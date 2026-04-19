@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidateTag, revalidatePath } from 'next/cache';
-import { config } from '@/lib/config';
+import { prisma } from '@/lib/prisma';
+import crypto from 'crypto';
 import type { RevalidateRequest, RevalidateResponse, ErrorResponse } from '@/lib/types';
 
 export async function POST(request: NextRequest) {
@@ -11,14 +12,35 @@ export async function POST(request: NextRequest) {
     const authHeader = request.headers.get('authorization');
     const apiKey = authHeader?.replace('Bearer ', '');
     
-    if (!apiKey || apiKey !== config.apiSecretKey) {
+    if (!apiKey) {
       const errorResponse: ErrorResponse = {
         error: 'Unauthorized',
-        message: 'Invalid or missing API key. Provide in Authorization: Bearer <key>',
+        message: 'Missing API key. Provide in Authorization: Bearer <key>',
         timestamp: new Date().toISOString()
       };
       return NextResponse.json(errorResponse, { status: 401 });
     }
+
+    const hashedKey = crypto.createHash('sha256').update(apiKey).digest('hex');
+    
+    const dbKey = await prisma.apiKey.findUnique({
+      where: { keyHash: hashedKey }
+    });
+
+    if (!dbKey) {
+      const errorResponse: ErrorResponse = {
+        error: 'Unauthorized',
+        message: 'Invalid API key.',
+        timestamp: new Date().toISOString()
+      };
+      return NextResponse.json(errorResponse, { status: 401 });
+    }
+
+    // Update lastUsedAt in the background
+    prisma.apiKey.update({
+      where: { id: dbKey.id },
+      data: { lastUsedAt: new Date() }
+    }).catch(console.error);
     
     // 2. Parse and validate request body
     let body: RevalidateRequest;
@@ -65,7 +87,6 @@ export async function POST(request: NextRequest) {
     
     // 4. Perform revalidation (CORRECT for Next.js 16.2.4)
     if (tag) {
-      // @ts-ignore - Next.js 16.2.4 expects second parameter but documentation varies
       revalidateTag(tag, 'page');
       const response: RevalidateResponse = {
         success: true,
@@ -76,7 +97,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(response);
     } 
     else if (path) {
-      // @ts-ignore - Next.js 16.2.4 expects second parameter but documentation varies
       revalidatePath(path, 'page');
       const response: RevalidateResponse = {
         success: true,
