@@ -43,3 +43,29 @@ export interface ErrorResponse {
   message: string;
   timestamp?: string;
 }
+
+// Analysis types
+export interface AnalyzeRequest {
+  url: string;
+}
+
+export interface AnalyzeResponse {
+  success: boolean;
+  results: {
+    url: string;
+    score: number;
+    metrics: {
+      hasTitle: boolean;
+      hasDescription: boolean;
+      hasFavicon: boolean;
+      isSsl: boolean;
+      loadTime: number;
+    };
+    details: {
+      title?: string;
+      description?: string;
+      server?: string;
+    };
+  };
+  timestamp: string;
+}

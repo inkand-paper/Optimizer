@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
     
     // 4. Perform revalidation (CORRECT for Next.js 16.2.4)
     if (tag) {
-      revalidateTag(tag, 'page');
+      revalidateTag(tag);
       const response: RevalidateResponse = {
         success: true,
         revalidated: { type: 'tag', value: tag },

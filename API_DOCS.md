@@ -1,79 +1,65 @@
-# Next.js Optimizer Suite - API Documentation
+# 🔌 API Documentation
+
+This guide covers how to integrate with the Next.js Optimizer Suite.
 
 ## Base URL
-- Development: `http://localhost:3000`
-- Production: `https://your-domain.com`
+- **Local**: `http://localhost:3000`
+- **Production**: `https://your-deployment-domain.com`
 
-## Authentication
-All protected endpoints require an API key in the Authorization header:
+---
 
+## 🛠 Authentication
 
-Authorization: Bearer YOUR_API_KEY
+All "Machine" endpoints require an API Key issued from your dashboard.
 
-## Endpoints
+**Header**:
+```http
+Authorization: Bearer opt_your_api_key_here
+```
 
-### 1. Health Check
+---
+
+## 🚀 Endpoints
+
+### 1. Health & Status
 **GET** `/api/health`
 
-No authentication required.
+Tells you if the server is alive and shows memory usage. No key required.
 
-**Response (200 OK):**
+---
+
+### 2. Cache Revalidation
+**POST** `/api/revalidate`
+
+Triggers Next.js to clear the cache and fetch new data.
+
+**Request Payload**:
 ```json
-{
-  "status": "healthy",
-  "timestamp": "2026-04-18T10:25:47.053Z",
-  "uptime": {
-    "seconds": 11,
-    "minutes": 0,
-    "hours": "0.00"
-  },
-  "memory": {
-    "rss": 522764288,
-    "heapTotal": 200998912,
-    "heapUsed": 63262776,
-    "external": 4157434
-  },
-  "environment": "production",
-  "version": "1.0.0",
-  "endpoints": {
-    "health": "/api/health",
-    "revalidate": "/api/revalidate"
-  }
-}
-
-
-2. Cache Revalidation
-POST /api/revalidate
-
-Requires authentication.
-
-Request Body (provide either path or tag):
-
-json
-{
-  "path": "/products/123"
-}
-OR
-
-json
 {
   "tag": "products"
 }
-Response (200 OK):
+```
 
-json
+---
+
+### 3. Website Analyzer
+**POST** `/api/analyze`
+
+Scans a website for SEO, SSL, and Performance metrics.
+
+**Request Payload**:
+```json
 {
-  "success": true,
-  "revalidated": {
-    "type": "path",
-    "value": "/products/123"
-  },
-  "timestamp": "2026-04-18T10:26:00.000Z"
+  "url": "https://google.com"
 }
-Error Responses:
+```
 
-401 Unauthorized - Missing or invalid API key
+---
 
-400 Bad Request - Invalid request body
+## ⚠️ Error Codes
 
-500 Internal Server Error - Server error
+| Code | Meaning | Solution |
+| :--- | :--- | :--- |
+| **401** | Unauthorized | Your API Key is missing, revoked, or incorrect. |
+| **400** | Bad Request | You didn't send a "tag" or a "url" in the body. |
+| **500** | Server Error | Something went wrong with the database connection. |
