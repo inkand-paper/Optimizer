@@ -34,7 +34,7 @@ fun triggerGlobalRefresh(tag: String, apiKey: String) {
     val body = jsonBody.toRequestBody("application/json".toMediaType())
     
     val request = Request.Builder()
-        .url("https://your-saas-url.com/api/revalidate")
+        .url("https://nextjs-optimizer-suite.vercel.app/api/revalidate")
         .addHeader("Authorization", "Bearer $apiKey")
         .post(body)
         .build()

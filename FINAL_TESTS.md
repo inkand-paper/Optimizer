@@ -6,7 +6,7 @@ Run these PowerShell commands to verify that your SaaS is fully operational and 
 Verify the server is running correctly.
 
 ```powershell
-Invoke-RestMethod -Uri "https://your-domain.com/api/health" -Method Get
+Invoke-RestMethod -Uri "https://nextjs-optimizer-suite.vercel.app/api/health" -Method Get
 ```
 
 ---
@@ -16,7 +16,7 @@ Ensure that accessing the revalidate API WITHOUT a key fails.
 
 ```powershell
 try {
-    Invoke-RestMethod -Uri "https://your-domain.com/api/revalidate" -Method Post -Body '{"tag": "test"}' -Headers @{"Content-Type"="application/json"}
+    Invoke-RestMethod -Uri "https://nextjs-optimizer-suite.vercel.app/api/revalidate" -Method Post -Body '{"tag": "test"}' -Headers @{"Content-Type"="application/json"}
 } catch {
     $_.Exception.Response.StatusCode
 }
@@ -35,7 +35,7 @@ $loginBody = @{
     password = "StrongPassword123!"
 } | ConvertTo-Json
 
-$loginResponse = Invoke-RestMethod -Uri "https://your-domain.com/api/auth/login" -Method Post -Headers @{"Content-Type"="application/json"} -Body $loginBody
+$loginResponse = Invoke-RestMethod -Uri "https://nextjs-optimizer-suite.vercel.app/api/auth/login" -Method Post -Headers @{"Content-Type"="application/json"} -Body $loginBody
 $jwtToken = $loginResponse.token
 "✅ Login Successful. Token captured."
 ```
@@ -43,7 +43,7 @@ $jwtToken = $loginResponse.token
 ### Step B: Create a Machine Key via Dashboard API
 ```powershell
 $keyBody = @{ name = "Test Android Device" } | ConvertTo-Json
-$keyResponse = Invoke-RestMethod -Uri "https://your-domain.com/api/keys" -Method Post -Headers @{
+$keyResponse = Invoke-RestMethod -Uri "https://nextjs-optimizer-suite.vercel.app/api/keys" -Method Post -Headers @{
     "Content-Type" = "application/json"
     "Authorization" = "Bearer $jwtToken"
 } -Body $keyBody
@@ -55,7 +55,7 @@ $apiKey = $keyResponse.apiKey
 ### Step C: Trigger Revalidation using the Machine Key
 ```powershell
 $revalidateBody = @{ tag = "products" } | ConvertTo-Json
-$revalResponse = Invoke-RestMethod -Uri "https://your-domain.com/api/revalidate" -Method Post -Headers @{
+$revalResponse = Invoke-RestMethod -Uri "https://nextjs-optimizer-suite.vercel.app/api/revalidate" -Method Post -Headers @{
     "Content-Type" = "application/json"
     "Authorization" = "Bearer $apiKey"
 } -Body $revalidateBody
@@ -71,7 +71,7 @@ Verify that the analyzer can scan a site.
 
 ```powershell
 $analyzeBody = @{ url = "https://google.com" } | ConvertTo-Json
-$analyzeResponse = Invoke-RestMethod -Uri "https://your-domain.com/api/analyze" -Method Post -Headers @{
+$analyzeResponse = Invoke-RestMethod -Uri "https://nextjs-optimizer-suite.vercel.app/api/analyze" -Method Post -Headers @{
     "Content-Type" = "application/json"
     "Authorization" = "Bearer $apiKey"
 } -Body $analyzeBody

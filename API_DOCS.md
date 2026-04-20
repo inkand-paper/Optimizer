@@ -4,7 +4,7 @@ This guide covers how to integrate with the Next.js Optimizer Suite.
 
 ## Base URL
 - **Local**: `http://localhost:3000`
-- **Production**: `https://your-deployment-domain.com`
+- **Production**: `https://nextjs-optimizer-suite.vercel.app`
 
 ---
 
