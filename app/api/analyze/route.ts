@@ -65,12 +65,21 @@ export async function POST(request: NextRequest) {
 
     // Calculate score (0-100)
     let score = 0;
-    if (metrics.hasTitle) score += 20;
-    if (metrics.hasDescription) score += 20;
-    if (metrics.hasFavicon) score += 20;
-    if (metrics.isSsl) score += 20;
-    if (loadTime < 1000) score += 20;
-    else if (loadTime < 3000) score += 10;
+    
+    // Check if the page actually exists (HTTP 200)
+    const isHealthy = response.ok;
+    
+    if (isHealthy) {
+      if (metrics.hasTitle) score += 20;
+      if (metrics.hasDescription) score += 20;
+      if (metrics.hasFavicon) score += 20;
+      if (metrics.isSsl) score += 20;
+      if (loadTime < 1000) score += 20;
+      else if (loadTime < 3000) score += 10;
+    } else {
+      // Penalty for 404/500/etc.
+      score = 0;
+    }
 
     const analyzeResult: AnalyzeResponse = {
       success: true,
@@ -81,7 +90,8 @@ export async function POST(request: NextRequest) {
         details: {
           title: titleMatch?.[1]?.substring(0, 100),
           description: descMatch?.[1]?.substring(0, 200),
-          server: response.headers.get('server') || 'unknown'
+          server: response.headers.get('server') || 'unknown',
+          status: response.status
         }
       },
       timestamp: new Date().toISOString()
