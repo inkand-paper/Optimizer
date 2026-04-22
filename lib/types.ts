@@ -65,6 +65,7 @@ export interface AnalyzeResponse {
       title?: string;
       description?: string;
       server?: string;
+      status?: number;
     };
   };
   timestamp: string;
