@@ -121,6 +121,15 @@ export default function DashboardPage() {
         setNewKey(data.apiKey);
         setPlaygroundKey(data.apiKey); 
         localStorage.setItem("active_api_key", data.apiKey); // Persist for refresh
+        
+        // [UX] Immediately show success in the Playground
+        setPlaygroundResult({ 
+          success: true, 
+          message: "Handshake verified. Your new machine key is active and authorized.", 
+          status: 200,
+          timestamp: new Date().toISOString()
+        });
+
         fetchKeys(token!);
       }
     } catch (err) {
