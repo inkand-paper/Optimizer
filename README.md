@@ -42,8 +42,10 @@ JWT_SECRET="your-super-secret-random-string"
 ```bash
 npm install          # Install dependencies
 npx prisma generate  # Connect the database
-npm run dev          # Start the engine
+npm run dev          # Start the engine (Optimized for 16GB+ RAM)
 ```
+> [!NOTE]
+> The `dev` script is configured with a 2.5GB memory limit and uses the Webpack engine to ensure stability on Windows systems.
 
 ### 4. Deploying to the Cloud
 1. Push your code to **GitHub**.

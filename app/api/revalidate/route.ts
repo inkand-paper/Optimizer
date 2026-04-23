@@ -59,12 +59,12 @@ export async function POST(request: NextRequest) {
     const { path, tag } = body;
     
     if (!path && !tag) {
-      const errorResponse: ErrorResponse = {
-        error: 'Bad Request',
-        message: 'Provide either "path" (string) or "tag" (string) in request body',
+      const response = {
+        success: true,
+        message: 'Handshake verified. Your machine key is active and authorized.',
         timestamp: new Date().toISOString()
       };
-      return NextResponse.json(errorResponse, { status: 400 });
+      return NextResponse.json(response);
     }
     
     if (path && typeof path !== 'string') {

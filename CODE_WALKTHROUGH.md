@@ -107,3 +107,14 @@ if (tag) {
 - `/components`: Reusable puzzle pieces like the Navbar and Theme Toggle.
 - `/lib`: Helper functions (The "Brain" behind the scenes).
 - `/public`: Static images and logos.
+
+---
+
+## 6. Stability & Performance (Crucial for Dev)
+To ensure the dev server doesn't crash or hang the PC, we've optimized the `package.json` scripts:
+- **Memory Limit**: Uses `NODE_OPTIONS='--max-old-space-size=2560'` to prevent system-wide RAM exhaustion.
+- **Webpack Engine**: Uses the `--webpack` flag to reduce compilation overhead compared to experimental engines.
+
+## 7. UX Optimizations (Dashboard)
+- **Persistent Keys**: The active API key is stored in `localStorage` so it survives page refreshes.
+- **Auto-Authorization**: Creating a new key automatically "fills" the playground, making the Website Analyzer ready for work instantly.

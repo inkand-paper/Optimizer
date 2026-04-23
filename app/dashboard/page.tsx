@@ -68,6 +68,10 @@ export default function DashboardPage() {
     }
 
     if (storedUser) setUser(JSON.parse(storedUser));
+    
+    const storedPlaygroundKey = localStorage.getItem("active_api_key");
+    if (storedPlaygroundKey) setPlaygroundKey(storedPlaygroundKey);
+
     fetchKeys(token);
     fetchHealth();
   }, []);
@@ -115,6 +119,8 @@ export default function DashboardPage() {
       const data = await res.json();
       if (res.ok) {
         setNewKey(data.apiKey);
+        setPlaygroundKey(data.apiKey); 
+        localStorage.setItem("active_api_key", data.apiKey); // Persist for refresh
         fetchKeys(token!);
       }
     } catch (err) {
@@ -153,7 +159,7 @@ export default function DashboardPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${playgroundKey}`
         },
-        body: JSON.stringify({ tag: playgroundTag }),
+        body: JSON.stringify({ tag: playgroundTag || undefined }),
       });
       const data = await res.json();
       setPlaygroundResult({ ...data, status: res.status });
@@ -273,7 +279,8 @@ export default function DashboardPage() {
                   <div className="space-y-1 pr-8">
                     <h3 className="font-bold text-green-800 dark:text-green-400">Key Created Successfully!</h3>
                     <p className="text-sm text-green-700 dark:text-green-500 mb-4">
-                      [SECURITY ALERT] Copy this key now. You will **never** see it again after you close this box.
+                      [SECURITY ALERT] Copy this key now. You will **never** see it again. 
+                      <span className="block mt-1 font-bold">The Website Analyzer is now automatically authorized with this key.</span>
                     </p>
                     <div className="flex items-center gap-2 bg-white dark:bg-zinc-900 p-3 rounded-lg border border-green-200 dark:border-green-800 font-mono text-xs break-all">
                       {newKey}
@@ -424,11 +431,17 @@ export default function DashboardPage() {
                     <PasswordInput 
                       className="w-full bg-zinc-800 border-zinc-700 text-white"
                       value={playgroundKey}
-                      onChange={(e) => setPlaygroundKey(e.target.value)}
+                      onChange={(e) => {
+                        setPlaygroundKey(e.target.value);
+                        localStorage.setItem("active_api_key", e.target.value);
+                      }}
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold uppercase tracking-wider opacity-80">Test Cache Tag</label>
+                    <div className="flex justify-between">
+                      <label className="text-[10px] font-bold uppercase tracking-wider opacity-80">Test Cache Tag</label>
+                      <span className="text-[8px] font-bold text-zinc-500 uppercase">Optional for handshake</span>
+                    </div>
                     <Input 
                       className="w-full bg-zinc-800 border-zinc-700 text-white"
                       placeholder="e.g. products"
@@ -439,7 +452,7 @@ export default function DashboardPage() {
                   <Button 
                     className="w-full bg-blue-600 hover:bg-blue-700 h-11" 
                     onClick={runPlayground}
-                    disabled={playgroundLoading || !playgroundKey || !playgroundTag}
+                    disabled={playgroundLoading || !playgroundKey}
                   >
                     {playgroundLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Verify Handshake"}
                   </Button>
