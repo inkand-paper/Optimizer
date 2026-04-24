@@ -6,6 +6,7 @@ import { Navbar } from "@/components/navbar";
 import { Card, Button, Input, PasswordInput } from "@/components/ui-elements";
 import { AnalysisReport } from "@/components/analysis-report";
 import { ActivityLogs } from "@/components/activity-logs";
+import { MonitoringDashboard } from "@/components/monitoring-dashboard";
 import { 
   Key, 
   Trash2, 
@@ -238,6 +239,8 @@ export default function DashboardPage() {
           
           {/* LEFT COLUMN: API Keys & Analysis */}
           <div className="flex-[2] space-y-6">
+            
+            <MonitoringDashboard />
             
             {/* WEBSITE ANALYZER CARD */}
             <Card className="p-6 border-blue-100 dark:border-blue-900/30 bg-white dark:bg-zinc-950 overflow-hidden relative">

@@ -20,7 +20,37 @@ model User {
   
   apiKeys      ApiKey[]
   activityLogs ActivityLog[]
+  monitors     Monitor[]
 }
+
+// ... ApiKey and ActivityLog models ...
+
+model Monitor {
+  id          String   @id @default(uuid())
+  name        String
+  url         String
+  status      String   @default("UP") // UP, DOWN, DEGRADED
+  lastChecked DateTime?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  checks      Check[]
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Check {
+  id        String   @id @default(uuid())
+  monitorId String
+  monitor   Monitor  @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+  status    String
+  latency   Int      // in ms
+  message   String?
+  createdAt DateTime @default(now())
+
+  @@index([monitorId])
+}
+
 
 model ApiKey {
   id         String   @id @default(uuid())
