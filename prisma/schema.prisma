@@ -19,6 +19,7 @@ model User {
   updatedAt    DateTime @updatedAt
   
   apiKeys      ApiKey[]
+  activityLogs ActivityLog[]
 }
 
 model ApiKey {
@@ -32,3 +33,17 @@ model ApiKey {
   
   @@index([userId])
 }
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  type      String   // 'REVALIDATE', 'ANALYZE', 'AUTH', etc.
+  action    String
+  status    String   // 'SUCCESS', 'FAILURE'
+  details   Json?
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+

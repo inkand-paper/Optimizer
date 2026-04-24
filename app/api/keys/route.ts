@@ -4,6 +4,7 @@ import { verifyJwt } from '@/lib/auth';
 import { createApiKeySchema } from '@/lib/validations';
 import { z } from 'zod';
 import crypto from 'crypto';
+import { logActivity } from '@/lib/logger';
 
 // Helper to hash API keys quickly (sha256)
 export function hashApiKey(key: string): string {
@@ -42,6 +43,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  let currentUserId: string | undefined = undefined;
   try {
     const authHeader = req.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -53,6 +55,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
+    currentUserId = decoded.userId;
     const body = await req.json();
     const { name } = createApiKeySchema.parse(body);
     
@@ -71,6 +74,14 @@ export async function POST(req: NextRequest) {
         userId: decoded.userId
       }
     });
+
+    await logActivity({
+      type: 'KEY_GEN',
+      action: `Key Generated: ${name}`,
+      status: 'SUCCESS',
+      userId: currentUserId,
+      details: { keyName: name, keyId: newKey.id }
+    });
     
     return NextResponse.json({
       success: true,
@@ -81,6 +92,16 @@ export async function POST(req: NextRequest) {
     }, { status: 201 });
     
   } catch (error) {
+    if (currentUserId) {
+      await logActivity({
+        type: 'KEY_GEN',
+        action: 'Key Generation Failed',
+        status: 'FAILURE',
+        userId: currentUserId,
+        details: { error: error instanceof Error ? error.message : 'Unknown error' }
+      });
+    }
+
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Validation Error', message: (error as any).errors }, { status: 400 });
     }
@@ -88,3 +109,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+

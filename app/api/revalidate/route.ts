@@ -3,9 +3,11 @@ import { revalidateTag, revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import crypto from 'crypto';
 import type { RevalidateRequest, RevalidateResponse, ErrorResponse } from '@/lib/types';
+import { logActivity } from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
+  let currentUserId: string | undefined = undefined;
   
   try {
     // 1. Validate API key
@@ -13,28 +15,29 @@ export async function POST(request: NextRequest) {
     const apiKey = authHeader?.replace('Bearer ', '');
     
     if (!apiKey) {
-      const errorResponse: ErrorResponse = {
+      return NextResponse.json({
         error: 'Unauthorized',
-        message: 'Missing API key. Provide in Authorization: Bearer <key>',
+        message: 'Missing API key.',
         timestamp: new Date().toISOString()
-      };
-      return NextResponse.json(errorResponse, { status: 401 });
+      }, { status: 401 });
     }
 
     const hashedKey = crypto.createHash('sha256').update(apiKey).digest('hex');
     
     const dbKey = await prisma.apiKey.findUnique({
-      where: { keyHash: hashedKey }
+      where: { keyHash: hashedKey },
+      include: { user: true }
     });
 
     if (!dbKey) {
-      const errorResponse: ErrorResponse = {
+      return NextResponse.json({
         error: 'Unauthorized',
         message: 'Invalid API key.',
         timestamp: new Date().toISOString()
-      };
-      return NextResponse.json(errorResponse, { status: 401 });
+      }, { status: 401 });
     }
+
+    currentUserId = dbKey.userId;
 
     // Update lastUsedAt in the background
     prisma.apiKey.update({
@@ -47,86 +50,94 @@ export async function POST(request: NextRequest) {
     try {
       body = await request.json();
     } catch {
-      const errorResponse: ErrorResponse = {
+      return NextResponse.json({
         error: 'Bad Request',
         message: 'Invalid JSON body',
         timestamp: new Date().toISOString()
-      };
-      return NextResponse.json(errorResponse, { status: 400 });
+      }, { status: 400 });
     }
     
     // 3. Validate request parameters
     const { path, tag } = body;
     
     if (!path && !tag) {
-      const response = {
+      await logActivity({
+        type: 'REVALIDATE',
+        action: 'Handshake Verification',
+        status: 'SUCCESS',
+        userId: currentUserId,
+        details: { message: 'Handshake only' }
+      });
+
+      return NextResponse.json({
         success: true,
         message: 'Handshake verified. Your machine key is active and authorized.',
         timestamp: new Date().toISOString()
-      };
-      return NextResponse.json(response);
+      });
     }
     
-    if (path && typeof path !== 'string') {
-      const errorResponse: ErrorResponse = {
-        error: 'Bad Request',
-        message: '"path" must be a string',
-        timestamp: new Date().toISOString()
-      };
-      return NextResponse.json(errorResponse, { status: 400 });
-    }
-    
-    if (tag && typeof tag !== 'string') {
-      const errorResponse: ErrorResponse = {
-        error: 'Bad Request',
-        message: '"tag" must be a string',
-        timestamp: new Date().toISOString()
-      };
-      return NextResponse.json(errorResponse, { status: 400 });
-    }
-    
-    // 4. Perform revalidation (CORRECT for Next.js 16.2.4)
+    // 4. Perform revalidation
     if (tag) {
-      // In Next.js 16, revalidateTag expects a second argument (profile)
-      // We use 'max' as suggested by the error message or cast to bypass
-      // @ts-ignore - Next.js 16 experimental signature
+      // @ts-ignore - Next.js experimental signature
       revalidateTag(tag); 
-      const response: RevalidateResponse = {
+      
+      await logActivity({
+        type: 'REVALIDATE',
+        action: `Tag Revalidation: ${tag}`,
+        status: 'SUCCESS',
+        userId: currentUserId,
+        details: { tag, durationMs: Date.now() - startTime }
+      });
+
+      return NextResponse.json({
         success: true,
         revalidated: { type: 'tag', value: tag },
         timestamp: new Date().toISOString()
-      };
-      console.log(`✅ Revalidated tag: ${tag} (${Date.now() - startTime}ms)`);
-      return NextResponse.json(response);
+      });
     } 
     else if (path) {
-      // @ts-ignore - Next.js 16 experimental signature
+      // @ts-ignore - Next.js experimental signature
       revalidatePath(path); 
-      const response: RevalidateResponse = {
+      
+      await logActivity({
+        type: 'REVALIDATE',
+        action: `Path Revalidation: ${path}`,
+        status: 'SUCCESS',
+        userId: currentUserId,
+        details: { path, durationMs: Date.now() - startTime }
+      });
+
+      return NextResponse.json({
         success: true,
         revalidated: { type: 'path', value: path },
         timestamp: new Date().toISOString()
-      };
-      console.log(`✅ Revalidated path: ${path} (${Date.now() - startTime}ms)`);
-      return NextResponse.json(response);
+      });
     }
     
-    // This should never happen due to validation above
-    const errorResponse: ErrorResponse = {
+    return NextResponse.json({
       error: 'Internal Server Error',
       message: 'Unexpected error during revalidation',
       timestamp: new Date().toISOString()
-    };
-    return NextResponse.json(errorResponse, { status: 500 });
+    }, { status: 500 });
     
   } catch (error) {
     console.error('❌ Revalidation error:', error);
-    const errorResponse: ErrorResponse = {
+    
+    if (currentUserId) {
+      await logActivity({
+        type: 'REVALIDATE',
+        action: 'Revalidation Failed',
+        status: 'FAILURE',
+        userId: currentUserId,
+        details: { error: error instanceof Error ? error.message : 'Unknown error' }
+      });
+    }
+
+    return NextResponse.json({
       error: 'Internal Server Error',
       message: error instanceof Error ? error.message : 'Failed to revalidate',
       timestamp: new Date().toISOString()
-    };
-    return NextResponse.json(errorResponse, { status: 500 });
+    }, { status: 500 });
   }
 }
 
@@ -139,4 +150,4 @@ export async function OPTIONS() {
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     }
   });
-}
+}
