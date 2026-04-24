@@ -22,6 +22,10 @@ export async function runFullAudit(url: string): Promise<FullAuditResult> {
       next: { revalidate: 0 }
     });
     
+    if (!response.ok) {
+      throw new Error(`HTTP Error ${response.status}: ${response.statusText}`);
+    }
+    
     const html = await response.text();
     const loadTimeMs = Date.now() - startTime;
     const headers = response.headers;

@@ -9,7 +9,7 @@
  *   njo status
  */
 
-import { readFileSync, existsSync, writeFileSync } from 'fs';
+import { readFileSync, existsSync, writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
 
@@ -44,7 +44,6 @@ function loadConfig() {
 
 function saveConfig(cfg) {
   const dir = join(homedir(), '.njo');
-  const { mkdirSync } = await import('fs');
   mkdirSync(dir, { recursive: true });
   writeFileSync(CONFIG_PATH, JSON.stringify(cfg, null, 2));
 }
@@ -197,12 +196,36 @@ async function cmdStatus() {
 
 async function cmdConfigSetKey(key) {
   if (!key) { console.error(fmt(c.red, 'Error: API key required')); process.exit(1); }
-  const { mkdirSync } = await import('fs');
   mkdirSync(join(homedir(), '.njo'), { recursive: true });
   const cfg = loadConfig();
   cfg.apiKey = key;
   writeFileSync(CONFIG_PATH, JSON.stringify(cfg, null, 2));
   console.log(fmt(c.green, `\n  ✓ API key saved to ${CONFIG_PATH}\n`));
+}
+
+async function cmdCron(opts) {
+  const interval = opts.interval || 60; // default 60s
+  console.log(fmt(c.cyan, `\n  🕰️ Starting monitoring cron loop (interval: ${interval}s). Press Ctrl+C to stop.\n`));
+  
+  const tick = async () => {
+    try {
+      const { ok, data } = await apiRequest('/api/cron/monitor');
+      const time = new Date().toLocaleTimeString();
+      if (ok) {
+        console.log(fmt(c.dim, `  [${time}] Checked ${data.checked} monitors. successful: ${data.successful}, failed: ${data.failed}`));
+      } else {
+        console.error(fmt(c.red, `  [${time}] Error triggering monitors: ${data?.error || 'Unknown error'}`));
+      }
+    } catch (e) {
+      console.error(fmt(c.red, `  [${new Date().toLocaleTimeString()}] Network error reaching API`));
+    }
+  };
+
+  await tick();
+  setInterval(tick, interval * 1000);
+  
+  // Keep alive
+  await new Promise(() => {});
 }
 
 // --- Main ---
@@ -216,6 +239,7 @@ async function main() {
     else if (args[i] === '--path') opts.path = args[++i];
     else if (args[i] === '--key') opts.key = args[++i];
     else if (args[i] === '--json') opts.json = true;
+    else if (args[i] === '--interval') opts.interval = parseInt(args[++i], 10);
   }
 
   if (!cmd || cmd === '--help' || cmd === '-h') { help(); return; }
@@ -226,7 +250,9 @@ async function main() {
   if (cmd === 'analyze') await cmdAnalyze(args[1], opts);
   else if (cmd === 'revalidate') await cmdRevalidate(opts);
   else if (cmd === 'status') await cmdStatus();
+  else if (cmd === 'cron') await cmdCron(opts);
   else if (cmd === 'config' && args[1] === 'set-key') await cmdConfigSetKey(args[2]);
+
   else {
     console.error(fmt(c.red, `  Unknown command: ${cmd}\n`));
     help();
