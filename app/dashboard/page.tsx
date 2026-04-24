@@ -22,7 +22,9 @@ import {
   LogOut,
   Search,
   AlertTriangle,
-  FileText
+  FileText,
+  Activity,
+  Webhook
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -223,6 +225,17 @@ export default function DashboardPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // Tab State for Mobile
+  const [activeTab, setActiveTab] = React.useState<"monitoring" | "audits" | "keys" | "webhooks" | "logs">("monitoring");
+
+  const tabs = [
+    { id: "monitoring", label: "Monitoring", icon: Activity },
+    { id: "audits", label: "Audits", icon: Search },
+    { id: "keys", label: "API Keys", icon: Key },
+    { id: "webhooks", label: "Webhooks", icon: Webhook },
+    { id: "logs", label: "Logs", icon: FileText },
+  ];
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-950">
@@ -232,283 +245,203 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950">
+    <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950 overflow-x-hidden">
       <Navbar />
       
-      <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row gap-8">
+      <main className="flex-1 container mx-auto px-4 py-6 md:py-8 mb-20 md:mb-0">
+        <div className="flex flex-col md:flex-row gap-8 lg:gap-12">
           
-          {/* LEFT COLUMN: API Keys & Analysis */}
-          <div className="flex-[2] space-y-6">
+          {/* SIDEBAR NAVIGATION (Desktop Only) */}
+          <div className="hidden md:flex flex-col w-64 shrink-0 space-y-1">
+            <div className="px-3 mb-6">
+              <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Navigation</h2>
+            </div>
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={cn(
+                  "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group",
+                  activeTab === tab.id 
+                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" 
+                    : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                )}
+              >
+                <tab.icon className={cn("h-4 w-4 transition-transform group-hover:scale-110", activeTab === tab.id ? "text-white" : "text-zinc-400")} />
+                {tab.label}
+              </button>
+            ))}
             
-            <MonitoringDashboard />
+            <div className="pt-8 px-3">
+              <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 mb-4">System Health</h2>
+              <Card className="p-4 bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800">
+                <div className="flex items-center justify-between mb-3">
+                  <div className={cn("h-2 w-2 rounded-full animate-pulse", health?.status === 'healthy' ? "bg-green-500" : "bg-red-500")} />
+                  <span className="text-[9px] font-bold text-zinc-400">{health?.status?.toUpperCase()}</span>
+                </div>
+                <div className="h-1 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                  <div className="h-full bg-green-500 w-full" />
+                </div>
+                <p className="text-[9px] text-zinc-500 mt-2">v{health?.version}</p>
+              </Card>
+            </div>
+          </div>
+
+          {/* MAIN CONTENT AREA */}
+          <div className="flex-1 space-y-8">
             
-            {/* WEBSITE ANALYZER CARD */}
-            <Card className="p-6 border-blue-100 dark:border-blue-900/30 bg-white dark:bg-zinc-950 overflow-hidden relative">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="h-10 w-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
-                  <Search className="h-5 w-5" />
+            {/* COMMON HEADER SECTION (Visible on all tabs) */}
+            <div className="flex items-center justify-between">
+              <div className="min-w-0">
+                <h1 className="text-2xl md:text-3xl font-bold tracking-tight capitalize">{activeTab}</h1>
+                <p className="text-sm text-zinc-500 truncate">Manage your {activeTab} settings and analytics</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="hidden sm:flex flex-col items-end mr-2">
+                   <p className="text-xs font-bold leading-none">{user?.name}</p>
+                   <p className="text-[10px] text-zinc-500">{user?.email}</p>
                 </div>
-                <div>
-                  <h2 className="text-xl font-bold font-display">Website Analyzer</h2>
-                  <p className="text-xs text-zinc-500">Scan any URL for SEO and Performance optimization scores</p>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3 mb-6">
-                <Input 
-                  placeholder="https://your-website.com" 
-                  value={analyzeUrl}
-                  onChange={(e) => setAnalyzeUrl(e.target.value)}
-                  className="flex-1"
-                />
-                <Button onClick={runAnalyzer} disabled={analyzeLoading || !analyzeUrl}>
-                  {analyzeLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <FileText className="h-4 w-4 mr-2" />}
-                  Run Audit
-                </Button>
-              </div>
-
-              {analyzeResult && <AnalysisReport data={analyzeResult} />}
-            </Card>
-
-            <div className="flex items-center justify-between pt-4">
-              <div>
-                <h1 className="text-2xl font-bold">API Access Keys</h1>
-                <p className="text-sm text-zinc-500">Secure machine keys for your external services</p>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => fetchKeys(localStorage.getItem("token")!)}>
-                  <RefreshCw className="h-4 w-4 mr-2" /> Refresh
+                <Button variant="ghost" size="icon" onClick={handleLogout} className="rounded-full hover:bg-red-50 hover:text-red-500">
+                   <LogOut className="h-4 w-4" />
                 </Button>
               </div>
             </div>
 
-            {/* NEW KEY SUCCESS MODAL (Pseudo-modal) */}
-            {newKey && (
-              <Card className="bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800 p-6 relative overflow-hidden">
-                <div className="flex items-start gap-4">
-                  <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center shrink-0">
-                    <CheckCircle2 className="h-6 w-6 text-green-600" />
-                  </div>
-                  <div className="space-y-1 pr-8">
-                    <h3 className="font-bold text-green-800 dark:text-green-400">Key Created Successfully!</h3>
-                    <p className="text-sm text-green-700 dark:text-green-500 mb-4">
-                      [SECURITY ALERT] Copy this key now. You will **never** see it again. 
-                      <span className="block mt-1 font-bold">The Website Analyzer is now automatically authorized with this key.</span>
-                    </p>
-                    <div className="flex items-center gap-2 bg-white dark:bg-zinc-900 p-3 rounded-lg border border-green-200 dark:border-green-800 font-mono text-xs break-all">
-                      {newKey}
-                      <button 
-                        onClick={() => copyToClipboard(newKey)}
-                        className="ml-auto p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition-colors"
-                      >
-                        {copied ? <CheckCircle2 className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4 text-zinc-400" />}
-                      </button>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => setNewKey(null)}
-                    className="absolute top-4 right-4 text-green-600 hover:bg-green-100 p-1 rounded-full"
-                  >
-                    ×
-                  </button>
-                </div>
-              </Card>
-            )}
-
-            <Card className="p-0 overflow-hidden">
-              <div className="p-4 border-b bg-zinc-50/50 dark:bg-zinc-900/50 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Key className="h-4 w-4 text-zinc-400" />
-                  <span className="font-medium text-sm">Active Keys ({keys.length})</span>
-                </div>
-                <form onSubmit={handleCreateKey} className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                  <Input 
-                    name="keyName" 
-                    placeholder="e.g. Android Mobile" 
-                    className="h-9 text-xs w-full sm:w-48"
-                    required
-                  />
-                  <Button size="sm" type="submit" disabled={creatingKey} className="whitespace-nowrap">
-                    {creatingKey ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Plus className="h-3 w-3 mr-1" />}
-                    Create Key
-                  </Button>
-                </form>
-              </div>
-
-              {keys.length === 0 ? (
-                <div className="p-12 text-center text-zinc-500">
-                  <p>You haven&apos;t generated any API keys yet.</p>
-                  <p className="text-xs">Generate one to start connecting your Android app.</p>
-                </div>
-              ) : (
-                <div className="divide-y">
-                  {keys.map((key) => (
-                    <div key={key.id} className="p-4 flex items-center justify-between hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50 transition-colors group">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-sm">{key.name}</span>
-                          <span className="text-[10px] bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-500 uppercase tracking-wider">Active</span>
-                        </div>
-                        <div className="flex items-center gap-4 text-xs text-zinc-500">
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" /> Created {new Date(key.createdAt).toLocaleDateString()}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Terminal className="h-3 w-3" /> 
-                            {key.lastUsedAt ? `Last active ${new Date(key.lastUsedAt).toLocaleDateString()}` : "Never used"}
-                          </span>
-                        </div>
+            {/* TAB CONTENT */}
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              {activeTab === "monitoring" && <MonitoringDashboard />}
+              
+              {activeTab === "audits" && (
+                <div className="space-y-8">
+                  <Card className="p-6 border-blue-100 dark:border-blue-900/30 bg-white dark:bg-zinc-950 overflow-hidden relative">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="h-10 w-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+                        <Search className="h-5 w-5" />
                       </div>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="text-zinc-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => handleDeleteKey(key.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
+                      <div>
+                        <h2 className="text-xl font-bold font-display">Website Analyzer</h2>
+                        <p className="text-xs text-zinc-500">Scan any URL for SEO and Performance optimization scores</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Input 
+                        placeholder="https://your-website.com" 
+                        value={analyzeUrl}
+                        onChange={(e) => setAnalyzeUrl(e.target.value)}
+                        className="flex-1"
+                      />
+                      <Button onClick={runAnalyzer} disabled={analyzeLoading || !analyzeUrl}>
+                        {analyzeLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <FileText className="h-4 w-4 mr-2" />}
+                        Run Audit
                       </Button>
                     </div>
-                  ))}
+                  </Card>
+                  {analyzeResult && <AnalysisReport data={analyzeResult} />}
                 </div>
               )}
-            </Card>
-          </div>
 
-          <div className="flex-1 space-y-6">
-            {/* SYSTEM HEALTH CARD */}
-            <Card className="p-4 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <div className={cn(
-                    "h-2 w-2 rounded-full animate-pulse",
-                    health?.status === 'healthy' ? "bg-green-500" : "bg-red-500"
-                  )} />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
-                    System {health?.status || 'Unknown'}
-                  </span>
-                </div>
-                <div className="text-[10px] text-zinc-400 font-mono">
-                  v{health?.version || '1.0.0'}
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="flex-1 h-1.5 bg-zinc-100 dark:bg-zinc-900 rounded-full overflow-hidden">
-                  <div className="h-full bg-green-500 w-full" />
-                </div>
-                <div className="text-[10px] whitespace-nowrap text-zinc-500">
-                  {health?.uptime?.hours || '0'} hrs uptime
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-6">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="h-12 w-12 rounded-full border-2 border-blue-600 flex items-center justify-center overflow-hidden bg-white">
-                  <span className="text-xl font-bold text-blue-600 uppercase">
-                    {user?.name?.[0] || 'U'}
-                  </span>
-                </div>
-                <div className="flex-1">
-                  <h2 className="font-bold leading-none">{user?.name}</h2>
-                  <p className="text-xs text-zinc-500 mt-1">{user?.email}</p>
-                </div>
-                <Button variant="ghost" size="icon" onClick={handleLogout} title="Sign Out">
-                  <LogOut className="h-4 w-4 text-zinc-400 hover:text-red-500" />
-                </Button>
-              </div>
-              <div className="grid grid-cols-2 gap-2 text-center">
-                <div className="p-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border">
-                  <div className="text-lg font-bold">{keys.length}</div>
-                  <div className="text-[10px] text-zinc-500 uppercase">Live Keys</div>
-                </div>
-                <div className="p-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border">
-                  <div className="text-lg font-bold text-green-600 uppercase text-sm">Pro</div>
-                  <div className="text-[10px] text-zinc-500 uppercase">Plan</div>
-                </div>
-              </div>
-            </Card>
-
-            <ActivityLogs />
-
-            <WebhookManager />
-
-            <Card className="p-0 overflow-hidden border-2 border-zinc-200 dark:border-zinc-800 shadow-xl">
-              <div className="p-6 bg-zinc-900 text-white">
-                <div className="flex items-center gap-2 mb-4">
-                  <ShieldCheck className="h-5 w-5 text-blue-400" />
-                  <h3 className="font-bold">Security Playground</h3>
-                </div>
-                <p className="text-[11px] text-zinc-400 mb-6 leading-relaxed">
-                  [FLOW] Use this tool to test your **API Keys**. Paste a key you generated, a Cache Tag (like `products`), and click run to verify the security handshake.
-                </p>
-                
-                <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold uppercase tracking-wider opacity-80">Machine API Key</label>
-                    <PasswordInput 
-                      className="w-full bg-zinc-800 border-zinc-700 text-white"
-                      value={playgroundKey}
-                      onChange={(e) => {
-                        setPlaygroundKey(e.target.value);
-                        localStorage.setItem("active_api_key", e.target.value);
-                      }}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between">
-                      <label className="text-[10px] font-bold uppercase tracking-wider opacity-80">Test Cache Tag</label>
-                      <span className="text-[8px] font-bold text-zinc-500 uppercase">Optional for handshake</span>
+              {activeTab === "keys" && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                  <div className="space-y-8">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-bold">Access Tokens</h2>
+                      <Button variant="outline" size="sm" onClick={() => fetchKeys(localStorage.getItem("token")!)}>
+                        <RefreshCw className="h-3 w-3 mr-2" /> Sync
+                      </Button>
                     </div>
-                    <Input 
-                      className="w-full bg-zinc-800 border-zinc-700 text-white"
-                      placeholder="e.g. products"
-                      value={playgroundTag}
-                      onChange={(e) => setPlaygroundTag(e.target.value)}
-                    />
-                  </div>
-                  <Button 
-                    className="w-full bg-blue-600 hover:bg-blue-700 h-11" 
-                    onClick={runPlayground}
-                    disabled={playgroundLoading || !playgroundKey}
-                  >
-                    {playgroundLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Verify Handshake"}
-                  </Button>
-                </div>
-              </div>
 
-              {playgroundResult && (
-                <div className={cn(
-                  "p-6 transition-all duration-500",
-                  playgroundResult.status === 200 
-                    ? "bg-green-600/10 text-green-700 dark:text-green-400" 
-                    : "bg-red-600/10 text-red-700 dark:text-red-400"
-                )}>
-                  <div className="flex items-center gap-3 mb-3">
-                    {playgroundResult.status === 200 ? (
-                      <CheckCircle2 className="h-6 w-6" />
-                    ) : (
-                      <AlertTriangle className="h-6 w-6 animate-pulse" />
+                    {newKey && (
+                      <Card className="bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-800 p-6 relative">
+                        <h3 className="font-bold text-emerald-800 dark:text-emerald-400 mb-2">Key Generated!</h3>
+                        <div className="flex items-center gap-2 bg-white dark:bg-zinc-900 p-3 rounded-lg border font-mono text-xs break-all">
+                          {newKey}
+                          <button onClick={() => copyToClipboard(newKey)} className="ml-auto p-1 text-zinc-400 hover:text-emerald-600">
+                             {copied ? <CheckCircle2 className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                          </button>
+                        </div>
+                        <p className="text-[10px] text-emerald-600 mt-2">Make sure to copy this now. It will not be shown again.</p>
+                      </Card>
                     )}
-                    <span className="font-bold text-sm uppercase tracking-tight">
-                      {playgroundResult.status === 200 ? "Authorization Success" : "Security Alert: Unauthorized"}
-                    </span>
+
+                    <Card className="p-0 overflow-hidden">
+                      <div className="p-4 border-b bg-zinc-50/50 flex flex-col gap-3">
+                        <p className="text-[10px] font-bold uppercase text-zinc-400">Generate New Machine Key</p>
+                        <form onSubmit={handleCreateKey} className="flex gap-2">
+                          <Input name="keyName" placeholder="Key name (e.g. CI/CD)" className="h-9" required />
+                          <Button size="sm" type="submit" disabled={creatingKey}>
+                            {creatingKey ? <Loader2 className="h-3 w-3 animate-spin" /> : "Create"}
+                          </Button>
+                        </form>
+                      </div>
+                      <div className="divide-y max-h-[300px] overflow-y-auto">
+                        {keys.map(k => (
+                          <div key={k.id} className="p-4 flex justify-between items-center group hover:bg-zinc-50">
+                            <div>
+                              <p className="text-sm font-bold">{k.name}</p>
+                              <p className="text-[10px] text-zinc-500">Issued {new Date(k.createdAt).toLocaleDateString()}</p>
+                            </div>
+                            <Button variant="ghost" size="icon" onClick={() => handleDeleteKey(k.id)} className="opacity-0 group-hover:opacity-100 text-zinc-400 hover:text-red-500">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </Card>
                   </div>
-                  <div className="p-3 bg-black/5 dark:bg-black/40 rounded-lg text-[10px] font-mono break-all border border-black/5 overflow-auto max-h-32">
-                    {JSON.stringify(playgroundResult, null, 2)}
-                  </div>
-                  {playgroundResult.status === 401 && (
-                    <p className="mt-3 text-[10px] font-medium leading-relaxed opacity-80">
-                      [TIP] Ensure you are using the `opt_...` key. Do not use your account password here.
-                    </p>
-                  )}
+
+                  <Card className="p-0 overflow-hidden border-2 border-zinc-200 dark:border-zinc-800 shadow-xl bg-zinc-900 text-white p-6">
+                    <div className="flex items-center gap-2 mb-4 text-blue-400"><ShieldCheck className="h-5 w-5" /><h3 className="font-bold text-sm">Security Playground</h3></div>
+                    <p className="text-[11px] text-zinc-400 mb-6">Test your machine handshakes before production deployment.</p>
+                    <div className="space-y-4">
+                      <div className="space-y-1"><label className="text-[9px] font-bold uppercase opacity-60">API Key</label><PasswordInput className="bg-zinc-800 border-zinc-700" value={playgroundKey} onChange={(e) => setPlaygroundKey(e.target.value)} /></div>
+                      <div className="space-y-1"><label className="text-[9px] font-bold uppercase opacity-60">Cache Tag</label><Input className="bg-zinc-800 border-zinc-700" placeholder="e.g. products" value={playgroundTag} onChange={(e) => setPlaygroundTag(e.target.value)} /></div>
+                      <Button className="w-full bg-blue-600 h-10 text-xs font-bold" onClick={runPlayground} disabled={playgroundLoading || !playgroundKey}>{playgroundLoading ? "Verifying..." : "Run Security Check"}</Button>
+                    </div>
+                  </Card>
                 </div>
               )}
-            </Card>
-          </div>
 
+              {activeTab === "webhooks" && (
+                <div className="max-w-3xl">
+                  <WebhookManager />
+                </div>
+              )}
+
+              {activeTab === "logs" && (
+                <div className="max-w-3xl">
+                  <ActivityLogs />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </main>
+
+      {/* MOBILE BOTTOM NAVIGATION */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-t px-6 pb-6 pt-3 flex justify-between items-center shadow-[0_-8px_30px_rgb(0,0,0,0.04)]">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className="flex flex-col items-center gap-1 group relative"
+          >
+            <div className={cn(
+              "h-10 w-10 rounded-2xl flex items-center justify-center transition-all duration-300",
+              activeTab === tab.id 
+                ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30 -translate-y-1" 
+                : "text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+            )}>
+              <tab.icon className="h-5 w-5" />
+            </div>
+            <span className={cn(
+              "text-[9px] font-bold transition-all duration-300",
+              activeTab === tab.id ? "text-blue-600 opacity-100" : "text-zinc-400 opacity-60"
+            )}>
+              {tab.label.split(' ')[0]}
+            </span>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

@@ -16,22 +16,38 @@ export async function dispatchWebhook(userId: string, event: string, payload: an
 
   for (const webhook of webhooks) {
     try {
-      const body = JSON.stringify({
+      let bodyText = JSON.stringify({
         event,
         payload,
         timestamp: new Date().toISOString()
       });
+
+      // Special handling for Discord Webhooks to make them look nice
+      if (webhook.url.includes('discord.com/api/webhooks')) {
+        let color = 3447003; // Blue
+        if (event.includes('DOWN') || event.includes('FAILURE')) color = 15158332; // Red
+        if (event.includes('UP') || event.includes('SUCCESS')) color = 3066993; // Green
+        
+        bodyText = JSON.stringify({
+          embeds: [{
+            title: `System Alert: ${event.replace('_', ' ')}`,
+            description: `**Target:** ${payload.name || payload.url || 'Unknown'}\n**Details:** ${payload.message || 'No details provided'}\n**Latency:** ${payload.latency ? payload.latency + 'ms' : 'N/A'}`,
+            color: color,
+            timestamp: new Date().toISOString()
+          }]
+        });
+      }
 
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
         'User-Agent': 'NextOptimizerWebhook/1.0'
       };
 
-      // Sign payload if secret exists
+      // Sign payload if secret exists (Discord ignores this, but custom APIs use it)
       if (webhook.secret) {
         const signature = crypto
           .createHmac('sha256', webhook.secret)
-          .update(body)
+          .update(bodyText)
           .digest('hex');
         headers['X-NJO-Signature'] = signature;
       }
@@ -39,7 +55,7 @@ export async function dispatchWebhook(userId: string, event: string, payload: an
       await fetch(webhook.url, {
         method: 'POST',
         headers,
-        body
+        body: bodyText
       });
       
       console.log(`[WEBHOOK DISPATCHED] Event: ${event} to ${webhook.url}`);

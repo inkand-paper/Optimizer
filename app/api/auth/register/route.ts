@@ -26,11 +26,16 @@ export async function POST(req: NextRequest) {
     // Hash password & create user
     const hashed = await hashPassword(parsedData.password);
     
+    // Count existing users and set role to ADMIN if it's the first user
+    const userCount = await prisma.user.count();
+    const role = userCount === 0 ? 'ADMIN' : 'DEVELOPER';
+    
     const newUser = await prisma.user.create({
       data: {
         email: parsedData.email,
         passwordHash: hashed,
-        name: parsedData.name
+        name: parsedData.name,
+        role: role
       }
     });
     

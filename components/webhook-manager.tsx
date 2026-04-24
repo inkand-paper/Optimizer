@@ -83,6 +83,24 @@ export function WebhookManager() {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    if (!confirm("Delete this webhook?")) return;
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(`/api/webhooks/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setWebhooks(webhooks.filter(w => w.id !== id));
+      } else {
+        alert("Failed to delete webhook");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const toggleEvent = (id: string) => {
     if (selectedEvents.includes(id)) {
       setSelectedEvents(selectedEvents.filter(e => e !== id));
@@ -161,8 +179,8 @@ export function WebhookManager() {
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <Globe className="h-3 w-3 text-zinc-400" />
-                    <p className="text-[11px] font-bold truncate">{w.url}</p>
+                    <Globe className="h-3 w-3 text-zinc-400 shrink-0" />
+                    <p className="text-[11px] font-bold break-all">{w.url}</p>
                   </div>
                   <div className="flex flex-wrap gap-1">
                     {w.events.map(ev => (
@@ -172,7 +190,12 @@ export function WebhookManager() {
                     ))}
                   </div>
                 </div>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button 
+                  onClick={() => handleDelete(w.id)}
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8 text-zinc-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
                   <Trash2 className="h-3 w-3" />
                 </Button>
               </div>

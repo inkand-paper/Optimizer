@@ -56,8 +56,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (!hasPermission(decoded.role, ROLES.DEVELOPER)) {
-      return NextResponse.json({ error: 'Forbidden', message: 'Only developers can generate API keys' }, { status: 403 });
+    const dbUser = await prisma.user.findUnique({ where: { id: decoded.userId } });
+    if (!dbUser || !hasPermission(dbUser.role, ROLES.DEVELOPER)) {
+      return NextResponse.json({ error: 'Forbidden', message: `Your role is ${dbUser?.role || 'UNKNOWN'}. Only developers can generate API keys.` }, { status: 403 });
     }
     
     currentUserId = decoded.userId;

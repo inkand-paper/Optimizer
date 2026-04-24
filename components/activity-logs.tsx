@@ -95,7 +95,7 @@ export function ActivityLogs() {
               </div>
               <div className="min-w-0 flex-1 space-y-1">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs font-bold truncate leading-none">{log.action}</p>
+                  <p className="text-xs font-bold truncate break-all leading-none">{log.action}</p>
                   <span className="text-[9px] text-zinc-400 whitespace-nowrap">
                     {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>

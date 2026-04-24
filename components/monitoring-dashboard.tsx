@@ -3,14 +3,13 @@ import { Card, Button, Input } from "./ui-elements";
 import { 
   Activity, 
   Plus, 
-  ArrowUpRight, 
-  ArrowDownRight, 
-  Clock, 
   Globe,
   Trash2,
+  Edit2,
   Loader2,
   CheckCircle2,
-  AlertTriangle
+  AlertTriangle,
+  X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +28,11 @@ export function MonitoringDashboard() {
   const [isAdding, setIsAdding] = React.useState(false);
   const [newName, setNewName] = React.useState("");
   const [newUrl, setNewUrl] = React.useState("");
+
+  // Edit state
+  const [editingId, setEditingId] = React.useState<string | null>(null);
+  const [editName, setEditName] = React.useState("");
+  const [isProcessing, setIsProcessing] = React.useState(false);
 
   const fetchMonitors = async () => {
     const token = localStorage.getItem("token");
@@ -80,6 +84,55 @@ export function MonitoringDashboard() {
     }
   };
 
+  const handleDeleteMonitor = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this monitor? All historical data will be lost.")) return;
+    
+    const token = localStorage.getItem("token");
+    setIsProcessing(true);
+    try {
+      const res = await fetch(`/api/monitors/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setMonitors(monitors.filter(m => m.id !== id));
+      } else {
+        alert("Failed to delete monitor");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleEditSubmit = async (id: string, e: React.FormEvent) => {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    setIsProcessing(true);
+    try {
+      const res = await fetch(`/api/monitors/${id}`, {
+        method: "PATCH",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ name: editName })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setMonitors(monitors.map(m => m.id === id ? { ...m, name: data.monitor.name } : m));
+        setEditingId(null);
+      } else {
+        alert("Failed to update monitor");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   if (loading && monitors.length === 0) {
     return (
       <Card className="p-12 text-center text-zinc-500">
@@ -102,7 +155,7 @@ export function MonitoringDashboard() {
       </div>
 
       {isAdding && (
-        <Card className="p-4 border-dashed border-zinc-300 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/50">
+        <Card className="p-4 border-dashed border-zinc-300 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/50 transition-all duration-300 animate-in fade-in slide-in-from-top-4">
           <form onSubmit={handleAddMonitor} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Input 
               placeholder="Service Name (e.g. Production API)" 
@@ -123,57 +176,108 @@ export function MonitoringDashboard() {
         </Card>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         {monitors.map((m) => (
-          <Card key={m.id} className="p-0 overflow-hidden group">
-            <div className="p-4 flex items-center justify-between border-b bg-white dark:bg-zinc-950">
-              <div className="flex items-center gap-3 min-w-0">
+          <Card key={m.id} className="p-0 overflow-hidden group hover:shadow-md transition-shadow relative">
+            <div className="p-4 flex items-center justify-between border-b bg-white dark:bg-zinc-950 relative">
+              <div className="flex items-center gap-4 min-w-0 flex-1">
                 <div className={cn(
-                  "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
-                  m.status === 'UP' ? "bg-green-50 dark:bg-green-900/10 text-green-600" : "bg-red-50 dark:bg-red-900/10 text-red-600"
+                  "h-12 w-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
+                  m.status === 'UP' ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400" : "bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400"
                 )}>
-                  {m.status === 'UP' ? <CheckCircle2 className="h-5 w-5" /> : <AlertTriangle className="h-5 w-5 animate-pulse" />}
+                  {m.status === 'UP' ? <CheckCircle2 className="h-6 w-6" /> : <AlertTriangle className="h-6 w-6 animate-pulse" />}
                 </div>
-                <div className="min-w-0">
-                  <h3 className="font-bold text-sm truncate">{m.name}</h3>
-                  <div className="flex items-center gap-1.5">
+                
+                <div className="min-w-0 flex-1">
+                  {editingId === m.id ? (
+                    <form onSubmit={(e) => handleEditSubmit(m.id, e)} className="flex items-center gap-2 max-w-sm">
+                      <Input 
+                        value={editName} 
+                        onChange={(e) => setEditName(e.target.value)} 
+                        className="h-7 text-sm" 
+                        autoFocus
+                      />
+                      <Button size="sm" type="submit" disabled={isProcessing} className="h-7 px-2 bg-blue-600 text-white">Save</Button>
+                      <Button size="sm" type="button" variant="ghost" onClick={() => setEditingId(null)} className="h-7 px-2"><X className="h-4 w-4"/></Button>
+                    </form>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-base truncate">{m.name}</h3>
+                      <button 
+                        onClick={() => { setEditingId(m.id); setEditName(m.name); }}
+                        className="opacity-0 group-hover:opacity-100 p-1 text-zinc-400 hover:text-blue-500 transition-opacity"
+                        title="Edit Name"
+                      >
+                        <Edit2 className="h-3 w-3" />
+                      </button>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1.5 mt-0.5">
                     <Globe className="h-3 w-3 text-zinc-400" />
-                    <p className="text-[10px] text-zinc-500 truncate">{m.url}</p>
+                    <p className="text-xs text-zinc-500 truncate">{m.url}</p>
                   </div>
                 </div>
               </div>
-              <div className="text-right">
+              
+              <div className="text-right flex flex-col items-end gap-1">
                 <div className={cn(
-                  "text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest",
-                  m.status === 'UP' ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                  "text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest",
+                  m.status === 'UP' ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400"
                 )}>
                   {m.status}
                 </div>
-                <p className="text-[9px] text-zinc-400 mt-1 font-mono">
-                  {m.checks[0]?.latency || 0}ms
-                </p>
+                {m.lastChecked && (
+                  <p className="text-[10px] text-zinc-400 mt-1">
+                    Last check: {new Date(m.lastChecked).toLocaleTimeString()}
+                  </p>
+                )}
               </div>
+
+              {/* Delete Button (absolute positioning top-right, visible on hover) */}
+              <button 
+                onClick={() => handleDeleteMonitor(m.id)}
+                disabled={isProcessing}
+                className="absolute top-2 right-2 p-1.5 text-zinc-300 hover:text-rose-500 hover:bg-rose-50 rounded-md opacity-0 group-hover:opacity-100 transition-all"
+                title="Delete Monitor"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
             </div>
             
-            <div className="p-4 bg-zinc-50/30 dark:bg-zinc-900/10 flex items-center gap-4">
-              <div className="flex-1 space-y-1">
-                <div className="flex justify-between text-[9px] text-zinc-500 mb-1">
-                  <span>Last 10 Checks</span>
-                  <span>99.9% Uptime</span>
-                </div>
-                <div className="flex gap-1 h-6 items-end">
-                  {m.checks.slice().reverse().map((c: any, i: number) => (
+            <div className="p-4 bg-zinc-50/50 dark:bg-zinc-900/10 flex flex-col gap-3">
+              <div className="flex justify-between items-end text-xs text-zinc-500">
+                <span className="font-medium">Recent Check Latency</span>
+                <span className="font-mono text-zinc-700 dark:text-zinc-300">
+                  {m.checks.length > 0 ? `${m.checks[0].latency}ms` : 'No data'}
+                </span>
+              </div>
+              <div className="flex gap-1.5 h-12 items-end border-b border-dashed border-zinc-200 dark:border-zinc-800 pb-1 relative group/chart">
+                {m.checks.slice(0, 30).reverse().map((c: any, i: number) => {
+                  // Normalize height between 10% and 100%
+                  const heightPct = Math.max(10, Math.min((c.latency / 1000) * 100, 100));
+                  return (
                     <div 
                       key={i} 
                       className={cn(
-                        "flex-1 rounded-sm transition-all hover:scale-110",
-                        c.status === 'UP' ? "bg-green-500/40" : "bg-red-500"
+                        "flex-1 rounded-t-[2px] transition-all hover:opacity-80 relative",
+                        c.status === 'UP' ? "bg-emerald-500/30" : "bg-rose-500"
                       )}
-                      style={{ height: `${Math.min((c.latency / 2000) * 100, 100)}%`, minHeight: '4px' }}
+                      style={{ height: `${heightPct}%`, minHeight: '2px' }}
                       title={`${c.status} - ${c.latency}ms at ${new Date(c.createdAt).toLocaleTimeString()}`}
-                    />
-                  ))}
-                </div>
+                    >
+                      {/* Hover tooltip for individual bars could go here */}
+                    </div>
+                  );
+                })}
+                {m.checks.length === 0 && (
+                  <div className="absolute inset-0 flex items-center justify-center text-xs text-zinc-400">
+                    Waiting for first ping...
+                  </div>
+                )}
+              </div>
+              <div className="flex justify-between text-[10px] text-zinc-400">
+                <span>Older</span>
+                <span>Now</span>
               </div>
             </div>
           </Card>
@@ -193,3 +297,4 @@ export function MonitoringDashboard() {
     </div>
   );
 }
+
