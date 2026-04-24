@@ -8,6 +8,7 @@ import { AnalysisReport } from "@/components/analysis-report";
 import { ActivityLogs } from "@/components/activity-logs";
 import { WebhookManager } from "@/components/webhook-manager";
 import { MonitoringDashboard } from "@/components/monitoring-dashboard";
+import { PulseTrigger } from "@/components/pulse-trigger";
 import { 
   Key, 
   Trash2, 
@@ -248,22 +249,22 @@ export default function DashboardPage() {
     <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950 overflow-x-hidden">
       <Navbar />
       
-      <main className="flex-1 container mx-auto px-4 py-6 md:py-8 mb-20 md:mb-0">
-        <div className="flex flex-col md:flex-row gap-8 lg:gap-12">
+      <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 mb-24 md:mb-0">
+        <div className="flex flex-col md:flex-row gap-10 lg:gap-16 items-start">
           
           {/* SIDEBAR NAVIGATION (Desktop Only) */}
-          <div className="hidden md:flex flex-col w-64 shrink-0 space-y-1">
-            <div className="px-3 mb-6">
-              <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Navigation</h2>
+          <div className="hidden md:flex flex-col w-72 shrink-0 space-y-2 sticky top-[100px]">
+            <div className="px-4 mb-8">
+              <h2 className="text-[11px] font-bold uppercase tracking-[0.3em] text-zinc-400 opacity-60">NexPulse Command</h2>
             </div>
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group",
+                  "flex items-center gap-3 px-5 py-3.5 rounded-2xl text-sm font-semibold transition-all group",
                   activeTab === tab.id 
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" 
+                    ? "bg-blue-600 text-white shadow-xl shadow-blue-600/20" 
                     : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900"
                 )}
               >
@@ -309,7 +310,12 @@ export default function DashboardPage() {
 
             {/* TAB CONTENT */}
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              {activeTab === "monitoring" && <MonitoringDashboard />}
+              {activeTab === "monitoring" && (
+                <div className="space-y-8">
+                  <PulseTrigger />
+                  <MonitoringDashboard />
+                </div>
+              )}
               
               {activeTab === "audits" && (
                 <div className="space-y-8">

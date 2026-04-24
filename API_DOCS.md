@@ -1,37 +1,31 @@
-# 🔌 API Documentation
+# NexPulse API Reference
 
-This guide covers how to integrate with the Next.js Optimizer Suite.
+This guide covers how to integrate your machines (Apps/Servers) with the NexPulse engine.
 
 ## Base URL
 - **Local**: `http://localhost:3000`
-- **Production**: `https://nextjs-optimizer-suite.vercel.app`
+- **Production**: `https://github.com/inkand-paper/Optimizer` (Your deployed instance)
 
----
+## Authentication
 
-## 🛠 Authentication
-
-All "Machine" endpoints require an API Key issued from your dashboard.
+All "Machine" endpoints require an API Key issued from your NexPulse dashboard.
 
 **Header**:
 ```http
 Authorization: Bearer opt_your_api_key_here
 ```
 
----
+## Endpoints
 
-## 🚀 Endpoints
-
-### 1. Health & Status
+### 1. Engine Pulse (Health)
 **GET** `/api/health`
 
-Tells you if the server is alive and shows memory usage. No key required.
+Returns the operational status and memory metrics of the NexPulse engine. No key required.
 
----
-
-### 2. Cache Revalidation
+### 2. Global Revalidation
 **POST** `/api/revalidate`
 
-Triggers Next.js to clear the cache and fetch new data.
+Triggers an instant cache purge for a specific tag or path across your connected web properties.
 
 **Request Payload**:
 ```json
@@ -40,12 +34,10 @@ Triggers Next.js to clear the cache and fetch new data.
 }
 ```
 
----
-
-### 3. Website Analyzer
+### 3. On-Demand Audit
 **POST** `/api/analyze`
 
-Scans a website for SEO, SSL, and Performance metrics.
+Triggers a deep-scan of any public URL for SEO, Security, and Performance.
 
 **Request Payload**:
 ```json
@@ -54,12 +46,11 @@ Scans a website for SEO, SSL, and Performance metrics.
 }
 ```
 
----
+## Response Codes
 
-## ⚠️ Error Codes
-
-| Code | Meaning | Solution |
+| Code | Status | Meaning |
 | :--- | :--- | :--- |
-| **401** | Unauthorized | Your API Key is missing, revoked, or incorrect. |
-| **400** | Bad Request | You didn't send a "tag" or a "url" in the body. |
-| **500** | Server Error | Something went wrong with the database connection. |
+| **200** | Success | Request processed and pulse sent. |
+| **401** | Unauthorized | Your API Key is missing, revoked, or invalid. |
+| **400** | Bad Request | Missing required parameters (`tag` or `url`). |
+| **500** | Error | Engine failure or database connection timeout. |

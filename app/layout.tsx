@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   // [BRANDING] - NEXTJS OPTIMIZER SUITE
   // Update the title and description below to change your SaaS branding
-  title: "Next.js Optimizer Suite", 
+  title: "NexPulse: Universal Monitoring & Optimization", 
   description: "Secure, high-performance cache revalidation and health monitoring for Next.js applications.",
 };
 

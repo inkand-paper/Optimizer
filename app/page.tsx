@@ -30,13 +30,13 @@ export default function Home() {
               <span>Next.js 15+ Optimized</span>
             </div>
             <h1 className="text-4xl md:text-7xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-500 dark:from-white dark:to-zinc-500">
-              Optimize Your <br />
-              Next.js Performance
+              Universal Web <br />
+              Optimization Pulse
             </h1>
             <p className="max-w-2xl mx-auto text-lg md:text-xl text-zinc-600 dark:text-zinc-400 mb-10 leading-relaxed">
-              [THE ANALOGY] Think of this as a remote control for your website. 
-              Update content in your Mobile App, click a button, and your website instantly 
-              refreshes its cache globally.
+              [THE ANALOGY] Think of NexPulse as a universal remote control for the internet. 
+              Scan any URL for SEO insights, monitor uptime 24/7, and instantly refresh 
+              global caches with a single click.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/register">
@@ -115,8 +115,8 @@ export default function Home() {
                  Ready to optimize your workflow?
                </h2>
                <p className="text-blue-100 mb-10 text-lg relative z-10">
-                 Join developers using Next.js Optimizer Suite to manage cache remotely.
-               </p>
+                 Join developers using NexPulse to manage and monitor any web property.
+                </p>
                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
                  <Link href="/register">
                    <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 border-none px-8">
@@ -138,15 +138,16 @@ export default function Home() {
         <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2 font-bold text-lg">
             <Activity className="h-5 w-5 text-blue-600" />
-            <span>Next.js Optimizer</span>
+            <span>NexPulse</span>
           </div>
           <p className="text-sm text-zinc-500">
-            © 2026 Next.js Optimizer Suite. Built by Professionals.
+            © 2026 NexPulse. Universal Web Insights.
           </p>
-          <div className="flex gap-6 text-sm text-zinc-500">
-            <Link href="#" className="hover:text-blue-600 transition-colors">Documentation</Link>
-            <Link href="#" className="hover:text-blue-600 transition-colors">Support</Link>
-            <Link href="#" className="hover:text-blue-600 transition-colors">Github</Link>
+          <div className="flex gap-8 text-sm text-zinc-500">
+            <Link href="/docs" className="hover:text-blue-600 transition-colors">Documentation</Link>
+            <Link href="mailto:tabir8431@gmail.com" className="hover:text-blue-600 transition-colors">Support</Link>
+            <Link href="https://discord.gg/your-invite" className="hover:text-blue-600 transition-colors">Discord</Link>
+            <Link href="https://github.com/inkand-paper/Optimizer" className="hover:text-blue-600 transition-colors">GitHub</Link>
           </div>
         </div>
       </footer>

@@ -1,68 +1,47 @@
-# 🚀 Next.js Optimizer Suite (SaaS Edition)
+# NexPulse: Universal Web Intelligence & Optimization Suite
 
-Professional-grade cache revalidation, website analysis, and server health monitoring for modern Next.js applications.
+Professional-grade uptime monitoring, website analysis, and server health tracking for modern web properties.
 
----
+## Overview
+NexPulse is a unified platform designed to monitor and optimize web properties regardless of their underlying technology stack. It provides a centralized Command Center for scanning public URLs, monitoring uptime 24/7, and triggering global cache optimizations via a secure machine-to-machine API.
 
-## 🌟 What is this?
-Think of this application as a **"Remote Control" for your website's performance.** It transforms your Next.js project into a controllable ecosystem where external machines (like Android Apps or Store Backends) can securely trigger cache updates and monitor health.
+### Key Capabilities
+- **Universal Monitoring**: High-precision tracking of uptime and latency for any public URL.
+- **Advanced Website Analysis**: In-depth audits of SEO metadata, security configurations (SSL/Headers), and performance metrics.
+- **Integrated Webhooks**: Native support for Discord, Slack, and Zapier with professional embed formatting.
+- **Responsive Management Interface**: A premium dashboard featuring a hybrid navigation model (Desktop Sidebar & Mobile Bottom Navigation).
+- **Secure Machine Integration**: High-entropy API keys for seamless integration with mobile applications (Android/iOS) and backend services.
+- **Technical Sandbox**: Interactive environment for testing API handshakes and optimization logic.
 
-### 💎 Key Features
-- **SaaS Dashboard**: A premium, responsive command center for managing API keys and audits.
-- **Website Analyzer**: Real-time scanning engine that scores your site's SEO, Security (SSL), and Speed.
-- **Interactive Playground**: A sandbox to test your API keys and revalidation logic with high-contrast security feedback.
-- **System Health Monitor**: Live tracking of API uptime, memory usage, and server stability.
-- **Enterprise Security**: Keys are stored as high-entropy SHA-256 hashes (Stripe-grade security).
+## Documentation
+Our documentation is structured to support users from conceptual understanding to technical implementation:
+1.  **[Core Concepts](./concepts)**: Philosophical and architectural overview.
+2.  **[API Reference](./api)**: Technical specifications for machine-to-machine integration.
+3.  **[Android Integration Guide](./android)**: Implementation patterns for mobile developers.
+4.  **[System Manual](./master)**: Comprehensive overview of platform features.
 
----
+## Technical Setup
 
-## 📚 Essential Guides
-We have written special documentation for every level of experience:
-1.  **[CONCEPTS.md](./CONCEPTS.md)**: 📖 **READ THIS FIRST**. Explains the logic using simple analogies like "Lassos" and "Wristbands".
-2.  **[API_DOCS.md](./API_DOCS.md)**: 🔌 Technical specs for developers wanting to connect their apps.
-3.  **[CODE_WALKTHROUGH.md](./CODE_WALKTHROUGH.md)**: 📂 A file-by-file map of where everything is located.
-4.  **[ANDROID_INTEGRATION.md](./ANDROID_INTEGRATION.md)**: 📱 A specific guide for mobile developers.
+### Prerequisites
+- **Node.js**: Environment version 20.0.0 or higher.
+- **Database**: PostgreSQL (Supabase, Neon, or local instances).
 
----
-
-## 🛠 Quick Start for the SaaS Owner
-
-### 1. Prerequisites
-- **Node.js**: >= 20.0.0
-- **Database**: A PostgreSQL database (e.g., Supabase or Neon).
-
-### 2. Environment Setup
-Create a `.env` file in the root:
-```env
-DATABASE_URL="postgresql://user:pass@host:port/db"
-JWT_SECRET="your-super-secret-random-string"
-```
-
-### 3. Launching Locally
+### Local Development
 ```bash
-npm install          # Install dependencies
-npx prisma generate  # Connect the database
-npm run dev          # Start the engine (Optimized for 16GB+ RAM)
+npm install          # Install required dependencies
+npx prisma generate  # Synchronize database schema
+npm run dev          # Initialize the development server
 ```
-> [!NOTE]
-> The `dev` script is configured with a 2.5GB memory limit and uses the Webpack engine to ensure stability on Windows systems.
 
-### 4. Deploying to the Cloud
-1. Push your code to **GitHub**.
-2. Connect the repo to **Vercel**.
-3. Add your `DATABASE_URL` and `JWT_SECRET` in the Vercel Settings.
-4. Done! Your SaaS is live.
+### Production Deployment
+1. Transfer the source code to a remote repository (e.g., GitHub).
+2. Connect the repository to a cloud hosting provider (e.g., Vercel).
+3. Configure environment variables including `DATABASE_URL` and `JWT_SECRET`.
 
 ---
 
-## 🏗 Technology Stack
-- **Foundation**: Next.js 15+ (App Router)
-- **Database**: Prisma ORM with PostgreSQL (Supabase)
-- **Styling**: Tailwind CSS (Dual-Theme Light/Dark)
-- **UI Components**: Lucide Icons & Custom Premium Component Library
-- **Security**: JWT Sessions & SHA-256 Machine Key Hashing
+## Architecture and Security
+NexPulse leverages Next.js 15+ for high-concurrency performance and Prisma ORM for type-safe database interactions. Security is maintained through Stripe-grade patterns; raw API keys are never stored, with the platform utilizing only cryptographic SHA-256 hashes for verification.
 
 ---
-
-## 🛡 Security & Privacy
-We take security seriously. Raw API keys are **never stored** in our database. We only store a hash. This ensures that even if the database is compromised, your users' connection keys remain mathematically impossible to recover.
+© 2026 NexPulse. Maintained by [inkand-paper](https://github.com/inkand-paper/Optimizer).

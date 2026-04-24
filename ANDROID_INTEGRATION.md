@@ -1,56 +1,50 @@
-# 📱 Android Integration Guide
+# NexPulse Android Integration Guide
 
-This guide explains how your customers can connect their **Android (Kotlin) apps** to your Next.js Optimizer Suite to refresh their website cache on the fly.
+This guide explains how to connect your **Android (Kotlin) apps** to the NexPulse engine to trigger global optimizations.
 
----
+## 1. API Key Provisioning
+1. **Registration**: Authenticate with the NexPulse SaaS platform.
+2. **Key Generation**: Navigate to Dashboard -> API Keys and generate a unique key for your mobile application.
+3. **Storage**: Secure the API key immediately. For security reasons, only the cryptographic hash is stored in our persistence layer.
 
-## 1. Getting the API Key
-1. **Sign Up**: Your user registers on your SaaS platform.
-2. **Generate Key**: They go to the Dashboard and create a key for their mobile app.
-3. **Copy Key**: They must copy the `opt_...` key immediately.
+## 2. Kotlin Implementation
 
----
-
-## 2. Kotlin Implementation (Using OkHttp)
-
-### Add Dependencies
-Ensure you have the OkHttp library in your `build.gradle`:
+### Dependencies
+Include the OkHttp library in your `build.gradle` file:
 ```gradle
 implementation("com.squareup.okhttp3:okhttp:4.12.0")
 ```
 
-### The Revalidation Function
+### Pulse Implementation
 ```kotlin
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 
-fun triggerGlobalRefresh(tag: String, apiKey: String) {
+fun triggerNexPulse(tag: String, apiKey: String) {
     val client = OkHttpClient()
     
-    // The "Lasso" (Tag) we want to refresh
-    val jsonBody = """{"tag": "$tag"}"""
+    // Pulse Payload
+    val jsonBody = "{\"tag\": \"$tag\"}"
     val body = jsonBody.toRequestBody("application/json".toMediaType())
     
     val request = Request.Builder()
-        .url("https://nextjs-optimizer-suite.vercel.app/api/revalidate")
+        .url("https://your-nex-pulse-deployment.vercel.app/api/revalidate")
         .addHeader("Authorization", "Bearer $apiKey")
         .post(body)
         .build()
 
     client.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
-            // Handle network failure
-            println("❌ Optimization Pulse Failed: ${e.message}")
+            // Handle network or connection failure
         }
 
         override fun onResponse(call: Call, response: Response) {
             if (response.isSuccessful) {
-                // Success! The website cache is now fresh.
-                println("✅ Website Optimized Successfully!")
+                // Global cache successfully refreshed
             } else {
-                println("⚠️ Optimization Error: ${response.code}")
+                // Handle API error response codes
             }
         }
     })
@@ -59,8 +53,7 @@ fun triggerGlobalRefresh(tag: String, apiKey: String) {
 
 ---
 
-## 🛠 Best Practices for Mobile Developers
-
-- **🔒 Hide Your Keys**: Do not hardcode API keys in plain text inside your app. Use **ProGuard/R8** to obfuscate them or fetch them from a secure server.
-- **📡 Network Check**: Always check if the device has an internet connection before calling the Optimization API.
-- **🚨 401 Handling**: If your app receives a `401 Unauthorized` response, it means the API key was revoked in the dashboard. You should prompt the user or admin to update the key.
+## 3. Best Practices
+- **Security**: Avoid hardcoding API keys in plain text. Implement secure key management or obfuscation.
+- **Connectivity**: Verify network availability before initiating a Pulse request.
+- **Authorization**: Implement error handling for `401 Unauthorized` responses to manage revoked or expired keys.

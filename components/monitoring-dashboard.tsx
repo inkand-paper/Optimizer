@@ -42,8 +42,18 @@ export function MonitoringDashboard() {
       const res = await fetch("/api/monitors", {
         headers: { Authorization: `Bearer ${token}` }
       });
-      const data = await res.json();
-      if (res.ok) setMonitors(data.monitors);
+      
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("Monitor fetch error:", res.status, text);
+        return;
+      }
+
+      const contentType = res.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        const data = await res.json();
+        setMonitors(data.monitors || []);
+      }
     } catch (err) {
       console.error("Failed to fetch monitors", err);
     } finally {

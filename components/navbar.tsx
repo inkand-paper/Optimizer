@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ThemeToggle } from "./theme-toggle";
-import { Activity, LogOut, LayoutDashboard, UserPlus, LogIn } from "lucide-react";
+import { Activity, LogOut, LayoutDashboard, UserPlus, LogIn, BookOpen } from "lucide-react";
 
 /**
  * [ENTRY-LEVEL] - Navbar
@@ -43,12 +43,17 @@ export function Navbar() {
         <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight">
           <Activity className="h-6 w-6 text-blue-600" />
           <span>
-            {/* [BRANDING] Next.js Optimizer Suite */}
-            Next.js Optimizer
+            NexPulse
           </span>
         </Link>
 
         <div className="flex items-center gap-2 sm:gap-4">
+          <Link 
+            href="/docs" 
+            className="hidden sm:flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mr-2"
+          >
+            <BookOpen className="h-4 w-4" /> Docs
+          </Link>
           {isLoggedIn ? (
             <>
               <Link 

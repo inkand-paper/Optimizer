@@ -1,94 +1,168 @@
-# 🏆 Next.js Optimizer Suite: Master Documentation
+# NexPulse Master Documentation
 
-This document provides a comprehensive overview of your SaaS application. It explains the "What," "How," and "Why" of the system using simple analogies so that any developer or user can understand it from line to line.
+This document provides a comprehensive technical and conceptual overview of the NexPulse SaaS platform. It is designed to guide both administrators and developers through the system architecture, features, and integration patterns.
 
----
+In high-performance web environments, caching and uptime are critical. NexPulse provides a centralized **Optimization Hub** where developers can trigger global cache refreshes (**Optimization Pulses**) and monitor website health with real-time **Uptime Alerts** via email and webhooks.
 
-## 🌟 1. The Core Definition
-**What is this app?**
-Think of the Next.js Optimizer Suite as a **"Remote Control for the Internet."** 
+## Architecture and Data Flow
 
-In modern web development, websites use "Cache" to stay fast (saving a copy of a page so they don't have to rebuild it every time). The problem is that the cache gets "stale" (old). Your application allows developers to **force-refresh** that cache from anywhere in the world—from a mobile app, a server, or even a script—using secure API keys.
+NexPulse operates as a decoupled three-layer system:
 
----
+1.  **Command Center (Dashboard)**: A premium interface for user registration, API key management, and real-time website auditing.
+2.  **Persistence Layer (Database)**: An encrypted vault powered by Prisma and PostgreSQL. We store only the cryptographic hashes of API keys to ensure zero-knowledge security.
+3.  **Pulse Engine (API)**: A high-concurrency API layer that validates incoming machine requests and dispatches optimization signals.
 
-## 🏗 2. The Architecture (How it connects)
-
-Your application is a **Three-Layer System**:
-
-1.  **The Dashboard (The Control Tower)**: A premium web interface where users sign up, manage their keys, and run website audits.
-2.  **The Database (The Brain)**: Powered by Supabase/Prisma. It securely stores user accounts and the "Hashes" of API keys.
-3.  **The Optimization Engine (The Worker)**: A set of high-performance API routes hosted on Vercel that handle security handshakes and trigger revalidations.
-
+### Data Flow Diagram
 ```mermaid
 graph TD
-    A[External Android App / Store Backend] -->|API Key + Tag| B{Your Optimizer API}
-    B -->|Verified| C[Supabase Database]
-    C -->|Authorized| D[Next.js Website Cache]
-    D -->|Fresh Data| E[End User]
+    A[External Machine / App] -->|API Key + Tag| B{NexPulse Engine}
+    B -->|Validation| C[Hashed Key Check]
+    C -->|Success| D[Target Application Cache]
+    D -->|Fresh Response| E[End User]
     
-    F[SaaS Dashboard] -->|Manage| C
-    F -->|Analyze| G[External Website]
+    F[SaaS Dashboard] -->|Management| C
+    F -->|Analysis| G[Public Web Property]
 ```
 
----
+## Core Features
 
-## 💎 3. Key Features Explained
+### Optimization Pulse (Remote Cache Revalidation)
+NexPulse enables "Tag-based Revalidation." By tagging data fetches in your application (e.g., `inventory`, `pricing`), you can use the NexPulse API to clear those specific tags globally in milliseconds. Each optimization triggers a professional **Optimization Signal** email alert to the account holder.
 
-### 🔌 Cache Revalidation (The "Lasso" Effect)
-Developers "tag" their data fetches with a specific name (like `products`). Your API allows them to hit that tag remotely, which instantly "lassoes" every page using that data and refreshes it.
+### Uptime Monitoring & Alerts
+The Pulse Engine continuously monitors your web properties for downtime. 
+- **Real-time Detection**: Automatic health checks every 60 seconds.
+- **Smart Alerts**: Instant email notifications for `UP` and `DOWN` status changes.
+- **Latency Tracking**: High-fidelity reporting of response times across global endpoints.
 
-### 🏥 Website Analyzer (The "Health Inspector")
-Your app includes a built-in scanner. It visits any URL, checks for SEO tags (Title/Description), verifies SSL security, and measures server speed. It then gives the site a **Health Score (0-100)**.
+### Pulse Command Center
+The dashboard features a manual **Command Center** allowing administrators to trigger cache optimizations directly from the UI without writing a single line of code.
 
-### 📛 API Key Management (Stripe-Grade Security)
-Instead of passwords, machines use **API Keys**.
-- We generate a high-entropy key (`opt_...`).
-- We **only show it once** to the user.
-- We store only the **SHA-256 Hash** in the database. 
-- *Analogy*: It's like a digital paper shredder. We store the "shredded bits." Even if a hacker steals the bits, they can never rebuild the original key.
+### Website Pulse Audit
+The built-in audit engine performs deep-scans on any public URL. It evaluates:
+- **SEO**: Meta tags, heading hierarchy, and social graph data.
+- **Security**: SSL validity, HSTS, and Content Security Policy (CSP) headers.
+- **Performance**: Time-to-First-Byte (TTFB) and script density.
 
-### 🩺 System Health Monitoring
-A live pulse monitor on the dashboard that tracks the SaaS engine's uptime and memory usage. If the light is green, the "Remote Control" is alive and ready.
+### Security and Hashing
+Machine-level security is handled via high-entropy API keys.
+- **Generation**: A unique key is generated once.
+- **Hashing**: We store only the **SHA-256 Hash** of the key.
+- **Verification**: When a request arrives, we hash the input and compare it to the stored value. This ensures your raw keys are never stored in plain text.
 
----
+## Integration Guide
+To integrate NexPulse into your own environment, follow these standard implementation patterns.
 
-## 🚀 4. How to Integrate (The Developer's Guide)
+### Authentication Header
+Every machine request must include your API key in the Authorization header:
+`Authorization: Bearer <your_api_key>`
 
-To use your tool, a developer (your customer) follows these two technical steps:
-
-### A. The Endpoint
-They will send all their high-performance requests to this live URL:
-`https://nextjs-optimizer-suite.vercel.app/api/revalidate`
-
----
-
-### B. The Web Integration (JavaScript/Next.js)
-If they are using a website, they put this in their server-side code:
-
+## Web Implementation (JavaScript / Node.js)
 ```javascript
-const refreshCache = async (tag) => {
-  await fetch("https://nextjs-optimizer-suite.vercel.app/api/revalidate", {
+const triggerOptimization = async (tag) => {
+  const response = await fetch("https://nextjs-optimizer-suite.vercel.app/api/revalidate", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer opt_their_api_key_here" // From your dashboard
+      "Authorization": "Bearer opt_live_..." 
     },
-    body: JSON.stringify({ tag: tag }) // e.g. "products"
+    body: JSON.stringify({ tag: tag }) 
   });
+  
+  if (response.ok) console.log("Pulse Sent Successfully");
 };
 ```
 
----
+## iOS Implementation (Swift)
+```swift
+import Foundation
 
-### C. The App Integration (Android/Kotlin)
-If they are building a mobile app, they use this function to tell the website to refresh:
+func sendNexPulse(tag: String, apiKey: String) {
+    let url = URL(string: "https://nextjs-optimizer-suite.vercel.app/api/revalidate")!
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+    
+    let body: [String: Any] = ["tag": tag]
+    request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+    
+    URLSession.shared.dataTask(with: request) { data, response, error in
+        if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+            print("NexPulse: Global Refresh Triggered")
+        }
+    }.resume()
+}
+```
 
+## Python Implementation
+```python
+import requests
+
+def trigger_pulse(tag, api_key):
+    url = "https://nextjs-optimizer-suite.vercel.app/api/revalidate"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+    data = {"tag": tag}
+    
+    response = requests.post(url, json=data, headers=headers)
+    if response.status_code == 200:
+        print("NexPulse: Optimization Success")
+```
+
+## Go Implementation
+```go
+package main
+
+import (
+    "bytes"
+    "net/http"
+)
+
+func triggerPulse(tag string, apiKey string) {
+    url := "https://nextjs-optimizer-suite.vercel.app/api/revalidate"
+    jsonBody := []byte(`{"tag": "` + tag + `"}`)
+    
+    req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonBody))
+    req.Header.Set("Content-Type", "application/json")
+    req.Header.Set("Authorization", "Bearer "+apiKey)
+    
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err == nil && resp.StatusCode == 200 {
+        // Success
+    }
+}
+```
+
+## Ruby Implementation
+```ruby
+require 'net/http'
+require 'json'
+
+def trigger_pulse(tag, api_key)
+  uri = URI('https://nextjs-optimizer-suite.vercel.app/api/revalidate')
+  http = Net::HTTP.new(uri.host, uri.port)
+  http.use_ssl = true
+  
+  request = Net::HTTP::Post.new(uri.path, {
+    'Content-Type' => 'application/json',
+    'Authorization' => "Bearer #{api_key}"
+  })
+  
+  request.body = { tag: tag }.to_json
+  response = http.request(request)
+  puts "Success" if response.code == "200"
+end
+```
+
+## Android Implementation (Kotlin)
 ```kotlin
-fun refreshWebsite(tag: String, apiKey: String) {
+fun sendPulse(tag: String, apiKey: String) {
     val client = OkHttpClient()
-    val json = """{"tag": "$tag"}"""
-    val body = json.toRequestBody("application/json".toMediaType())
+    val body = "{\"tag\": \"$tag\"}".toRequestBody("application/json".toMediaType())
     
     val request = Request.Builder()
         .url("https://nextjs-optimizer-suite.vercel.app/api/revalidate")
@@ -98,28 +172,26 @@ fun refreshWebsite(tag: String, apiKey: String) {
 
     client.newCall(request).enqueue(object : Callback {
         override fun onResponse(call: Call, response: Response) {
-            if (response.isSuccessful) println("✅ Website Refreshed!")
+            if (response.isSuccessful) { /* Success */ }
         }
     })
 }
 ```
 
----
+## Technical Specification
+- **Engine**: Next.js 15+
+- **Database**: Prisma with PostgreSQL
+- **Security**: SHA-256 Key Hashing & JWT Sessions
+- **Deployment**: Optimized for Vercel and Docker
 
-## 🏗 5. The Technical Stack
-- **Foundation**: Next.js 15+ (App Router)
-- **Database**: Prisma + PostgreSQL (Supabase)
-- **Styling**: Tailwind CSS (Dual-Theme Light/Dark)
-- **Security**: JWT (Sessions) & Bcrypt (Passwords)
-- **Icons**: Lucide React (Premium Icon Suite)
+## Webhooks
+NexPulse supports automated event notifications via HTTP webhooks. This is primarily used for real-time alerting on Discord, Slack, or custom endpoints when a Pulse is triggered or a scan is completed.
 
----
+### Discord Integration
+To connect NexPulse to Discord:
+1. Create a Webhook URL in your Discord Channel Settings.
+2. Add the URL to the **Webhooks** tab in the NexPulse Dashboard.
+3. NexPulse will now send professional embed notifications whenever your web properties are optimized.
 
-## 📂 6. File Directory Map
-- `/app`: Contains all pages (Login, Dashboard) and API routes (Revalidate, Analyze, Health).
-- `/components`: Contains the Premium UI (Navbar, Buttons, Analysis Report).
-- `/prisma`: The database schema that defines Users and API Keys.
-- `/lib`: Common logic for Authentication, Database connection, and Security.
-
-> [!TIP]
-> Always refer to **[CONCEPTS.md](./CONCEPTS.md)** for more in-depth analogies and **[API_DOCS.md](./API_DOCS.md)** for technical integration steps.
+> [!NOTE]
+> For detailed API endpoint specifications, refer to the **[API Reference](./api)**. For conceptual analogies, see **[Core Concepts](./concepts)**.

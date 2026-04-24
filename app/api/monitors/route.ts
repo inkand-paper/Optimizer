@@ -10,7 +10,9 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const decoded = verifyJwt(authHeader.split(' ')[1]);
+    const token = authHeader.split(' ')[1];
+    const decoded = verifyJwt(token);
+    
     if (!decoded) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -20,7 +22,7 @@ export async function GET(req: NextRequest) {
       include: {
         checks: {
           orderBy: { createdAt: 'desc' },
-          take: 10
+          take: 30
         }
       },
       orderBy: { createdAt: 'desc' }
@@ -40,12 +42,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const decoded = verifyJwt(authHeader.split(' ')[1]);
+    const token = authHeader.split(' ')[1];
+    const decoded = verifyJwt(token);
+    
     if (!decoded) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const { name, url } = await req.json();
+    const body = await req.json();
+    const { name, url } = body;
     
     if (!name || !url) {
       return NextResponse.json({ error: 'Bad Request', message: 'Name and URL are required' }, { status: 400 });
@@ -55,12 +60,17 @@ export async function POST(req: NextRequest) {
       data: {
         name,
         url,
-        userId: decoded.userId
+        userId: decoded.userId,
+        status: 'UP'
       }
     });
 
-    // Initial check
-    await performCheck(monitor.id, url);
+    // Perform initial check
+    try {
+      await performCheck(monitor.id, url);
+    } catch (checkError) {
+      console.error('Initial monitor check failed:', checkError);
+    }
     
     return NextResponse.json({ success: true, monitor }, { status: 201 });
   } catch (error) {

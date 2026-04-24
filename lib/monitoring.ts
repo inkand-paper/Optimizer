@@ -1,5 +1,6 @@
 import { prisma } from './prisma';
 import { dispatchWebhook } from './webhooks';
+import { sendUptimeAlert } from './mail';
 
 /**
  * [SaaS INFRA] - Health Checker
@@ -22,7 +23,11 @@ export async function performCheck(monitorId: string, url: string) {
     // Get current monitor to check for status change
     const monitor = await prisma.monitor.findUnique({
       where: { id: monitorId },
-      select: { status: true, userId: true, name: true }
+      include: { 
+        user: {
+          select: { name: true, email: true }
+        }
+      }
     });
 
     // Record the check
@@ -44,8 +49,10 @@ export async function performCheck(monitorId: string, url: string) {
       }
     });
 
-    // Dispatch Webhook on change
+    // Dispatch Webhook & Email on change
     if (monitor && monitor.status !== status) {
+      console.log(`[MONITOR CHANGE] ${monitor.name}: ${monitor.status} -> ${status}`);
+      
       const event = status === 'DOWN' ? 'MONITOR_DOWN' : 'MONITOR_UP';
       await dispatchWebhook(monitor.userId, event, {
         monitorId,
@@ -54,6 +61,22 @@ export async function performCheck(monitorId: string, url: string) {
         latency,
         message
       });
+
+      // Send Email Alert
+      if (monitor.user?.email) {
+        console.log(`[EMAIL ALERT] Sending to ${monitor.user.email}`);
+        sendUptimeAlert({
+          email: monitor.user.email,
+          userName: monitor.user.name || 'Developer',
+          name: monitor.name,
+          url,
+          status,
+          message,
+          latency
+        }).catch(console.error);
+      } else {
+        console.warn(`[EMAIL ALERT] Skip: No email for user ${monitor.userId}`);
+      }
     }
 
     return { status, latency, message };
@@ -64,7 +87,11 @@ export async function performCheck(monitorId: string, url: string) {
 
     const monitor = await prisma.monitor.findUnique({
       where: { id: monitorId },
-      select: { status: true, userId: true, name: true }
+      include: { 
+        user: {
+          select: { name: true, email: true }
+        }
+      }
     });
 
     await prisma.check.create({
@@ -85,13 +112,28 @@ export async function performCheck(monitorId: string, url: string) {
     });
 
     if (monitor && monitor.status !== status) {
-      await dispatchWebhook(monitor.userId, 'MONITOR_DOWN', {
+      // Dispatch Webhook & Email on change
+      const event = status === 'DOWN' ? 'MONITOR_DOWN' : 'MONITOR_UP';
+      await dispatchWebhook(monitor.userId, event, {
         monitorId,
         name: monitor.name,
         url,
         latency,
         message
       });
+
+      // Send Email Alert
+      if (monitor.user?.email) {
+        sendUptimeAlert({
+          email: monitor.user.email,
+          userName: monitor.user.name || 'Developer',
+          name: monitor.name,
+          url,
+          status,
+          message,
+          latency
+        }).catch(console.error);
+      }
     }
 
     return { status, latency, message };
