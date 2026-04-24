@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import crypto from 'crypto';
 import type { RevalidateRequest, RevalidateResponse, ErrorResponse } from '@/lib/types';
 import { logActivity } from '@/lib/logger';
+import { dispatchWebhook } from '@/lib/webhooks';
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -89,6 +90,8 @@ export async function POST(request: NextRequest) {
         details: { tag, durationMs: Date.now() - startTime }
       });
 
+      await dispatchWebhook(currentUserId, 'REVALIDATE_SUCCESS', { type: 'tag', value: tag });
+
       return NextResponse.json({
         success: true,
         revalidated: { type: 'tag', value: tag },
@@ -106,6 +109,8 @@ export async function POST(request: NextRequest) {
         userId: currentUserId,
         details: { path, durationMs: Date.now() - startTime }
       });
+
+      await dispatchWebhook(currentUserId, 'REVALIDATE_SUCCESS', { type: 'path', value: path });
 
       return NextResponse.json({
         success: true,

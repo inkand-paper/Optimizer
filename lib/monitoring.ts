@@ -1,4 +1,5 @@
 import { prisma } from './prisma';
+import { dispatchWebhook } from './webhooks';
 
 /**
  * [SaaS INFRA] - Health Checker
@@ -17,6 +18,12 @@ export async function performCheck(monitorId: string, url: string) {
     const latency = Date.now() - startTime;
     const status = response.ok ? 'UP' : 'DOWN';
     const message = response.ok ? undefined : `HTTP ${response.status}: ${response.statusText}`;
+
+    // Get current monitor to check for status change
+    const monitor = await prisma.monitor.findUnique({
+      where: { id: monitorId },
+      select: { status: true, userId: true, name: true }
+    });
 
     // Record the check
     await prisma.check.create({
@@ -37,11 +44,28 @@ export async function performCheck(monitorId: string, url: string) {
       }
     });
 
+    // Dispatch Webhook on change
+    if (monitor && monitor.status !== status) {
+      const event = status === 'DOWN' ? 'MONITOR_DOWN' : 'MONITOR_UP';
+      await dispatchWebhook(monitor.userId, event, {
+        monitorId,
+        name: monitor.name,
+        url,
+        latency,
+        message
+      });
+    }
+
     return { status, latency, message };
   } catch (error) {
     const latency = Date.now() - startTime;
     const status = 'DOWN';
     const message = error instanceof Error ? error.message : 'Connection failed';
+
+    const monitor = await prisma.monitor.findUnique({
+      where: { id: monitorId },
+      select: { status: true, userId: true, name: true }
+    });
 
     await prisma.check.create({
       data: {
@@ -60,6 +84,17 @@ export async function performCheck(monitorId: string, url: string) {
       }
     });
 
+    if (monitor && monitor.status !== status) {
+      await dispatchWebhook(monitor.userId, 'MONITOR_DOWN', {
+        monitorId,
+        name: monitor.name,
+        url,
+        latency,
+        message
+      });
+    }
+
     return { status, latency, message };
   }
 }
+

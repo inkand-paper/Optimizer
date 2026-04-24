@@ -6,6 +6,7 @@ import { Navbar } from "@/components/navbar";
 import { Card, Button, Input, PasswordInput } from "@/components/ui-elements";
 import { AnalysisReport } from "@/components/analysis-report";
 import { ActivityLogs } from "@/components/activity-logs";
+import { WebhookManager } from "@/components/webhook-manager";
 import { MonitoringDashboard } from "@/components/monitoring-dashboard";
 import { 
   Key, 
@@ -429,6 +430,8 @@ export default function DashboardPage() {
             </Card>
 
             <ActivityLogs />
+
+            <WebhookManager />
 
             <Card className="p-0 overflow-hidden border-2 border-zinc-200 dark:border-zinc-800 shadow-xl">
               <div className="p-6 bg-zinc-900 text-white">

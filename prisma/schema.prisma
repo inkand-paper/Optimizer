@@ -28,7 +28,23 @@ model User {
   apiKeys      ApiKey[]
   activityLogs ActivityLog[]
   monitors     Monitor[]
+  webhooks     Webhook[]
 }
+
+// ... Role, User, Monitor, Check, ApiKey, ActivityLog models ...
+
+model Webhook {
+  id        String   @id @default(uuid())
+  url       String
+  events    String[] // REVALIDATE_SUCCESS, REVALIDATE_FAILURE, MONITOR_DOWN, MONITOR_UP
+  secret    String?  // For payload signing
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
 
 
 // ... ApiKey and ActivityLog models ...
