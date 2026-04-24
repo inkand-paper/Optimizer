@@ -49,7 +49,7 @@ async function processRevalidation(
 
     if (dbKey?.user?.email) {
       console.log(`[EMAIL] Attempting to send Pulse alert to: ${dbKey.user.email}`);
-      sendPulseAlert({
+      await sendPulseAlert({
         email: dbKey.user.email,
         userName: dbKey.user.name || 'Developer',
         type: 'tag',
@@ -84,7 +84,7 @@ async function processRevalidation(
 
     if (dbKey?.user?.email) {
       console.log(`[EMAIL] Attempting to send Pulse alert to: ${dbKey.user.email}`);
-      sendPulseAlert({
+      await sendPulseAlert({
         email: dbKey.user.email,
         userName: dbKey.user.name || 'Developer',
         type: 'path',
