@@ -2,7 +2,6 @@
   "name": "nextjs-optimizer-suite",
   "version": "0.1.0",
   "private": true,
-
   "scripts": {
     "dev": "cross-env NODE_OPTIONS='--max-old-space-size=2560' next dev --webpack",
     "build": "next build",
@@ -13,7 +12,10 @@
     "docker:build": "docker build -t njo-app .",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
-    "docker:logs": "docker compose logs -f app"
+    "docker:logs": "docker compose logs -f app",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "engines": {
     "node": ">=20.0.0 <23.0.0"
@@ -38,6 +40,7 @@
     "@types/node": "^20.19.39",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@vitest/coverage-v8": "^4.1.5",
     "autoprefixer": "^10.5.0",
     "cross-env": "^10.1.0",
     "eslint": "^9",
@@ -45,6 +48,7 @@
     "postcss": "^8.5.10",
     "prisma": "^5.14.0",
     "tailwindcss": "^3.4.19",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.5"
   }
 }
