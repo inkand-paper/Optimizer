@@ -7,7 +7,9 @@ const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_do_not_use_in_prod
 export interface JwtPayload {
   userId: string;
   email: string;
+  role: string;
 }
+
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, SALT_ROUNDS);

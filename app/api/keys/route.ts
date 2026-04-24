@@ -5,6 +5,7 @@ import { createApiKeySchema } from '@/lib/validations';
 import { z } from 'zod';
 import crypto from 'crypto';
 import { logActivity } from '@/lib/logger';
+import { hasPermission, ROLES } from '@/lib/rbac';
 
 // Helper to hash API keys quickly (sha256)
 export function hashApiKey(key: string): string {
@@ -53,6 +54,10 @@ export async function POST(req: NextRequest) {
     const decoded = verifyJwt(authHeader.split(' ')[1]);
     if (!decoded) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!hasPermission(decoded.role, ROLES.DEVELOPER)) {
+      return NextResponse.json({ error: 'Forbidden', message: 'Only developers can generate API keys' }, { status: 403 });
     }
     
     currentUserId = decoded.userId;

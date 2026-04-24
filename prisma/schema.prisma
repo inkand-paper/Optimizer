@@ -10,11 +10,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  DEVELOPER
+  VIEWER
+}
+
 model User {
   id           String   @id @default(uuid())
   email        String   @unique
   passwordHash String
   name         String?
+  role         Role     @default(DEVELOPER)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   
@@ -22,6 +29,7 @@ model User {
   activityLogs ActivityLog[]
   monitors     Monitor[]
 }
+
 
 // ... ApiKey and ActivityLog models ...
 

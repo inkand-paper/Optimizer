@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     });
     
     // Generate JWT
-    const token = signJwt({ userId: newUser.id, email: newUser.email });
+    const token = signJwt({ userId: newUser.id, email: newUser.email, role: newUser.role });
     
     return NextResponse.json({
       success: true,
@@ -43,9 +43,11 @@ export async function POST(req: NextRequest) {
       user: {
         id: newUser.id,
         email: newUser.email,
-        name: newUser.name
+        name: newUser.name,
+        role: newUser.role
       }
     }, { status: 201 });
+
     
   } catch (error) {
     if (error instanceof z.ZodError) {
