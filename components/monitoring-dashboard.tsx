@@ -261,27 +261,35 @@ export function MonitoringDashboard() {
                   {m.checks.length > 0 ? `${m.checks[0].latency}ms` : 'No data'}
                 </span>
               </div>
-              <div className="flex gap-1.5 h-12 items-end border-b border-dashed border-zinc-200 dark:border-zinc-800 pb-1 relative group/chart">
-                {m.checks.slice(0, 30).reverse().map((c: any, i: number) => {
-                  // Normalize height between 10% and 100%
-                  const heightPct = Math.max(10, Math.min((c.latency / 1000) * 100, 100));
-                  return (
-                    <div 
-                      key={i} 
-                      className={cn(
-                        "flex-1 rounded-t-[2px] transition-all hover:opacity-80 relative",
-                        c.status === 'UP' ? "bg-emerald-500/30" : "bg-rose-500"
-                      )}
-                      style={{ height: `${heightPct}%`, minHeight: '2px' }}
-                      title={`${c.status} - ${c.latency}ms at ${new Date(c.createdAt).toLocaleTimeString()}`}
-                    >
-                      {/* Hover tooltip for individual bars could go here */}
-                    </div>
-                  );
-                })}
+              <div className="flex gap-[2px] h-16 items-end border-b border-zinc-200 dark:border-zinc-800/50 pb-1 relative group/chart">
+                {(() => {
+                  const visibleChecks = m.checks.slice(0, 40).reverse();
+                  const maxLatency = Math.max(...visibleChecks.map(c => c.latency), 100); // Dynamic ceiling
+                  
+                  return visibleChecks.map((c: any, i: number) => {
+                    const heightPct = Math.max(8, (c.latency / maxLatency) * 100);
+                    const isLatest = i === visibleChecks.length - 1;
+                    
+                    return (
+                      <div 
+                        key={i} 
+                        className={cn(
+                          "flex-1 rounded-t-sm transition-all duration-500 hover:brightness-110 relative",
+                          c.status === 'UP' 
+                            ? "bg-gradient-to-t from-emerald-500/10 to-emerald-500/40" 
+                            : "bg-rose-500",
+                          isLatest && "animate-pulse brightness-125 shadow-[0_0_10px_rgba(16,185,129,0.2)]"
+                        )}
+                        style={{ height: `${heightPct}%` }}
+                        title={`${c.status} - ${c.latency}ms at ${new Date(c.createdAt).toLocaleTimeString()}`}
+                      />
+                    );
+                  });
+                })()}
                 {m.checks.length === 0 && (
-                  <div className="absolute inset-0 flex items-center justify-center text-xs text-zinc-400">
-                    Waiting for first ping...
+                  <div className="absolute inset-0 flex items-center justify-center text-[10px] font-medium text-zinc-400 uppercase tracking-tighter">
+                    <Loader2 className="h-3 w-3 animate-spin mr-2" />
+                    Gathering Intelligence...
                   </div>
                 )}
               </div>
