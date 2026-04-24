@@ -1,0 +1,59 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+    container_name: njo-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
+    restart: unless-stopped
+    depends_on:
+      - db
+    networks:
+      - njo-network
+
+  db:
+    image: postgres:16-alpine
+    container_name: njo-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-njo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
+      POSTGRES_DB: ${POSTGRES_DB:-njo_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - njo-network
+
+  # Optional: pgAdmin for DB management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: njo-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@njo.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - njo-network
+    profiles:
+      - tools
+
+volumes:
+  postgres_data:
+
+networks:
+  njo-network:
+    driver: bridge

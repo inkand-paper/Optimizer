@@ -1,0 +1,17 @@
+{
+  "name": "njo",
+  "version": "1.0.0",
+  "description": "Next.js Optimizer Suite — CLI tool",
+  "type": "module",
+  "bin": {
+    "njo": "./njo.mjs"
+  },
+  "scripts": {
+    "start": "node njo.mjs"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "keywords": ["nextjs", "optimizer", "cli", "performance", "seo"],
+  "license": "MIT"
+}
