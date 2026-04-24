@@ -22,10 +22,21 @@ export async function GET(req: NextRequest) {
       include: {
         checks: {
           orderBy: { createdAt: 'desc' },
-          take: 30
+          take: 40
         }
       },
       orderBy: { createdAt: 'desc' }
+    });
+
+    // Proactive Health Checks: If last check is older than 30s, trigger a fresh one in the background
+    const thirtySecondsAgo = new Date(Date.now() - 30 * 1000);
+    monitors.forEach(monitor => {
+      if (!monitor.lastChecked || monitor.lastChecked < thirtySecondsAgo) {
+        // Fire and forget background check
+        performCheck(monitor.id, monitor.url).catch(err => 
+          console.error(`Background check failed for ${monitor.name}:`, err)
+        );
+      }
     });
     
     return NextResponse.json({ success: true, monitors });
