@@ -53,20 +53,13 @@ export interface AnalyzeResponse {
   success: boolean;
   results: {
     url: string;
-    score: number;
-    metrics: {
-      hasTitle: boolean;
-      hasDescription: boolean;
-      hasFavicon: boolean;
-      isSsl: boolean;
-      loadTime: number;
-    };
-    details: {
-      title?: string;
-      description?: string;
-      server?: string;
-      status?: number;
+    overallScore: number;
+    sections: {
+      seo: { score: number; metrics: any; suggestions: string[] };
+      security: { score: number; metrics: any; suggestions: string[] };
+      performance: { score: number; metrics: any; suggestions: string[] };
     };
   };
   timestamp: string;
-}
+}
+

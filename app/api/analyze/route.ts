@@ -2,15 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import crypto from 'crypto';
 import type { AnalyzeRequest, AnalyzeResponse, ErrorResponse } from '@/lib/types';
+import { runFullAudit } from '@/core/analyzer';
 
 /**
- * [ENTRY-LEVEL] - Website Analyzer API
- * This engine "scans" another website to check if it's healthy.
- * It's secure: only a verified Machine (via API Key) can run it.
+ * [PRODUCTION-GRADE] - Advanced Website Analyzer API
+ * This engine performs a multi-dimensional audit of target websites.
+ * Secure: Requires a verified Machine API Key.
  */
 export async function POST(request: NextRequest) {
-  const startTime = Date.now();
-  
   try {
     // 1. Security Check (API Key)
     const authHeader = request.headers.get('authorization');
@@ -40,70 +39,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Bad Request', message: 'Valid URL (with http/https) is required' }, { status: 400 });
     }
 
-    // 3. Perform Analysis (Scanning the site)
-    const fetchStartTime = Date.now();
-    const response = await fetch(url, { 
-      headers: { 'User-Agent': 'NextOptimizerBot/1.0' },
-      next: { revalidate: 0 } // Don't cache the scan itself
-    });
-    
-    const html = await response.text();
-    const loadTime = Date.now() - fetchStartTime;
+    // 3. Perform Advanced Analysis
+    const auditResult = await runFullAudit(url);
 
-    // Regex scanners (Simulated engine)
-    const titleMatch = html.match(/<title>(.*?)<\/title>/i);
-    const descMatch = html.match(/<meta name="description" content="(.*?)"/i);
-    const faviconMatch = html.match(/rel="icon"|rel="shortcut icon"/i);
-
-    const metrics = {
-      hasTitle: !!titleMatch,
-      hasDescription: !!descMatch,
-      hasFavicon: !!faviconMatch,
-      isSsl: url.startsWith('https'),
-      loadTime: loadTime
-    };
-
-    // Calculate score (0-100)
-    let score = 0;
-    
-    // Check if the page actually exists (HTTP 200)
-    const isHealthy = response.ok;
-    
-    if (isHealthy) {
-      if (metrics.hasTitle) score += 20;
-      if (metrics.hasDescription) score += 20;
-      if (metrics.hasFavicon) score += 20;
-      if (metrics.isSsl) score += 20;
-      if (loadTime < 1000) score += 20;
-      else if (loadTime < 3000) score += 10;
-    } else {
-      // Penalty for 404/500/etc.
-      score = 0;
-    }
-
-    const analyzeResult: AnalyzeResponse = {
+    const response: AnalyzeResponse = {
       success: true,
-      results: {
-        url,
-        score,
-        metrics,
-        details: {
-          title: titleMatch?.[1]?.substring(0, 100),
-          description: descMatch?.[1]?.substring(0, 200),
-          server: response.headers.get('server') || 'unknown',
-          status: response.status
-        }
-      },
+      results: auditResult,
       timestamp: new Date().toISOString()
     };
 
-    return NextResponse.json(analyzeResult);
+    return NextResponse.json(response);
 
   } catch (error) {
     console.error('Analysis failed:', error);
     return NextResponse.json({ 
       error: 'Internal Server Error', 
-      message: 'Failed to scan the target website' 
+      message: error instanceof Error ? error.message : 'Failed to scan the target website' 
     }, { status: 500 });
   }
 }
+

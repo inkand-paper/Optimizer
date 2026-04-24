@@ -7,7 +7,11 @@ import {
   ShieldCheck, 
   Zap, 
   Download,
-  AlertCircle
+  AlertCircle,
+  Globe,
+  Lock,
+  Gauge,
+  ArrowRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { AnalyzeResponse } from "@/lib/types";
@@ -17,8 +21,8 @@ interface Props {
 }
 
 /**
- * [ENTRY-LEVEL] - Analysis Report Component
- * Visualizes the data from our scanner into a readable "Report Card".
+ * [PRODUCTION-GRADE] - Advanced Analysis Report
+ * Visualizes the multi-dimensional audit data into a professional dashboard.
  */
 export function AnalysisReport({ data }: Props) {
   const { results, success } = data;
@@ -35,103 +39,161 @@ export function AnalysisReport({ data }: Props) {
     );
   }
 
+  const { overallScore, sections } = results;
+
   const downloadReport = () => {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `report-${results.url.replace(/https?:\/\//, '').replace(/\//g, '-')}.json`;
+    a.download = `audit-${results.url.replace(/https?:\/\//, '').replace(/\//g, '-')}.json`;
     a.click();
   };
 
   return (
-    <Card className="p-6 border-zinc-200 dark:border-zinc-800 animate-in fade-in slide-in-from-bottom-2">
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
-        <div>
-          <h3 className="text-xl font-bold flex items-center gap-2">
-            <Search className="h-5 w-5 text-blue-600" />
-            Scan Results
-          </h3>
-          <p className="text-xs text-zinc-500 font-mono mt-1">{results.url}</p>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="text-right">
-            <span className={cn(
-              "text-3xl font-black",
-              results.score >= 80 ? "text-green-500" : 
-              results.score >= 50 ? "text-yellow-500" : "text-red-500"
-            )}>
-              {results.score}/100
-            </span>
-            <p className="text-[10px] uppercase font-bold tracking-tighter text-zinc-400">Health Score</p>
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* Header Summary */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-6 bg-zinc-900 rounded-2xl text-white overflow-hidden relative">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl -mr-32 -mt-32" />
+        <div className="z-10">
+          <div className="flex items-center gap-2 mb-2">
+            <Globe className="h-4 w-4 text-blue-400" />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Domain Audit</span>
           </div>
-          <Button variant="outline" size="sm" onClick={downloadReport}>
-            <Download className="h-4 w-4 mr-2" /> JSON Report
+          <h3 className="text-xl font-bold truncate max-w-[300px] sm:max-w-md">{results.url}</h3>
+          <p className="text-xs text-zinc-500 mt-1">Scan completed on {new Date(data.timestamp).toLocaleString()}</p>
+        </div>
+        
+        <div className="flex items-center gap-6 z-10">
+          <div className="text-center">
+            <div className={cn(
+              "text-5xl font-black tracking-tighter",
+              overallScore >= 80 ? "text-green-400" : 
+              overallScore >= 50 ? "text-yellow-400" : "text-red-400"
+            )}>
+              {overallScore}
+            </div>
+            <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 mt-1">Overall Score</p>
+          </div>
+          <Button variant="outline" size="sm" onClick={downloadReport} className="bg-white/5 border-white/10 hover:bg-white/10 text-white border-0">
+            <Download className="h-4 w-4 mr-2" /> Export
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Metrics Grid */}
-        <div className="space-y-3">
-          <MetricItem 
-            label="Title Tag Found" 
-            success={results.metrics.hasTitle} 
-            desc={results.details.title || "No title found"}
-          />
-          <MetricItem 
-            label="Meta Description" 
-            success={results.metrics.hasDescription} 
-            desc={results.details.description || "Missing for SEO"}
-          />
-          <MetricItem 
-            label="SSL Security" 
-            success={results.metrics.isSsl} 
-            desc={results.metrics.isSsl ? "Connection is encrypted" : "Insecure HTTP"}
-          />
-        </div>
+      {/* Main Sections Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* SEO Section */}
+        <AuditSection 
+          title="SEO" 
+          icon={<Search className="h-4 w-4" />} 
+          score={sections.seo.score}
+          color="blue"
+          metrics={[
+            { label: "Title Tag", value: sections.seo.metrics.hasTitle ? "Present" : "Missing", success: sections.seo.metrics.hasTitle },
+            { label: "Description", value: sections.seo.metrics.hasDescription ? "Present" : "Missing", success: sections.seo.metrics.hasDescription },
+            { label: "H1 Tag", value: sections.seo.metrics.h1Count === 1 ? "Optimal" : `${sections.seo.metrics.h1Count} Found`, success: sections.seo.metrics.h1Count === 1 },
+          ]}
+          suggestions={sections.seo.suggestions}
+        />
 
-        <div className="space-y-3">
-          <div className={cn(
-            "p-4 rounded-xl border flex items-center gap-4",
-            results.metrics.loadTime < 1500 ? "bg-green-50/50 border-green-100" : "bg-orange-50/50 border-orange-100"
-          )}>
-            <div className="h-10 w-10 rounded-full bg-white dark:bg-zinc-900 border flex items-center justify-center">
-              <Zap className={cn("h-5 w-5", results.metrics.loadTime < 1500 ? "text-orange-500" : "text-zinc-400")} />
-            </div>
-            <div>
-              <p className="text-sm font-bold">{results.metrics.loadTime}ms</p>
-              <p className="text-[10px] text-zinc-500">Response Speed</p>
+        {/* Security Section */}
+        <AuditSection 
+          title="Security" 
+          icon={<ShieldCheck className="h-4 w-4" />} 
+          score={sections.security.score}
+          color="green"
+          metrics={[
+            { label: "HTTPS", value: sections.security.metrics.isHttps ? "Active" : "Insecure", success: sections.security.metrics.isHttps },
+            { label: "CSP Header", value: sections.security.metrics.hasCsp ? "Secure" : "Missing", success: sections.security.metrics.hasCsp },
+            { label: "HSTS", value: sections.security.metrics.hasHsts ? "Active" : "Inactive", success: sections.security.metrics.hasHsts },
+          ]}
+          suggestions={sections.security.suggestions}
+        />
+
+        {/* Performance Section */}
+        <AuditSection 
+          title="Performance" 
+          icon={<Zap className="h-4 w-4" />} 
+          score={sections.performance.score}
+          color="orange"
+          metrics={[
+            { label: "Load Time", value: `${sections.performance.metrics.loadTimeMs}ms`, success: sections.performance.metrics.loadTimeMs < 1000 },
+            { label: "Compression", value: sections.performance.metrics.isCompressed ? "Gzip/Br" : "None", success: sections.performance.metrics.isCompressed },
+            { label: "Scripts", value: sections.performance.metrics.scriptCount.toString(), success: sections.performance.metrics.scriptCount < 15 },
+          ]}
+          suggestions={sections.performance.suggestions}
+        />
+      </div>
+    </div>
+  );
+}
+
+function AuditSection({ title, icon, score, color, metrics, suggestions }: any) {
+  const colors: any = {
+    blue: "bg-blue-600",
+    green: "bg-green-600",
+    orange: "bg-orange-600",
+    red: "bg-red-600"
+  };
+
+  const bgColors: any = {
+    blue: "bg-blue-50/50 dark:bg-blue-900/5",
+    green: "bg-green-50/50 dark:bg-green-900/5",
+    orange: "bg-orange-50/50 dark:bg-orange-900/5",
+    red: "bg-red-50/50 dark:bg-red-900/5"
+  };
+
+  const borderColors: any = {
+    blue: "border-blue-100 dark:border-blue-900/20",
+    green: "border-green-100 dark:border-green-900/20",
+    orange: "border-orange-100 dark:border-orange-900/20",
+    red: "border-red-100 dark:border-red-900/20"
+  };
+
+  return (
+    <Card className={cn("p-0 overflow-hidden border-0 shadow-sm flex flex-col h-full", bgColors[color])}>
+      <div className={cn("p-4 flex items-center justify-between border-b", borderColors[color])}>
+        <div className="flex items-center gap-2">
+          <div className={cn("h-8 w-8 rounded-lg flex items-center justify-center text-white shadow-sm", colors[color])}>
+            {icon}
+          </div>
+          <span className="font-bold text-sm">{title}</span>
+        </div>
+        <div className="text-lg font-black">{score}<span className="text-[10px] text-zinc-400 font-normal">/100</span></div>
+      </div>
+
+      <div className="p-4 space-y-3 flex-1">
+        {metrics.map((m: any, i: number) => (
+          <div key={i} className="flex items-center justify-between">
+            <span className="text-xs text-zinc-500">{m.label}</span>
+            <div className="flex items-center gap-1.5">
+              <span className={cn("text-[11px] font-bold", m.success ? "text-zinc-900 dark:text-zinc-100" : "text-red-500")}>
+                {m.value}
+              </span>
+              {m.success ? <CheckCircle2 className="h-3 w-3 text-green-500" /> : <XCircle className="h-3 w-3 text-red-500" />}
             </div>
           </div>
+        ))}
 
-          <div className="p-4 rounded-xl border border-zinc-100 dark:border-zinc-800 flex items-center gap-4">
-            <div className="h-10 w-10 rounded-full bg-zinc-50 dark:bg-zinc-900 border flex items-center justify-center">
-              <ShieldCheck className="h-5 w-5 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm font-bold uppercase text-[10px] tracking-widest">{results.details.server}</p>
-              <p className="text-[10px] text-zinc-500">Detected Server</p>
+        {suggestions.length > 0 && (
+          <div className="mt-4 pt-4 border-t border-black/5 dark:border-white/5">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-2">Improvements</p>
+            <div className="space-y-2">
+              {suggestions.slice(0, 3).map((s: string, i: number) => (
+                <div key={i} className="flex items-start gap-2 group">
+                  <ArrowRight className="h-2.5 w-2.5 text-zinc-300 mt-1 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                  <p className="text-[10px] text-zinc-600 dark:text-zinc-400 leading-tight">{s}</p>
+                </div>
+              ))}
+              {suggestions.length > 3 && (
+                <p className="text-[9px] text-zinc-500 italic pl-4">+{suggestions.length - 3} more insights</p>
+              )}
             </div>
           </div>
-        </div>
+        )}
       </div>
     </Card>
   );
 }
 
-function MetricItem({ label, success, desc }: { label: string; success: boolean; desc: string }) {
-  return (
-    <div className="flex items-start gap-3 p-3 rounded-xl border border-zinc-50 dark:border-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors">
-      {success ? (
-        <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-      ) : (
-        <XCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
-      )}
-      <div className="min-w-0">
-        <p className="text-sm font-semibold leading-none">{label}</p>
-        <p className="text-[11px] text-zinc-500 mt-1 truncate">{desc}</p>
-      </div>
-    </div>
-  );
-}
