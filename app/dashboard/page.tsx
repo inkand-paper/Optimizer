@@ -98,17 +98,20 @@ export default function DashboardPage() {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
-      if (res.ok) setKeys(data.keys);
+      if (res.ok) {
+        setKeys(data.keys);
+        
+        // [UX] Auto-select the first key for the playground/analyzer if not set
+        if (!playgroundKey && data.keys?.length > 0) {
+          // Note: We can't get the raw key from DB, so we rely on session persistence
+          const sessionKey = localStorage.getItem("active_api_key");
+          if (sessionKey) setPlaygroundKey(sessionKey);
+        }
+      }
     } catch (err) {
       console.error("Failed to fetch keys", err);
     } finally {
       setLoading(false);
-      // [UX] Auto-select the first key for the playground/analyzer if not set
-      if (!playgroundKey && data.keys?.length > 0) {
-        const firstKey = data.keys[0];
-        // We can't get the raw key back from the DB (it's hashed), 
-        // so we'll remind the user or use the most recently created raw key
-      }
     }
   }
 
