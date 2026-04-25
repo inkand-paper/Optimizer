@@ -43,18 +43,20 @@ function renderMarkdownAsCards(md: string) {
       if (lang === 'kotlin') icon = '<svg class="h-4 w-4 text-purple-400" viewBox="0 0 24 24" fill="currentColor"><path d="M2 2l10 10L22 2v20H2V2z"/></svg>';
 
       return `<div class="relative group my-8">
-        <div class="absolute -top-4 right-6 flex items-center gap-2 px-3 py-1 bg-zinc-800 border border-zinc-700 rounded-full shadow-lg z-10">
+        <div class="absolute -top-3 right-4 flex items-center gap-2 px-3 py-1 bg-zinc-800 border border-zinc-700 rounded-full shadow-lg z-10 scale-90 sm:scale-100">
           ${icon}
           <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400">${displayLang}</span>
         </div>
-        <pre class="bg-zinc-950 text-zinc-100 p-8 pt-10 rounded-[32px] overflow-x-auto border border-zinc-800 shadow-2xl !whitespace-pre">
-          <code class="language-${lang} text-sm font-mono leading-relaxed !whitespace-pre !break-normal" onload="Prism.highlightElement(this)">${code.trim()}</code>
-        </pre>
+        <div class="rounded-[24px] sm:rounded-[32px] overflow-hidden border border-zinc-800 shadow-2xl">
+          <pre class="bg-zinc-950 text-zinc-100 p-6 sm:p-8 pt-8 sm:pt-10 overflow-x-auto custom-scrollbar !whitespace-pre">
+            <code class="language-${lang} text-[11px] sm:text-sm font-mono leading-relaxed !whitespace-pre !break-normal inline-block min-w-full">${code.trim()}</code>
+          </pre>
+        </div>
       </div>`;
     });
 
     // 3. Handle Standard Code Blocks
-    content = content.replace(/```([\s\S]*?)```/g, '<div class="relative group my-8"><pre class="bg-zinc-950 text-zinc-100 p-6 rounded-2xl overflow-x-auto border border-zinc-800 shadow-2xl !whitespace-pre"><code class="text-sm font-mono leading-relaxed !whitespace-pre !break-normal">$1</code></pre></div>');
+    content = content.replace(/```([\s\S]*?)```/g, '<div class="relative group my-8"><div class="rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl"><pre class="bg-zinc-950 text-zinc-100 p-6 overflow-x-auto custom-scrollbar !whitespace-pre"><code class="text-[11px] sm:text-sm font-mono leading-relaxed !whitespace-pre !break-normal inline-block min-w-full">$1</code></pre></div></div>');
 
     // 4. Tables
     content = content.replace(/((?:\|.+\|\n?)+)/g, (match) => {

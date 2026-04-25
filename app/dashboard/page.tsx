@@ -309,7 +309,7 @@ export default function DashboardPage() {
           <div className="flex-1 space-y-8">
             
             {/* COMMON HEADER SECTION (Visible on all tabs) */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
                 <h1 className="text-2xl md:text-3xl font-bold tracking-tight capitalize">{activeTab}</h1>
                 <p className="text-sm text-zinc-500 truncate">Manage your {activeTab} settings and analytics</p>
@@ -389,7 +389,7 @@ export default function DashboardPage() {
                     <Card className="p-0 overflow-hidden">
                       <div className="p-4 border-b bg-zinc-50/50 flex flex-col gap-3">
                         <p className="text-[10px] font-bold uppercase text-zinc-400">Generate New Machine Key</p>
-                        <form onSubmit={handleCreateKey} className="flex gap-2">
+                        <form onSubmit={handleCreateKey} className="flex flex-col sm:flex-row gap-2">
                           <Input name="keyName" placeholder="Key name (e.g. CI/CD)" className="h-9" required />
                           <Button size="sm" type="submit" disabled={creatingKey}>
                             {creatingKey ? <Loader2 className="h-3 w-3 animate-spin" /> : "Create"}
