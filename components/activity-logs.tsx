@@ -93,27 +93,27 @@ export function ActivityLogs() {
               )}>
                 {getIcon(log.type)}
               </div>
-              <div className="min-w-0 flex-1 space-y-1">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs font-bold truncate break-all leading-none">{log.action}</p>
-                  <span className="text-[9px] text-zinc-400 whitespace-nowrap">
-                    {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
+              <div className="min-w-0 flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="min-w-0 flex-1 space-y-1">
+                  <p className="text-xs font-bold break-words leading-tight pr-4">{log.action}</p>
+                  <div className="flex items-center gap-2">
+                    <span className={cn(
+                      "text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-md",
+                      log.status === 'SUCCESS' ? "bg-green-500/10 text-green-500" : "bg-red-500/10 text-red-500"
+                    )}>
+                      {log.status}
+                    </span>
+                    {log.details?.durationMs && (
+                      <span className="text-[9px] text-zinc-500 font-medium">• {log.details.durationMs}ms</span>
+                    )}
+                    {log.details?.score && (
+                      <span className="text-[9px] text-zinc-500 font-medium">• Score: {log.details.score}</span>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className={cn(
-                    "text-[9px] font-bold uppercase tracking-widest",
-                    log.status === 'SUCCESS' ? "text-green-500" : "text-red-500"
-                  )}>
-                    {log.status}
-                  </span>
-                  {log.details?.durationMs && (
-                    <span className="text-[9px] text-zinc-500">• {log.details.durationMs}ms</span>
-                  )}
-                  {log.details?.score && (
-                    <span className="text-[9px] text-zinc-500">• Score: {log.details.score}</span>
-                  )}
-                </div>
+                <span className="text-[9px] text-zinc-400 whitespace-nowrap self-start sm:self-center font-medium opacity-60">
+                  {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
               </div>
             </div>
           ))
