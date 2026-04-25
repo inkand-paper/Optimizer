@@ -53,18 +53,18 @@ export function AnalysisReport({ data }: Props) {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Header Summary */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-6 bg-zinc-900 rounded-2xl text-white overflow-hidden relative">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-6 bg-zinc-900 dark:bg-zinc-900/50 rounded-2xl text-white overflow-hidden relative border border-white/5 shadow-2xl">
         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl -mr-32 -mt-32" />
-        <div className="z-10">
+        <div className="z-10 w-full sm:w-auto">
           <div className="flex items-center gap-2 mb-2">
             <Globe className="h-4 w-4 text-blue-400" />
             <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Domain Audit</span>
           </div>
-          <h3 className="text-xl font-bold truncate max-w-[300px] sm:max-w-md">{results.url}</h3>
+          <h3 className="text-xl font-bold truncate max-w-full sm:max-w-md">{results.url}</h3>
           <p className="text-xs text-zinc-500 mt-1">Scan completed on {new Date(data.timestamp).toLocaleString()}</p>
         </div>
         
-        <div className="flex items-center gap-6 z-10">
+        <div className="flex items-center justify-between sm:justify-end gap-8 z-10 w-full sm:w-auto">
           <div className="text-center">
             <div className={cn(
               "text-5xl font-black tracking-tighter",
@@ -73,9 +73,9 @@ export function AnalysisReport({ data }: Props) {
             )}>
               {overallScore}
             </div>
-            <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 mt-1">Overall Score</p>
+            <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 mt-1">Score</p>
           </div>
-          <Button variant="outline" size="sm" onClick={downloadReport} className="bg-white/5 border-white/10 hover:bg-white/10 text-white border-0">
+          <Button variant="outline" size="sm" onClick={downloadReport} className="bg-white/5 border-white/10 hover:bg-white/10 text-white border-0 h-10 px-4">
             <Download className="h-4 w-4 mr-2" /> Export
           </Button>
         </div>
