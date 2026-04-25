@@ -103,6 +103,12 @@ export default function DashboardPage() {
       console.error("Failed to fetch keys", err);
     } finally {
       setLoading(false);
+      // [UX] Auto-select the first key for the playground/analyzer if not set
+      if (!playgroundKey && data.keys?.length > 0) {
+        const firstKey = data.keys[0];
+        // We can't get the raw key back from the DB (it's hashed), 
+        // so we'll remind the user or use the most recently created raw key
+      }
     }
   }
 
@@ -191,17 +197,25 @@ export default function DashboardPage() {
     setAnalyzeResult(null);
 
     if (!playgroundKey) {
-      alert("Please paste your API Key into the 'Security Playground' section (bottom right) first to authorize the scanner.");
-      setAnalyzeLoading(false);
-      return;
+      // Try to find a raw key created in this session
+      const sessionKey = localStorage.getItem("active_api_key");
+      if (sessionKey) {
+        setPlaygroundKey(sessionKey);
+      } else {
+        alert("Please create an API Key in the 'API Keys' tab first to authorize the scanner.");
+        setAnalyzeLoading(false);
+        return;
+      }
     }
+
+    const tokenToUse = playgroundKey || localStorage.getItem("active_api_key");
 
     try {
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          Authorization: `Bearer ${playgroundKey}`
+          Authorization: `Bearer ${tokenToUse}`
         },
         body: JSON.stringify({ url: analyzeUrl }),
       });
