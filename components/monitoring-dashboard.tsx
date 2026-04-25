@@ -167,20 +167,22 @@ export function MonitoringDashboard() {
 
       {isAdding && (
         <Card className="p-4 border-dashed border-zinc-300 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/50 transition-all duration-300 animate-in fade-in slide-in-from-top-4">
-          <form onSubmit={handleAddMonitor} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <form onSubmit={handleAddMonitor} className="flex flex-col sm:grid sm:grid-cols-3 gap-3">
             <Input 
               placeholder="Service Name (e.g. Production API)" 
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
+              className="h-10 sm:h-9"
               required
             />
             <Input 
               placeholder="https://api.myapp.com/health" 
               value={newUrl}
               onChange={(e) => setNewUrl(e.target.value)}
+              className="h-10 sm:h-9"
               required
             />
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading} className="h-10 sm:h-9">
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Deploy Monitor"}
             </Button>
           </form>
@@ -190,7 +192,7 @@ export function MonitoringDashboard() {
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         {monitors.map((m) => (
           <Card key={m.id} className="p-0 overflow-hidden group hover:shadow-md transition-shadow relative">
-            <div className="p-4 flex items-center justify-between border-b bg-white dark:bg-zinc-950 relative">
+            <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between border-b bg-white dark:bg-zinc-950 relative gap-4">
               <div className="flex items-center gap-4 min-w-0 flex-1">
                 <div className={cn(
                   "h-12 w-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
@@ -216,7 +218,7 @@ export function MonitoringDashboard() {
                       <h3 className="font-bold text-base truncate">{m.name}</h3>
                       <button 
                         onClick={() => { setEditingId(m.id); setEditName(m.name); }}
-                        className="opacity-0 group-hover:opacity-100 p-1 text-zinc-400 hover:text-blue-500 transition-opacity"
+                        className="p-1 text-zinc-400 hover:text-blue-500 transition-opacity"
                         title="Edit Name"
                       >
                         <Edit2 className="h-3 w-3" />
@@ -225,12 +227,12 @@ export function MonitoringDashboard() {
                   )}
                   <div className="flex items-center gap-1.5 mt-0.5">
                     <Globe className="h-3 w-3 text-zinc-400" />
-                    <p className="text-xs text-zinc-500 truncate">{m.url}</p>
+                    <p className="text-xs text-zinc-500 truncate max-w-[150px] sm:max-w-none">{m.url}</p>
                   </div>
                 </div>
               </div>
               
-              <div className="text-right flex flex-col items-end gap-1">
+              <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 pt-2 sm:pt-0 border-t sm:border-0 border-zinc-100 dark:border-zinc-900">
                 <div className={cn(
                   "text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest",
                   m.status === 'UP' ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400"
@@ -238,8 +240,8 @@ export function MonitoringDashboard() {
                   {m.status}
                 </div>
                 {m.lastChecked && (
-                  <p className="text-[10px] text-zinc-400 mt-1">
-                    Last check: {new Date(m.lastChecked).toLocaleTimeString()}
+                  <p className="text-[10px] text-zinc-400">
+                    {new Date(m.lastChecked).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 )}
               </div>

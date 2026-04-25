@@ -78,21 +78,21 @@ export function PulseTrigger() {
             </button>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
               <Input
                 placeholder={type === 'tag' ? "e.g. products-list" : "e.g. /blog/post-1"}
                 value={target}
                 onChange={(e) => setTarget(e.target.value)}
-                className="bg-zinc-900/50 border-zinc-700 text-white pl-9"
+                className="bg-zinc-900/50 border-zinc-700 text-white pl-9 h-11 sm:h-9"
                 required
               />
-              <ShieldCheck className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500" />
+              <ShieldCheck className="absolute left-3 top-3 sm:top-2.5 h-4 w-4 text-zinc-500" />
             </div>
             <Button 
               type="submit" 
               disabled={loading || !target}
-              className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20 min-w-[120px]"
+              className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20 min-w-[120px] h-11 sm:h-9"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : success ? <CheckCircle2 className="h-4 w-4" /> : "Send Pulse"}
             </Button>
