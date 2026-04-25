@@ -266,8 +266,8 @@ export default function DashboardPage() {
     <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950 overflow-x-hidden">
       <Navbar />
       
-      <main className="flex-1 w-full max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-4 md:py-10 mb-24 md:mb-0">
-        <div className="flex flex-col md:flex-row gap-6 lg:gap-16 items-start">
+      <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-10 mb-24 md:mb-0">
+        <div className="flex flex-col md:flex-row gap-6 lg:gap-16 items-stretch md:items-start">
           
           {/* SIDEBAR NAVIGATION (Desktop Only) */}
           <div className="hidden md:flex flex-col w-72 shrink-0 space-y-2 sticky top-[100px]">
