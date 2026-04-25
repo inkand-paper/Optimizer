@@ -11,7 +11,7 @@ export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
   return (
     <div
       className={cn(
-        "rounded-xl border bg-card text-card-foreground shadow-sm",
+        "rounded-2xl border border-zinc-200 dark:border-zinc-800/60 bg-white dark:bg-zinc-950 text-zinc-950 dark:text-zinc-50 shadow-sm transition-colors",
         className
       )}
       {...props}
@@ -36,7 +36,7 @@ export function Button({
   const variants = {
     primary: "bg-blue-600 text-white hover:bg-blue-700 shadow-md active:scale-95",
     secondary: "bg-zinc-100 text-zinc-900 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-50 dark:hover:bg-zinc-700",
-    outline: "border border-zinc-200 bg-transparent hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-800",
+    outline: "border border-zinc-200 bg-transparent hover:bg-zinc-100 dark:border-zinc-800/60 dark:hover:bg-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100",
     ghost: "bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-800",
     danger: "bg-red-600 text-white hover:bg-red-700",
   };
@@ -68,7 +68,7 @@ export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInp
   return (
     <input
       className={cn(
-        "flex h-10 w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-950 dark:ring-offset-zinc-950 dark:placeholder:text-zinc-400",
+        "flex h-10 w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800/60 dark:bg-zinc-900 dark:ring-offset-zinc-950 dark:placeholder:text-zinc-500",
         className
       )}
       {...props}
