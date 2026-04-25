@@ -29,20 +29,31 @@ export async function GET(req: NextRequest) {
     });
 
     // Proactive Health Checks: If last check is older than 30s, trigger a fresh one in the background
-    const thirtySecondsAgo = new Date(Date.now() - 30 * 1000);
-    monitors.forEach(monitor => {
-      if (!monitor.lastChecked || monitor.lastChecked < thirtySecondsAgo) {
-        // Fire and forget background check
-        performCheck(monitor.id, monitor.url).catch(err => 
-          console.error(`Background check failed for ${monitor.name}:`, err)
-        );
-      }
-    });
+    try {
+      const thirtySecondsAgo = new Date(Date.now() - 30 * 1000);
+      monitors.forEach(monitor => {
+        const needsCheck = !monitor.lastChecked || new Date(monitor.lastChecked) < thirtySecondsAgo;
+        
+        if (needsCheck) {
+          console.log(`[PROACTIVE] Triggering check for ${monitor.name}`);
+          // Fire and forget background check - completely isolated
+          performCheck(monitor.id, monitor.url).catch(err => 
+            console.error(`[PROACTIVE ERROR] ${monitor.name}:`, err)
+          );
+        }
+      });
+    } catch (proactiveError) {
+      console.error('[PROACTIVE SYSTEM ERROR]:', proactiveError);
+      // We don't return 500 here because the data fetch was successful
+    }
     
     return NextResponse.json({ success: true, monitors });
   } catch (error) {
-    console.error('Fetch monitors error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    console.error('CRITICAL ERROR Fetching Monitors:', error);
+    return NextResponse.json({ 
+      error: 'Internal Server Error', 
+      message: error instanceof Error ? error.message : 'Unknown database error' 
+    }, { status: 500 });
   }
 }
 
