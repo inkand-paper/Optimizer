@@ -379,11 +379,11 @@ export default function DashboardPage() {
                           </Button>
                         </form>
                       </div>
-                      <div className="divide-y max-h-[300px] overflow-y-auto">
+                      <div className="divide-y divide-zinc-100 dark:divide-zinc-800 max-h-[300px] overflow-y-auto">
                         {keys.map(k => (
-                          <div key={k.id} className="p-4 flex justify-between items-center group hover:bg-zinc-50">
-                            <div>
-                              <p className="text-sm font-bold">{k.name}</p>
+                          <div key={k.id} className="p-4 flex justify-between items-center group hover:bg-zinc-100 dark:hover:bg-zinc-900/50 transition-colors">
+                            <div className="min-w-0">
+                              <p className="text-sm font-bold truncate">{k.name}</p>
                               <p className="text-[10px] text-zinc-500">Issued {new Date(k.createdAt).toLocaleDateString()}</p>
                             </div>
                             <Button variant="ghost" size="icon" onClick={() => handleDeleteKey(k.id)} className="opacity-0 group-hover:opacity-100 text-zinc-400 hover:text-red-500">
@@ -394,14 +394,24 @@ export default function DashboardPage() {
                       </div>
                     </Card>
                   </div>
-
                   <Card className="p-0 overflow-hidden border-2 border-zinc-200 dark:border-zinc-800 shadow-xl bg-zinc-900 text-white p-6">
-                    <div className="flex items-center gap-2 mb-4 text-blue-400"><ShieldCheck className="h-5 w-5" /><h3 className="font-bold text-sm">Security Playground</h3></div>
+                    <div className="flex items-center gap-2 mb-4 text-blue-400">
+                      <ShieldCheck className="h-5 w-5" />
+                      <h3 className="font-bold text-sm">Security Playground</h3>
+                    </div>
                     <p className="text-[11px] text-zinc-400 mb-6">Test your machine handshakes before production deployment.</p>
                     <div className="space-y-4">
-                      <div className="space-y-1"><label className="text-[9px] font-bold uppercase opacity-60">API Key</label><PasswordInput className="bg-zinc-800 border-zinc-700" value={playgroundKey} onChange={(e) => setPlaygroundKey(e.target.value)} /></div>
-                      <div className="space-y-1"><label className="text-[9px] font-bold uppercase opacity-60">Cache Tag</label><Input className="bg-zinc-800 border-zinc-700" placeholder="e.g. products" value={playgroundTag} onChange={(e) => setPlaygroundTag(e.target.value)} /></div>
-                      <Button className="w-full bg-blue-600 h-10 text-xs font-bold" onClick={runPlayground} disabled={playgroundLoading || !playgroundKey}>{playgroundLoading ? "Verifying..." : "Run Security Check"}</Button>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-bold uppercase opacity-60">API Key</label>
+                        <PasswordInput className="bg-zinc-800 border-zinc-700" value={playgroundKey} onChange={(e) => setPlaygroundKey(e.target.value)} />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-bold uppercase opacity-60">Cache Tag</label>
+                        <Input className="bg-zinc-800 border-zinc-700" placeholder="e.g. products" value={playgroundTag} onChange={(e) => setPlaygroundTag(e.target.value)} />
+                      </div>
+                      <Button className="w-full bg-blue-600 h-10 text-xs font-bold" onClick={runPlayground} disabled={playgroundLoading || !playgroundKey}>
+                        {playgroundLoading ? "Verifying..." : "Run Security Check"}
+                      </Button>
                     </div>
                   </Card>
                 </div>
