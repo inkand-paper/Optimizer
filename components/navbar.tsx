@@ -50,17 +50,21 @@ export function Navbar() {
         <div className="flex items-center gap-2 sm:gap-4">
           <Link 
             href="/docs" 
-            className="hidden sm:flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mr-2"
+            className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-1.5"
+            title="Documentation"
           >
-            <BookOpen className="h-4 w-4" /> Docs
+            <BookOpen className="h-4 w-4" /> 
+            <span className="hidden xs:inline">Docs</span>
           </Link>
           {isLoggedIn ? (
             <>
               <Link 
                 href="/dashboard" 
-                className="hidden sm:flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-1.5"
+                title="Dashboard"
               >
-                <LayoutDashboard className="h-4 w-4" /> Dashboard
+                <LayoutDashboard className="h-4 w-4" /> 
+                <span className="hidden xs:inline">Dashboard</span>
               </Link>
               <button 
                 onClick={handleLogout}
