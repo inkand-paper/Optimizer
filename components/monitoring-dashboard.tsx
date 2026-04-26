@@ -33,6 +33,7 @@ export function MonitoringDashboard() {
   const [editingId, setEditingId] = React.useState<string | null>(null);
   const [editName, setEditName] = React.useState("");
   const [isProcessing, setIsProcessing] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
   const fetchMonitors = async () => {
     const token = localStorage.getItem("token");
@@ -82,14 +83,21 @@ export function MonitoringDashboard() {
         },
         body: JSON.stringify({ name: newName, url: newUrl }),
       });
+      
       if (res.ok) {
         setIsAdding(false);
         setNewName("");
         setNewUrl("");
+        setErrorMessage(null);
         fetchMonitors();
+      } else if (res.status === 403) {
+        const data = await res.json();
+        setErrorMessage(data.message || "You've reached the monitor limit for your plan.");
+      } else {
+        setErrorMessage("Failed to add monitor. Please try again.");
       }
     } catch (err) {
-      alert("Failed to add monitor");
+      setErrorMessage("A network error occurred.");
     } finally {
       setLoading(false);
     }
@@ -171,14 +179,14 @@ export function MonitoringDashboard() {
             <Input 
               placeholder="Service Name (e.g. Production API)" 
               value={newName}
-              onChange={(e) => setNewName(e.target.value)}
+              onChange={(e) => { setNewName(e.target.value); setErrorMessage(null); }}
               className="h-10 sm:h-9"
               required
             />
             <Input 
               placeholder="https://api.myapp.com/health" 
               value={newUrl}
-              onChange={(e) => setNewUrl(e.target.value)}
+              onChange={(e) => { setNewUrl(e.target.value); setErrorMessage(null); }}
               className="h-10 sm:h-9"
               required
             />
@@ -186,6 +194,30 @@ export function MonitoringDashboard() {
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Deploy Monitor"}
             </Button>
           </form>
+          
+          {errorMessage && (
+            <div className="mt-4 p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-900/30 rounded-2xl animate-in zoom-in-95">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="h-4 w-4 text-rose-500 mt-0.5 shrink-0" />
+                <div className="flex-1">
+                  <p className="text-xs font-bold text-rose-700 dark:text-rose-400 mb-1">{errorMessage}</p>
+                  <p className="text-[10px] text-rose-600/70 dark:text-rose-500/70 leading-relaxed mb-3">
+                    Your current plan has reached its capacity. Upgrade to unlock more slots and higher frequency monitoring.
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="p-2 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20 cursor-pointer hover:bg-blue-700 transition-colors">
+                      <p className="text-[9px] font-black uppercase tracking-widest opacity-80 mb-0.5">Recommended</p>
+                      <p className="text-xs font-bold">Upgrade to PRO</p>
+                    </div>
+                    <div className="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 cursor-pointer hover:bg-zinc-50 transition-colors">
+                      <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-0.5">Enterprise</p>
+                      <p className="text-xs font-bold">View Business</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </Card>
       )}
 
