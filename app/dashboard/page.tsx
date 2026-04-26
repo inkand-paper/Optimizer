@@ -338,11 +338,12 @@ export default function DashboardPage() {
                      <p className="text-xs font-bold leading-none">{user?.name}</p>
                      <span className={cn(
                        "text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-widest",
+                       user?.role === 'ADMIN' ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-md" :
                        user?.plan === 'FREE' ? "bg-zinc-100 text-zinc-500" : 
                        user?.plan === 'PRO' ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" :
                        "bg-purple-600 text-white shadow-lg shadow-purple-600/20"
                      )}>
-                       {user?.plan || 'FREE'}
+                       {user?.role === 'ADMIN' ? 'ADMIN' : (user?.plan || 'FREE')}
                      </span>
                    </div>
                    <p className="text-[10px] text-zinc-500">{user?.email}</p>
