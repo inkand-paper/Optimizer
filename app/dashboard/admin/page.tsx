@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Navbar } from "@/components/navbar";
-import { Users, Shield, Zap, Search, ArrowLeft, MoreHorizontal, UserCheck, ShieldAlert } from "lucide-react";
+import { Users, Shield, Zap, Search, ArrowLeft, Trash2, UserCheck, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -57,6 +57,29 @@ export default function AdminPortal() {
       if (res.ok) fetchUsers();
     } catch (err) {
       console.error("Update failed");
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const deleteUser = async (userId: string) => {
+    if (!confirm("Are you sure you want to permanently delete this user? This cannot be undone.")) return;
+    
+    setUpdatingId(userId);
+    try {
+      const res = await fetch(`/api/admin/users?userId=${userId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+      });
+      
+      const data = await res.json();
+      if (res.ok) {
+        fetchUsers();
+      } else {
+        alert(data.error || "Failed to delete user");
+      }
+    } catch (err) {
+      console.error("Delete failed");
     } finally {
       setUpdatingId(null);
     }
@@ -163,8 +186,13 @@ export default function AdminPortal() {
                       {new Date(user.createdAt).toLocaleDateString()}
                     </td>
                     <td className="p-4 text-right">
-                       <button className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors opacity-0 group-hover:opacity-100">
-                          <MoreHorizontal className="h-4 w-4 text-zinc-400" />
+                       <button 
+                         onClick={() => deleteUser(user.id)}
+                         disabled={updatingId === user.id}
+                         className="p-2 text-zinc-300 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-colors opacity-0 group-hover:opacity-100 disabled:opacity-50"
+                         title="Delete User"
+                       >
+                          <Trash2 className="h-4 w-4" />
                        </button>
                     </td>
                   </tr>

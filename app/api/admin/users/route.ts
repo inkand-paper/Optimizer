@@ -72,3 +72,31 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to update user' }, { status: 500 });
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  const adminId = await ensureAdmin(req);
+  if (!adminId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  try {
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get('userId');
+
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    }
+
+    // Prevent self-deletion
+    if (userId === adminId) {
+      return NextResponse.json({ error: 'Cannot delete your own account' }, { status: 403 });
+    }
+
+    await prisma.user.delete({
+      where: { id: userId }
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Delete user error:", error);
+    return NextResponse.json({ error: 'Failed to delete user' }, { status: 500 });
+  }
+}
