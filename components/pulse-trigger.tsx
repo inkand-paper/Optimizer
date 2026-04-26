@@ -44,7 +44,7 @@ export function PulseTrigger() {
   };
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-zinc-900 to-black border-blue-500/20 relative overflow-hidden group">
+    <Card className="p-6 bg-gradient-to-br from-blue-50 to-white dark:from-zinc-900 dark:to-black border-blue-500/20 relative overflow-hidden group">
       <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
         <Zap className="h-24 w-24 text-blue-500" />
       </div>
@@ -55,13 +55,13 @@ export function PulseTrigger() {
             <Zap className="h-4 w-4 text-blue-400" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">Pulse Command Center</h3>
-            <p className="text-xs text-zinc-400">Manual Cache Optimization Trigger</p>
+            <h3 className="text-lg font-bold text-zinc-900 dark:text-white">Pulse Command Center</h3>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">Manual Cache Optimization Trigger</p>
           </div>
         </div>
 
         <form onSubmit={handlePulse} className="space-y-4">
-          <div className="flex gap-2 p-1 bg-zinc-800/50 rounded-lg w-fit">
+          <div className="flex gap-2 p-1 bg-zinc-100 dark:bg-zinc-800/50 rounded-lg w-fit">
             <button
               type="button"
               onClick={() => setType("tag")}
@@ -84,7 +84,7 @@ export function PulseTrigger() {
                 placeholder={type === 'tag' ? "e.g. products-list" : "e.g. /blog/post-1"}
                 value={target}
                 onChange={(e) => setTarget(e.target.value)}
-                className="bg-zinc-900/50 border-zinc-700 text-white pl-9 h-11 sm:h-9"
+                className="bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white pl-9 h-11 sm:h-9"
                 required
               />
               <ShieldCheck className="absolute left-3 top-3 sm:top-2.5 h-4 w-4 text-zinc-500" />

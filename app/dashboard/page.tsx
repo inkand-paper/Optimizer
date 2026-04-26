@@ -440,7 +440,7 @@ export default function DashboardPage() {
                       </div>
                     </Card>
                   </div>
-                  <Card className="p-0 overflow-hidden border-2 border-zinc-200 dark:border-zinc-800 shadow-xl bg-zinc-900 text-white p-6">
+                  <Card className="p-0 overflow-hidden border-2 border-zinc-200 dark:border-zinc-800 shadow-xl bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white p-6">
                     <div className="flex items-center gap-2 mb-4 text-blue-400">
                       <ShieldCheck className="h-5 w-5" />
                       <h3 className="font-bold text-sm">Security Playground</h3>
