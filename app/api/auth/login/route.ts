@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
     const token = signJwt({ userId: user.id, email: user.email, role: user.role });
     
     // 2. Secure HttpOnly Cookie (Enterprise standard)
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     cookieStore.set('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
