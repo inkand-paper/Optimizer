@@ -147,7 +147,7 @@ export function PricingModal({ isOpen, onClose, currentPlan = "FREE" }: PricingM
                       ? "bg-white text-blue-600 hover:bg-zinc-50 shadow-xl" 
                       : "bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 hover:opacity-90"
                   )}
-                  onClick={() => window.open(`https://wa.me/8801738221443?text=I'd like to upgrade to the ${plan.name} plan.`, '_blank')}
+                  onClick={() => window.open(`https://wa.me/8801345808742?text=I'd like to upgrade to the ${plan.name} plan.`, '_blank')}
                 >
                   {currentPlan === plan.id ? "Current Plan" : "Upgrade Now"}
                 </Button>
@@ -171,7 +171,7 @@ export function PricingModal({ isOpen, onClose, currentPlan = "FREE" }: PricingM
               <Button 
                 variant="outline" 
                 className="rounded-xl flex items-center gap-2"
-                onClick={() => window.open('https://wa.me/8801738221443', '_blank')}
+                onClick={() => window.open('https://wa.me/8801345808742', '_blank')}
               >
                  <MessageCircle className="h-4 w-4 text-green-500" />
                  Chat with Sales
