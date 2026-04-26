@@ -27,9 +27,7 @@ export default function AdminPortal() {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch("/api/admin/users", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-      });
+      const res = await fetch("/api/admin/users", { credentials: 'include' });
       const data = await res.json();
       if (data.success) setUsers(data.users);
     } catch (err) {
@@ -48,10 +46,8 @@ export default function AdminPortal() {
     try {
       const res = await fetch("/api/admin/users", {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        },
+        headers: { "Content-Type": "application/json" },
+        credentials: 'include',
         body: JSON.stringify({ userId, ...data })
       });
       if (res.ok) {
@@ -74,7 +70,7 @@ export default function AdminPortal() {
     try {
       const res = await fetch(`/api/admin/users?userId=${userId}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+        credentials: 'include'
       });
       
       const data = await res.json();

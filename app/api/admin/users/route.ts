@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyJwt } from '@/lib/auth';
+import { getTokenFromRequest } from '@/lib/auth';
 
 /**
  * [ADMIN] User Management API
@@ -8,10 +8,7 @@ import { verifyJwt } from '@/lib/auth';
  */
 
 async function ensureAdmin(req: NextRequest) {
-  const authHeader = req.headers.get('authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
-
-  const decoded = verifyJwt(authHeader.split(' ')[1]);
+  const decoded = getTokenFromRequest(req);
   if (!decoded) return null;
 
   const user = await prisma.user.findUnique({

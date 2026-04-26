@@ -68,30 +68,27 @@ export default function DashboardPage() {
   const [health, setHealth] = React.useState<any>(null);
 
   React.useEffect(() => {
-    const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
-
-    if (!token) {
-      router.push("/login");
-      return;
-    }
-
     if (storedUser) setUser(JSON.parse(storedUser));
     
-    // [SYNC] Silently refresh user data to catch any Admin-level tier upgrades
-    fetch("/api/auth/me", { headers: { Authorization: `Bearer ${token}` }})
-      .then(res => res.json())
+    // [SYNC] Fetch fresh user data from server (reads the HttpOnly cookie securely)
+    fetch("/api/auth/me", { credentials: 'include' })
+      .then(res => {
+        if (!res.ok) { router.push("/login"); return null; }
+        return res.json();
+      })
       .then(data => {
-        if (data.success && data.user) {
+        if (data?.success && data.user) {
           setUser(data.user);
           localStorage.setItem("user", JSON.stringify(data.user));
         }
       })
-      .catch(console.error);
+      .catch(() => router.push("/login"));
+
     const storedPlaygroundKey = localStorage.getItem("active_api_key");
     if (storedPlaygroundKey) setPlaygroundKey(storedPlaygroundKey);
 
-    fetchKeys(token);
+    fetchKeys();
     fetchHealth();
   }, []);
 
@@ -105,18 +102,15 @@ export default function DashboardPage() {
     }
   }
 
-  async function fetchKeys(token: string) {
+  async function fetchKeys() {
     try {
-      const res = await fetch("/api/keys", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await fetch("/api/keys", { credentials: 'include' });
       const data = await res.json();
       if (res.ok) {
         setKeys(data.keys);
         
-        // [UX] Auto-select the first key for the playground/analyzer if not set
+        // Auto-select the first key for the playground/analyzer if not set
         if (!playgroundKey && data.keys?.length > 0) {
-          // Note: We can't get the raw key from DB, so we rely on session persistence
           const sessionKey = localStorage.getItem("active_api_key");
           if (sessionKey) setPlaygroundKey(sessionKey);
         }
@@ -131,26 +125,22 @@ export default function DashboardPage() {
   async function handleCreateKey(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setCreatingKey(true);
-    const token = localStorage.getItem("token");
     const formData = new FormData(e.currentTarget);
     const name = formData.get("keyName");
 
     try {
       const res = await fetch("/api/keys", {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
+        headers: { "Content-Type": "application/json" },
+        credentials: 'include',
         body: JSON.stringify({ name }),
       });
       const data = await res.json();
       if (res.ok) {
         setNewKey(data.apiKey);
         setPlaygroundKey(data.apiKey); 
-        localStorage.setItem("active_api_key", data.apiKey); // Persist for refresh
+        localStorage.setItem("active_api_key", data.apiKey); // persist the raw API key (not a session token)
         
-        // [UX] Immediately show success in the Playground
         setPlaygroundResult({ 
           success: true, 
           message: "Handshake verified. Your new machine key is active and authorized.", 
@@ -158,7 +148,7 @@ export default function DashboardPage() {
           timestamp: new Date().toISOString()
         });
 
-        fetchKeys(token!);
+        fetchKeys();
       }
     } catch (err) {
       alert("Failed to create key");
@@ -170,11 +160,10 @@ export default function DashboardPage() {
   async function handleDeleteKey(id: string) {
     if (!confirm("Are you sure you want to revoke this key? Any app using it will lose access immediately.")) return;
     
-    const token = localStorage.getItem("token");
     try {
       const res = await fetch(`/api/keys/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` }
+        credentials: 'include'
       });
       if (res.ok) {
         setKeys(keys.filter(k => k.id !== id));
