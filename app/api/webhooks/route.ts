@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyJwt } from '@/lib/auth';
+import { getTokenFromRequest } from '@/lib/auth';
 import crypto from 'crypto';
 
 export async function GET(req: NextRequest) {
