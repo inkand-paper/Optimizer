@@ -1,68 +1,54 @@
+import { Redis } from '@upstash/redis';
+
 /**
- * [SaaS INFRA] - In-Memory Rate Limiter
- * Provides robust protection against brute-force attacks and API abuse.
- * Designed to be easily swappable with Upstash Redis in multi-server deployments.
+ * [SaaS INFRA] - Distributed Rate Limiter (Upstash Redis)
+ * Uses a global Redis database to enforce rate limits across ALL server instances/regions.
+ * This is the enterprise-grade upgrade from the in-memory version.
+ * 
+ * Database: Tokyo, Japan (AWS ap-northeast-1)
  */
 
-type RateLimitRecord = {
-  count: number;
-  resetAt: number;
-};
-
-// In-memory store (Note: cleared on server restart. Use Redis for true distributed scale)
-const store = new Map<string, RateLimitRecord>();
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
 
 interface RateLimitConfig {
   maxRequests: number;  // Maximum allowed requests within the window
   windowMs: number;     // Time window in milliseconds
 }
 
-export function checkRateLimit(
-  identifier: string, // IP Address or User ID
+export async function checkRateLimit(
+  identifier: string,
   config: RateLimitConfig
-): { success: boolean; remaining: number; resetAt: number } {
+): Promise<{ success: boolean; remaining: number; resetAt: number }> {
+  const key = `rate_limit:${identifier}`;
   const now = Date.now();
-  const record = store.get(identifier);
+  const windowEnd = now + config.windowMs;
 
-  // If no record exists or the window has expired, create a new window
-  if (!record || now > record.resetAt) {
-    store.set(identifier, {
-      count: 1,
-      resetAt: now + config.windowMs,
-    });
-    return {
-      success: true,
-      remaining: config.maxRequests - 1,
-      resetAt: now + config.windowMs,
-    };
+  // Atomically increment the counter for this key
+  const count = await redis.incr(key);
+
+  // On the first request in this window, set the expiry
+  if (count === 1) {
+    await redis.pexpire(key, config.windowMs);
   }
 
-  // If within the window, check the count
-  if (record.count >= config.maxRequests) {
+  // Get the remaining TTL to calculate the reset time
+  const ttlMs = await redis.pttl(key);
+  const resetAt = now + (ttlMs > 0 ? ttlMs : config.windowMs);
+
+  if (count > config.maxRequests) {
     return {
       success: false,
       remaining: 0,
-      resetAt: record.resetAt,
+      resetAt,
     };
   }
 
-  // Increment and allow
-  record.count += 1;
-  store.set(identifier, record);
-
   return {
     success: true,
-    remaining: config.maxRequests - record.count,
-    resetAt: record.resetAt,
+    remaining: config.maxRequests - count,
+    resetAt,
   };
 }
-
-// Memory cleanup utility to prevent Map from growing indefinitely
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, record] of store.entries()) {
-    if (now > record.resetAt) {
-      store.delete(key);
-    }
-  }
-}, 60000); // Cleanup stale records every minute
