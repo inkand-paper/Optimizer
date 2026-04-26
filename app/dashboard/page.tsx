@@ -449,11 +449,11 @@ export default function DashboardPage() {
                     <div className="space-y-4">
                       <div className="space-y-1">
                         <label className="text-[9px] font-bold uppercase opacity-60">API Key</label>
-                        <PasswordInput className="bg-zinc-800 border-zinc-700" value={playgroundKey} onChange={(e) => setPlaygroundKey(e.target.value)} />
+                        <PasswordInput className="bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700" value={playgroundKey} onChange={(e) => setPlaygroundKey(e.target.value)} />
                       </div>
                       <div className="space-y-1">
                         <label className="text-[9px] font-bold uppercase opacity-60">Cache Tag</label>
-                        <Input className="bg-zinc-800 border-zinc-700" placeholder="e.g. products" value={playgroundTag} onChange={(e) => setPlaygroundTag(e.target.value)} />
+                        <Input className="bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700" placeholder="e.g. products" value={playgroundTag} onChange={(e) => setPlaygroundTag(e.target.value)} />
                       </div>
                       <Button className="w-full bg-blue-600 h-10 text-xs font-bold" onClick={runPlayground} disabled={playgroundLoading || !playgroundKey}>
                         {playgroundLoading ? "Verifying..." : "Run Security Check"}
