@@ -386,7 +386,7 @@ export default function DashboardPage() {
                   <div className="space-y-8">
                     <div className="flex items-center justify-between">
                       <h2 className="text-xl font-bold">Access Tokens</h2>
-                      <Button variant="outline" size="sm" onClick={() => fetchKeys(localStorage.getItem("token")!)}>
+                      <Button variant="outline" size="sm" onClick={() => fetchKeys()}>
                         <RefreshCw className="h-3 w-3 mr-2" /> Sync
                       </Button>
                     </div>

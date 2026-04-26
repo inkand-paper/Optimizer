@@ -50,13 +50,8 @@ export function MonitoringDashboard() {
   }, []);
 
   const fetchMonitors = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
     try {
-      const res = await fetch("/api/monitors", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await fetch("/api/monitors", { credentials: 'include' });
       
       if (!res.ok) {
         const text = await res.text();
@@ -85,16 +80,13 @@ export function MonitoringDashboard() {
 
   const handleAddMonitor = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
     setLoading(true);
 
     try {
       const res = await fetch("/api/monitors", {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
+        headers: { "Content-Type": "application/json" },
+        credentials: 'include',
         body: JSON.stringify({ name: newName, url: newUrl }),
       });
       
@@ -120,12 +112,11 @@ export function MonitoringDashboard() {
   const handleDeleteMonitor = async (id: string) => {
     if (!confirm("Are you sure you want to delete this monitor? All historical data will be lost.")) return;
     
-    const token = localStorage.getItem("token");
     setIsProcessing(true);
     try {
       const res = await fetch(`/api/monitors/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` }
+        credentials: 'include'
       });
       if (res.ok) {
         setMonitors(monitors.filter(m => m.id !== id));
@@ -141,15 +132,12 @@ export function MonitoringDashboard() {
 
   const handleEditSubmit = async (id: string, e: React.FormEvent) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
     setIsProcessing(true);
     try {
       const res = await fetch(`/api/monitors/${id}`, {
         method: "PATCH",
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
+        headers: { "Content-Type": "application/json" },
+        credentials: 'include',
         body: JSON.stringify({ name: editName })
       });
       if (res.ok) {

@@ -26,13 +26,8 @@ export function ActivityLogs() {
   const [loading, setLoading] = React.useState(true);
 
   const fetchLogs = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
     try {
-      const res = await fetch("/api/logs", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await fetch("/api/logs", { credentials: 'include' });
       const data = await res.json();
       if (res.ok) setLogs(data.logs);
     } catch (err) {

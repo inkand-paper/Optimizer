@@ -37,13 +37,8 @@ export function WebhookManager() {
   ];
 
   const fetchWebhooks = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
     try {
-      const res = await fetch("/api/webhooks", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await fetch("/api/webhooks", { credentials: 'include' });
       const data = await res.json();
       if (res.ok) setWebhooks(data.webhooks);
     } catch (err) {
@@ -59,16 +54,13 @@ export function WebhookManager() {
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
     setLoading(true);
 
     try {
       const res = await fetch("/api/webhooks", {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
+        headers: { "Content-Type": "application/json" },
+        credentials: 'include',
         body: JSON.stringify({ url, events: selectedEvents }),
       });
       if (res.ok) {
@@ -85,11 +77,10 @@ export function WebhookManager() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this webhook?")) return;
-    const token = localStorage.getItem("token");
     try {
       const res = await fetch(`/api/webhooks/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` }
+        credentials: 'include'
       });
       if (res.ok) {
         setWebhooks(webhooks.filter(w => w.id !== id));
