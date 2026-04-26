@@ -316,7 +316,17 @@ export default function DashboardPage() {
               </div>
               <div className="flex items-center gap-3">
                 <div className="hidden sm:flex flex-col items-end mr-2">
-                   <p className="text-xs font-bold leading-none">{user?.name}</p>
+                   <div className="flex items-center gap-2">
+                     <p className="text-xs font-bold leading-none">{user?.name}</p>
+                     <span className={cn(
+                       "text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-widest",
+                       user?.plan === 'FREE' ? "bg-zinc-100 text-zinc-500" : 
+                       user?.plan === 'PRO' ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" :
+                       "bg-purple-600 text-white shadow-lg shadow-purple-600/20"
+                     )}>
+                       {user?.plan || 'FREE'}
+                     </span>
+                   </div>
                    <p className="text-[10px] text-zinc-500">{user?.email}</p>
                 </div>
                 <Button variant="ghost" size="icon" onClick={handleLogout} className="rounded-full hover:bg-red-50 hover:text-red-500">

@@ -17,12 +17,19 @@ enum Role {
   VIEWER
 }
 
+enum Plan {
+  FREE
+  PRO
+  BUSINESS
+}
+
 model User {
   id           String   @id @default(uuid())
   email        String   @unique
   passwordHash String
   name         String?
   role         Role     @default(DEVELOPER)
+  plan         Plan     @default(FREE)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifyJwt } from '@/lib/auth';
 import { performCheck } from '@/lib/monitoring';
+import { PLAN_LIMITS, PlanType } from '@/lib/plans';
 
 export async function GET(req: NextRequest) {
   try {
@@ -76,6 +77,29 @@ export async function POST(req: NextRequest) {
     
     if (!name || !url) {
       return NextResponse.json({ error: 'Bad Request', message: 'Name and URL are required' }, { status: 400 });
+    }
+
+    // [MONETIZATION] Enforce Plan Limits
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: { 
+        plan: true,
+        _count: {
+          select: { monitors: true }
+        }
+      }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    const planLimit = PLAN_LIMITS[user.plan as PlanType].monitors;
+    if (user._count.monitors >= planLimit) {
+      return NextResponse.json({ 
+        error: 'Limit Reached', 
+        message: `Your ${user.plan} plan is limited to ${planLimit} monitors. Please upgrade to add more targets.` 
+      }, { status: 403 });
     }
     
     const monitor = await prisma.monitor.create({
