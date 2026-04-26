@@ -77,7 +77,7 @@ export function Navbar() {
               {isAdmin && (
                 <Link 
                   href="/dashboard/admin" 
-                  className="flex items-center gap-1.5 text-sm font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-colors px-3 py-1.5 rounded-xl border border-blue-200 dark:border-blue-900/30"
+                  className="flex items-center gap-1.5 text-sm font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors px-2 py-1.5"
                 >
                   <ShieldAlert className="h-4 w-4" /> Admin
                 </Link>
@@ -142,7 +142,7 @@ export function Navbar() {
                   Dashboard
                 </LinkItem>
                 {isAdmin && (
-                  <LinkItem href="/dashboard/admin" icon={ShieldAlert} className="p-3 text-base font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/10 rounded-xl mt-2 border border-blue-100 dark:border-blue-900/30">
+                  <LinkItem href="/dashboard/admin" icon={ShieldAlert} className="p-3 text-base font-bold text-zinc-600 dark:text-zinc-300 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors mt-2">
                     Admin Portal
                   </LinkItem>
                 )}
