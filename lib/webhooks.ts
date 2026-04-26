@@ -1,5 +1,6 @@
 import { prisma } from './prisma';
 import crypto from 'crypto';
+import { validateSafeUrl } from './ssrf';
 
 /**
  * [SaaS INFRA] - Webhook Dispatcher
@@ -52,7 +53,9 @@ export async function dispatchWebhook(userId: string, event: string, payload: an
         headers['X-NJO-Signature'] = signature;
       }
 
-      await fetch(webhook.url, {
+      const safeUrl = await validateSafeUrl(webhook.url);
+
+      await fetch(safeUrl, {
         method: 'POST',
         headers,
         body: bodyText

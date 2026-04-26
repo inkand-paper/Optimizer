@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { NextRequest } from 'next/server';
 
 const SALT_ROUNDS = 10;
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_do_not_use_in_prod';
@@ -29,4 +30,27 @@ export function verifyJwt(token: string): JwtPayload | null {
   } catch (error) {
     return null;
   }
+}
+
+/**
+ * Extracts and verifies a JWT from either:
+ * 1. A secure HttpOnly cookie named 'token' (preferred, enterprise-grade)
+ * 2. An Authorization: Bearer <token> header (legacy, for API clients)
+ * 
+ * This dual-support approach ensures zero downtime during migration.
+ */
+export function getTokenFromRequest(req: NextRequest): JwtPayload | null {
+  // Priority 1: HttpOnly Cookie (secure browser sessions)
+  const cookieToken = req.cookies.get('token')?.value;
+  if (cookieToken) {
+    return verifyJwt(cookieToken);
+  }
+
+  // Priority 2: Bearer Token (API clients, mobile apps)
+  const authHeader = req.headers.get('authorization');
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return verifyJwt(authHeader.split(' ')[1]);
+  }
+
+  return null;
 }

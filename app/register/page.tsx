@@ -37,7 +37,7 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (res.ok) {
-        localStorage.setItem("token", data.token);
+        // Token is set as a secure HttpOnly cookie by the server.
         localStorage.setItem("user", JSON.stringify(data.user));
         router.push("/dashboard");
       } else {

@@ -1,19 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyJwt } from '@/lib/auth';
+import { getTokenFromRequest } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   try {
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'Unauthorized', message: 'Missing token' }, { status: 401 });
-    }
-    
-    const token = authHeader.split(' ')[1];
-    const decoded = verifyJwt(token);
+    const decoded = getTokenFromRequest(req);
     
     if (!decoded) {
-      return NextResponse.json({ error: 'Unauthorized', message: 'Invalid or expired token' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized', message: 'Missing or invalid token' }, { status: 401 });
     }
     
     const user = await prisma.user.findUnique({

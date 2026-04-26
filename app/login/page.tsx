@@ -36,9 +36,8 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (res.ok) {
-        // [ENTRY-LEVEL] Save token to localStorage 
-        // Think of this like putting your hotel wristband on so you don't lose it.
-        localStorage.setItem("token", data.token);
+        // Token is now set as a secure HttpOnly cookie by the server.
+        // We only store non-sensitive display data locally.
         localStorage.setItem("user", JSON.stringify(data.user));
         router.push("/dashboard");
       } else {

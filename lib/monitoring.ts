@@ -1,6 +1,7 @@
 import { prisma } from './prisma';
 import { dispatchWebhook } from './webhooks';
 import { sendUptimeAlert } from './mail';
+import { validateSafeUrl } from './ssrf';
 
 /**
  * [SaaS INFRA] - Health Checker
@@ -10,7 +11,9 @@ export async function performCheck(monitorId: string, url: string) {
   const startTime = Date.now();
   
   try {
-    const response = await fetch(url, {
+    const safeUrl = await validateSafeUrl(url);
+
+    const response = await fetch(safeUrl, {
       method: 'GET',
       headers: { 'User-Agent': 'NextOptimizerMonitor/1.0' },
       cache: 'no-store'

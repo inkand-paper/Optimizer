@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { hashPassword, signJwt } from '@/lib/auth';
 import { registerSchema } from '@/lib/validations';
 import { z } from 'zod';
+import { cookies } from 'next/headers';
 
 export async function POST(req: NextRequest) {
   try {
@@ -46,12 +47,20 @@ export async function POST(req: NextRequest) {
       }
     });
     
-    // Generate JWT
+    // Generate JWT & set secure HttpOnly cookie
     const token = signJwt({ userId: newUser.id, email: newUser.email, role: newUser.role });
+    
+    const cookieStore = cookies();
+    cookieStore.set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+      path: '/'
+    });
     
     return NextResponse.json({
       success: true,
-      token,
       user: {
         id: newUser.id,
         email: newUser.email,

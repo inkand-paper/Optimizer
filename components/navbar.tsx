@@ -17,27 +17,31 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   React.useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem("token");
-      setIsLoggedIn(!!token);
-      const userStr = localStorage.getItem("user");
-      if (userStr) {
-        try {
-          const user = JSON.parse(userStr);
-          setIsAdmin(user.role === "ADMIN");
-        } catch (e) {}
-      } else {
+    const checkAuth = async () => {
+      try {
+        // Securely check auth state from the server (reads the HttpOnly cookie)
+        const res = await fetch('/api/auth/me');
+        if (res.ok) {
+          const data = await res.json();
+          setIsLoggedIn(true);
+          setIsAdmin(data.user?.role === 'ADMIN');
+        } else {
+          setIsLoggedIn(false);
+          setIsAdmin(false);
+        }
+      } catch {
+        setIsLoggedIn(false);
         setIsAdmin(false);
       }
     };
     
     checkAuth();
-    window.addEventListener("storage", checkAuth);
-    return () => window.removeEventListener("storage", checkAuth);
   }, []);
 
-  function handleLogout() {
-    localStorage.removeItem("token");
+  async function handleLogout() {
+    // Destroy the HttpOnly cookie server-side
+    await fetch('/api/auth/logout', { method: 'POST' });
+    // Clear any cached local display data
     localStorage.removeItem("user");
     setIsLoggedIn(false);
     setIsAdmin(false);
