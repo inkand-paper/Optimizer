@@ -26,16 +26,23 @@ export async function POST(req: NextRequest) {
     // Hash password & create user
     const hashed = await hashPassword(parsedData.password);
     
-    // Count existing users and set role to ADMIN if it's the first user
+    // [GENESIS RULE] - Handle First User & Admin Promotion
+    const adminEmail = process.env.ADMIN_EMAIL;
     const userCount = await prisma.user.count();
-    const role = userCount === 0 ? 'ADMIN' : 'DEVELOPER';
+    
+    const isFirstUser = userCount === 0;
+    const isFounderEmail = adminEmail && parsedData.email.toLowerCase() === adminEmail.toLowerCase();
+
+    const role = (isFirstUser || isFounderEmail) ? 'ADMIN' : 'DEVELOPER';
+    const plan = (isFirstUser || isFounderEmail) ? 'BUSINESS' : 'FREE';
     
     const newUser = await prisma.user.create({
       data: {
         email: parsedData.email,
         passwordHash: hashed,
         name: parsedData.name,
-        role: role
+        role: role as any,
+        plan: plan as any
       }
     });
     
