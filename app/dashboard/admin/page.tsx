@@ -54,9 +54,14 @@ export default function AdminPortal() {
         },
         body: JSON.stringify({ userId, ...data })
       });
-      if (res.ok) fetchUsers();
+      if (res.ok) {
+         fetchUsers();
+      } else {
+         const errorData = await res.json();
+         alert(errorData.error || "Failed to update user");
+      }
     } catch (err) {
-      console.error("Update failed");
+      alert("Network error: Update failed");
     } finally {
       setUpdatingId(null);
     }
