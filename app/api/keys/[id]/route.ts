@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyJwt } from '@/lib/auth';
+import { getTokenFromRequest } from '@/lib/auth';
 import { logActivity } from '@/lib/logger';
 
 export async function DELETE(
@@ -9,12 +9,7 @@ export async function DELETE(
 ) {
   let currentUserId: string | undefined = undefined;
   try {
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    
-    const decoded = verifyJwt(authHeader.split(' ')[1]);
+    const decoded = getTokenFromRequest(req);
     if (!decoded) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

@@ -1,18 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyJwt } from '@/lib/auth';
+import { getTokenFromRequest } from '@/lib/auth';
 import { performCheck } from '@/lib/monitoring';
 import { PLAN_LIMITS, PlanType } from '@/lib/plans';
 
 export async function GET(req: NextRequest) {
   try {
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    
-    const token = authHeader.split(' ')[1];
-    const decoded = verifyJwt(token);
+    const decoded = getTokenFromRequest(req);
     
     if (!decoded) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -60,13 +54,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    
-    const token = authHeader.split(' ')[1];
-    const decoded = verifyJwt(token);
+    const decoded = getTokenFromRequest(req);
     
     if (!decoded) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
