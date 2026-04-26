@@ -78,6 +78,16 @@ export default function DashboardPage() {
 
     if (storedUser) setUser(JSON.parse(storedUser));
     
+    // [SYNC] Silently refresh user data to catch any Admin-level tier upgrades
+    fetch("/api/auth/me", { headers: { Authorization: `Bearer ${token}` }})
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.user) {
+          setUser(data.user);
+          localStorage.setItem("user", JSON.stringify(data.user));
+        }
+      })
+      .catch(console.error);
     const storedPlaygroundKey = localStorage.getItem("active_api_key");
     if (storedPlaygroundKey) setPlaygroundKey(storedPlaygroundKey);
 

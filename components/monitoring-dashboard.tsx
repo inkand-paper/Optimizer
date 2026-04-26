@@ -9,9 +9,11 @@ import {
   Loader2,
   CheckCircle2,
   AlertTriangle,
-  X
+  X,
+  Crown
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PricingModal } from "./pricing-modal";
 
 interface Monitor {
   id: string;
@@ -34,6 +36,18 @@ export function MonitoringDashboard() {
   const [editName, setEditName] = React.useState("");
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const [showPricing, setShowPricing] = React.useState(false);
+  const [currentUserPlan, setCurrentUserPlan] = React.useState("FREE");
+
+  React.useEffect(() => {
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        if (u.plan) setCurrentUserPlan(u.plan);
+      } catch (e) {}
+    }
+  }, []);
 
   const fetchMonitors = async () => {
     const token = localStorage.getItem("token");
@@ -91,8 +105,8 @@ export function MonitoringDashboard() {
         setErrorMessage(null);
         fetchMonitors();
       } else if (res.status === 403) {
-        const data = await res.json();
-        setErrorMessage(data.message || "You've reached the monitor limit for your plan.");
+        setShowPricing(true);
+        setErrorMessage(null); // Clear inline error since we show the modal
       } else {
         setErrorMessage("Failed to add monitor. Please try again.");
       }
@@ -347,6 +361,12 @@ export function MonitoringDashboard() {
           </Button>
         </div>
       )}
+
+      <PricingModal 
+        isOpen={showPricing} 
+        onClose={() => setShowPricing(false)} 
+        currentPlan={currentUserPlan} 
+      />
     </div>
   );
 }
