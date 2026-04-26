@@ -83,6 +83,7 @@ export async function POST(req: NextRequest) {
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
       select: { 
+        role: true,
         plan: true,
         _count: {
           select: { monitors: true }
@@ -94,12 +95,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const planLimit = PLAN_LIMITS[user.plan as PlanType].monitors;
-    if (user._count.monitors >= planLimit) {
-      return NextResponse.json({ 
-        error: 'Limit Reached', 
-        message: `Your ${user.plan} plan is limited to ${planLimit} monitors. Please upgrade to add more targets.` 
-      }, { status: 403 });
+    // Admins have unlimited monitors
+    if (user.role !== 'ADMIN') {
+      const planLimit = PLAN_LIMITS[user.plan as PlanType].monitors;
+      if (user._count.monitors >= planLimit) {
+        return NextResponse.json({ 
+          error: 'Limit Reached', 
+          message: `Your ${user.plan} plan is limited to ${planLimit} monitors. Please upgrade to add more targets.` 
+        }, { status: 403 });
+      }
     }
     
     const monitor = await prisma.monitor.create({

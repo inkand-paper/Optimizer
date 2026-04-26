@@ -25,7 +25,9 @@ import {
   AlertTriangle,
   FileText,
   Activity,
-  Webhook
+  Webhook,
+  ShieldAlert,
+  BarChart4
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -271,8 +273,13 @@ export default function DashboardPage() {
           
           {/* SIDEBAR NAVIGATION (Desktop Only) */}
           <div className="hidden md:flex flex-col w-72 shrink-0 space-y-2 sticky top-[100px]">
-            <div className="px-4 mb-8">
+            <div className="px-4 mb-8 flex items-center justify-between">
               <h2 className="text-[11px] font-bold uppercase tracking-[0.3em] text-zinc-400 opacity-60">NexPulse Command</h2>
+              {user?.role === 'ADMIN' && (
+                <Link href="/dashboard/admin" title="Admin Portal">
+                  <ShieldAlert className="h-4 w-4 text-blue-600 hover:scale-110 transition-transform cursor-pointer" />
+                </Link>
+              )}
             </div>
             {tabs.map((tab) => (
               <button
