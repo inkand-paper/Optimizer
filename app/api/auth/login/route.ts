@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
   try {
     // 1. Rate Limiting Protection (Max 5 attempts per minute per IP)
     const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
-    const rateLimit = checkRateLimit(`login_${ip}`, { maxRequests: 5, windowMs: 60000 });
+    const rateLimit = await checkRateLimit(`login_${ip}`, { maxRequests: 5, windowMs: 60000 });
     
     if (!rateLimit.success) {
       return NextResponse.json(
