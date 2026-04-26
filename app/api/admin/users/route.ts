@@ -36,7 +36,8 @@ export async function GET(req: NextRequest) {
           select: { monitors: true, apiKeys: true }
         }
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      take: 100 // [PRODUCTION SCALE] Cap results to prevent OOM on large userbases
     });
 
     return NextResponse.json({ success: true, users });

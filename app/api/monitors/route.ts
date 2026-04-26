@@ -3,6 +3,12 @@ import { prisma } from '@/lib/prisma';
 import { getTokenFromRequest } from '@/lib/auth';
 import { performCheck } from '@/lib/monitoring';
 import { PLAN_LIMITS, PlanType } from '@/lib/plans';
+import { z } from 'zod';
+
+const createMonitorSchema = z.object({
+  name: z.string().min(1, "Name is required").max(100, "Name cannot exceed 100 characters"),
+  url: z.string().url("Must be a valid URL").max(2048, "URL cannot exceed 2048 characters")
+});
 
 export async function GET(req: NextRequest) {
   try {
@@ -61,11 +67,18 @@ export async function POST(req: NextRequest) {
     }
     
     const body = await req.json();
-    const { name, url } = body;
     
-    if (!name || !url) {
-      return NextResponse.json({ error: 'Bad Request', message: 'Name and URL are required' }, { status: 400 });
+    // [PRODUCTION SECURE] Strict payload validation
+    const parsedResult = createMonitorSchema.safeParse(body);
+    if (!parsedResult.success) {
+      return NextResponse.json({ 
+        error: 'Bad Request', 
+        message: parsedResult.error.errors[0].message 
+      }, { status: 400 });
     }
+
+    const { name, url } = parsedResult.data;
+
 
     // [MONETIZATION] Enforce Plan Limits
     const user = await prisma.user.findUnique({
