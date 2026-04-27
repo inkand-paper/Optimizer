@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
     if (!parsedResult.success) {
       return NextResponse.json({ 
         error: 'Bad Request', 
-        message: parsedResult.error.errors[0].message 
+        message: parsedResult.error.issues[0].message 
       }, { status: 400 });
     }
 
