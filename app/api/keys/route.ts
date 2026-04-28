@@ -6,6 +6,7 @@ import { z } from 'zod';
 import crypto from 'crypto';
 import { logActivity } from '@/lib/logger';
 import { hasPermission, ROLES } from '@/lib/rbac';
+import { PLAN_LIMITS, PlanType } from '@/lib/plans';
 
 // Helper to hash API keys quickly (sha256)
 export function hashApiKey(key: string): string {
@@ -49,6 +50,17 @@ export async function POST(req: NextRequest) {
     const dbUser = await prisma.user.findUnique({ where: { id: decoded.userId } });
     if (!dbUser || !hasPermission(dbUser.role, ROLES.DEVELOPER)) {
       return NextResponse.json({ error: 'Forbidden', message: `Your role is ${dbUser?.role || 'UNKNOWN'}. Only developers can generate API keys.` }, { status: 403 });
+    }
+
+    // [MONETIZATION] Enforce API Access Limit
+    if (dbUser.role !== 'ADMIN') {
+      const canGenerateKeys = PLAN_LIMITS[dbUser.plan as PlanType].allowApiKeys;
+      if (!canGenerateKeys) {
+        return NextResponse.json({ 
+          error: 'Forbidden', 
+          message: 'API Access is a Pro tier feature. Please upgrade your plan to generate machine keys.' 
+        }, { status: 403 });
+      }
     }
     
     currentUserId = decoded.userId;

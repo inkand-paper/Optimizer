@@ -6,6 +6,7 @@ import type { RevalidateRequest } from '@/lib/types';
 import { logActivity } from '@/lib/logger';
 import { dispatchWebhook } from '@/lib/webhooks';
 import { sendPulseAlert } from '@/lib/mail';
+import { PLAN_LIMITS, PlanType } from '@/lib/plans';
 
 async function processRevalidation(
   tag: string | undefined,
@@ -155,11 +156,23 @@ export async function POST(request: NextRequest) {
       }, { status: 401 });
     }
 
-    currentUserId = dbKey.userId;
     prisma.apiKey.update({
       where: { id: dbKey.id },
       data: { lastUsedAt: new Date() }
     }).catch(console.error);
+
+    // [MONETIZATION] Enforce Edge Cache Purge Limit
+    // Only Business plan and Admins can purge cache via API
+    if (dbKey.user.role !== 'ADMIN') {
+      const canRevalidate = PLAN_LIMITS[dbKey.user.plan as PlanType].allowRevalidate;
+      if (!canRevalidate) {
+        return NextResponse.json({
+          error: 'Forbidden',
+          message: 'Edge Cache Purge is a Business tier feature. Please upgrade your plan to enable remote revalidation.',
+          timestamp: new Date().toISOString()
+        }, { status: 403 });
+      }
+    }
     
     return await processRevalidation(tag, path, currentUserId, dbKey, startTime);
     

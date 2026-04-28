@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getTokenFromRequest } from '@/lib/auth';
+import { PLAN_LIMITS, PlanType } from '@/lib/plans';
 import crypto from 'crypto';
 
 export async function GET(req: NextRequest) {
@@ -33,6 +34,32 @@ export async function POST(req: NextRequest) {
     
     if (!url || !events || !Array.isArray(events)) {
       return NextResponse.json({ error: 'Bad Request', message: 'URL and events array are required' }, { status: 400 });
+    }
+
+    // [MONETIZATION] Enforce Plan Limits
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: { 
+        role: true,
+        plan: true,
+        _count: {
+          select: { webhooks: true }
+        }
+      }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    if (user.role !== 'ADMIN') {
+      const planLimit = PLAN_LIMITS[user.plan as PlanType].webhooks;
+      if (user._count.webhooks >= planLimit) {
+        return NextResponse.json({ 
+          error: 'Limit Reached', 
+          message: `Your ${user.plan} plan is limited to ${planLimit} webhooks. Please upgrade to add more endpoints.` 
+        }, { status: 403 });
+      }
     }
     
     // Generate a secret for signing
