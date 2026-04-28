@@ -30,13 +30,13 @@ export default function Home() {
               <span>Next.js 15+ Optimized</span>
             </div>
             <h1 className="text-4xl md:text-7xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-500 dark:from-white dark:to-zinc-500">
-              Universal Web <br />
-              Optimization Pulse
+              The Universal Engine <br />
+              for Web Performance
             </h1>
             <p className="max-w-2xl mx-auto text-lg md:text-xl text-zinc-600 dark:text-zinc-400 mb-10 leading-relaxed">
-              [THE ANALOGY] Think of NexPulse as a universal remote control for the internet. 
-              Scan any URL for SEO insights, monitor uptime 24/7, and instantly refresh 
-              global caches with a single click.
+              NexPulse is your mission control for the modern web. 
+              Monitor uptime across distributed networks, analyze performance in real-time, 
+              and synchronize global caches with enterprise-grade security.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/register">
@@ -46,7 +46,7 @@ export default function Home() {
               </Link>
               <Link href="/dashboard">
                 <Button variant="outline" size="lg" className="rounded-full px-8">
-                  Live Dashboard Demo
+                  Explore Features
                 </Button>
               </Link>
             </div>
@@ -63,8 +63,8 @@ export default function Home() {
         <section className="py-24 bg-zinc-50 dark:bg-zinc-900/30 border-y">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-4">Everything you need to scale</h2>
-              <p className="text-zinc-500 dark:text-zinc-400">Professional infrastructure for modern web developers</p>
+              <h2 className="text-3xl font-bold mb-4">Enterprise-Ready Infrastructure</h2>
+              <p className="text-zinc-500 dark:text-zinc-400">Scalable, secure, and built for modern engineering teams.</p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
@@ -74,8 +74,8 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-bold mb-3">Military-Grade Security</h3>
                 <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">
-                  We store your API keys as SHA-256 hashes. Even if our database is hacked, 
-                  your raw keys remain safe and invisible.
+                  Advanced SHA-256 hashing and secure HttpOnly session architecture. 
+                  Integrated SSRF protection keeps your internal network invisible to the world.
                 </p>
               </Card>
 
@@ -83,24 +83,25 @@ export default function Home() {
                 <div className="h-12 w-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mb-6">
                   <Smartphone className="h-6 w-6 text-purple-600" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">Android Ready</h3>
+                <h3 className="text-xl font-bold mb-3">Universal API & SDKs</h3>
                 <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">
-                  Built specifically for mobile developers. Integrate revalidation triggers 
-                  directly into your Kotlin/Swift code with 2 lines of code.
+                  Built for the entire stack. Integrate real-time pulse triggers into Kotlin, 
+                  Swift, Go, or Python with zero configuration overhead.
                 </p>
               </Card>
 
               <Card className="p-8 hover:shadow-lg transition-shadow border-none dark:bg-zinc-900/50">
                 <div className="h-12 w-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center mb-6">
-                  <Globe className="h-6 w-6 text-green-600" />
+                  <Database className="h-6 w-6 text-green-600" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">Edge Global Refresh</h3>
+                <h3 className="text-xl font-bold mb-3">Distributed Reliability</h3>
                 <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">
-                  Clear cache tags across the globe in under 200ms. Keep your SSR and 
-                  ISR pages fresh without expensive redeploys.
+                  Powered by global Redis state for stateful rate-limiting and 
+                  asynchronous monitoring tasks. Built to scale from 1 to 1M requests.
                 </p>
               </Card>
             </div>
+
           </div>
         </section>
 
