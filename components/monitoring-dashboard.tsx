@@ -99,8 +99,12 @@ export function MonitoringDashboard() {
         setErrorMessage(null);
         fetchMonitors();
       } else if (res.status === 403) {
-        setShowPricing(true);
-        setErrorMessage(null); // Clear inline error since we show the modal
+        if (currentUserRole === 'ADMIN') {
+          setErrorMessage("Admin Permission Error: Please check your database role.");
+        } else {
+          setShowPricing(true);
+          setErrorMessage(null); 
+        }
       } else {
         setErrorMessage("Failed to add monitor. Please try again.");
       }
