@@ -38,6 +38,7 @@ export function MonitoringDashboard() {
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const [showPricing, setShowPricing] = React.useState(false);
   const [currentUserPlan, setCurrentUserPlan] = React.useState("FREE");
+  const [currentUserRole, setCurrentUserRole] = React.useState("DEVELOPER");
 
   React.useEffect(() => {
     const userStr = localStorage.getItem("user");
@@ -45,6 +46,7 @@ export function MonitoringDashboard() {
       try {
         const u = JSON.parse(userStr);
         if (u.plan) setCurrentUserPlan(u.plan);
+        if (u.role) setCurrentUserRole(u.role);
       } catch (e) {}
     }
   }, []);
@@ -203,19 +205,25 @@ export function MonitoringDashboard() {
                 <AlertTriangle className="h-4 w-4 text-rose-500 mt-0.5 shrink-0" />
                 <div className="flex-1">
                   <p className="text-xs font-bold text-rose-700 dark:text-rose-400 mb-1">{errorMessage}</p>
-                  <p className="text-[10px] text-rose-600/70 dark:text-rose-500/70 leading-relaxed mb-3">
-                    Your current plan has reached its capacity. Upgrade to unlock more slots and higher frequency monitoring.
-                  </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="p-2 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20 cursor-pointer hover:bg-blue-700 transition-colors">
-                      <p className="text-[9px] font-black uppercase tracking-widest opacity-80 mb-0.5">Recommended</p>
-                      <p className="text-xs font-bold">Upgrade to PRO</p>
-                    </div>
-                    <div className="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 cursor-pointer hover:bg-zinc-50 transition-colors">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-0.5">Enterprise</p>
-                      <p className="text-xs font-bold">View Business</p>
-                    </div>
-                  </div>
+                  
+                  {/* [MONETIZATION] Only show upgrade prompts to non-admins */}
+                  {currentUserRole !== 'ADMIN' && (
+                    <>
+                      <p className="text-[10px] text-rose-600/70 dark:text-rose-500/70 leading-relaxed mb-3">
+                        Your current plan has reached its capacity. Upgrade to unlock more slots and higher frequency monitoring.
+                      </p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="p-2 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20 cursor-pointer hover:bg-blue-700 transition-colors">
+                          <p className="text-[9px] font-black uppercase tracking-widest opacity-80 mb-0.5">Recommended</p>
+                          <p className="text-xs font-bold">Upgrade to PRO</p>
+                        </div>
+                        <div className="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 cursor-pointer hover:bg-zinc-50 transition-colors">
+                          <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-0.5">Enterprise</p>
+                          <p className="text-xs font-bold">View Business</p>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
