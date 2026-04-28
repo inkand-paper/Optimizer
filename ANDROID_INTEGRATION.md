@@ -30,7 +30,7 @@ fun triggerNexPulse(tag: String, apiKey: String) {
     val body = jsonBody.toRequestBody("application/json".toMediaType())
     
     val request = Request.Builder()
-        .url("https://your-nex-pulse-deployment.vercel.app/api/revalidate")
+        .url("https://nextjs-optimizer-suite.vercel.app/api/revalidate")
         .addHeader("Authorization", "Bearer $apiKey")
         .post(body)
         .build()

@@ -4,7 +4,7 @@ This guide covers how to integrate your machines (Apps/Servers) with the NexPuls
 
 ## Base URL
 - **Local**: `http://localhost:3000`
-- **Production**: `https://github.com/inkand-paper/Optimizer` (Your deployed instance)
+- **Production**: `https://nextjs-optimizer-suite.vercel.app` (Your deployed instance)
 
 ## Authentication
 
