@@ -29,14 +29,16 @@ export function proxy(request: NextRequest) {
   // Strict check: Allow if:
   // 1. Origin matches the environment variable
   // 2. Origin matches the current host (Auto-detect)
-  // 3. It's localhost
+  // 3. It's a same-site request (Origin is null but host matches)
+  // 4. It's localhost
   const isExactMatch = normalizedOrigin === normalizedAllowed;
   const isSameHost = normalizedOrigin && host && normalizedOrigin.includes(host);
+  const isLocalSameSite = !normalizedOrigin && host && (host === normalizedAllowed?.replace(/^https?:\/\//, '') || host.includes('localhost'));
   const isLocalhost = normalizedOrigin?.includes('localhost');
   const isProduction = process.env.NODE_ENV === 'production';
 
   // [PRODUCTION LOCKDOWN]
-  if (isProduction && !isExactMatch && !isSameHost && !isLocalhost && !authHeader) {
+  if (isProduction && !isExactMatch && !isSameHost && !isLocalSameSite && !isLocalhost && !authHeader) {
     console.error(`[CORS SECURITY] Blocked unauthorized origin: ${origin}. Host: ${host}`);
     return new NextResponse(
       JSON.stringify({ 
