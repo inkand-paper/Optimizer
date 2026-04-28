@@ -9,14 +9,23 @@ import { getTokenFromRequest } from '@/lib/auth';
 
 async function ensureAdmin(req: NextRequest) {
   const decoded = getTokenFromRequest(req);
-  if (!decoded) return null;
+  if (!decoded) {
+    console.warn("[ADMIN SECURITY] No token found in request");
+    return null;
+  }
 
   const user = await prisma.user.findUnique({
     where: { id: decoded.userId },
-    select: { role: true }
+    select: { role: true, email: true }
   });
 
-  return user?.role === 'ADMIN' ? decoded.userId : null;
+  if (!user || user.role !== 'ADMIN') {
+    console.warn(`[ADMIN SECURITY] Access Denied for ${user?.email || 'Unknown'}. Role: ${user?.role || 'NONE'}`);
+    return null;
+  }
+
+  console.log(`[ADMIN SECURITY] Access Granted to ${user.email}`);
+  return decoded.userId;
 }
 
 export async function GET(req: NextRequest) {
