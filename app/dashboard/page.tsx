@@ -139,7 +139,7 @@ export default function DashboardPage() {
       if (res.ok) {
         setNewKey(data.apiKey);
         setPlaygroundKey(data.apiKey); 
-        localStorage.setItem("active_api_key", data.apiKey); // persist the raw API key (not a session token)
+        localStorage.setItem("active_api_key", data.apiKey);
         
         setPlaygroundResult({ 
           success: true, 
@@ -149,6 +149,10 @@ export default function DashboardPage() {
         });
 
         fetchKeys();
+      } else if (res.status === 403) {
+        setShowPricing(true);
+      } else {
+        alert(data.message || "Failed to create key");
       }
     } catch (err) {
       alert("Failed to create key");
@@ -454,7 +458,7 @@ export default function DashboardPage() {
 
               {activeTab === "webhooks" && (
                 <div className="max-w-3xl">
-                  <WebhookManager />
+                  <WebhookManager onLimitReached={() => setShowPricing(true)} />
                 </div>
               )}
 

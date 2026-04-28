@@ -21,7 +21,11 @@ interface WebhookItem {
   createdAt: string;
 }
 
-export function WebhookManager() {
+interface WebhookManagerProps {
+  onLimitReached?: () => void;
+}
+
+export function WebhookManager({ onLimitReached }: WebhookManagerProps) {
   const [webhooks, setWebhooks] = React.useState<WebhookItem[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [isAdding, setIsAdding] = React.useState(false);
@@ -67,6 +71,12 @@ export function WebhookManager() {
         setIsAdding(false);
         setUrl("");
         fetchWebhooks();
+      } else if (res.status === 403) {
+        if (onLimitReached) onLimitReached();
+        else alert("Limit reached. Please upgrade your plan.");
+      } else {
+        const data = await res.json();
+        alert(data.message || "Failed to add webhook");
       }
     } catch (err) {
       alert("Failed to add webhook");
