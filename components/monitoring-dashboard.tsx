@@ -216,14 +216,10 @@ export function MonitoringDashboard() {
                   
                   {/* [MONETIZATION] Only show upgrade prompts to non-admins */}
                   {currentUserRole !== 'ADMIN' ? (
-                    <p className="text-[10px] text-rose-600/70 dark:text-rose-500/70 leading-relaxed mb-3">
-                      Your current plan has reached its capacity. Upgrade to unlock more slots and higher frequency monitoring.
-                    </p>
-                  ) : (
-                    <p className="text-[10px] text-rose-600/70 dark:text-rose-500/70 leading-relaxed mb-3">
-                      Hint: Double-check the URL format. It must be a full valid URL (e.g. https://google.com).
-                    </p>
-                  )}
+                    <>
+                      <p className="text-[10px] text-rose-600/70 dark:text-rose-500/70 leading-relaxed mb-3">
+                        Your current plan has reached its capacity. Upgrade to unlock more slots and higher frequency monitoring.
+                      </p>
                       <div className="grid grid-cols-2 gap-2">
                         <div className="p-2 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20 cursor-pointer hover:bg-blue-700 transition-colors">
                           <p className="text-[9px] font-black uppercase tracking-widest opacity-80 mb-0.5">Recommended</p>
@@ -235,6 +231,10 @@ export function MonitoringDashboard() {
                         </div>
                       </div>
                     </>
+                  ) : (
+                    <p className="text-[10px] text-rose-600/70 dark:text-rose-500/70 leading-relaxed mb-3 italic">
+                      Admin Hint: Check the URL format. It must start with **https://**.
+                    </p>
                   )}
                 </div>
               </div>
