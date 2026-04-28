@@ -203,6 +203,10 @@ export function MonitoringDashboard() {
             </Button>
           </form>
           
+          <p className="mt-2 text-[10px] text-zinc-400 italic">
+            Note: Target URL must start with **https://** for secure monitoring.
+          </p>
+          
           {errorMessage && (
             <div className="mt-4 p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-900/30 rounded-2xl animate-in zoom-in-95">
               <div className="flex items-start gap-3">
@@ -211,11 +215,15 @@ export function MonitoringDashboard() {
                   <p className="text-xs font-bold text-rose-700 dark:text-rose-400 mb-1">{errorMessage}</p>
                   
                   {/* [MONETIZATION] Only show upgrade prompts to non-admins */}
-                  {currentUserRole !== 'ADMIN' && (
-                    <>
-                      <p className="text-[10px] text-rose-600/70 dark:text-rose-500/70 leading-relaxed mb-3">
-                        Your current plan has reached its capacity. Upgrade to unlock more slots and higher frequency monitoring.
-                      </p>
+                  {currentUserRole !== 'ADMIN' ? (
+                    <p className="text-[10px] text-rose-600/70 dark:text-rose-500/70 leading-relaxed mb-3">
+                      Your current plan has reached its capacity. Upgrade to unlock more slots and higher frequency monitoring.
+                    </p>
+                  ) : (
+                    <p className="text-[10px] text-rose-600/70 dark:text-rose-500/70 leading-relaxed mb-3">
+                      Hint: Double-check the URL format. It must be a full valid URL (e.g. https://google.com).
+                    </p>
+                  )}
                       <div className="grid grid-cols-2 gap-2">
                         <div className="p-2 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20 cursor-pointer hover:bg-blue-700 transition-colors">
                           <p className="text-[9px] font-black uppercase tracking-widest opacity-80 mb-0.5">Recommended</p>
