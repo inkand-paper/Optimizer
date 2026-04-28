@@ -19,7 +19,6 @@ export async function POST(req: NextRequest) {
 
     const hmac = crypto.createHmac('sha256', process.env.LEMONSQUEEZY_WEBHOOK_SECRET || '');
     const digest = hmac.update(rawBody).digest('hex');
-    const signature = req.headers.get('x-signature');
 
     if (digest !== signature) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
