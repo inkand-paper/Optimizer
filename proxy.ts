@@ -21,8 +21,16 @@ export function proxy(request: NextRequest) {
   }
 
   // 2. [SECURITY] CORS Protection
+  // Normalize origins (remove trailing slashes for comparison)
+  const normalizedOrigin = origin?.replace(/\/$/, '');
+  const normalizedAllowed = allowedOrigin?.replace(/\/$/, '');
+
   // Only allow browser requests from your own domain in production
-  if (origin && origin !== allowedOrigin && !authHeader && process.env.NODE_ENV === 'production') {
+  // We allow if: 1. Origin matches, 2. It's an SDK call (authHeader), 3. It's localhost
+  const isAllowedOrigin = !normalizedOrigin || normalizedOrigin === normalizedAllowed || normalizedOrigin.includes('localhost');
+
+  if (!isAllowedOrigin && !authHeader && process.env.NODE_ENV === 'production') {
+    console.error(`[CORS SHIELD] Blocked origin: ${origin}. Expected: ${allowedOrigin}`);
     return new NextResponse(
       JSON.stringify({ error: 'CORS Error', message: 'Forbidden origin' }),
       { 
