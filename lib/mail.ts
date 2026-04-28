@@ -1,8 +1,14 @@
-import { resend } from "./resend";
 import { PulseAlertEmail } from "@/components/emails/pulse-alert";
 import { UptimeAlertEmail } from "@/components/emails/uptime-alert";
 import { render } from "@react-email/components";
 import React from "react";
+import { sendEmail } from "./nodemailer";
+
+/**
+ * [HYBRID MAIL SYSTEM]
+ * Defaults to Nodemailer (Gmail) for free production delivery.
+ * Keeps React Email templates for premium design.
+ */
 
 export async function sendPulseAlert({
   email,
@@ -23,14 +29,11 @@ export async function sendPulseAlert({
       timestamp: new Date().toLocaleString()
     }));
 
-    const data = await resend.emails.send({
-      from: 'NexPulse Alerts <onboarding@resend.dev>',
-      to: [email],
+    return await sendEmail({
+      to: email,
       subject: `⚡ NexPulse: Optimization Signal for ${value}`,
       html: html,
     });
-
-    return { success: true, data };
   } catch (error) {
     console.error("❌ Failed to send pulse alert email:", error);
     return { success: false, error };
@@ -65,14 +68,11 @@ export async function sendUptimeAlert({
       timestamp: new Date().toLocaleString()
     }));
 
-    const data = await resend.emails.send({
-      from: 'NexPulse Monitoring <onboarding@resend.dev>',
-      to: [email],
+    return await sendEmail({
+      to: email,
       subject: `${status === 'UP' ? '✅' : '🚨'} NexPulse Alert: ${name} is ${status}`,
       html: html,
     });
-
-    return { success: true, data };
   } catch (error) {
     console.error("❌ Failed to send uptime alert email:", error);
     return { success: false, error };
