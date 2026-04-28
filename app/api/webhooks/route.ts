@@ -53,11 +53,12 @@ export async function POST(req: NextRequest) {
     }
 
     if (user.role !== 'ADMIN') {
-      const planLimit = PLAN_LIMITS[user.plan as PlanType].webhooks;
+      const userPlan = (user.plan || 'FREE') as PlanType;
+      const planLimit = PLAN_LIMITS[userPlan].webhooks;
       if (user._count.webhooks >= planLimit) {
         return NextResponse.json({ 
           error: 'Limit Reached', 
-          message: `Your ${user.plan} plan is limited to ${planLimit} webhooks. Please upgrade to add more endpoints.` 
+          message: `Your ${userPlan} plan is limited to ${planLimit} webhooks. Please upgrade to add more endpoints.` 
         }, { status: 403 });
       }
     }

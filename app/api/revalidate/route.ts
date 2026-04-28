@@ -156,6 +156,8 @@ export async function POST(request: NextRequest) {
       }, { status: 401 });
     }
 
+    currentUserId = dbKey.user.id;
+
     prisma.apiKey.update({
       where: { id: dbKey.id },
       data: { lastUsedAt: new Date() }
@@ -164,7 +166,8 @@ export async function POST(request: NextRequest) {
     // [MONETIZATION] Enforce Edge Cache Purge Limit
     // Only Business plan and Admins can purge cache via API
     if (dbKey.user.role !== 'ADMIN') {
-      const canRevalidate = PLAN_LIMITS[dbKey.user.plan as PlanType].allowRevalidate;
+      const userPlan = (dbKey.user.plan || 'FREE') as PlanType;
+      const canRevalidate = PLAN_LIMITS[userPlan].allowRevalidate;
       if (!canRevalidate) {
         return NextResponse.json({
           error: 'Forbidden',

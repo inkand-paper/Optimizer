@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // Required for Docker standalone deployment
   output: "standalone",
+  allowedDevOrigins: ["turbine-importer-anyway.ngrok-free.dev", "localhost:3000"],
   
   // Performance optimizations
   compress: true,

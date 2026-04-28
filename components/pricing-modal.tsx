@@ -13,7 +13,34 @@ interface PricingModalProps {
 }
 
 export function PricingModal({ isOpen, onClose, currentPlan = "FREE" }: PricingModalProps) {
+  const [loadingPlan, setLoadingPlan] = React.useState<string | null>(null);
+
   if (!isOpen) return null;
+
+  const handleUpgrade = async (planId: string) => {
+    if (planId === "FREE" || planId === currentPlan) return;
+    
+    setLoadingPlan(planId);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: planId }),
+      });
+      
+      const data = await res.json();
+      if (res.ok && data.url) {
+        window.location.href = data.url;
+      } else {
+        alert(data.message || "Failed to initiate checkout");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
 
   const plans = [
     {
@@ -147,9 +174,10 @@ export function PricingModal({ isOpen, onClose, currentPlan = "FREE" }: PricingM
                       ? "bg-white text-blue-600 hover:bg-zinc-50 shadow-xl" 
                       : "bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 hover:opacity-90"
                   )}
-                  onClick={() => window.open(`https://wa.me/8801345808742?text=I'd like to upgrade to the ${plan.name} plan.`, '_blank')}
+                  onClick={() => handleUpgrade(plan.id)}
+                  disabled={loadingPlan !== null || currentPlan === plan.id}
                 >
-                  {currentPlan === plan.id ? "Current Plan" : "Upgrade Now"}
+                  {loadingPlan === plan.id ? "Processing..." : currentPlan === plan.id ? "Current Plan" : "Upgrade Now"}
                 </Button>
               </div>
             </div>
@@ -164,14 +192,14 @@ export function PricingModal({ isOpen, onClose, currentPlan = "FREE" }: PricingM
               </div>
               <div>
                  <h4 className="font-bold text-sm dark:text-white">Local Payments Supported</h4>
-                 <p className="text-xs text-zinc-500">Pay via bKash, Rocket, or Local Bank Transfer</p>
+                 <p className="text-xs text-zinc-500">For bKash, Rocket, or Direct Bank Transfer</p>
               </div>
            </div>
            <div className="flex items-center gap-2">
               <Button 
                 variant="outline" 
                 className="rounded-xl flex items-center gap-2"
-                onClick={() => window.open('https://wa.me/8801345808742', '_blank')}
+                onClick={() => window.open('https://wa.me/8801345808742?text=I want to pay via bKash', '_blank')}
               >
                  <MessageCircle className="h-4 w-4 text-green-500" />
                  Chat with Sales

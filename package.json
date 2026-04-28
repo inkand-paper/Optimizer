@@ -21,11 +21,13 @@
     "node": ">=20.0.0 <23.0.0"
   },
   "dependencies": {
+    "@lemonsqueezy/lemonsqueezy.js": "^4.0.0",
     "@prisma/client": "^5.14.0",
     "@react-email/components": "^1.0.12",
     "@upstash/redis": "^1.37.0",
     "bcrypt": "^6.0.0",
     "clsx": "^2.1.1",
+    "crypto-js": "^4.2.0",
     "dotenv": "^17.4.2",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^1.8.0",

@@ -54,7 +54,8 @@ export async function POST(req: NextRequest) {
 
     // [MONETIZATION] Enforce API Access Limit
     if (dbUser.role !== 'ADMIN') {
-      const canGenerateKeys = PLAN_LIMITS[dbUser.plan as PlanType].allowApiKeys;
+      const userPlan = (dbUser.plan || 'FREE') as PlanType;
+      const canGenerateKeys = PLAN_LIMITS[userPlan].allowApiKeys;
       if (!canGenerateKeys) {
         return NextResponse.json({ 
           error: 'Forbidden', 

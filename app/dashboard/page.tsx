@@ -10,6 +10,7 @@ import { ActivityLogs } from "@/components/activity-logs";
 import { WebhookManager } from "@/components/webhook-manager";
 import { MonitoringDashboard } from "@/components/monitoring-dashboard";
 import { PulseTrigger } from "@/components/pulse-trigger";
+import { PricingModal } from "@/components/pricing-modal";
 import { 
   Key, 
   Trash2, 
@@ -58,6 +59,8 @@ export default function DashboardPage() {
   const [playgroundTag, setPlaygroundTag] = React.useState("");
   const [playgroundResult, setPlaygroundResult] = React.useState<any>(null);
   const [playgroundLoading, setPlaygroundLoading] = React.useState(false);
+  const [showPricing, setShowPricing] = React.useState(false);
+  const [currentUserPlan, setCurrentUserPlan] = React.useState("FREE");
 
   // Analysis States
   const [analyzeUrl, setAnalyzeUrl] = React.useState("");
@@ -90,6 +93,13 @@ export default function DashboardPage() {
 
     fetchKeys();
     fetchHealth();
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        if (u.plan) setCurrentUserPlan(u.plan);
+      } catch (e) {}
+    }
   }, []);
 
   async function fetchHealth() {
@@ -497,6 +507,12 @@ export default function DashboardPage() {
           </button>
         ))}
       </div>
+
+      <PricingModal 
+        isOpen={showPricing} 
+        onClose={() => setShowPricing(false)} 
+        currentPlan={currentUserPlan} 
+      />
     </div>
   );
 }
