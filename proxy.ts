@@ -25,14 +25,18 @@ export function proxy(request: NextRequest) {
   const normalizedOrigin = origin?.replace(/\/$/, '');
   const normalizedAllowed = allowedOrigin?.replace(/\/$/, '');
 
-  // Only allow browser requests from your own domain in production
-  // We allow if: 1. Origin matches, 2. It's an SDK call (authHeader), 3. It's localhost
-  const isAllowedOrigin = !normalizedOrigin || normalizedOrigin === normalizedAllowed || normalizedOrigin.includes('localhost');
+  // Strict check: Only allow matching origin or localhost
+  const isExactMatch = normalizedOrigin === normalizedAllowed;
+  const isLocalhost = normalizedOrigin?.includes('localhost');
+  const isProduction = process.env.NODE_ENV === 'production';
 
-  if (!isAllowedOrigin && !authHeader && process.env.NODE_ENV === 'production') {
-    console.error(`[CORS SHIELD] Blocked origin: ${origin}. Expected: ${allowedOrigin}`);
+  // [PRODUCTION LOCKDOWN]
+  // In production, we block if origin is missing OR mismatched, 
+  // UNLESS it's an SDK call with an Authorization header.
+  if (isProduction && !isExactMatch && !authHeader) {
+    console.error(`[CORS SECURITY] Blocked unauthorized origin: ${origin}`);
     return new NextResponse(
-      JSON.stringify({ error: 'CORS Error', message: 'Forbidden origin' }),
+      JSON.stringify({ error: 'CORS Security Error', message: 'Unauthorized origin. Access restricted to official NexPulse domains.' }),
       { 
         status: 403, 
         headers: { 'Content-Type': 'application/json' } 
