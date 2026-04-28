@@ -160,7 +160,11 @@ export default function DashboardPage() {
 
         fetchKeys();
       } else if (res.status === 403) {
-        setShowPricing(true);
+        if (user?.role === 'ADMIN') {
+          alert(data.message || "Admin access error");
+        } else {
+          setShowPricing(true);
+        }
       } else {
         alert(data.message || "Failed to create key");
       }
