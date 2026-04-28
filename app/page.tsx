@@ -27,7 +27,7 @@ export default function Home() {
           <div className="container mx-auto px-4 text-center relative z-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 font-medium text-xs mb-6 border border-blue-200 dark:border-blue-800 animate-fade-in">
               <Zap className="h-3 w-3 fill-current" />
-              <span>Next.js 15+ Optimized</span>
+              <span>Universal Engine v2.0</span>
             </div>
             <h1 className="text-4xl md:text-7xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-500 dark:from-white dark:to-zinc-500">
               The Universal Engine <br />
