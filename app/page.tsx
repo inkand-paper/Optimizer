@@ -9,7 +9,9 @@ import {
   Globe, 
   ArrowRight, 
   Database,
-  BarChart3
+  BarChart3,
+  Crown,
+  Check
 } from "lucide-react";
 
 /**
