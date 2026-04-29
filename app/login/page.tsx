@@ -6,13 +6,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Navbar } from "@/components/navbar";
 import { Card, Button, Input, PasswordInput } from "@/components/ui-elements";
 import { Activity, Loader2, CheckCircle2 } from "lucide-react";
+import { Suspense } from "react";
 
 /**
  * [ENTRY-LEVEL DEFINITION] - Login Page
  * Analogous to checking in at a hotel. You provide your ID (email/password), 
  * and if valid, you get a "key" (JWT) to access the rest of the building.
  */
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isVerified = searchParams.get("verified") === "true";
@@ -119,5 +120,17 @@ export default function LoginPage() {
         </Card>
       </main>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-950">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
