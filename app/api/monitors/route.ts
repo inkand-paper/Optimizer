@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
     // Admins have unlimited monitors
     if (user.role !== 'ADMIN') {
       const userPlan = (user.plan || 'FREE') as PlanType;
-      const planLimit = PLAN_LIMITS[userPlan].monitors;
+      const planLimit = PLAN_LIMITS[userPlan].assets;
       if (user._count.monitors >= planLimit) {
         return NextResponse.json({ 
           error: 'Limit Reached', 
