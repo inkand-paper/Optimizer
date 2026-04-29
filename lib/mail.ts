@@ -91,7 +91,7 @@ export async function sendVerificationEmail({
 }) {
   try {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    const verificationUrl = `${appUrl}/verify?token=${token}`;
+    const verificationUrl = `${appUrl}/api/auth/verify?token=${token}`;
 
     const html = await render(React.createElement(VerificationEmail, {
       userName,
