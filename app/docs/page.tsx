@@ -100,12 +100,12 @@ export default function DocsPage() {
               </p>
             </div>
             <div className="flex gap-4">
-              <Link href="mailto:tabir8431@gmail.com">
+              <Link href="mailto:nexpulse.team@gmail.com">
                 <button className="bg-white text-black px-8 py-4 rounded-2xl font-bold hover:bg-zinc-200 transition-colors">
                   Email Support
                 </button>
               </Link>
-              <Link href="https://discord.gg/your-invite">
+              <Link href="https://discord.gg/R35wamng">
                 <button className="bg-zinc-800 text-white px-8 py-4 rounded-2xl font-bold hover:bg-zinc-700 transition-colors">
                   Join Discord
                 </button>
