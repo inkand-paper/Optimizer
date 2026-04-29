@@ -11,23 +11,23 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'http://localhost:3000')),
-  title: "Next.js Optimizer Suite: universal Monitoring & Analytics Platform", 
-  description: "Secure, high-performance monitoring and cache revalidation for Next.js. Maximize your digital performance with universal digital asset tracking and SEO optimization.",
+  title: "NexPulse Universal: High-Performance Asset Monitoring & Purge Engine", 
+  description: "The universal command center for modern web assets. Monitor health, analyze performance, and revalidate cache across any framework with NexPulse Universal.",
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: "Next.js Optimizer Suite: Universal Monitoring & Analytics",
-    description: "High-performance monitoring and cache revalidation for modern web apps.",
+    title: "NexPulse Universal: Any Framework, One Dashboard",
+    description: "Universal performance monitoring and cache revalidation for the modern web.",
     url: '/',
-    siteName: 'Next.js Optimizer Suite',
+    siteName: 'NexPulse Universal',
     locale: 'en_US',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Next.js Optimizer Suite",
-    description: "High-performance monitoring and cache revalidation for Next.js apps.",
+    title: "NexPulse Universal",
+    description: "The universal performance command center for modern web apps.",
     creator: '@abirmajid',
   },
 };
@@ -37,10 +37,10 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "SoftwareApplication",
-      "name": "Next.js Optimizer Suite",
+      "name": "NexPulse Universal",
       "operatingSystem": "Web",
       "applicationCategory": "DeveloperApplication",
-      "description": "Secure, high-performance cache revalidation and health monitoring for Next.js applications.",
+      "description": "Universal high-performance cache revalidation and health monitoring for all modern web frameworks.",
       "url": "https://nextjs-optimizer-suite.vercel.app",
       "author": {
         "@type": "Organization",
@@ -50,7 +50,7 @@ const jsonLd = {
     },
     {
       "@type": "Organization",
-      "name": "Next.js Optimizer",
+      "name": "NexPulse",
       "url": "https://nextjs-optimizer-suite.vercel.app",
       "logo": "https://nextjs-optimizer-suite.vercel.app/logo.png",
       "contactPoint": {

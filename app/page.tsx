@@ -145,14 +145,14 @@ export default function Home() {
             © 2026 NexPulse. Universal Web Insights.
           </p>
           <div className="flex gap-8 text-sm text-zinc-500 flex-wrap justify-center">
-            <Link href="/docs" className="hover:text-blue-600 transition-colors">Next.js Documentation</Link>
+            <Link href="/docs" className="hover:text-blue-600 transition-colors">Platform Documentation</Link>
             <Link href="mailto:tabir8431@gmail.com" className="hover:text-blue-600 transition-colors">Technical Support</Link>
             <Link href="https://github.com/inkand-paper/Optimizer" className="hover:text-blue-600 transition-colors">GitHub Repository</Link>
           </div>
         </div>
         <div className="container mx-auto px-4 mt-8 pt-8 border-t border-zinc-200 dark:border-zinc-800 flex flex-col items-center gap-6">
           <p className="text-xs text-zinc-400 text-center max-w-2xl">
-            The Next.js Optimizer Suite is the premier performance monitoring and analytics platform designed specifically for modern web infrastructure. We specialize in cache revalidation, server-side monitoring, and delivering high-performance tools to scale your Next.js applications seamlessly across the globe. By leveraging advanced React server components and edge computing, our suite ensures your deployment maintains peak performance, maximum SEO visibility, and unwavering reliability.
+            NexPulse Universal is the premier asset monitoring and performance platform designed for the modern web ecosystem. We provide mission-critical uptime tracking, intelligent cache revalidation, and automated SEO authority tools that work across any framework. By centralizing your digital infrastructure, NexPulse ensures unwavering reliability and peak performance for engineering teams and agencies worldwide.
           </p>
           <div className="flex justify-center gap-6">
             <Link href="mailto:tabir8431@gmail.com" aria-label="Email" className="text-zinc-400 hover:text-blue-500 transition-colors">
