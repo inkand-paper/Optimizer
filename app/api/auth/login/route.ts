@@ -43,6 +43,17 @@ export async function POST(req: NextRequest) {
         { status: 401 }
       );
     }
+
+    // 3. Email Verification Check
+    if (!user.emailVerified) {
+      return NextResponse.json(
+        { 
+          error: 'Forbidden', 
+          message: 'Please verify your email address before logging in. Check your inbox for the activation link.' 
+        },
+        { status: 403 }
+      );
+    }
     
     // Generate JWT
     const token = signJwt({ userId: user.id, email: user.email, role: user.role });

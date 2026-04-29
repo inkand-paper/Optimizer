@@ -2,10 +2,10 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Navbar } from "@/components/navbar";
 import { Card, Button, Input, PasswordInput } from "@/components/ui-elements";
-import { Activity, Loader2 } from "lucide-react";
+import { Activity, Loader2, CheckCircle2 } from "lucide-react";
 
 /**
  * [ENTRY-LEVEL DEFINITION] - Login Page
@@ -14,6 +14,8 @@ import { Activity, Loader2 } from "lucide-react";
  */
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isVerified = searchParams.get("verified") === "true";
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
 
@@ -89,6 +91,13 @@ export default function LoginPage() {
                 required 
               />
             </div>
+
+            {isVerified && (
+              <div className="p-4 flex items-center gap-3 text-sm font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-900/20">
+                <CheckCircle2 className="h-5 w-5 shrink-0" />
+                Account successfully activated! You can now sign in.
+              </div>
+            )}
 
             {error && (
               <div className="p-3 text-xs font-medium text-red-600 bg-red-50 dark:bg-red-900/10 rounded-lg">

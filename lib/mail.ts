@@ -1,5 +1,6 @@
 import { PulseAlertEmail } from "@/components/emails/pulse-alert";
 import { UptimeAlertEmail } from "@/components/emails/uptime-alert";
+import { VerificationEmail } from "@/components/emails/verification";
 import { render } from "@react-email/components";
 import React from "react";
 import { sendEmail } from "./nodemailer";
@@ -75,6 +76,35 @@ export async function sendUptimeAlert({
     });
   } catch (error) {
     console.error("❌ Failed to send uptime alert email:", error);
+    return { success: false, error };
+  }
+}
+
+export async function sendVerificationEmail({
+  email,
+  userName,
+  token
+}: {
+  email: string;
+  userName: string;
+  token: string;
+}) {
+  try {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const verificationUrl = `${appUrl}/verify?token=${token}`;
+
+    const html = await render(React.createElement(VerificationEmail, {
+      userName,
+      verificationUrl
+    }));
+
+    return await sendEmail({
+      to: email,
+      subject: "Activate your NexPulse account",
+      html: html,
+    });
+  } catch (error) {
+    console.error("❌ Failed to send verification email:", error);
     return { success: false, error };
   }
 }
