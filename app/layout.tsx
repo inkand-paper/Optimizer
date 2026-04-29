@@ -5,12 +5,12 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Script from "next/script";
 
 // Force re-compile after emergency restore: 2026-04-29T17:42
-const geistSans = Geist({
+export const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
+export const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
