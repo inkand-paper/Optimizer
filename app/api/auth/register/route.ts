@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     
     // Generate verification token
     const verificationToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    const emailVerified = isFirstUser || isFounderEmail; // Auto-verify admins
+    const emailVerified = Boolean(isFirstUser || isFounderEmail); // Auto-verify admins (strict boolean)
 
     const newUser = await prisma.user.create({
       data: {
