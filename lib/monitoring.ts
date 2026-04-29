@@ -33,6 +33,12 @@ export async function performCheck(monitorId: string, url: string) {
       }
     });
 
+    // [SECURITY] If monitor was deleted during the check, stop immediately
+    if (!monitor) {
+      console.log(`[MONITOR] Skip recording check for deleted monitor: ${monitorId}`);
+      return { status, latency, message };
+    }
+
     // Record the check
     await prisma.check.create({
       data: {
@@ -53,7 +59,7 @@ export async function performCheck(monitorId: string, url: string) {
     });
 
     // Dispatch Webhook & Email on change
-    if (monitor && monitor.status !== status) {
+    if (monitor.status !== status) {
       console.log(`[MONITOR CHANGE] ${monitor.name}: ${monitor.status} -> ${status}`);
       
       const event = status === 'DOWN' ? 'MONITOR_DOWN' : 'MONITOR_UP';
@@ -77,8 +83,6 @@ export async function performCheck(monitorId: string, url: string) {
           message,
           latency
         }).catch(console.error);
-      } else {
-        console.warn(`[EMAIL ALERT] Skip: No email for user ${monitor.userId}`);
       }
     }
 
@@ -88,6 +92,7 @@ export async function performCheck(monitorId: string, url: string) {
     const status = 'DOWN';
     const message = error instanceof Error ? error.message : 'Connection failed';
 
+    // Verify the monitor still exists before trying to record an error check
     const monitor = await prisma.monitor.findUnique({
       where: { id: monitorId },
       include: { 
@@ -96,6 +101,8 @@ export async function performCheck(monitorId: string, url: string) {
         }
       }
     });
+
+    if (!monitor) return { status, latency, message };
 
     await prisma.check.create({
       data: {
@@ -114,7 +121,7 @@ export async function performCheck(monitorId: string, url: string) {
       }
     });
 
-    if (monitor && monitor.status !== status) {
+    if (monitor.status !== status) {
       // Dispatch Webhook & Email on change
       const event = status === 'DOWN' ? 'MONITOR_DOWN' : 'MONITOR_UP';
       await dispatchWebhook(monitor.userId, event, {
