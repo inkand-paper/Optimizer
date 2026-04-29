@@ -182,19 +182,18 @@ export default function Home() {
                        </ul>
                     </div>
     
-                    <Button 
-                      asChild
-                      className={cn(
-                        "mt-10 w-full h-14 rounded-2xl font-bold transition-all active:scale-95 text-base",
-                        plan.popular 
-                          ? "bg-white text-blue-600 hover:bg-zinc-50 shadow-xl" 
-                          : "bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 hover:opacity-90"
-                      )}
-                    >
-                      <Link href="/signup">
+                    <Link href="/signup" className="mt-10 block w-full">
+                      <Button 
+                        className={cn(
+                          "w-full h-14 rounded-2xl font-bold transition-all active:scale-95 text-base",
+                          plan.popular 
+                            ? "bg-white text-blue-600 hover:bg-zinc-50 shadow-xl" 
+                            : "bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 hover:opacity-90"
+                        )}
+                      >
                         {plan.id === 'BUSINESS' ? 'Contact Sales' : 'Get Started'}
-                      </Link>
-                    </Button>
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               ))}
