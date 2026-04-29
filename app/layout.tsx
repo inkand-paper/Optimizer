@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,12 +42,25 @@ export const metadata: Metadata = {
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "Next.js Optimizer Suite",
-  "operatingSystem": "Web",
-  "applicationCategory": "DeveloperApplication",
-  "description": "Secure, high-performance cache revalidation and health monitoring for Next.js applications.",
-  "url": "https://nextjs-optimizer-suite.vercel.app",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Next.js Optimizer Suite",
+      "operatingSystem": "Web",
+      "applicationCategory": "DeveloperApplication",
+      "description": "Secure, high-performance cache revalidation and health monitoring for Next.js applications.",
+      "url": "https://nextjs-optimizer-suite.vercel.app"
+    },
+    {
+      "@type": "Organization",
+      "name": "Next.js Optimizer",
+      "url": "https://nextjs-optimizer-suite.vercel.app",
+      "logo": "https://nextjs-optimizer-suite.vercel.app/logo.png",
+      "sameAs": [
+        "https://linkedin.com/company/nextjsoptimizer"
+      ]
+    }
+  ]
 };
 
 export default function RootLayout({
@@ -62,6 +76,7 @@ export default function RootLayout({
     >
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+        {/* Schema.org Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -76,6 +91,20 @@ export default function RootLayout({
         >
           {children}
         </ThemeProvider>
+
+        {/* Official Analytics Tracking Tool (Next.js Optimized) */}
+        <Script 
+          src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX" 
+          strategy="afterInteractive" 
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-XXXXXXXXXX');
+          `}
+        </Script>
       </body>
     </html>
   );
