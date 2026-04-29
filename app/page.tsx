@@ -71,59 +71,116 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto items-stretch">
               {/* STARTER */}
-              <Card className="p-8 border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-xl relative flex flex-col">
-                <div className="mb-8">
-                  <h3 className="text-xl font-bold mb-1">Starter</h3>
-                  <p className="text-sm text-zinc-500 mb-4">For Personal Assets</p>
-                  <div className="text-4xl font-bold">$0<span className="text-sm text-zinc-400 font-normal">/mo</span></div>
+              <Card className="flex flex-col p-8 md:p-10 border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-xl rounded-[2.5rem] transition-all hover:border-blue-500/30">
+                <div className="mb-10">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-500 font-bold text-[10px] uppercase tracking-widest mb-6">
+                    Starter
+                  </div>
+                  <h3 className="text-2xl font-bold mb-2">Personal</h3>
+                  <p className="text-sm text-zinc-500 mb-6 leading-relaxed">Perfect for testing side projects and personal assets.</p>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-5xl font-black">$0</span>
+                    <span className="text-zinc-400 text-sm">/month</span>
+                  </div>
                 </div>
-                <ul className="space-y-4 mb-8 text-sm flex-1">
-                  <li className="flex items-center gap-2"><Zap className="h-4 w-4 text-blue-500" /> 1 Production Site</li>
-                  <li className="flex items-center gap-2"><Shield className="h-4 w-4 text-blue-500" /> 500 Checks / mo</li>
-                  <li className="flex items-center gap-2"><Globe className="h-4 w-4 text-blue-500" /> 50 Global Purges / mo</li>
-                  <li className="flex items-center gap-2 text-zinc-400">✗ Performance Diagnosis</li>
-                  <li className="flex items-center gap-2 text-zinc-400">✗ White-label Reports</li>
-                </ul>
-                <Button variant="outline" className="w-full rounded-full">Get Started</Button>
+                
+                <div className="space-y-5 flex-1 mb-10">
+                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">What&apos;s Included</div>
+                  <ul className="space-y-4">
+                    {[
+                      { text: "1 Production Site", icon: Zap, active: true },
+                      { text: "500 Checks / mo", icon: Shield, active: true },
+                      { text: "50 Global Purges / mo", icon: Globe, active: true },
+                      { text: "Performance Diagnosis", icon: BarChart3, active: false },
+                      { text: "White-label Portals", icon: Smartphone, active: false },
+                    ].map((feature, i) => (
+                      <li key={i} className={cn("flex items-center gap-3 text-sm", feature.active ? "text-zinc-700 dark:text-zinc-300" : "text-zinc-400 opacity-50")}>
+                        <feature.icon className={cn("h-4 w-4 shrink-0", feature.active ? "text-blue-500" : "text-zinc-300")} />
+                        <span className="flex-1">{feature.text}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <Button variant="outline" className="w-full h-12 rounded-2xl font-bold border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800">
+                  Get Started Free
+                </Button>
               </Card>
 
               {/* PRO */}
-              <Card className="p-8 border-2 border-blue-600 bg-white dark:bg-zinc-900 relative flex flex-col shadow-2xl shadow-blue-500/10 scale-105 z-20">
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+              <Card className="flex flex-col p-8 md:p-10 border-2 border-blue-600 bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-2xl shadow-blue-600/20 relative scale-105 z-20">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest px-5 py-2 rounded-full shadow-lg">
                   Most Popular
                 </div>
-                <div className="mb-8">
-                  <h3 className="text-xl font-bold mb-1 text-blue-600">Professional</h3>
-                  <p className="text-sm text-zinc-500 mb-4">For Production Apps</p>
-                  <div className="text-4xl font-bold">$29<span className="text-sm text-zinc-400 font-normal">/mo</span></div>
+                <div className="mb-10">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 font-bold text-[10px] uppercase tracking-widest mb-6">
+                    Professional
+                  </div>
+                  <h3 className="text-2xl font-bold mb-2 text-blue-600">Production</h3>
+                  <p className="text-sm text-zinc-500 mb-6 leading-relaxed">High-performance tools for production-grade apps.</p>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-5xl font-black text-blue-600">$29</span>
+                    <span className="text-zinc-400 text-sm">/month</span>
+                  </div>
                 </div>
-                <ul className="space-y-4 mb-8 text-sm flex-1">
-                  <li className="flex items-center gap-2"><Zap className="h-4 w-4 text-blue-500" /> 10 Assets</li>
-                  <li className="flex items-center gap-2"><Shield className="h-4 w-4 text-blue-500" /> 25,000 Checks / mo</li>
-                  <li className="flex items-center gap-2"><Globe className="h-4 w-4 text-blue-500" /> 2,500 Purges / mo</li>
-                  <li className="flex items-center gap-2 font-medium"><Zap className="h-4 w-4 text-blue-500" /> Performance Diagnosis</li>
-                  <li className="flex items-center gap-2 text-zinc-400">✗ White-label Portals</li>
-                </ul>
-                <Button className="w-full rounded-full bg-blue-600 hover:bg-blue-700">Go Professional</Button>
+
+                <div className="space-y-5 flex-1 mb-10">
+                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600/60">Advanced Power</div>
+                  <ul className="space-y-4">
+                    {[
+                      { text: "10 Universal Assets", icon: Zap, active: true },
+                      { text: "25,000 Checks / mo", icon: Shield, active: true },
+                      { text: "2,500 Purges / mo", icon: Globe, active: true },
+                      { text: "Performance Diagnosis", icon: BarChart3, active: true },
+                      { text: "White-label Portals", icon: Smartphone, active: false },
+                    ].map((feature, i) => (
+                      <li key={i} className={cn("flex items-center gap-3 text-sm font-medium", feature.active ? "text-zinc-900 dark:text-zinc-100" : "text-zinc-400 opacity-50")}>
+                        <feature.icon className={cn("h-4 w-4 shrink-0", feature.active ? "text-blue-500" : "text-zinc-300")} />
+                        <span className="flex-1">{feature.text}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <Button className="w-full h-12 rounded-2xl font-bold bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/30">
+                  Upgrade to Pro
+                </Button>
               </Card>
 
               {/* AGENCY */}
-              <Card className="p-8 border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-xl relative flex flex-col">
-                <div className="mb-8">
-                  <h3 className="text-xl font-bold mb-1">Agency</h3>
-                  <p className="text-sm text-zinc-500 mb-4">For Profit-Focused Teams</p>
-                  <div className="text-4xl font-bold">$129<span className="text-sm text-zinc-400 font-normal">/mo</span></div>
+              <Card className="flex flex-col p-8 md:p-10 border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-xl rounded-[2.5rem] transition-all hover:border-purple-500/30">
+                <div className="mb-10">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-900/30 text-purple-600 font-bold text-[10px] uppercase tracking-widest mb-6">
+                    Agency
+                  </div>
+                  <h3 className="text-2xl font-bold mb-2">Authority</h3>
+                  <p className="text-sm text-zinc-500 mb-6 leading-relaxed">Scale your agency with 1-click white-label control.</p>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-5xl font-black text-purple-600">$129</span>
+                    <span className="text-zinc-400 text-sm">/month</span>
+                  </div>
                 </div>
-                <ul className="space-y-4 mb-8 text-sm flex-1">
-                  <li className="flex items-center gap-2"><Zap className="h-4 w-4 text-blue-500" /> Unlimited Assets</li>
-                  <li className="flex items-center gap-2"><Shield className="h-4 w-4 text-blue-500" /> Unlimited Checks</li>
-                  <li className="flex items-center gap-2"><Globe className="h-4 w-4 text-blue-500" /> Unlimited Purges</li>
-                  <li className="flex items-center gap-2 font-medium"><BarChart3 className="h-4 w-4 text-blue-500" /> White-label Portals</li>
-                  <li className="flex items-center gap-2 font-medium"><Smartphone className="h-4 w-4 text-blue-500" /> 1-Click Reporting</li>
-                </ul>
-                <Button variant="outline" className="w-full rounded-full">Contact Sales</Button>
+
+                <div className="space-y-5 flex-1 mb-10">
+                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-purple-600/60">Agency Infrastructure</div>
+                  <ul className="space-y-4">
+                    {[
+                      { text: "Unlimited Assets", icon: Zap, active: true },
+                      { text: "Unlimited Checks / mo", icon: Shield, active: true },
+                      { text: "Unlimited Purges / mo", icon: Globe, active: true },
+                      { text: "White-label Portals", icon: Smartphone, active: true },
+                      { text: "1-Click Reporting", icon: BarChart3, active: true },
+                    ].map((feature, i) => (
+                      <li key={i} className="flex items-center gap-3 text-sm text-zinc-700 dark:text-zinc-300 font-medium">
+                        <feature.icon className="h-4 w-4 shrink-0 text-purple-500" />
+                        <span className="flex-1">{feature.text}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <Button variant="outline" className="w-full h-12 rounded-2xl font-bold border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800">
+                  Contact Sales
+                </Button>
               </Card>
             </div>
           </div>

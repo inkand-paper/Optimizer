@@ -47,32 +47,32 @@ export function PricingModal({ isOpen, onClose, currentPlan = "FREE" }: PricingM
       id: "FREE",
       name: "Starter",
       price: "$0",
-      description: "Perfect for indie developers testing their first project.",
+      description: "Perfect for testing personal projects and basic assets.",
       icon: Globe,
       color: "zinc",
       features: PLAN_LIMITS.FREE.features,
-      limits: `${PLAN_LIMITS.FREE.monitors} Monitors`
+      limits: `${PLAN_LIMITS.FREE.checks} Intelligence Checks`
     },
     {
       id: "PRO",
       name: "Pro Optimizer",
       price: "$29",
-      description: "The sweet spot for growing agencies and SaaS founders.",
+      description: "The outcome-driven choice for growing production apps.",
       icon: Zap,
       color: "blue",
       popular: true,
       features: PLAN_LIMITS.PRO.features,
-      limits: `${PLAN_LIMITS.PRO.monitors} Monitors`
+      limits: `${PLAN_LIMITS.PRO.checks} Intelligence Checks`
     },
     {
       id: "BUSINESS",
-      name: "Enterprise",
-      price: "$99",
-      description: "Unmatched power for high-traffic networks and teams.",
+      name: "Agency",
+      price: "$129",
+      description: "Unlimited power for profit-focused agencies and teams.",
       icon: Crown,
       color: "purple",
       features: PLAN_LIMITS.BUSINESS.features,
-      limits: `${PLAN_LIMITS.BUSINESS.monitors} Monitors`
+      limits: `${PLAN_LIMITS.BUSINESS.checks} Intelligence Checks`
     }
   ];
 
@@ -98,10 +98,10 @@ export function PricingModal({ isOpen, onClose, currentPlan = "FREE" }: PricingM
           </button>
           
           <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-zinc-900 dark:text-white mb-4">
-            Scale Your <span className="text-blue-600">Intelligence</span>
+            Scale Your <span className="text-blue-600">NexPulse</span>
           </h2>
           <p className="text-zinc-500 max-w-2xl mx-auto text-sm sm:text-base">
-            Your current plan has reached its capacity. Choose a tier that matches your growth and unlock advanced monitoring features.
+            Your current plan has reached its capacity. Choose a tier that matches your growth and unlock universal monitoring authority.
           </p>
         </div>
 
