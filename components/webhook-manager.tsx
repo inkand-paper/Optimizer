@@ -137,7 +137,7 @@ export function WebhookManager({ onLimitReached }: WebhookManagerProps) {
           <div className="space-y-1.5">
             <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Payload URL</label>
             <Input 
-              placeholder="https://your-api.com/webhooks/njo" 
+              placeholder="https://your-api.com/webhooks/nexpulse" 
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               className="h-9"

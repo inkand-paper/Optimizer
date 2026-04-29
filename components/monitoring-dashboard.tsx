@@ -218,16 +218,16 @@ export function MonitoringDashboard() {
                   {currentUserRole !== 'ADMIN' ? (
                     <>
                       <p className="text-[10px] text-rose-600/70 dark:text-rose-500/70 leading-relaxed mb-3">
-                        Your current plan has reached its capacity. Upgrade to unlock more slots and higher frequency monitoring.
+                        Your current plan has reached its intelligence capacity. Upgrade to Professional for 25,000 checks or Agency for unlimited assets.
                       </p>
                       <div className="grid grid-cols-2 gap-2">
-                        <div className="p-2 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20 cursor-pointer hover:bg-blue-700 transition-colors">
-                          <p className="text-[9px] font-black uppercase tracking-widest opacity-80 mb-0.5">Recommended</p>
-                          <p className="text-xs font-bold">Upgrade to PRO</p>
+                        <div className="p-2 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20 cursor-pointer hover:bg-blue-700 transition-colors" onClick={() => setShowPricing(true)}>
+                          <p className="text-[9px] font-black uppercase tracking-widest opacity-80 mb-0.5">Most Popular</p>
+                          <p className="text-xs font-bold">Pro ($29)</p>
                         </div>
-                        <div className="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 cursor-pointer hover:bg-zinc-50 transition-colors">
-                          <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-0.5">Enterprise</p>
-                          <p className="text-xs font-bold">View Business</p>
+                        <div className="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 cursor-pointer hover:bg-zinc-50 transition-colors" onClick={() => setShowPricing(true)}>
+                          <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-0.5">Scalable</p>
+                          <p className="text-xs font-bold">Agency ($129)</p>
                         </div>
                       </div>
                     </>
