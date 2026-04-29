@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import Script from "next/script";
 
+// Force re-compile after emergency restore: 2026-04-29T17:42
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
