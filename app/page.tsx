@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Navbar } from "@/components/navbar";
 import { Button, Card } from "@/components/ui-elements";
+import { cn } from "@/lib/utils";
 import { 
   Zap, 
   Shield, 
