@@ -59,49 +59,73 @@ export default function Home() {
           </div>
         </section>
 
-        {/* FEATURES GRID */}
-        <section className="py-24 bg-zinc-50 dark:bg-zinc-900/30 border-y">
-          <div className="container mx-auto px-4">
+        {/* PRICING SECTION */}
+        <section className="py-24 relative overflow-hidden" id="pricing">
+          <div className="container mx-auto px-4 relative z-10">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-4">Enterprise-Ready Infrastructure</h2>
-              <p className="text-zinc-500 dark:text-zinc-400">Scalable, secure, and built for modern engineering teams.</p>
+              <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-zinc-900 to-zinc-600 dark:from-white dark:to-zinc-400 bg-clip-text text-transparent">
+                Outcome-Driven Pricing
+              </h2>
+              <p className="text-zinc-500 dark:text-zinc-400 max-w-xl mx-auto">
+                Select the plan that matches your growth. From personal projects to global agencies.
+              </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8">
-              <Card className="p-8 hover:shadow-lg transition-shadow border-none dark:bg-zinc-900/50">
-                <div className="h-12 w-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-6">
-                  <Shield className="h-6 w-6 text-blue-600" />
+            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              {/* STARTER */}
+              <Card className="p-8 border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-xl relative flex flex-col">
+                <div className="mb-8">
+                  <h3 className="text-xl font-bold mb-1">Starter</h3>
+                  <p className="text-sm text-zinc-500 mb-4">For Personal Assets</p>
+                  <div className="text-4xl font-bold">$0<span className="text-sm text-zinc-400 font-normal">/mo</span></div>
                 </div>
-                <h3 className="text-xl font-bold mb-3">Military-Grade Security</h3>
-                <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">
-                  Advanced SHA-256 hashing and secure HttpOnly session architecture. 
-                  Integrated SSRF protection keeps your internal network invisible to the world.
-                </p>
+                <ul className="space-y-4 mb-8 text-sm flex-1">
+                  <li className="flex items-center gap-2"><Zap className="h-4 w-4 text-blue-500" /> 1 Production Site</li>
+                  <li className="flex items-center gap-2"><Shield className="h-4 w-4 text-blue-500" /> 500 Checks / mo</li>
+                  <li className="flex items-center gap-2"><Globe className="h-4 w-4 text-blue-500" /> 50 Global Purges / mo</li>
+                  <li className="flex items-center gap-2 text-zinc-400">✗ Performance Diagnosis</li>
+                  <li className="flex items-center gap-2 text-zinc-400">✗ White-label Reports</li>
+                </ul>
+                <Button variant="outline" className="w-full rounded-full">Get Started</Button>
               </Card>
 
-              <Card className="p-8 hover:shadow-lg transition-shadow border-none dark:bg-zinc-900/50">
-                <div className="h-12 w-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mb-6">
-                  <Smartphone className="h-6 w-6 text-purple-600" />
+              {/* PRO */}
+              <Card className="p-8 border-2 border-blue-600 bg-white dark:bg-zinc-900 relative flex flex-col shadow-2xl shadow-blue-500/10 scale-105 z-20">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+                  Most Popular
                 </div>
-                <h3 className="text-xl font-bold mb-3">Universal API & SDKs</h3>
-                <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">
-                  Built for the entire stack. Integrate real-time pulse triggers into Kotlin, 
-                  Swift, Go, or Python with zero configuration overhead.
-                </p>
+                <div className="mb-8">
+                  <h3 className="text-xl font-bold mb-1 text-blue-600">Professional</h3>
+                  <p className="text-sm text-zinc-500 mb-4">For Production Apps</p>
+                  <div className="text-4xl font-bold">$29<span className="text-sm text-zinc-400 font-normal">/mo</span></div>
+                </div>
+                <ul className="space-y-4 mb-8 text-sm flex-1">
+                  <li className="flex items-center gap-2"><Zap className="h-4 w-4 text-blue-500" /> 10 Assets</li>
+                  <li className="flex items-center gap-2"><Shield className="h-4 w-4 text-blue-500" /> 25,000 Checks / mo</li>
+                  <li className="flex items-center gap-2"><Globe className="h-4 w-4 text-blue-500" /> 2,500 Purges / mo</li>
+                  <li className="flex items-center gap-2 font-medium"><Zap className="h-4 w-4 text-blue-500" /> Performance Diagnosis</li>
+                  <li className="flex items-center gap-2 text-zinc-400">✗ White-label Portals</li>
+                </ul>
+                <Button className="w-full rounded-full bg-blue-600 hover:bg-blue-700">Go Professional</Button>
               </Card>
 
-              <Card className="p-8 hover:shadow-lg transition-shadow border-none dark:bg-zinc-900/50">
-                <div className="h-12 w-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center mb-6">
-                  <Database className="h-6 w-6 text-green-600" />
+              {/* AGENCY */}
+              <Card className="p-8 border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-xl relative flex flex-col">
+                <div className="mb-8">
+                  <h3 className="text-xl font-bold mb-1">Agency</h3>
+                  <p className="text-sm text-zinc-500 mb-4">For Profit-Focused Teams</p>
+                  <div className="text-4xl font-bold">$129<span className="text-sm text-zinc-400 font-normal">/mo</span></div>
                 </div>
-                <h3 className="text-xl font-bold mb-3">Distributed Reliability</h3>
-                <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">
-                  Powered by global Redis state for stateful rate-limiting and 
-                  asynchronous monitoring tasks. Built to scale from 1 to 1M requests.
-                </p>
+                <ul className="space-y-4 mb-8 text-sm flex-1">
+                  <li className="flex items-center gap-2"><Zap className="h-4 w-4 text-blue-500" /> Unlimited Assets</li>
+                  <li className="flex items-center gap-2"><Shield className="h-4 w-4 text-blue-500" /> Unlimited Checks</li>
+                  <li className="flex items-center gap-2"><Globe className="h-4 w-4 text-blue-500" /> Unlimited Purges</li>
+                  <li className="flex items-center gap-2 font-medium"><BarChart3 className="h-4 w-4 text-blue-500" /> White-label Portals</li>
+                  <li className="flex items-center gap-2 font-medium"><Smartphone className="h-4 w-4 text-blue-500" /> 1-Click Reporting</li>
+                </ul>
+                <Button variant="outline" className="w-full rounded-full">Contact Sales</Button>
               </Card>
             </div>
-
           </div>
         </section>
 
