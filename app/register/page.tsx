@@ -16,6 +16,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
+  const [isSent, setIsSent] = React.useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -37,9 +38,12 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (res.ok) {
-        // Token is set as a secure HttpOnly cookie by the server.
-        localStorage.setItem("user", JSON.stringify(data.user));
-        router.push("/dashboard");
+        if (data.emailVerified) {
+          localStorage.setItem("user", JSON.stringify(data.user));
+          router.push("/dashboard");
+        } else {
+          setIsSent(true);
+        }
       } else {
         setError(data.message || "Registration failed. This email may already be in use.");
       }
@@ -48,6 +52,30 @@ export default function RegisterPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (isSent) {
+    return (
+      <div className="flex-1 flex flex-col bg-zinc-50 dark:bg-zinc-950">
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center p-6 py-12">
+          <Card className="w-full max-w-md p-8 text-center">
+            <div className="h-16 w-16 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mx-auto mb-6">
+              <Activity className="h-8 w-8 text-blue-600 animate-pulse" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-2">
+              Check your inbox!
+            </h1>
+            <p className="text-zinc-500 dark:text-zinc-400 text-sm mb-8 leading-relaxed">
+              We&apos;ve sent a verification link to your email. Please click the link to activate your account and start optimizing.
+            </p>
+            <Link href="/login">
+               <Button className="w-full">Back to Login</Button>
+            </Link>
+          </Card>
+        </main>
+      </div>
+    );
   }
 
   return (

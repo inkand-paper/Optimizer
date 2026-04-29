@@ -282,6 +282,35 @@ export default function DashboardPage() {
     );
   }
 
+  if (user && !user.emailVerified) {
+    return (
+      <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950">
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center p-6 py-12">
+          <Card className="w-full max-w-md p-8 text-center border-rose-100 dark:border-rose-900/30">
+            <div className="h-16 w-16 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center mx-auto mb-6">
+              <ShieldAlert className="h-8 w-8 text-rose-600" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-2">
+              Verify your email
+            </h1>
+            <p className="text-zinc-500 dark:text-zinc-400 text-sm mb-8 leading-relaxed">
+              Your account is currently limited. Please check your email inbox and click the verification link to unlock the NexPulse dashboard.
+            </p>
+            <div className="space-y-3">
+              <Button onClick={() => window.location.reload()} className="w-full">
+                 I&apos;ve verified my email
+              </Button>
+              <Button variant="ghost" onClick={handleLogout} className="w-full text-zinc-500">
+                 Logout
+              </Button>
+            </div>
+          </Card>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950 overflow-x-hidden">
       <Navbar />
