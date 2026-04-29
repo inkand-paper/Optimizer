@@ -1,0 +1,19 @@
+# Next.js Optimizer Suite
+
+Next.js Optimizer Suite is a high-performance analytics, caching, and health-monitoring platform designed exclusively for Next.js applications (App Router).
+
+## Features
+- Dynamic Cache Revalidation API
+- System Health Monitoring
+- Automated SEO checks
+- Role-based Access Control (Admin vs Viewer)
+
+## Technologies Used
+- Next.js 14+ (React)
+- Tailwind CSS
+- Prisma ORM
+- PostgreSQL (Supabase)
+
+## Author
+Built by MD MUSTAK TAHSIN ABIR.
+Website: https://nextjs-optimizer-suite.vercel.app

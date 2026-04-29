@@ -14,10 +14,39 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  // [BRANDING] - NEXTJS OPTIMIZER SUITE
-  // Update the title and description below to change your SaaS branding
-  title: "NexPulse: Universal Monitoring & Optimization", 
-  description: "Secure, high-performance cache revalidation and health monitoring for Next.js applications.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'http://localhost:3000')),
+  title: "Next.js Optimizer Suite: Universal Monitoring & Analytics", 
+  description: "Secure, high-performance cache revalidation, system health monitoring, and analytics for Next.js applications. Maximize your digital performance today.",
+  alternates: {
+    canonical: '/',
+    languages: {
+      'en-US': '/en-US',
+    },
+  },
+  openGraph: {
+    title: "Next.js Optimizer Suite: Universal Monitoring & Analytics",
+    description: "Secure, high-performance cache revalidation and system health monitoring for Next.js applications.",
+    url: '/',
+    siteName: 'Next.js Optimizer Suite',
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Next.js Optimizer Suite",
+    description: "High-performance cache revalidation and monitoring for Next.js apps.",
+    creator: '@abirmajid',
+  },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Next.js Optimizer Suite",
+  "operatingSystem": "Web",
+  "applicationCategory": "DeveloperApplication",
+  "description": "Secure, high-performance cache revalidation and health monitoring for Next.js applications.",
+  "url": "https://nextjs-optimizer-suite.vercel.app",
 };
 
 export default function RootLayout({
@@ -31,6 +60,13 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground transition-colors duration-300">
         <ThemeProvider
           attribute="class"
@@ -44,4 +80,3 @@ export default function RootLayout({
     </html>
   );
 }
-
