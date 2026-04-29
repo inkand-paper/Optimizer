@@ -72,117 +72,130 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto items-stretch">
-              {/* STARTER */}
-              <Card className="flex flex-col p-8 md:p-10 border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-xl rounded-[2.5rem] transition-all hover:border-blue-500/30">
-                <div className="mb-10">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-500 font-bold text-[10px] uppercase tracking-widest mb-6">
-                    Starter
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto items-stretch">
+              {[
+                {
+                  id: "FREE",
+                  name: "Starter",
+                  price: "$0",
+                  description: "Perfect for testing personal projects and side assets.",
+                  icon: Globe,
+                  color: "zinc",
+                  popular: false,
+                  features: [
+                    { text: "1 Production Site", active: true },
+                    { text: "500 Checks / mo", active: true },
+                    { text: "50 Global Purges / mo", active: true },
+                    { text: "Performance Diagnosis", active: false },
+                    { text: "White-label Portals", active: false },
+                  ]
+                },
+                {
+                  id: "PRO",
+                  name: "Professional",
+                  price: "$29",
+                  description: "High-performance tools for production-grade apps.",
+                  icon: Zap,
+                  color: "blue",
+                  popular: true,
+                  features: [
+                    { text: "10 Universal Assets", active: true },
+                    { text: "25,000 Checks / mo", active: true },
+                    { text: "2,500 Purges / mo", active: true },
+                    { text: "Performance Diagnosis", active: true },
+                    { text: "White-label Portals", active: false },
+                  ]
+                },
+                {
+                  id: "BUSINESS",
+                  name: "Agency",
+                  price: "$129",
+                  description: "Scale your agency with 1-click white-label control.",
+                  icon: Crown,
+                  color: "purple",
+                  popular: false,
+                  features: [
+                    { text: "Unlimited Assets", active: true },
+                    { text: "Unlimited Checks / mo", active: true },
+                    { text: "Unlimited Purges / mo", active: true },
+                    { text: "White-label Portals", active: true },
+                    { text: "1-Click Reporting", active: true },
+                  ]
+                }
+              ].map((plan) => (
+                <div 
+                  key={plan.id}
+                  className={cn(
+                    "relative group p-8 md:p-10 rounded-[40px] border transition-all duration-500 hover:scale-[1.02] flex flex-col",
+                    plan.popular 
+                      ? "bg-blue-600 border-blue-500 shadow-2xl shadow-blue-600/20 z-20 scale-105" 
+                      : "bg-white/50 dark:bg-zinc-900/50 backdrop-blur-xl border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700"
+                  )}
+                >
+                  {plan.popular && (
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-white text-blue-600 text-[10px] font-black uppercase tracking-widest px-5 py-2 rounded-full shadow-lg">
+                      Most Popular
+                    </div>
+                  )}
+    
+                  <div className="flex flex-col h-full">
+                    <div className="mb-8">
+                      <div className={cn(
+                        "h-14 w-14 rounded-2xl flex items-center justify-center mb-6 shadow-sm",
+                        plan.popular ? "bg-white/20 text-white" : 
+                        plan.id === 'BUSINESS' ? "bg-purple-500/10 text-purple-600" :
+                        "bg-blue-600/10 text-blue-600"
+                      )}>
+                        <plan.icon className="h-7 w-7" />
+                      </div>
+                      <h3 className={cn("text-2xl font-black mb-2", plan.popular ? "text-white" : "text-zinc-900 dark:text-white")}>
+                        {plan.name}
+                      </h3>
+                      <p className={cn("text-sm mb-6 leading-relaxed", plan.popular ? "text-white/70" : "text-zinc-500")}>
+                        {plan.description}
+                      </p>
+                      <div className="flex items-baseline gap-1">
+                        <span className={cn("text-5xl font-black", plan.popular ? "text-white" : "text-zinc-900 dark:text-white")}>
+                          {plan.price}
+                        </span>
+                        <span className={cn("text-sm font-medium", plan.popular ? "text-white/60" : "text-zinc-400")}>
+                          /month
+                        </span>
+                      </div>
+                    </div>
+    
+                    <div className="space-y-6 flex-1">
+                       <div className={cn("text-[10px] font-black uppercase tracking-[0.2em]", plan.popular ? "text-white/60" : "text-zinc-400")}>
+                          Plan Capabilities
+                       </div>
+                       <ul className="space-y-4">
+                          {plan.features.map((feature, i) => (
+                            <li key={i} className={cn("flex items-center gap-3 text-sm", feature.active ? (plan.popular ? "text-white" : "text-zinc-700 dark:text-zinc-300 font-medium") : "text-zinc-400 opacity-40")}>
+                               <div className={cn("h-5 w-5 rounded-full flex items-center justify-center shrink-0", plan.popular ? "bg-white/20" : "bg-blue-600/10")}>
+                                  <Check className={cn("h-3 w-3", plan.popular ? "text-white" : "text-blue-600")} />
+                               </div>
+                               <span className="flex-1">{feature.text}</span>
+                            </li>
+                          ))}
+                       </ul>
+                    </div>
+    
+                    <Button 
+                      asChild
+                      className={cn(
+                        "mt-10 w-full h-14 rounded-2xl font-bold transition-all active:scale-95 text-base",
+                        plan.popular 
+                          ? "bg-white text-blue-600 hover:bg-zinc-50 shadow-xl" 
+                          : "bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 hover:opacity-90"
+                      )}
+                    >
+                      <Link href="/signup">
+                        {plan.id === 'BUSINESS' ? 'Contact Sales' : 'Get Started'}
+                      </Link>
+                    </Button>
                   </div>
-                  <h3 className="text-2xl font-bold mb-2">Personal</h3>
-                  <p className="text-sm text-zinc-500 mb-6 leading-relaxed">Perfect for testing side projects and personal assets.</p>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-5xl font-black">$0</span>
-                    <span className="text-zinc-400 text-sm">/month</span>
-                  </div>
                 </div>
-                
-                <div className="space-y-5 flex-1 mb-10">
-                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">What&apos;s Included</div>
-                  <ul className="space-y-4">
-                    {[
-                      { text: "1 Production Site", icon: Zap, active: true },
-                      { text: "500 Checks / mo", icon: Shield, active: true },
-                      { text: "50 Global Purges / mo", icon: Globe, active: true },
-                      { text: "Performance Diagnosis", icon: BarChart3, active: false },
-                      { text: "White-label Portals", icon: Smartphone, active: false },
-                    ].map((feature, i) => (
-                      <li key={i} className={cn("flex items-center gap-3 text-sm", feature.active ? "text-zinc-700 dark:text-zinc-300" : "text-zinc-400 opacity-50")}>
-                        <feature.icon className={cn("h-4 w-4 shrink-0", feature.active ? "text-blue-500" : "text-zinc-300")} />
-                        <span className="flex-1">{feature.text}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <Button variant="outline" className="w-full h-12 rounded-2xl font-bold border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800">
-                  Get Started Free
-                </Button>
-              </Card>
-
-              {/* PRO */}
-              <Card className="flex flex-col p-8 md:p-10 border-2 border-blue-600 bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-2xl shadow-blue-600/20 relative scale-105 z-20">
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest px-5 py-2 rounded-full shadow-lg">
-                  Most Popular
-                </div>
-                <div className="mb-10">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 font-bold text-[10px] uppercase tracking-widest mb-6">
-                    Professional
-                  </div>
-                  <h3 className="text-2xl font-bold mb-2 text-blue-600">Production</h3>
-                  <p className="text-sm text-zinc-500 mb-6 leading-relaxed">High-performance tools for production-grade apps.</p>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-5xl font-black text-blue-600">$29</span>
-                    <span className="text-zinc-400 text-sm">/month</span>
-                  </div>
-                </div>
-
-                <div className="space-y-5 flex-1 mb-10">
-                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600/60">Advanced Power</div>
-                  <ul className="space-y-4">
-                    {[
-                      { text: "10 Universal Assets", icon: Zap, active: true },
-                      { text: "25,000 Checks / mo", icon: Shield, active: true },
-                      { text: "2,500 Purges / mo", icon: Globe, active: true },
-                      { text: "Performance Diagnosis", icon: BarChart3, active: true },
-                      { text: "White-label Portals", icon: Smartphone, active: false },
-                    ].map((feature, i) => (
-                      <li key={i} className={cn("flex items-center gap-3 text-sm font-medium", feature.active ? "text-zinc-900 dark:text-zinc-100" : "text-zinc-400 opacity-50")}>
-                        <feature.icon className={cn("h-4 w-4 shrink-0", feature.active ? "text-blue-500" : "text-zinc-300")} />
-                        <span className="flex-1">{feature.text}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <Button className="w-full h-12 rounded-2xl font-bold bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/30">
-                  Upgrade to Pro
-                </Button>
-              </Card>
-
-              {/* AGENCY */}
-              <Card className="flex flex-col p-8 md:p-10 border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-xl rounded-[2.5rem] transition-all hover:border-purple-500/30">
-                <div className="mb-10">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-900/30 text-purple-600 font-bold text-[10px] uppercase tracking-widest mb-6">
-                    Agency
-                  </div>
-                  <h3 className="text-2xl font-bold mb-2">Authority</h3>
-                  <p className="text-sm text-zinc-500 mb-6 leading-relaxed">Scale your agency with 1-click white-label control.</p>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-5xl font-black text-purple-600">$129</span>
-                    <span className="text-zinc-400 text-sm">/month</span>
-                  </div>
-                </div>
-
-                <div className="space-y-5 flex-1 mb-10">
-                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-purple-600/60">Agency Infrastructure</div>
-                  <ul className="space-y-4">
-                    {[
-                      { text: "Unlimited Assets", icon: Zap, active: true },
-                      { text: "Unlimited Checks / mo", icon: Shield, active: true },
-                      { text: "Unlimited Purges / mo", icon: Globe, active: true },
-                      { text: "White-label Portals", icon: Smartphone, active: true },
-                      { text: "1-Click Reporting", icon: BarChart3, active: true },
-                    ].map((feature, i) => (
-                      <li key={i} className="flex items-center gap-3 text-sm text-zinc-700 dark:text-zinc-300 font-medium">
-                        <feature.icon className="h-4 w-4 shrink-0 text-purple-500" />
-                        <span className="flex-1">{feature.text}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <Button variant="outline" className="w-full h-12 rounded-2xl font-bold border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800">
-                  Contact Sales
-                </Button>
-              </Card>
+              ))}
             </div>
           </div>
         </section>
