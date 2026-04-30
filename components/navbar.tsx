@@ -61,10 +61,10 @@ export function Navbar() {
   );
 
   return (
-    <nav className="border-b bg-white/95 dark:bg-zinc-950/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-zinc-950/60 sticky top-0 z-50">
+    <nav className="border-b border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-950 sticky top-0 z-50">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight z-50">
-          <Activity className="h-6 w-6 text-blue-600" />
+        <Link href="/" className="flex items-center gap-2 font-black text-xl tracking-tighter z-50">
+          <Activity className="h-6 w-6 text-indigo-600" />
           <span>NexPulse</span>
         </Link>
 
@@ -72,7 +72,7 @@ export function Navbar() {
         <div className="hidden md:flex items-center gap-4">
           <Link 
             href="/docs" 
-            className="flex items-center gap-1.5 text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors px-2 py-1.5"
+            className="flex items-center gap-1.5 text-sm font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors px-2 py-1.5"
           >
             <BookOpen className="h-4 w-4" /> Docs
           </Link>
@@ -88,13 +88,13 @@ export function Navbar() {
               )}
               <Link 
                 href="/dashboard" 
-                className="flex items-center gap-1.5 text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors px-2 py-1.5"
+                className="flex items-center gap-1.5 text-sm font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors px-2 py-1.5"
               >
                 <LayoutDashboard className="h-4 w-4" /> Dashboard
               </Link>
               <button 
                 onClick={handleLogout}
-                className="flex items-center gap-1 text-sm font-medium text-red-500 hover:text-red-600 transition-colors bg-red-50 dark:bg-red-900/10 px-3 py-1.5 rounded-xl border border-red-200 dark:border-red-900"
+                className="flex items-center gap-1 text-sm font-bold text-red-500 hover:text-red-600 transition-colors bg-red-50 dark:bg-red-900/10 px-3 py-1.5 rounded-lg border border-red-200 dark:border-red-900"
               >
                 <LogOut className="h-4 w-4" /> Logout
               </button>
@@ -103,13 +103,13 @@ export function Navbar() {
             <>
               <Link 
                 href="/login" 
-                className="flex items-center gap-1 text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors px-3 py-1.5"
+                className="flex items-center gap-1 text-sm font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors px-3 py-1.5"
               >
                 <LogIn className="h-4 w-4" /> Login
               </Link>
               <Link 
                 href="/register" 
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all shadow-md active:scale-95 flex items-center gap-1"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg text-sm font-bold transition-all shadow-sm active:scale-95 flex items-center gap-1"
               >
                 <UserPlus className="h-4 w-4" /> Get Started
               </Link>
