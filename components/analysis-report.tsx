@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { AnalyzeResponse } from "@/lib/types";
+import ReactMarkdown from "react-markdown";
 
 interface Props {
   data: AnalyzeResponse;
@@ -101,9 +102,16 @@ export function AnalysisReport({ data }: Props) {
             </div>
 
             <div className="prose prose-sm dark:prose-invert max-w-none">
-              <div className="text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-line text-sm">
+              <ReactMarkdown 
+                className={cn(
+                  "text-zinc-700 dark:text-zinc-300 leading-relaxed text-sm",
+                  "prose-headings:text-indigo-900 dark:prose-headings:text-indigo-100 prose-headings:font-black prose-headings:mb-2 prose-headings:mt-4",
+                  "prose-strong:text-indigo-600 dark:prose-strong:text-indigo-400 prose-strong:font-black",
+                  "prose-ul:list-disc prose-ul:pl-4 prose-ul:space-y-1 prose-li:marker:text-indigo-500"
+                )}
+              >
                 {data.aiInsight}
-              </div>
+              </ReactMarkdown>
             </div>
 
             <div className="mt-6 flex items-center gap-2 p-3 rounded-xl bg-indigo-600/5 dark:bg-indigo-400/5 border border-indigo-100 dark:border-indigo-400/10">
