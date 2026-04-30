@@ -34,11 +34,11 @@ export function Button({
   ...props 
 }: ButtonProps) {
   const variants = {
-    primary: "bg-zinc-900 text-zinc-50 hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200 shadow-sm transition-all active:scale-[0.98]",
-    secondary: "bg-zinc-100 text-zinc-900 hover:bg-zinc-200 dark:bg-zinc-900 dark:text-zinc-50 dark:hover:bg-zinc-800",
-    outline: "border border-zinc-200 bg-transparent hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100",
+    primary: "bg-blue-600 text-white hover:bg-blue-700 dark:bg-white dark:text-black dark:hover:bg-zinc-200 shadow-lg shadow-blue-500/20 dark:shadow-none transition-all active:scale-[0.98]",
+    secondary: "bg-zinc-100 text-zinc-900 hover:bg-zinc-200 dark:bg-zinc-900 dark:text-zinc-50 dark:hover:bg-zinc-800 border border-transparent dark:border-zinc-800",
+    outline: "border border-zinc-200 bg-transparent hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100",
     ghost: "bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-300",
-    danger: "bg-red-600 text-white hover:bg-red-700",
+    danger: "bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-500/20",
   };
 
   const sizes = {

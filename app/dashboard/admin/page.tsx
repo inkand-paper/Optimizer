@@ -92,106 +92,126 @@ export default function AdminPortal() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-black">
       <Navbar />
       
-      <main className="flex-1 w-full max-w-[1200px] mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-12 md:py-20">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-16 gap-8">
           <div>
-            <Link href="/dashboard" className="flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-white mb-2 transition-colors">
-              <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+            <Link href="/dashboard" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 hover:text-blue-600 mb-4 transition-all group">
+              <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" /> 
+              <span>Return to Mission Control</span>
             </Link>
-            <h1 className="text-3xl font-black tracking-tight text-zinc-900 dark:text-white">Admin Control Panel</h1>
-            <p className="text-zinc-500">Manage user access, tiers, and system growth.</p>
+            <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-zinc-900 dark:text-white uppercase leading-none">
+              Executive <br />
+              <span className="text-blue-600">Administration</span>
+            </h1>
+            <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mt-4">Manage global user access, infrastructure tiers, and system scaling.</p>
           </div>
           <div className="flex items-center gap-4">
-             <div className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-1">Total Users</p>
-                <p className="text-2xl font-black text-blue-600 leading-none">{users.length}</p>
+             <div className="bg-white dark:bg-zinc-950 p-6 rounded-md border border-zinc-200 dark:border-zinc-800 shadow-xl min-w-[200px]">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2 border-b border-zinc-100 dark:border-zinc-900 pb-2">Total Authorized Units</p>
+                <div className="flex items-center gap-3">
+                  <Users className="h-5 w-5 text-blue-600" />
+                  <p className="text-4xl font-black text-zinc-900 dark:text-white leading-none tracking-tighter">{users.length}</p>
+                </div>
              </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between gap-4">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+        <div className="bg-white dark:bg-zinc-950 rounded-md border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/5 rounded-full blur-[100px] -mr-32 -mt-32 pointer-events-none" />
+          
+          <div className="p-8 border-b border-zinc-100 dark:border-zinc-900 flex flex-col sm:flex-row items-center justify-between gap-6 bg-zinc-50/50 dark:bg-zinc-900/20 relative z-10">
+            <div className="relative flex-1 w-full max-w-md">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
               <input 
                 type="text" 
-                placeholder="Search users by email or name..."
-                className="w-full pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 border border-transparent focus:border-blue-600/50 transition-all"
+                placeholder="SEARCH OPERATOR (EMAIL/IDENTITY)..."
+                className="w-full pl-12 pr-4 h-12 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md text-[10px] font-black uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            <button onClick={fetchUsers} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors">
-               <Zap className={cn("h-4 w-4 text-zinc-400", loading && "animate-spin")} />
+            <button 
+              onClick={fetchUsers} 
+              className="h-12 w-12 flex items-center justify-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md hover:text-blue-600 transition-all shadow-sm"
+            >
+               <Zap className={cn("h-5 w-5 text-zinc-400 transition-all", loading && "animate-spin text-blue-600")} />
             </button>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto relative z-10">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-100 dark:border-zinc-800">
-                  <th className="p-4 text-[10px] font-black uppercase tracking-widest text-zinc-400">User</th>
-                  <th className="p-4 text-[10px] font-black uppercase tracking-widest text-zinc-400">Status</th>
-                  <th className="p-4 text-[10px] font-black uppercase tracking-widest text-zinc-400">Activity</th>
-                  <th className="p-4 text-[10px] font-black uppercase tracking-widest text-zinc-400">Joined</th>
-                  <th className="p-4 text-[10px] font-black uppercase tracking-widest text-zinc-400 text-right">Actions</th>
+                <tr className="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-100 dark:border-zinc-900">
+                  <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Unit Identity</th>
+                  <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Tier / Authorization</th>
+                  <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 text-center">Infrastructure Status</th>
+                  <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Activation Date</th>
+                  <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 text-right">Overrides</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-900">
                 {filteredUsers.map((user) => (
-                  <tr key={user.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors group">
-                    <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-blue-600/10 flex items-center justify-center text-blue-600 font-black text-sm uppercase">
+                  <tr key={user.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30 transition-all group">
+                    <td className="p-6">
+                      <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-md bg-blue-600 flex items-center justify-center text-white font-black text-xs uppercase shadow-lg shadow-blue-500/20">
                           {user.name?.[0] || user.email[0]}
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-zinc-900 dark:text-white leading-none mb-1">{user.name || "Anonymous User"}</p>
-                          <p className="text-xs text-zinc-500 font-mono">{user.email}</p>
+                          <p className="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-0.5">{user.name || "UNIDENTIFIED UNIT"}</p>
+                          <p className="text-[10px] text-zinc-400 font-bold tracking-widest">{user.email}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="p-4">
-                      <div className="flex flex-col gap-1.5">
+                    <td className="p-6">
+                      <div className="flex items-center gap-2">
                         <select 
                           value={user.plan}
                           onChange={(e) => updateUser(user.id, { plan: e.target.value })}
                           disabled={updatingId === user.id}
-                          className="text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 border-none focus:ring-2 focus:ring-blue-600"
+                          className="text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-sm bg-zinc-100 dark:bg-zinc-900 border border-transparent focus:border-blue-600 transition-all"
                         >
-                          <option value="FREE">Free</option>
-                          <option value="PRO">Pro</option>
-                          <option value="BUSINESS">Business</option>
+                          <option value="FREE">Standard</option>
+                          <option value="PRO">Optimizer Pro</option>
+                          <option value="BUSINESS">Agency Elite</option>
                         </select>
                         <select 
                           value={user.role}
                           onChange={(e) => updateUser(user.id, { role: e.target.value })}
                           disabled={updatingId === user.id}
-                          className="text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 border-none focus:ring-2 focus:ring-blue-600"
+                          className="text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-sm bg-blue-600 text-white border-none shadow-lg shadow-blue-500/10"
                         >
-                          <option value="DEVELOPER">Developer</option>
-                          <option value="ADMIN">Admin</option>
+                          <option value="DEVELOPER">Operator</option>
+                          <option value="ADMIN">Command</option>
                         </select>
                       </div>
                     </td>
-                    <td className="p-4 text-xs">
-                       <div className="flex items-center gap-4 text-zinc-500">
-                          <span className="flex items-center gap-1"><Zap className="h-3 w-3" /> {user._count.monitors}</span>
-                          <span className="flex items-center gap-1"><Shield className="h-3 w-3" /> {user._count.apiKeys}</span>
+                    <td className="p-6">
+                       <div className="flex items-center justify-center gap-6 text-zinc-500">
+                          <div className="flex flex-col items-center">
+                            <span className="text-[10px] font-black text-zinc-900 dark:text-white mb-0.5">{user._count.monitors}</span>
+                            <span className="text-[8px] font-black uppercase tracking-widest text-zinc-400">Assets</span>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <span className="text-[10px] font-black text-zinc-900 dark:text-white mb-0.5">{user._count.apiKeys}</span>
+                            <span className="text-[8px] font-black uppercase tracking-widest text-zinc-400">Keys</span>
+                          </div>
                        </div>
                     </td>
-                    <td className="p-4 text-xs text-zinc-400">
-                      {new Date(user.createdAt).toLocaleDateString()}
+                    <td className="p-6">
+                      <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+                        {new Date(user.createdAt).toLocaleDateString([], { month: 'short', day: '2-digit', year: 'numeric' })}
+                      </p>
                     </td>
-                    <td className="p-4 text-right">
+                    <td className="p-6 text-right">
                        <button 
                          onClick={() => deleteUser(user.id)}
                          disabled={updatingId === user.id}
-                         className="p-2 text-zinc-300 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-colors opacity-0 group-hover:opacity-100 disabled:opacity-50"
-                         title="Delete User"
+                         className="h-10 w-10 flex items-center justify-center text-zinc-200 hover:text-white hover:bg-red-600 rounded-md transition-all opacity-0 group-hover:opacity-100 disabled:opacity-50 border border-transparent hover:border-red-700"
+                         title="Decommission Unit"
                        >
                           <Trash2 className="h-4 w-4" />
                        </button>

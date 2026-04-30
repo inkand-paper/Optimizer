@@ -57,16 +57,16 @@ function LoginContent() {
       <main className="flex-1 flex items-center justify-center p-6 relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[120px] pointer-events-none" />
         
-        <Card className="w-full max-w-md p-10 relative z-10 border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-black/50 backdrop-blur-xl">
+        <Card className="w-full max-w-md p-10 relative z-10 border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-black/50 backdrop-blur-xl shadow-2xl">
           <div className="flex flex-col items-center gap-2 mb-10 text-center">
-            <div className="h-14 w-14 rounded-md bg-zinc-900 dark:bg-zinc-50 flex items-center justify-center mb-4 shadow-2xl">
+            <div className="h-14 w-14 rounded-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center mb-4 shadow-xl">
               <Activity className="h-7 w-7 text-blue-600" />
             </div>
-            <h1 className="text-3xl font-black tracking-tighter text-zinc-900 dark:text-white uppercase">
-              Access Control
+            <h1 className="text-3xl font-black tracking-tighter text-zinc-900 dark:text-white uppercase leading-none">
+              Access Console
             </h1>
-            <p className="text-zinc-500 dark:text-zinc-400 text-xs font-black uppercase tracking-[0.2em]">
-              NexPulse Infrastructure Portal
+            <p className="text-zinc-500 dark:text-zinc-400 text-[10px] font-black uppercase tracking-[0.3em] mt-2">
+              NexPulse Infrastructure Gateway
             </p>
           </div>
 
@@ -113,10 +113,10 @@ function LoginContent() {
             </Button>
           </form>
 
-          <p className="mt-8 text-center text-[10px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-widest">
-            First time?{" "}
+          <p className="mt-8 text-center text-[9px] text-zinc-400 font-black uppercase tracking-[0.2em]">
+            New Engineering Unit?{" "}
             <Link href="/register" className="text-blue-600 hover:text-blue-500 transition-colors">
-              Create an architecture
+              Initialize Account
             </Link>
           </p>
         </Card>

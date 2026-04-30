@@ -3,22 +3,22 @@ import fs from "fs";
 import path from "path";
 import Link from "next/link";
 import { Navbar } from "@/components/navbar";
-import { ArrowLeft, BookOpen, Clock, Tag } from "lucide-react";
+import { ArrowLeft, BookOpen, Clock, Tag, ChevronRight } from "lucide-react";
 import { notFound } from "next/navigation";
+import { Button } from "@/components/ui-elements";
 
 import { MermaidInitializer } from "@/components/mermaid-initializer";
 
 function renderMarkdownAsCards(md: string) {
   const normalizedMd = md.replace(/\r\n/g, '\n');
   
-  // Use a more robust split that preserves the H2 headers
   const sections = normalizedMd.split(/\n(?=## )/);
   const intro = sections.shift() || "";
 
   const renderedIntro = intro
-    .replace(/^# (.*$)/gm, '<h1 class="text-4xl md:text-6xl font-black mb-8 tracking-tight text-zinc-900 dark:text-white">$1</h1>')
-    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-zinc-900 dark:text-white">$1</strong>')
-    .split('\n\n').filter(Boolean).map(p => p.startsWith('<') ? p : `<p class="text-xl text-zinc-500 dark:text-zinc-400 leading-relaxed mb-8">${p}</p>`).join('\n');
+    .replace(/^# (.*$)/gm, '<h1 class="text-4xl md:text-7xl font-black mb-10 tracking-tighter text-zinc-900 dark:text-white uppercase leading-[0.9]">$1</h1>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-black text-zinc-900 dark:text-white uppercase tracking-tight">$1</strong>')
+    .split('\n\n').filter(Boolean).map(p => p.startsWith('<') ? p : `<p class="text-lg text-zinc-500 dark:text-zinc-400 font-bold tracking-tight leading-relaxed mb-10 uppercase">${p}</p>`).join('\n');
 
   const renderedSections = sections.map(section => {
     const rawSection = section.replace(/^## /, '');
@@ -28,73 +28,65 @@ function renderMarkdownAsCards(md: string) {
     let content = lines.join('\n');
 
     // 1. Handle Mermaid
-    content = content.replace(/```mermaid\n([\s\S]*?)```/g, '<div class="mermaid bg-white dark:bg-zinc-900 p-8 rounded-3xl border dark:border-zinc-800 my-8 flex justify-center">$1</div>');
+    content = content.replace(/```mermaid\n([\s\S]*?)```/g, '<div class="mermaid bg-zinc-50 dark:bg-zinc-950 p-8 rounded-md border border-zinc-200 dark:border-zinc-800 my-10 flex justify-center shadow-sm">$1</div>');
 
     // 2. Handle Highlighted Code Blocks
     content = content.replace(/```(\w+)\n([\s\S]*?)```/g, (match, lang, code) => {
       const displayLang = lang.toUpperCase();
-      let icon = '<div class="h-2 w-2 rounded-full bg-zinc-500"></div>';
-      
-      if (lang === 'swift') icon = '<svg class="h-4 w-4 text-orange-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12.162 14.5c.325.263.663.513 1.013.738 1.412.913 2.925 1.575 4.537 1.988-1.55 1.113-3.237 1.838-5.012 2.163-.125.025-.138.013-.088-.1.45-.9 1.138-1.788 2-2.613-.675-.125-1.325-.338-1.95-.625-.325-.15-.65-.325-.963-.512-1.637-1.025-3.087-2.313-4.287-3.813C6.462 10.512 5.8 9.075 5.438 7.55c1.075 1.538 2.375 2.875 3.862 3.963 1.05.775 2.188 1.4 3.388 1.838-.138-.45-.225-.913-.263-1.388-.038-.55 0-1.1.113-1.638-1.125.075-2.225.325-3.275.75-1.125.463-2.175 1.075-3.125 1.825 1.162-1.313 2.588-2.375 4.188-3.138.4-.188.812-.35 1.225-.488.512-.163 1.037-.288 1.575-.363.15-.025.3-.038.45-.05.613-.038 1.238-.013 1.85.088-.013-.013-.025-.013-.038-.025-1.575-.6-3.175-.9-4.825-.9C6.912 8 4.225 10.325 3 13.562c2.162.275 4.1.913 5.837 1.888-.312.162-.612.337-.9.537-.562.4-.4.538-.15.425 2.1-1 4.512-1.538 6.975-1.538-2.613 2.1-3.9 4.8-3.9 8.1 0 1.35.3 2.55.9 3.6-1.5-.3-2.925-.9-4.2-1.8 1.2-.3 2.325-.75 3.375-1.35.375-.225.75-.45 1.125-.712z"/></svg>';
-      if (lang === 'javascript' || lang === 'js') icon = '<svg class="h-4 w-4 text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h18v18H3V3zm15.525 15.111c-.344-.659-.838-1.218-1.447-1.542-.609-.324-1.286-.486-1.984-.486-.698 0-1.362.162-1.95.486-.588.324-1.053.791-1.353 1.341l1.554.96c.201-.351.464-.627.766-.807.302-.18.618-.27.915-.27s.588.08.852.24.471.4.6.72c.129.32.193.67.193 1.05 0 .39-.064.75-.193 1.08-.129.33-.328.6-.6.81-.271.21-.555.315-.852.315-.312 0-.6-.085-.863-.255-.262-.17-.481-.42-.657-.75l-1.635 1c.36.63.855 1.11 1.485 1.44s1.305.495 2.025.495c.744 0 1.449-.17 2.055-.51s1.083-.815 1.431-1.425.522-1.305.522-2.085c0-.792-.174-1.488-.522-2.148z"/></svg>';
-      if (lang === 'python') icon = '<svg class="h-4 w-4 text-blue-400" viewBox="0 0 24 24" fill="currentColor"><path d="M14.25.18l.9.2.73.26.59.3.45.32.34.34.25.34.16.33.1.3.04.26.02.2v1.13l-.02.53-.05.46-.11.4-.18.35-.26.3-.33.25-.43.19-.58.11H11.1l-.31.03-.38.08-.3.12-.35.22-.3.27-.24.35-.19.4-.13.47-.08.56-.03.62V10.3l.03.62.08.56.13.47.19.4.24.35.3.27.35.22.3.12.38.08.31.03h3.15l.58.11.43.19.33.25.26.3.18.35.11.4.05.46.02.53V15.4l-.02.2-.04.26-.1.3-.16.33-.25.34-.34.34-.45.32-.59.3-.73.26-.9.2-.17.03h-1.13l-.9-.2-.73-.26-.59-.3-.45-.32-.34-.34-.25-.34-.16-.33-.1-.3-.04-.26-.02-.2V14.4l.02-.53.05-.46.11-.4.18-.35.26-.3.33-.25.43-.19.58-.11H14.4l.31-.03.38-.08.3-.12.35-.22.3-.27.24-.35.19-.4.13-.47.08-.56.03-.62V8.3l-.03-.62-.08-.56-.13-.47-.19-.4-.24-.35-.3-.27-.35-.22-.3-.12-.38-.08-.31-.03h-3.15l-.58-.11-.43-.19-.33-.25-.26-.3-.18-.35-.11-.4-.05-.46-.02-.53V3.4l.02-.2.04-.26.1-.3.16-.33.25-.34.34-.34.45-.32.59-.3.73-.26.9-.2.17-.03H14.25z"/></svg>';
-      if (lang === 'go') icon = '<svg class="h-4 w-4 text-cyan-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>';
-      if (lang === 'ruby') icon = '<svg class="h-4 w-4 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L3 9l9 13 9-13-9-7z"/></svg>';
-      if (lang === 'kotlin') icon = '<svg class="h-4 w-4 text-purple-400" viewBox="0 0 24 24" fill="currentColor"><path d="M2 2l10 10L22 2v20H2V2z"/></svg>';
-
-      return `<div class="relative group my-8">
-        <div class="absolute -top-3 right-4 flex items-center gap-2 px-3 py-1 bg-zinc-800 border border-zinc-700 rounded-full shadow-lg z-10 scale-90 sm:scale-100">
-          ${icon}
-          <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400">${displayLang}</span>
+      return `<div class="relative group my-10">
+        <div class="absolute -top-3 right-4 flex items-center gap-2 px-3 py-1 bg-zinc-900 dark:bg-white border border-zinc-800 dark:border-zinc-200 rounded-sm shadow-xl z-10">
+          <div class="h-2 w-2 rounded-full bg-blue-500"></div>
+          <span class="text-[9px] font-black uppercase tracking-[0.2em] text-white dark:text-zinc-900">${displayLang}</span>
         </div>
-        <div class="rounded-[24px] sm:rounded-[32px] overflow-hidden border border-zinc-800 shadow-2xl">
-          <pre class="bg-zinc-950 text-zinc-100 p-6 sm:p-8 pt-8 sm:pt-10 overflow-x-auto custom-scrollbar !whitespace-pre">
-            <code class="language-${lang} text-[11px] sm:text-sm font-mono leading-relaxed !whitespace-pre !break-normal inline-block min-w-full">${code.trim()}</code>
+        <div class="rounded-md overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-xl">
+          <pre class="bg-zinc-950 text-zinc-100 p-8 pt-10 overflow-x-auto custom-scrollbar !whitespace-pre">
+            <code class="language-${lang} text-xs font-mono leading-relaxed !whitespace-pre !break-normal inline-block min-w-full">${code.trim()}</code>
           </pre>
         </div>
       </div>`;
     });
 
     // 3. Handle Standard Code Blocks
-    content = content.replace(/```([\s\S]*?)```/g, '<div class="relative group my-8"><div class="rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl"><pre class="bg-zinc-950 text-zinc-100 p-6 overflow-x-auto custom-scrollbar !whitespace-pre"><code class="text-[11px] sm:text-sm font-mono leading-relaxed !whitespace-pre !break-normal inline-block min-w-full">$1</code></pre></div></div>');
+    content = content.replace(/```([\s\S]*?)```/g, '<div class="relative group my-10"><div class="rounded-md overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-xl"><pre class="bg-zinc-950 text-zinc-100 p-8 overflow-x-auto custom-scrollbar !whitespace-pre"><code class="text-xs font-mono leading-relaxed !whitespace-pre !break-normal inline-block min-w-full">$1</code></pre></div></div>');
 
     // 4. Tables
     content = content.replace(/((?:\|.+\|\n?)+)/g, (match) => {
       const rows = match.trim().split('\n');
       if (rows.length < 2) return match;
       const headerRow = rows.shift() || "";
-      rows.shift(); // separator
+      rows.shift(); 
       
       const headerCells = headerRow.split('|').filter(c => c.trim() !== "").map(c => c.trim());
-      const headerHtml = `<thead class="bg-zinc-50 dark:bg-zinc-800/50"><tr>${headerCells.map(c => `<th class="p-4 text-xs font-black uppercase tracking-widest text-zinc-500">${c}</th>`).join('')}</tr></thead>`;
+      const headerHtml = `<thead class="bg-zinc-50 dark:bg-zinc-900"><tr>${headerCells.map(c => `<th class="p-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">${c}</th>`).join('')}</tr></thead>`;
       
       const bodyRowsHtml = rows.map(row => {
         const cells = row.split('|').filter(c => c.trim() !== "").map(c => c.trim());
-        return `<tr class="border-b dark:border-zinc-800">${cells.map(c => `<td class="p-4 text-sm text-zinc-600 dark:text-zinc-400">${c}</td>`).join('')}</tr>`;
+        return `<tr class="border-b border-zinc-100 dark:border-zinc-900 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50 transition-colors">${cells.map(c => `<td class="p-5 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-tight">${c}</td>`).join('')}</tr>`;
       }).join('');
       
-      return `<div class="overflow-x-auto my-8 border dark:border-zinc-800 rounded-2xl shadow-sm"><table class="w-full text-left border-collapse">${headerHtml}<tbody class="divide-y dark:divide-zinc-800">${bodyRowsHtml}</tbody></table></div>`;
+      return `<div class="overflow-x-auto my-10 border border-zinc-200 dark:border-zinc-800 rounded-md shadow-sm"><table class="w-full text-left border-collapse">${headerHtml}<tbody class="divide-y border-zinc-100 dark:divide-zinc-900">${bodyRowsHtml}</tbody></table></div>`;
     });
 
     // 5. Basic Inline
     content = content
-      .replace(/^### (.*$)/gm, '<h3 class="text-xl font-bold mb-4 mt-8 text-zinc-900 dark:text-white">$1</h3>')
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-blue-600 hover:underline font-medium">$1</a>')
-      .replace(/^> (.*$)/gm, '<div class="bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-600 p-4 my-6 rounded-r-xl"><p class="italic text-blue-900 dark:text-blue-300">$1</p></div>')
-      .replace(/^\- (.*$)/gm, '<li class="flex items-start gap-3 mb-3"><span class="h-1.5 w-1.5 rounded-full bg-blue-600 mt-2 shrink-0"></span><span class="text-zinc-600 dark:text-zinc-400">$1</span></li>');
+      .replace(/^### (.*$)/gm, '<h3 class="text-2xl font-black mb-6 mt-12 text-zinc-900 dark:text-white uppercase tracking-tighter border-b border-zinc-100 dark:border-zinc-900 pb-2">$1</h3>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong class="font-black text-zinc-900 dark:text-white uppercase tracking-tight">$1</strong>')
+      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-blue-600 hover:text-blue-500 font-black uppercase tracking-tight transition-colors underline decoration-2 underline-offset-4">$1</a>')
+      .replace(/^> (.*$)/gm, '<div class="bg-zinc-50 dark:bg-zinc-900/50 border-l-4 border-blue-600 p-6 my-10 rounded-sm shadow-sm"><p class="text-xs font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-400 leading-loose">$1</p></div>')
+      .replace(/^\- (.*$)/gm, '<li class="flex items-start gap-4 mb-4"><div class="h-2 w-2 rounded-sm bg-blue-600 mt-1.5 shrink-0 shadow-lg shadow-blue-500/20"></div><span class="text-xs font-black uppercase tracking-tight text-zinc-600 dark:text-zinc-400 leading-relaxed">$1</span></li>');
 
-    // 6. Paragraphs (More surgical)
+    // 6. Paragraphs
     content = content.split('\n\n').filter(Boolean).map(p => {
       const trimmed = p.trim();
       if (trimmed.startsWith('<div') || trimmed.startsWith('<section') || trimmed.startsWith('<h3') || trimmed.startsWith('<li')) return trimmed;
-      return `<p class="mb-4 leading-relaxed text-zinc-600 dark:text-zinc-400">${trimmed}</p>`;
+      return `<p class="mb-6 text-xs font-bold uppercase tracking-tight text-zinc-500 dark:text-zinc-400 leading-relaxed">${trimmed}</p>`;
     }).join('\n');
 
     return `
-      <section id="${sectionId}" class="mb-12 scroll-mt-24">
-        <div class="bg-white dark:bg-zinc-900 rounded-[32px] p-8 md:p-12 border border-zinc-100 dark:border-zinc-800 shadow-sm hover:shadow-xl hover:shadow-zinc-200/50 dark:hover:shadow-none transition-all duration-500">
-          <h2 class="text-2xl md:text-3xl font-black mb-8 tracking-tight text-zinc-900 dark:text-white">${title}</h2>
+      <section id="${sectionId}" class="mb-16 scroll-mt-32">
+        <div class="bg-white dark:bg-zinc-950 rounded-md p-8 md:p-16 border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden group">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-blue-600/10 transition-all duration-700" />
+          <h2 class="text-3xl md:text-5xl font-black mb-12 tracking-tighter text-zinc-900 dark:text-white uppercase leading-none border-l-4 border-blue-600 pl-8">${title}</h2>
           <div class="prose prose-zinc dark:prose-invert max-w-none">
             ${content}
           </div>
@@ -126,47 +118,54 @@ export default async function DocDetail({ params }: { params: Promise<{ slug: st
     const { renderedIntro, renderedSections } = renderMarkdownAsCards(content);
 
     return (
-      <div className="min-h-screen flex flex-col bg-white dark:bg-zinc-950">
+      <div className="min-h-screen flex flex-col bg-white dark:bg-black">
         <MermaidInitializer />
         <Navbar />
         
-        <main className="flex-1 w-full max-w-[900px] mx-auto px-4 py-12 md:py-20">
+        <main className="flex-1 w-full max-w-[1000px] mx-auto px-4 py-20 md:py-32">
           <Link 
             href="/docs" 
-            className="inline-flex items-center gap-2 text-zinc-500 hover:text-blue-600 transition-colors mb-12 group"
+            className="inline-flex items-center gap-2 text-zinc-400 hover:text-blue-600 transition-all mb-16 group font-black text-[10px] uppercase tracking-[0.3em]"
           >
             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-            Back to Documentation
+            Return to Protocols
           </Link>
 
-          <div className="flex items-center gap-4 mb-8">
-            <div className="px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5">
-              <BookOpen className="h-3 w-3" /> Technical Guide
+          <div className="flex items-center gap-6 mb-12 border-b border-zinc-100 dark:border-zinc-900 pb-8">
+            <div className="px-3 py-1 rounded-sm bg-blue-600 text-white text-[9px] font-black uppercase tracking-[0.3em] flex items-center gap-2 shadow-lg shadow-blue-500/20">
+              <BookOpen className="h-3 w-3 fill-current" /> 
+              <span>Engineering Guideline</span>
             </div>
-            <div className="flex items-center gap-1.5 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
-              <Clock className="h-3 w-3" /> 5 Min Read
+            <div className="flex items-center gap-2 text-[9px] font-black text-zinc-400 uppercase tracking-[0.3em]">
+              <Clock className="h-3 w-3" /> 
+              <span>Transmission: 5m</span>
             </div>
           </div>
 
           <div 
+            className="docs-content"
             dangerouslySetInnerHTML={{ __html: renderedIntro }}
           />
 
           <div 
+            className="docs-content mt-16"
             dangerouslySetInnerHTML={{ __html: renderedSections }}
           />
 
-          <div className="mt-20 pt-12 border-t border-zinc-100 dark:border-zinc-800">
-            <h4 className="text-sm font-bold mb-6">Need more help?</h4>
-            <div className="grid sm:grid-cols-2 gap-4">
-               <Link href="mailto:tabir8431@gmail.com" className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-colors border border-transparent hover:border-blue-200">
-                  <p className="font-bold text-sm mb-1">Email Support</p>
-                  <p className="text-xs text-zinc-500">Response within 24 hours</p>
-               </Link>
-               <Link href="https://github.com/inkand-paper/Optimizer" className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors border border-transparent">
-                  <p className="font-bold text-sm mb-1">Open Issue</p>
-                  <p className="text-xs text-zinc-500">Report bugs on GitHub</p>
-               </Link>
+          <div className="mt-32 p-12 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md relative overflow-hidden">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_var(--tw-gradient-stops))] from-blue-600/5 via-transparent to-transparent opacity-50" />
+            <div class="relative z-10">
+              <h4 className="text-xl font-black mb-8 uppercase tracking-tighter">Support Escalation Matrix</h4>
+              <div className="grid sm:grid-cols-2 gap-4">
+                 <Link href="mailto:tabir8431@gmail.com" className="p-6 rounded-md bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 hover:border-blue-600 transition-all shadow-sm group">
+                    <p className="font-black text-xs mb-1 uppercase tracking-tight text-zinc-900 dark:text-white group-hover:text-blue-600 transition-colors">Direct Engineering Liaison</p>
+                    <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">SLA: 24 Hour Response Time</p>
+                 </Link>
+                 <Link href="https://github.com/inkand-paper/Optimizer" className="p-6 rounded-md bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 hover:border-blue-600 transition-all shadow-sm group">
+                    <p className="font-black text-xs mb-1 uppercase tracking-tight text-zinc-900 dark:text-white group-hover:text-blue-600 transition-colors">Protocol Issue Log</p>
+                    <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Public Repository Tracking</p>
+                 </Link>
+              </div>
             </div>
           </div>
         </main>

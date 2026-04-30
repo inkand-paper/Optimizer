@@ -155,18 +155,18 @@ export function WebhookManager({ onLimitReached }: WebhookManagerProps) {
                   className={cn(
                     "flex items-center gap-3 px-3 py-3 rounded-md border text-[9px] font-black uppercase tracking-widest transition-all text-left",
                     selectedEvents.includes(ev.id) 
-                      ? "bg-zinc-900 border-zinc-900 text-white dark:bg-white dark:border-white dark:text-zinc-900" 
+                      ? "bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/20" 
                       : "bg-white border-zinc-200 text-zinc-500 dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-500 hover:border-zinc-400"
                   )}
                 >
-                  <Zap className={cn("h-3 w-3", selectedEvents.includes(ev.id) ? "text-blue-500" : "opacity-20")} />
+                  <Zap className={cn("h-3 w-3", selectedEvents.includes(ev.id) ? "text-white" : "text-blue-500 opacity-30")} />
                   {ev.label}
                 </button>
               ))}
             </div>
           </div>
-          <Button className="w-full h-12 font-black uppercase tracking-widest text-xs" onClick={handleAdd} disabled={!url || selectedEvents.length === 0}>
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Deploy Webhook Sequence"}
+          <Button className="w-full h-14 font-black uppercase tracking-[0.2em] text-xs bg-zinc-900 text-white dark:bg-white dark:text-black hover:bg-blue-600 dark:hover:bg-blue-600 dark:hover:text-white shadow-xl transition-all" onClick={handleAdd} disabled={!url || selectedEvents.length === 0}>
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Deploy Protocol Sequence"}
           </Button>
         </div>
       )}
