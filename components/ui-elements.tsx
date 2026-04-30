@@ -11,7 +11,7 @@ export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
   return (
     <div
       className={cn(
-        "rounded-[var(--radius)] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-950 dark:text-zinc-50 shadow-sm transition-colors",
+        "rounded-[var(--radius)] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black text-zinc-950 dark:text-zinc-50 shadow-sm transition-colors",
         className
       )}
       {...props}
@@ -34,15 +34,15 @@ export function Button({
   ...props 
 }: ButtonProps) {
   const variants = {
-    primary: "bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm active:scale-95 transition-all",
-    secondary: "bg-zinc-100 text-zinc-900 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-50 dark:hover:bg-zinc-700",
+    primary: "bg-zinc-900 text-zinc-50 hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200 shadow-sm transition-all active:scale-[0.98]",
+    secondary: "bg-zinc-100 text-zinc-900 hover:bg-zinc-200 dark:bg-zinc-900 dark:text-zinc-50 dark:hover:bg-zinc-800",
     outline: "border border-zinc-200 bg-transparent hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100",
-    ghost: "bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-800",
+    ghost: "bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-300",
     danger: "bg-red-600 text-white hover:bg-red-700",
   };
 
   const sizes = {
-    sm: "h-8 px-3 text-xs rounded-lg",
+    sm: "h-8 px-3 text-xs rounded-md",
     md: "h-10 px-4 py-2 text-sm rounded-[var(--radius)]",
     lg: "h-12 px-8 text-base rounded-[var(--radius)]",
     icon: "h-10 w-10 flex items-center justify-center p-0 rounded-[var(--radius)]",
@@ -51,7 +51,7 @@ export function Button({
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center font-medium transition-all focus-visibility:outline-none focus-visibility:ring-2 disabled:opacity-50 disabled:pointer-events-none",
+        "inline-flex items-center justify-center font-bold tracking-tight transition-all focus-visibility:outline-none focus-visibility:ring-2 disabled:opacity-50 disabled:pointer-events-none",
         variants[variant],
         sizes[size],
         className
@@ -68,7 +68,7 @@ export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInp
   return (
     <input
       className={cn(
-        "flex h-10 w-full rounded-[var(--radius)] border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-900 dark:ring-offset-zinc-950 dark:placeholder:text-zinc-500",
+        "flex h-10 w-full rounded-[var(--radius)] border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-900 dark:ring-offset-zinc-950 dark:placeholder:text-zinc-500",
         className
       )}
       {...props}

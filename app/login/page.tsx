@@ -39,8 +39,6 @@ function LoginContent() {
       const data = await res.json();
 
       if (res.ok) {
-        // Token is now set as a secure HttpOnly cookie by the server.
-        // We only store non-sensitive display data locally.
         localStorage.setItem("user", JSON.stringify(data.user));
         router.push("/dashboard");
       } else {
@@ -54,67 +52,71 @@ function LoginContent() {
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-zinc-50 dark:bg-zinc-950">
+    <div className="flex-1 flex flex-col bg-white dark:bg-black min-h-screen">
       <Navbar />
-      <main className="flex-1 flex items-center justify-center p-6">
-        <Card className="w-full max-w-md p-8">
-          <div className="flex flex-col items-center gap-2 mb-8">
-            <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-2">
-              <Activity className="h-6 w-6 text-blue-600" />
+      <main className="flex-1 flex items-center justify-center p-6 relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[120px] pointer-events-none" />
+        
+        <Card className="w-full max-w-md p-10 relative z-10 border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-black/50 backdrop-blur-xl">
+          <div className="flex flex-col items-center gap-2 mb-10 text-center">
+            <div className="h-14 w-14 rounded-md bg-zinc-900 dark:bg-zinc-50 flex items-center justify-center mb-4 shadow-2xl">
+              <Activity className="h-7 w-7 text-blue-600" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-              Welcome back
+            <h1 className="text-3xl font-black tracking-tighter text-zinc-900 dark:text-white uppercase">
+              Access Control
             </h1>
-            <p className="text-zinc-500 dark:text-zinc-400 text-sm">
-              Enter your credentials to access your dashboard
+            <p className="text-zinc-500 dark:text-zinc-400 text-xs font-black uppercase tracking-[0.2em]">
+              NexPulse Infrastructure Portal
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} method="POST" className="space-y-4">
+          <form onSubmit={handleSubmit} method="POST" className="space-y-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="email">Email</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500" htmlFor="email">Email Address</label>
               <Input 
                 id="email" 
                 name="email" 
                 type="email" 
-                placeholder="name@example.com" 
+                placeholder="infrastructure@nexpulse.io" 
                 required 
                 autoFocus
+                className="h-12 bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 font-bold"
               />
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-medium" htmlFor="password">Password</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500" htmlFor="password">Password</label>
               </div>
               <PasswordInput 
                 id="password" 
                 name="password" 
                 required 
+                className="h-12 bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 font-bold"
               />
             </div>
 
             {isVerified && (
-              <div className="p-4 flex items-center gap-3 text-sm font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-900/20">
-                <CheckCircle2 className="h-5 w-5 shrink-0" />
-                Account successfully activated! You can now sign in.
+              <div className="p-4 flex items-center gap-3 text-xs font-black uppercase tracking-wider text-emerald-600 bg-emerald-50 dark:bg-emerald-900/10 rounded-md border border-emerald-100 dark:border-emerald-900/20">
+                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                Account Activated
               </div>
             )}
 
             {error && (
-              <div className="p-3 text-xs font-medium text-red-600 bg-red-50 dark:bg-red-900/10 rounded-lg">
+              <div className="p-4 text-[10px] font-black uppercase tracking-widest text-red-600 bg-red-50 dark:bg-red-900/10 rounded-md border border-red-100 dark:border-red-900/20">
                 {error}
               </div>
             )}
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign In"}
+            <Button type="submit" className="w-full h-14 font-black uppercase tracking-[0.2em] text-xs" disabled={loading}>
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Authenticate"}
             </Button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
-            Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-blue-600 hover:underline font-medium">
-              Create an account
+          <p className="mt-8 text-center text-[10px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-widest">
+            First time?{" "}
+            <Link href="/register" className="text-blue-600 hover:text-blue-500 transition-colors">
+              Create an architecture
             </Link>
           </p>
         </Card>
@@ -126,8 +128,8 @@ function LoginContent() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-950">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black">
+        <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
       </div>
     }>
       <LoginContent />

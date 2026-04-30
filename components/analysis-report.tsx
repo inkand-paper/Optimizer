@@ -10,7 +10,6 @@ import {
   AlertCircle,
   Globe,
   Lock,
-  Gauge,
   ArrowRight,
   Sparkles,
   Crown
@@ -25,7 +24,7 @@ interface Props {
 
 /**
  * [PRODUCTION-GRADE] - Advanced Analysis Report
- * Visualizes the multi-dimensional audit data into a professional dashboard.
+ * Sovereign Obsidian Aesthetic
  */
 export function AnalysisReport({ data }: Props) {
   const { results, success } = data;
@@ -56,15 +55,15 @@ export function AnalysisReport({ data }: Props) {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Header Summary */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-8 bg-zinc-900 dark:bg-zinc-900/80 rounded-[var(--radius)] text-white overflow-hidden relative border border-white/5 shadow-2xl">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600/10 rounded-full blur-3xl -mr-32 -mt-32" />
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-8 bg-zinc-900 dark:bg-black rounded-lg text-white overflow-hidden relative border border-white/5 shadow-2xl">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl -mr-32 -mt-32" />
         <div className="z-10 w-full sm:w-auto">
           <div className="flex items-center gap-2 mb-3">
-            <Globe className="h-4 w-4 text-indigo-400" />
+            <Globe className="h-4 w-4 text-blue-400" />
             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Universal Domain Audit</span>
           </div>
           <h3 className="text-2xl font-black tracking-tight truncate max-w-full sm:max-w-md">{results.url}</h3>
-          <p className="text-xs text-zinc-500 mt-2 font-medium">Scan completed on {new Date(data.timestamp).toLocaleString()}</p>
+          <p className="text-xs text-zinc-500 mt-2 font-bold uppercase tracking-widest">Completed: {new Date(data.timestamp).toLocaleString()}</p>
         </div>
         
         <div className="flex items-center justify-between sm:justify-end gap-10 z-10 w-full sm:w-auto">
@@ -78,37 +77,37 @@ export function AnalysisReport({ data }: Props) {
             </div>
             <p className="text-[10px] uppercase font-black tracking-[0.2em] text-zinc-500 mt-2">Health Score</p>
           </div>
-          <Button variant="outline" size="sm" onClick={downloadReport} className="bg-white/5 border-white/10 hover:bg-white/10 text-white border-0 h-12 px-6 rounded-xl font-bold">
-            <Download className="h-4 w-4 mr-2" /> Export
+          <Button variant="outline" size="sm" onClick={downloadReport} className="bg-white/5 border-white/10 hover:bg-white/10 text-white border-0 h-12 px-6 font-black uppercase tracking-widest text-[10px]">
+            <Download className="h-4 w-4 mr-2" /> Export JSON
           </Button>
         </div>
       </div>
 
       {/* AI Genius Diagnosis Section */}
       {data.aiInsight && (
-        <Card className="p-0 overflow-hidden border-indigo-200 dark:border-indigo-500/20 bg-gradient-to-br from-indigo-50/30 to-white dark:from-indigo-950/10 dark:to-zinc-900/50 relative group">
+        <Card className="p-0 overflow-hidden border-blue-200/50 dark:border-blue-500/20 bg-white dark:bg-black relative group">
           <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
-            <Crown className="h-32 w-32 text-indigo-600" />
+            <Crown className="h-32 w-32 text-blue-600" />
           </div>
           
           <div className="p-8 relative z-10">
             <div className="flex items-center gap-4 mb-6">
-              <div className="h-12 w-12 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-xl shadow-indigo-600/20">
+              <div className="h-12 w-12 rounded-md bg-blue-600 flex items-center justify-center text-white shadow-xl shadow-blue-600/20">
                 <Sparkles className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-black text-xl text-zinc-900 dark:text-white">AI Genius Diagnosis</h3>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500 opacity-80">Infrastructure Brief • Gemini 1.5 Flash</p>
+                <h3 className="font-black text-xl text-zinc-900 dark:text-white uppercase tracking-tight">AI Genius Diagnosis</h3>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-500">Infrastructure Brief • Gemini 1.5 Flash</p>
               </div>
             </div>
 
             <div className="prose prose-sm dark:prose-invert max-w-none">
               <div 
                 className={cn(
-                  "text-zinc-700 dark:text-zinc-300 leading-relaxed text-sm",
+                  "text-zinc-700 dark:text-zinc-300 leading-relaxed text-sm font-medium",
                   "prose-headings:text-zinc-900 dark:prose-headings:text-white prose-headings:font-black prose-headings:mb-3 prose-headings:mt-6",
-                  "prose-strong:text-indigo-600 dark:prose-strong:text-indigo-400 prose-strong:font-black",
-                  "prose-ul:list-disc prose-ul:pl-5 prose-ul:space-y-2 prose-li:marker:text-indigo-500"
+                  "prose-strong:text-blue-600 dark:prose-strong:text-blue-400 prose-strong:font-black",
+                  "prose-ul:list-disc prose-ul:pl-5 prose-ul:space-y-2 prose-li:marker:text-blue-500"
                 )}
               >
                 <ReactMarkdown>
@@ -117,10 +116,10 @@ export function AnalysisReport({ data }: Props) {
               </div>
             </div>
 
-            <div className="mt-8 flex items-center gap-3 p-4 rounded-xl bg-indigo-600/5 border border-indigo-100 dark:border-indigo-500/10">
-              <ShieldCheck className="h-4 w-4 text-indigo-500" />
-              <p className="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold">
-                This diagnostic report is calibrated against universal performance benchmarks.
+            <div className="mt-8 flex items-center gap-3 p-4 rounded-md bg-blue-600/5 border border-blue-100 dark:border-blue-500/10">
+              <ShieldCheck className="h-4 w-4 text-blue-500" />
+              <p className="text-[11px] text-blue-600 dark:text-blue-400 font-black uppercase tracking-wider">
+                Universal Infrastructure Briefing Complete.
               </p>
             </div>
           </div>
@@ -129,20 +128,20 @@ export function AnalysisReport({ data }: Props) {
 
       {/* Upgrade Prompt for Free Users */}
       {!data.aiInsight && (
-        <Card className="p-10 border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/10 text-center relative overflow-hidden group">
+        <Card className="p-10 border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-black text-center relative overflow-hidden group">
           <div className="relative z-10 max-w-lg mx-auto">
-            <div className="h-14 w-14 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mx-auto mb-6 text-zinc-400 group-hover:text-indigo-500 transition-all duration-300">
+            <div className="h-14 w-14 rounded-md bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center mx-auto mb-6 text-zinc-400 group-hover:text-blue-600 transition-all duration-300">
               <Lock className="h-6 w-6" />
             </div>
             <h3 className="font-black text-2xl mb-3 tracking-tight">Unlock AI Infrastructure Intelligence</h3>
-            <p className="text-zinc-500 mb-8 leading-relaxed font-medium">
+            <p className="text-zinc-500 mb-8 leading-relaxed font-bold">
               Join enterprise teams using NexPulse Pro to unlock AI-powered profit recovery audits and professional performance action plans.
             </p>
             <Button 
               onClick={() => window.dispatchEvent(new CustomEvent('open-pricing'))}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl shadow-indigo-600/20 px-10 h-14 rounded-xl font-black text-base"
+              className="bg-zinc-900 dark:bg-white dark:text-black hover:opacity-90 px-10 h-14 font-black text-xs uppercase tracking-widest"
             >
-              <Crown className="h-5 w-5 mr-2" /> Upgrade to Professional
+              <Crown className="h-4 w-4 mr-2" /> Upgrade to Professional
             </Button>
           </div>
         </Card>
@@ -192,13 +191,13 @@ export function AnalysisReport({ data }: Props) {
 
 function AuditSection({ title, icon, score, metrics, suggestions }: any) {
   return (
-    <Card className="p-0 overflow-hidden border border-zinc-200 dark:border-zinc-800 flex flex-col h-full bg-white dark:bg-zinc-950">
-      <div className="p-5 flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800">
+    <Card className="p-0 overflow-hidden border border-zinc-200 dark:border-zinc-800 flex flex-col h-full bg-white dark:bg-black">
+      <div className="p-5 flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
         <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-xl flex items-center justify-center text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20">
+          <div className="h-9 w-9 rounded-md flex items-center justify-center text-blue-600 bg-blue-50 dark:bg-blue-900/20">
             {icon}
           </div>
-          <span className="font-black text-xs uppercase tracking-widest text-zinc-900 dark:text-white">{title}</span>
+          <span className="font-black text-[10px] uppercase tracking-[0.2em] text-zinc-900 dark:text-white">{title}</span>
         </div>
         <div className="text-xl font-black tabular-nums">{score}</div>
       </div>
@@ -206,7 +205,7 @@ function AuditSection({ title, icon, score, metrics, suggestions }: any) {
       <div className="p-5 space-y-4 flex-1">
         {metrics.map((m: any, i: number) => (
           <div key={i} className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">{m.label}</span>
+            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{m.label}</span>
             <div className="flex items-center gap-2">
               <span className={cn("text-[11px] font-black", m.success ? "text-zinc-900 dark:text-zinc-100" : "text-red-500")}>
                 {m.value}
@@ -218,12 +217,12 @@ function AuditSection({ title, icon, score, metrics, suggestions }: any) {
 
         {suggestions.length > 0 && (
           <div className="mt-6 pt-5 border-t border-zinc-100 dark:border-zinc-800">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-3">Optimization Action Plan</p>
+            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-3">Optimization Action Plan</p>
             <div className="space-y-3">
               {suggestions.slice(0, 3).map((s: string, i: number) => (
                 <div key={i} className="flex items-start gap-3 group">
-                  <div className="h-1.5 w-1.5 rounded-full bg-indigo-500 mt-1.5 shrink-0" />
-                  <p className="text-[11px] text-zinc-600 dark:text-zinc-400 leading-normal font-medium">{s}</p>
+                  <div className="h-1.5 w-1.5 rounded-full bg-blue-500 mt-1.5 shrink-0" />
+                  <p className="text-[11px] text-zinc-600 dark:text-zinc-400 leading-normal font-bold">{s}</p>
                 </div>
               ))}
             </div>
@@ -233,4 +232,3 @@ function AuditSection({ title, icon, score, metrics, suggestions }: any) {
     </Card>
   );
 }
-

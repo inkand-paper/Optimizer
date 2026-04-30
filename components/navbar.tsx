@@ -61,61 +61,61 @@ export function Navbar() {
   );
 
   return (
-    <nav className="border-b border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-950 sticky top-0 z-50">
+    <nav className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black sticky top-0 z-50">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-black text-xl tracking-tighter z-50">
-          <Activity className="h-6 w-6 text-indigo-600" />
-          <span>NexPulse</span>
+          <Activity className="h-6 w-6 text-blue-600" />
+          <span className="text-zinc-900 dark:text-white">NexPulse</span>
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-6">
           <Link 
             href="/docs" 
-            className="flex items-center gap-1.5 text-sm font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors px-2 py-1.5"
+            className="text-sm font-black text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-white transition-colors"
           >
-            <BookOpen className="h-4 w-4" /> Docs
+            Docs
           </Link>
           {isLoggedIn ? (
             <>
               {isAdmin && (
                 <Link 
                   href="/dashboard/admin" 
-                  className="flex items-center gap-1.5 text-sm font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors px-2 py-1.5"
+                  className="text-sm font-black text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-white transition-colors"
                 >
-                  <ShieldAlert className="h-4 w-4" /> Admin
+                  Admin
                 </Link>
               )}
               <Link 
                 href="/dashboard" 
-                className="flex items-center gap-1.5 text-sm font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors px-2 py-1.5"
+                className="text-sm font-black text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-white transition-colors"
               >
-                <LayoutDashboard className="h-4 w-4" /> Dashboard
+                Dashboard
               </Link>
               <button 
                 onClick={handleLogout}
-                className="flex items-center gap-1 text-sm font-bold text-red-500 hover:text-red-600 transition-colors bg-red-50 dark:bg-red-900/10 px-3 py-1.5 rounded-lg border border-red-200 dark:border-red-900"
+                className="text-sm font-black text-red-500 hover:text-red-600 transition-colors"
               >
-                <LogOut className="h-4 w-4" /> Logout
+                Logout
               </button>
             </>
           ) : (
             <>
               <Link 
                 href="/login" 
-                className="flex items-center gap-1 text-sm font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors px-3 py-1.5"
+                className="text-sm font-black text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-white transition-colors"
               >
-                <LogIn className="h-4 w-4" /> Login
+                Login
               </Link>
               <Link 
                 href="/register" 
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg text-sm font-bold transition-all shadow-sm active:scale-95 flex items-center gap-1"
+                className="bg-zinc-900 text-zinc-50 dark:bg-zinc-50 dark:text-zinc-900 px-5 py-2 rounded-md text-sm font-black transition-all hover:opacity-90 flex items-center gap-1"
               >
-                <UserPlus className="h-4 w-4" /> Get Started
+                Get Started
               </Link>
             </>
           )}
-          <div className="border-l border-zinc-200 dark:border-zinc-800 pl-4 ml-1">
+          <div className="border-l border-zinc-200 dark:border-zinc-800 pl-4">
             <ThemeToggle />
           </div>
         </div>
@@ -134,37 +134,36 @@ export function Navbar() {
 
       {/* Mobile Menu Drawer */}
       {isMobileMenuOpen && (
-        <div className="md:hidden fixed inset-x-0 top-16 h-[calc(100vh-4rem)] bg-white dark:bg-zinc-950 z-40 border-t border-zinc-200 dark:border-zinc-800 flex flex-col px-4 py-6 animate-in slide-in-from-top-2 overflow-y-auto">
-          <div className="flex flex-col gap-2">
-            <LinkItem href="/docs" icon={BookOpen} className="p-3 text-base font-bold text-zinc-600 dark:text-zinc-300 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors">
+        <div className="md:hidden fixed inset-x-0 top-16 h-[calc(100vh-4rem)] bg-white dark:bg-black z-40 border-t border-zinc-200 dark:border-zinc-800 flex flex-col px-6 py-8 animate-in slide-in-from-top-2 overflow-y-auto">
+          <div className="flex flex-col gap-6">
+            <LinkItem href="/docs" icon={BookOpen} className="text-lg font-black text-zinc-900 dark:text-white">
               Documentation
             </LinkItem>
             
             {isLoggedIn ? (
               <>
-                <LinkItem href="/dashboard" icon={LayoutDashboard} className="p-3 text-base font-bold text-zinc-600 dark:text-zinc-300 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors">
+                <LinkItem href="/dashboard" icon={LayoutDashboard} className="text-lg font-black text-zinc-900 dark:text-white">
                   Dashboard
                 </LinkItem>
                 {isAdmin && (
-                  <LinkItem href="/dashboard/admin" icon={ShieldAlert} className="p-3 text-base font-bold text-zinc-600 dark:text-zinc-300 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors mt-2">
+                  <LinkItem href="/dashboard/admin" icon={ShieldAlert} className="text-lg font-black text-zinc-900 dark:text-white">
                     Admin Portal
                   </LinkItem>
                 )}
-                <div className="h-px bg-zinc-100 dark:bg-zinc-800 my-4" />
+                <div className="h-px bg-zinc-100 dark:bg-zinc-800 my-2" />
                 <button 
                   onClick={handleLogout}
-                  className="flex items-center gap-3 p-3 text-base font-bold text-red-600 hover:bg-red-50 dark:text-red-500 dark:hover:bg-red-900/10 rounded-xl w-full text-left transition-colors"
+                  className="flex items-center gap-3 text-lg font-black text-red-600 dark:text-red-500 w-full text-left"
                 >
                   <LogOut className="h-5 w-5" /> Logout
                 </button>
               </>
             ) : (
               <>
-                <div className="h-px bg-zinc-100 dark:bg-zinc-800 my-4" />
-                <LinkItem href="/login" icon={LogIn} className="p-3 text-base font-bold text-zinc-600 dark:text-zinc-300 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors">
+                <LinkItem href="/login" icon={LogIn} className="text-lg font-black text-zinc-900 dark:text-white">
                   Login
                 </LinkItem>
-                <LinkItem href="/register" icon={UserPlus} className="p-4 text-base font-black bg-blue-600 text-white rounded-xl flex items-center justify-center mt-4 shadow-lg shadow-blue-600/20 active:scale-95 transition-all">
+                <LinkItem href="/register" icon={UserPlus} className="p-4 text-lg font-black bg-zinc-900 text-zinc-50 dark:bg-zinc-50 dark:text-zinc-900 rounded-md flex items-center justify-center mt-4">
                   Get Started
                 </LinkItem>
               </>
