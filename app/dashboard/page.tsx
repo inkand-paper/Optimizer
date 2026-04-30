@@ -246,7 +246,7 @@ export default function DashboardPage() {
 
           {/* MONITORING */}
           {activeTab === "monitoring" && (
-            <div className="space-y-6 w-full max-w-screen-2xl">
+            <div className="space-y-6 w-full">
               <PulseTrigger />
               <MonitoringDashboard />
             </div>
@@ -254,7 +254,7 @@ export default function DashboardPage() {
 
           {/* AUDITS */}
           {activeTab === "audits" && (
-            <div className="space-y-5 w-full max-w-screen-2xl">
+            <div className="space-y-5 w-full">
               <Card className="p-6">
                 <div className="flex items-center gap-3 mb-5">
                   <div className="h-9 w-9 rounded-ui flex items-center justify-center bg-np-gold/10">
@@ -283,7 +283,7 @@ export default function DashboardPage() {
 
           {/* API KEYS */}
           {activeTab === "keys" && (
-            <div className="grid lg:grid-cols-2 gap-5 w-full max-w-screen-2xl items-start">
+            <div className="grid lg:grid-cols-2 gap-5 w-full items-start">
               {/* Left — key list */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -377,14 +377,14 @@ export default function DashboardPage() {
 
           {/* WEBHOOKS */}
           {activeTab === "webhooks" && (
-            <div className="w-full max-w-screen-2xl">
+            <div className="w-full">
               <WebhookManager onLimitReached={() => setShowPricing(true)} />
             </div>
           )}
 
           {/* LOGS */}
           {activeTab === "logs" && (
-            <div className="w-full max-w-screen-2xl">
+            <div className="w-full">
               <ActivityLogs />
             </div>
           )}
