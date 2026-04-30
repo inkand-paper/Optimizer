@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import Link from "next/link";
 import { Navbar } from "@/components/navbar";
-import { ArrowLeft, BookOpen, Clock, Mail, Github } from "lucide-react";
+import { ArrowLeft, BookOpen, Clock, Mail, GitBranch } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Card } from "@/components/ui-elements";
 
