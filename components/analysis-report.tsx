@@ -86,7 +86,9 @@ export function AnalysisReport({ data }: Props) {
   const seoSection  = sections?.seo;
   const secSection  = sections?.security;
   const perfSection = sections?.performance;
-  const aiSection   = sections?.ai || sections?.genius;
+  const s           = sections as any;
+  const aiSection   = s?.ai || s?.genius;
+
 
   const tabSections = [seoSection, secSection, perfSection, null];
 
