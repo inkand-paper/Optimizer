@@ -93,6 +93,7 @@ export default function DashboardPage() {
 
     fetchKeys();
     fetchHealth();
+    const userStr = localStorage.getItem("user");
     if (userStr) {
       try {
         const u = JSON.parse(userStr);
