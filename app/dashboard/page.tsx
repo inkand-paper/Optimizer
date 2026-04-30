@@ -70,41 +70,53 @@ export default function DashboardPage() {
   // Health State
   const [health, setHealth] = React.useState<any>(null);
 
+  const [mounted, setMounted] = React.useState(false);
+
   React.useEffect(() => {
+    setMounted(true);
     const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+        const u = JSON.parse(storedUser);
+        if (u.plan) setCurrentUserPlan(u.plan);
+      } catch (e) {
+        console.error("Malformed user data in storage");
+      }
+    }
     
-    // [SYNC] Fetch fresh user data from server (reads the HttpOnly cookie securely)
+    // [SYNC] Fetch fresh user data from server
     fetch("/api/auth/me", { credentials: 'include' })
       .then(res => {
-        if (!res.ok) { router.push("/login"); return null; }
+        if (!res.ok) { 
+          // Only redirect if we don't have a stored user as a fallback
+          if (!storedUser) router.push("/login"); 
+          return null; 
+        }
         return res.json();
       })
       .then(data => {
         if (data?.success && data.user) {
           setUser(data.user);
+          setCurrentUserPlan(data.user.plan || "FREE");
           localStorage.setItem("user", JSON.stringify(data.user));
         }
       })
-      .catch(() => router.push("/login"));
+      .catch(() => {
+        if (!localStorage.getItem("user")) router.push("/login");
+      });
 
     const storedPlaygroundKey = localStorage.getItem("active_api_key");
     if (storedPlaygroundKey) setPlaygroundKey(storedPlaygroundKey);
 
     fetchKeys();
     fetchHealth();
-    const userStr = localStorage.getItem("user");
-    if (userStr) {
-      try {
-        const u = JSON.parse(userStr);
-        if (u.plan) setCurrentUserPlan(u.plan);
-      } catch (e) {}
-    }
 
     const handleOpenPricing = () => setShowPricing(true);
     window.addEventListener('open-pricing', handleOpenPricing);
     return () => window.removeEventListener('open-pricing', handleOpenPricing);
   }, []);
+
 
   async function fetchHealth() {
     try {
@@ -324,83 +336,102 @@ export default function DashboardPage() {
         <div className="flex flex-col md:flex-row gap-6 lg:gap-16 items-stretch md:items-start">
           
           {/* SIDEBAR NAVIGATION (Desktop Only) */}
-          <div className="hidden md:flex flex-col w-72 shrink-0 space-y-1 sticky top-[100px]">
-            <div className="px-4 mb-6">
-              <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 opacity-60">NexPulse Command</h2>
+          <div className="hidden md:flex flex-col w-72 shrink-0 space-y-2 sticky top-[100px]">
+            <div className="px-5 mb-8">
+              <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 opacity-60">System Protocol</h2>
             </div>
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={cn(
-                  "flex items-center gap-3 px-5 py-3 rounded-md text-sm font-black uppercase tracking-widest transition-all group relative",
-                  activeTab === tab.id 
-                    ? "bg-zinc-50 dark:bg-zinc-900 text-blue-600 dark:text-white" 
-                    : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100/50 dark:hover:bg-zinc-900/50"
-                )}
-              >
-                {activeTab === tab.id && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-1 bg-blue-600 rounded-r-full" />
-                )}
-                <tab.icon className={cn("h-4 w-4 transition-transform group-hover:scale-110", activeTab === tab.id ? "text-blue-600" : "text-zinc-400")} />
-                {tab.label}
-              </button>
-            ))}
-            
-            <div className="pt-8 px-4">
-              <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-4">System Health</h2>
-              <div className="p-4 rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
-                <div className="flex items-center justify-between mb-3">
-                  <div className={cn("h-2 w-2 rounded-full animate-pulse", health?.status === 'healthy' ? "bg-green-500" : "bg-red-500")} />
-                  <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">{health?.status || 'OFFLINE'}</span>
-                </div>
-                <div className="h-1 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-green-500 w-full" />
-                </div>
-                <div className="flex items-center justify-between mt-3">
-                  <p className="text-[9px] text-zinc-500 font-black">v{health?.version || '1.0.0'}</p>
-                  {user?.role === 'ADMIN' && (
-                    <Link href="/dashboard/admin" className="text-blue-600 hover:text-blue-500 transition-colors">
-                      <ShieldAlert className="h-3 w-3" />
-                    </Link>
+            <div className="space-y-4"> {/* Grouped Intent */}
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={cn(
+                    "flex items-center gap-4 px-6 py-4 rounded-md text-[10px] font-black uppercase tracking-[0.2em] transition-all group relative",
+                    activeTab === tab.id 
+                      ? "text-blue-600 dark:text-white" 
+                      : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
                   )}
+                >
+                  {/* Tactile Indicator (Floating Pill) */}
+                  {activeTab === tab.id && (
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 bg-blue-600 rounded-r-full shadow-[0_0_15px_rgba(37,99,235,0.4)]" />
+                  )}
+                  
+                  <tab.icon className={cn(
+                    "h-4 w-4 transition-all duration-300", 
+                    activeTab === tab.id ? "text-blue-600 scale-110" : "text-zinc-400 group-hover:scale-110"
+                  )} />
+                  
+                  <span className="relative flex items-center gap-2">
+                    {tab.label}
+                    {/* Micro-Dash Hover Feedback */}
+                    <span className="h-0.5 w-0 bg-blue-600 transition-all duration-300 group-hover:w-2" />
+                  </span>
+                </button>
+              ))}
+            </div>
+            
+            <div className="pt-12 px-5">
+              <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-6">Engine Telemetry</h2>
+              <Card className="p-6 border border-zinc-200/50 dark:border-white/5 bg-white dark:bg-zinc-900/50 backdrop-blur-sm shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className={cn("h-2 w-2 rounded-full", health?.status === 'healthy' ? "bg-blue-600 shadow-[0_0_10px_rgba(37,99,235,0.4)]" : "bg-red-500 animate-pulse")} />
+                    <span className="text-[9px] font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-widest">{health?.status || 'OFFLINE'}</span>
+                  </div>
+                  <span className="text-[8px] text-zinc-400 font-bold uppercase tracking-widest leading-none">v{health?.version || '1.0.0'}</span>
                 </div>
-              </div>
+                <p className="text-[9px] text-zinc-500 font-bold uppercase tracking-tighter mb-4 leading-relaxed">
+                  {health?.status === 'healthy' ? "Infrastructure heartbeat is stable and responsive." : "Anomaly detected in local protocol stream."}
+                </p>
+                <div className="h-1 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue-600 w-full transition-all duration-1000" />
+                </div>
+              </Card>
             </div>
           </div>
 
           {/* MAIN CONTENT AREA */}
-          <div className="flex-1 space-y-10">
+          <div className="flex-1 space-y-12">
             
-            {/* COMMON HEADER SECTION */}
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-100 dark:border-zinc-900 pb-8">
+            {/* COMMON HEADER SECTION - Header-Label Combo */}
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between border-b border-zinc-100 dark:border-zinc-900 pb-10">
               <div className="min-w-0">
-                <h1 className="text-3xl md:text-5xl font-black tracking-tighter uppercase leading-none">{activeTab}</h1>
-                <p className="text-xs text-zinc-500 font-black uppercase tracking-[0.2em] mt-2">Manage infrastructure and global analytics</p>
+                <div className="text-blue-600 text-[10px] font-black uppercase tracking-[0.3em] mb-2 flex items-center gap-2">
+                   <div className="h-1 w-4 bg-blue-600 rounded-full" />
+                   Active Node: {activeTab}
+                </div>
+                <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase leading-none text-zinc-900 dark:text-white">
+                  {activeTab === 'monitoring' ? 'Command Center' : activeTab}
+                </h1>
+                <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.2em] mt-4 flex items-center gap-2">
+                   <span className="text-blue-600">Context:</span> System heartbeat is stable.
+                </p>
               </div>
-              <div className="flex items-center gap-4 bg-zinc-50 dark:bg-zinc-950 p-2 rounded-md border border-zinc-100 dark:border-zinc-900">
-                <div className="flex flex-col items-end mr-4 pl-2">
-                   <div className="flex items-center gap-2">
-                     <p className="text-xs font-black uppercase tracking-tight">{user?.name}</p>
+              
+              <div className="flex items-center gap-4 bg-zinc-50/50 dark:bg-zinc-950/50 p-2 rounded-md border border-zinc-200/50 dark:border-white/5 backdrop-blur-md">
+                <div className="flex flex-col items-end mr-4 pl-3">
+                   <div className="flex items-center gap-3">
+                     <p className="text-xs font-black uppercase tracking-tight text-zinc-900 dark:text-white">{user?.name}</p>
                      <span className={cn(
-                       "text-[8px] px-2 py-0.5 rounded-sm font-black uppercase tracking-widest",
+                       "text-[8px] px-2 py-0.5 rounded-sm font-black uppercase tracking-widest shadow-sm",
                        user?.role === 'ADMIN' ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900" :
-                       user?.plan === 'FREE' ? "bg-zinc-100 text-zinc-500" : 
-                       "bg-blue-600 text-white"
+                       user?.plan === 'FREE' ? "bg-zinc-100 text-zinc-500 border border-zinc-200/50" : 
+                       "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
                      )}>
                        {user?.role === 'ADMIN' ? 'ADMIN' : (user?.plan || 'FREE')}
                      </span>
                    </div>
-                   <p className="text-[9px] text-zinc-400 font-bold tracking-tight">{user?.email}</p>
+                   <p className="text-[9px] text-zinc-400 font-bold tracking-widest uppercase">{user?.email}</p>
                 </div>
-                <Button variant="ghost" size="icon" onClick={handleLogout} className="h-10 w-10 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20">
-                   <LogOut className="h-4 w-4" />
+                <Button variant="ghost" size="icon" onClick={handleLogout} className="h-11 w-11 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 group">
+                   <LogOut className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
                 </Button>
               </div>
             </div>
 
-            {/* TAB CONTENT */}
-            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {/* TAB CONTENT - Stepped Progression */}
+            <div className="space-y-12 animate-slide-up">
               {activeTab === "monitoring" && (
                 <div className="space-y-10">
                   <PulseTrigger />

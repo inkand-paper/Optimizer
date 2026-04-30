@@ -3,68 +3,118 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #09090b;
-  --card: #ffffff;
-  --card-foreground: #09090b;
-  --popover: #ffffff;
-  --popover-foreground: #09090b;
-  --primary: #09090b;
-  --primary-foreground: #ffffff;
-  --secondary: #f4f4f5;
-  --secondary-foreground: #18181b;
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
-  --accent: #2563eb;
-  --accent-foreground: #ffffff;
-  --border: #e4e4e7;
-  --input: #e4e4e7;
-  --ring: #09090b;
+  --background: 240 10% 98.5%; /* Zinc-50 (Architectural Vellum) */
+  --foreground: 240 10% 3.9%;  /* Zinc-950 (Ink) */
+  --card: 0 0% 100%;           /* Pure White Cards */
+  --card-foreground: 240 10% 3.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 3.9%;
+  --primary: 221.2 83.2% 53.3%; /* Blue-600 */
+  --primary-foreground: 210 40% 98%;
+  --secondary: 240 4.8% 95.9%; /* Zinc-100 */
+  --secondary-foreground: 240 5.9% 10%;
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
+  --accent: 221.2 83.2% 53.3%; /* Blue-600 */
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 240 5.9% 90%; /* Zinc-200 Border */
+  --input: 240 5.9% 90%;
+  --ring: 240 10% 3.9%;
   --radius: 0.5rem;
 }
 
 .dark {
-  --background: #020202;
-  --foreground: #fafafa;
-  --card: #020202;
-  --card-foreground: #fafafa;
-  --popover: #020202;
-  --popover-foreground: #fafafa;
-  --primary: #fafafa;
-  --primary-foreground: #09090b;
-  --secondary: #09090b;
-  --secondary-foreground: #fafafa;
-  --muted: #09090b;
-  --muted-foreground: #a1a1aa;
-  --accent: #3b82f6;
-  --accent-foreground: #ffffff;
-  --border: #1a1a1a;
-  --input: #1a1a1a;
-  --ring: #fafafa;
+  --background: 240 10% 2%;    /* Zinc-950 (Deep Obsidian) */
+  --foreground: 0 0% 98%;
+  --card: 240 10% 4%;          /* Zinc-900 Surfaces */
+  --card-foreground: 0 0% 98%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 217.2 91.2% 59.8%; /* Blue-500 */
+  --primary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%; /* Zinc-400 Secondary Text */
+  --accent: 217.2 91.2% 59.8%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%; /* Zinc-800/900 level */
+  --input: 240 3.7% 15.9%;
+  --ring: 240 4.9% 83.9%;
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: var(--font-inter), sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer base {
+  * {
+    @apply border-zinc-200 dark:border-zinc-800;
+  }
+  body {
+    @apply bg-background text-foreground transition-colors duration-200;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
 }
 
-@layer utilities {
-  .animate-shimmer {
-    background: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.05) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
+@layer components {
+  .soft-diffusion {
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .dark .soft-diffusion {
+    box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
   }
 
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+  .glass-edge {
+    @apply border border-white/10;
+  }
+
+  .tactile-button {
+    @apply shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] transition-all duration-200 active:scale-[0.98] hover:scale-[1.01];
+  }
+
+  .dark .tactile-button {
+    @apply shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)];
+  }
+
+  .engineering-grid {
+    background-image: 
+      linear-gradient(to right, currentColor 0.05px, transparent 1px),
+      linear-gradient(to bottom, currentColor 0.05px, transparent 1px);
+    background-size: 30px 30px;
+  }
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-zinc-200 dark:bg-zinc-800 rounded-full;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  @apply bg-zinc-300 dark:bg-zinc-700;
+}
+
+/* Stepped Progression Animations */
+.animate-slide-up {
+  animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

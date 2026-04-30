@@ -53,52 +53,56 @@ export function AnalysisReport({ data }: Props) {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* Header Summary */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-8 p-10 bg-white dark:bg-zinc-950 rounded-md border border-zinc-200 dark:border-zinc-800 shadow-2xl relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/5 rounded-full blur-[100px] -mr-32 -mt-32 group-hover:bg-blue-600/10 transition-all duration-700 pointer-events-none" />
+    <div className="space-y-12 animate-slide-up">
+      {/* Header Summary - Stepped Progression Header */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-10 p-12 bg-card rounded-md border border-zinc-200/50 dark:border-white/5 soft-diffusion relative overflow-hidden group">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/[0.03] rounded-full blur-[100px] -mr-32 -mt-32 pointer-events-none" />
         
         <div className="z-10 w-full md:w-auto">
-          <div className="flex items-center gap-2 mb-4">
-            <Globe className="h-4 w-4 text-blue-600" />
-            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-400">Universal Infrastructure Audit</span>
+          <div className="text-blue-600 text-[10px] font-black uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
+             <div className="h-1 w-4 bg-blue-600 rounded-full" />
+             Technical Protocol Audit
           </div>
-          <h3 className="text-3xl md:text-4xl font-black tracking-tighter truncate max-w-full sm:max-w-md uppercase text-zinc-900 dark:text-white leading-none">{results.url}</h3>
-          <p className="text-[10px] text-zinc-500 mt-4 font-black uppercase tracking-[0.2em] border-l-2 border-blue-600 pl-4 leading-none">Transmission: {new Date(data.timestamp).toLocaleString()}</p>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter truncate max-w-full sm:max-w-md uppercase text-zinc-900 dark:text-white leading-none">
+            {results.url.replace(/https?:\/\//, '')}
+          </h1>
+          <p className="text-[10px] text-zinc-500 mt-6 font-black uppercase tracking-[0.2em] flex items-center gap-2 leading-none">
+            <span className="text-blue-600">Transmission Log:</span> {new Date(data.timestamp).toLocaleString()}
+          </p>
         </div>
         
-        <div className="flex items-center justify-between md:justify-end gap-12 z-10 w-full md:w-auto border-t md:border-t-0 md:border-l border-zinc-100 dark:border-zinc-900 pt-8 md:pt-0 md:pl-12">
+        <div className="flex items-center justify-between md:justify-end gap-16 z-10 w-full md:w-auto border-t md:border-t-0 md:border-l border-zinc-100 dark:border-zinc-900/50 pt-10 md:pt-0 md:pl-16">
           <div className="text-center">
             <div className={cn(
-              "text-7xl font-black tracking-tighter leading-none mb-2",
+              "text-8xl font-black tracking-tighter leading-none mb-3",
               overallScore >= 80 ? "text-blue-600" : 
               overallScore >= 50 ? "text-zinc-900 dark:text-white" : "text-red-600"
             )}>
               {overallScore}
             </div>
-            <p className="text-[9px] uppercase font-black tracking-[0.3em] text-zinc-400">Health Protocol</p>
+            <p className="text-[9px] uppercase font-black tracking-[0.3em] text-zinc-400">Health Protocol: {overallScore >= 80 ? "Optimal" : "Degraded"}</p>
           </div>
-          <Button variant="outline" size="lg" onClick={downloadReport} className="h-14 px-8 font-black uppercase tracking-[0.2em] text-[10px] border-zinc-200 dark:border-zinc-800 hover:border-blue-600 hover:text-blue-600 transition-all shadow-sm">
-            <Download className="h-4 w-4 mr-2" /> Export Audit
+          <Button variant="outline" size="lg" onClick={downloadReport} className="h-16 px-10 border-zinc-200 dark:border-white/10 hover:border-blue-600 hover:text-blue-600 transition-all shadow-sm">
+            <Download className="h-4 w-4 mr-3" /> <span className="text-[11px] font-black uppercase tracking-[0.2em]">Export Audit</span>
           </Button>
         </div>
       </div>
 
-      {/* AI Genius Diagnosis Section */}
+      {/* AI Genius Diagnosis Section - Field Note Style */}
       {data.aiInsight && (
-        <Card className="p-0 overflow-hidden border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 relative group shadow-sm hover:shadow-xl transition-all duration-500">
-          <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity pointer-events-none">
-            <Crown className="h-48 w-48 text-blue-600" />
-          </div>
+        <Card className="p-0 overflow-hidden relative group">
+          <div className="absolute inset-0 engineering-grid opacity-[0.03] dark:opacity-[0.05] pointer-events-none" />
           
-          <div className="p-10 md:p-16 relative z-10">
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-12 border-b border-zinc-100 dark:border-zinc-900 pb-8">
-              <div className="h-16 w-16 rounded-md bg-blue-600 flex items-center justify-center text-white shadow-xl shadow-blue-600/30">
-                <Sparkles className="h-8 w-8" />
+          <div className="p-12 md:p-20 relative z-10">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-8 mb-16 border-b border-zinc-100 dark:border-zinc-900/50 pb-10">
+              <div className="h-20 w-20 rounded-md bg-blue-600 flex items-center justify-center text-white shadow-xl shadow-blue-600/30 tactile-button">
+                <Sparkles className="h-10 w-10" />
               </div>
               <div>
-                <h3 className="font-black text-3xl text-zinc-900 dark:text-white uppercase tracking-tighter leading-none mb-2">Genius Diagnosis</h3>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-600">Infrastructure Brief • Protocol Engine v4.0</p>
+                <div className="text-blue-600 text-[10px] font-black uppercase tracking-[0.4em] mb-2 flex items-center gap-2">
+                   Protocol Interpretation v4.0
+                </div>
+                <h3 className="font-black text-4xl text-zinc-900 dark:text-white uppercase tracking-tighter leading-none">Genius Diagnosis</h3>
               </div>
             </div>
 
@@ -106,9 +110,10 @@ export function AnalysisReport({ data }: Props) {
               <div 
                 className={cn(
                   "text-zinc-600 dark:text-zinc-400 leading-relaxed text-sm font-bold uppercase tracking-tight",
-                  "prose-headings:text-zinc-900 dark:prose-headings:text-white prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tighter prose-headings:mb-6 prose-headings:mt-12 prose-headings:border-l-4 prose-headings:border-blue-600 prose-headings:pl-6",
+                  "prose-headings:text-zinc-900 dark:prose-headings:text-white prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tighter prose-headings:mb-8 prose-headings:mt-16 prose-headings:border-l-4 prose-headings:border-blue-600 prose-headings:pl-8",
                   "prose-strong:text-blue-600 dark:prose-strong:text-blue-600 prose-strong:font-black",
-                  "prose-ul:list-none prose-ul:pl-0 prose-ul:space-y-4 prose-li:flex prose-li:items-start prose-li:gap-4 prose-li:before:content-[''] prose-li:before:h-2 prose-li:before:w-2 prose-li:before:bg-blue-600 prose-li:before:mt-1.5 prose-li:before:shrink-0"
+                  "prose-ul:list-none prose-ul:pl-0 prose-ul:space-y-6 prose-li:flex prose-li:items-start prose-li:gap-5 prose-li:before:content-[''] prose-li:before:h-2 prose-li:before:w-2 prose-li:before:bg-blue-600 prose-li:before:mt-1.5 prose-li:before:shrink-0 prose-li:before:shadow-[0_0_10px_rgba(37,99,235,0.4)]",
+                  "prose-code:font-mono prose-code:bg-zinc-100 dark:prose-code:bg-zinc-900 prose-code:px-2 prose-code:py-1 prose-code:rounded-sm prose-code:text-blue-600 dark:prose-code:text-blue-500"
                 )}
               >
                 <ReactMarkdown>
@@ -117,43 +122,45 @@ export function AnalysisReport({ data }: Props) {
               </div>
             </div>
 
-            <div className="mt-12 flex items-center gap-4 p-6 rounded-md bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800">
-              <ShieldCheck className="h-5 w-5 text-blue-600" />
-              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-black uppercase tracking-[0.2em]">
-                Universal Infrastructure Briefing Protocol Executed Successfully.
+            <div className="mt-16 flex items-center gap-5 p-8 rounded-md bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30">
+              <ShieldCheck className="h-6 w-6 text-blue-600" />
+              <p className="text-[12px] text-zinc-600 dark:text-zinc-400 font-black uppercase tracking-[0.2em] leading-relaxed">
+                <span className="text-blue-600 font-black">Handshake Status:</span> Universal Intelligence Protocol Executed. Interpretation verified for production deployment.
               </p>
             </div>
           </div>
         </Card>
       )}
 
-      {/* Upgrade Prompt for Free Users */}
+      {/* Upgrade Prompt - Human-Tech Edition */}
       {!data.aiInsight && (
-        <Card className="p-12 md:p-24 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-center relative overflow-hidden group shadow-xl">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-600/[0.03] via-transparent to-transparent" />
+        <Card className="p-16 md:p-32 text-center relative overflow-hidden group">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-600/[0.05] via-transparent to-transparent opacity-50" />
           <div className="relative z-10 max-w-2xl mx-auto">
-            <div className="h-20 w-20 rounded-md bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 flex items-center justify-center mx-auto mb-10 text-zinc-400 group-hover:text-blue-600 group-hover:border-blue-600/50 transition-all duration-500 shadow-sm">
-              <Lock className="h-10 w-10" />
+            <div className="h-24 w-24 rounded-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 flex items-center justify-center mx-auto mb-12 text-zinc-400 group-hover:text-blue-600 transition-all duration-700 shadow-xl dark:glass-edge">
+              <Lock className="h-12 w-12" />
             </div>
-            <h3 className="font-black text-4xl mb-6 tracking-tighter uppercase leading-none text-zinc-900 dark:text-white">Unlock <span className="text-blue-600">Genius</span> Intelligence</h3>
-            <p className="text-zinc-500 dark:text-zinc-400 mb-12 text-lg font-bold tracking-tight uppercase max-w-lg mx-auto leading-relaxed">
-              Activate the enterprise protocol to unlock AI-powered profit recovery audits and deep architectural action plans.
+            <div className="text-blue-600 text-[10px] font-black uppercase tracking-[0.4em] mb-4">Encrypted Protocol</div>
+            <h3 className="font-black text-5xl mb-8 tracking-tighter uppercase leading-none text-zinc-900 dark:text-white">Unlock <span className="text-blue-600">Genius</span> Intelligence</h3>
+            <p className="text-zinc-500 dark:text-zinc-400 mb-16 text-xl font-bold tracking-tight uppercase max-w-xl mx-auto leading-relaxed">
+              Activate the enterprise liaison to unlock profit recovery audits and human-curated architectural action plans.
             </p>
             <Button 
+              size="lg"
               onClick={() => window.dispatchEvent(new CustomEvent('open-pricing'))}
-              className="bg-zinc-900 text-white dark:bg-white dark:text-black hover:bg-blue-600 dark:hover:bg-blue-600 dark:hover:text-white px-12 h-16 font-black text-xs uppercase tracking-[0.2em] shadow-2xl transition-all"
+              className="h-18 px-16 shadow-2xl"
             >
-              <Crown className="h-4 w-4 mr-3" /> Upgrade to Professional
+              <Crown className="h-5 w-5 mr-4" /> <span className="text-xs">Initialize Professional Protocol</span>
             </Button>
           </div>
         </Card>
       )}
 
-      {/* Main Sections Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Main Sections Grid - Stepped Progression */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         <AuditSection 
           title="SEO Protocols" 
-          icon={<Search className="h-5 w-5" />} 
+          icon={<Search className="h-6 w-6" />} 
           score={sections.seo.score}
           metrics={[
             { label: "Identity Tag", value: sections.seo.metrics.hasTitle ? "DETECTED" : "MISSING", success: sections.seo.metrics.hasTitle },
@@ -165,7 +172,7 @@ export function AnalysisReport({ data }: Props) {
 
         <AuditSection 
           title="Security Matrix" 
-          icon={<ShieldCheck className="h-5 w-5" />} 
+          icon={<ShieldCheck className="h-6 w-6" />} 
           score={sections.security.score}
           metrics={[
             { label: "SSL/HTTPS", value: sections.security.metrics.isHttps ? "ENCRYPTED" : "INSECURE", success: sections.security.metrics.isHttps },
@@ -177,7 +184,7 @@ export function AnalysisReport({ data }: Props) {
 
         <AuditSection 
           title="Web Vitals" 
-          icon={<Zap className="h-5 w-5" />} 
+          icon={<Zap className="h-6 w-6" />} 
           score={sections.performance.score}
           metrics={[
             { label: "TTFB / LOAD", value: `${sections.performance.metrics.loadTimeMs}MS`, success: sections.performance.metrics.loadTimeMs < 1000 },

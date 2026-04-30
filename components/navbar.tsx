@@ -65,7 +65,7 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-8 h-full">
           <Link 
             href="/docs" 
             className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-white transition-colors"
@@ -73,7 +73,7 @@ export function Navbar() {
             Docs
           </Link>
           {isLoggedIn ? (
-            <>
+            <div className="flex items-center gap-6">
               {isAdmin && (
                 <Link 
                   href="/dashboard/admin" 
@@ -94,9 +94,9 @@ export function Navbar() {
               >
                 Logout
               </button>
-            </>
+            </div>
           ) : (
-            <>
+            <div className="flex items-center gap-6">
               <Link 
                 href="/login" 
                 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-white transition-colors"
@@ -109,23 +109,25 @@ export function Navbar() {
               >
                 Get Started
               </Link>
-            </>
+            </div>
           )}
-          <div className="border-l border-zinc-200 dark:border-zinc-800 pl-6">
+          <div className="border-l border-zinc-200 dark:border-zinc-800 pl-6 h-6 flex items-center">
             <ThemeToggle />
           </div>
         </div>
 
-        {/* Mobile Navigation Toggle */}
-        <div className="flex md:hidden items-center gap-4 z-50">
+        {/* Mobile Navigation Toggle - Ensure Visibility */}
+        <div className="flex md:hidden items-center gap-2 z-50">
           <ThemeToggle />
           <button 
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-2 -mr-2 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+            className="p-3 text-zinc-900 dark:text-white"
+            aria-label="Toggle menu"
           >
             {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
+
       </div>
 
       {/* Mobile Menu Drawer */}
