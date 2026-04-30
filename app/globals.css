@@ -4,18 +4,51 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #09090b;
+  --card: #ffffff;
+  --card-foreground: #09090b;
+  --popover: #ffffff;
+  --popover-foreground: #09090b;
+  --primary: #4f46e5;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #18181b;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --accent: #f4f4f5;
+  --accent-foreground: #18181b;
+  --border: #e4e4e7;
+  --input: #e4e4e7;
+  --ring: #4f46e5;
+  --radius: 0.75rem;
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #09090b;
+  --foreground: #fafafa;
+  --card: #09090b;
+  --card-foreground: #fafafa;
+  --popover: #09090b;
+  --popover-foreground: #fafafa;
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: #18181b;
+  --secondary-foreground: #fafafa;
+  --muted: #18181b;
+  --muted-foreground: #a1a1aa;
+  --accent: #18181b;
+  --accent-foreground: #fafafa;
+  --border: #27272a;
+  --input: #27272a;
+  --ring: #6366f1;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: inherit;
+  font-family: var(--font-inter), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @layer utilities {
@@ -30,22 +63,8 @@ body {
     animation: shimmer 1.5s infinite;
   }
 
-  .dark .animate-shimmer {
-    background: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.03) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
-    background-size: 200% 100%;
-  }
-
   @keyframes shimmer {
-    0% {
-      background-position: -200% 0;
-    }
-    100% {
-      background-position: 200% 0;
-    }
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
   }
 }

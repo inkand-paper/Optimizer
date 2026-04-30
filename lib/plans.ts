@@ -1,5 +1,8 @@
 export const PLAN_LIMITS = {
   FREE: {
+    name: 'Starter',
+    price: '$0',
+    description: 'Perfect for personal projects and technical audits.',
     assets: 1,
     checks: 500,
     webhooks: 1,
@@ -8,9 +11,18 @@ export const PLAN_LIMITS = {
     allowRevalidate: false,
     allowApiKeys: false,
     allowAi: false,
-    features: ['Discord Alerts', 'Standard Monitoring', 'Technical Audits']
+    features: [
+      { text: '1 Production Site', active: true },
+      { text: '500 Checks / mo', active: true },
+      { text: 'Technical Audits', active: true },
+      { text: 'AI Genius Diagnosis', active: false },
+      { text: 'White-label Portals', active: false },
+    ]
   },
   PRO: {
+    name: 'Professional',
+    price: '$29',
+    description: 'The AI-driven choice for production-grade web assets.',
     assets: 10,
     checks: 25000,
     webhooks: 5,
@@ -19,10 +31,19 @@ export const PLAN_LIMITS = {
     allowRevalidate: false,
     allowApiKeys: true,
     allowAi: true,
-    features: ['Slack/Discord Alerts', 'AI Genius Diagnosis', 'Performance Insights']
+    features: [
+      { text: '10 Universal Assets', active: true },
+      { text: '25,000 Checks / mo', active: true },
+      { text: 'AI Genius Diagnosis', active: true },
+      { text: 'Performance Insights', active: true },
+      { text: 'White-label Portals', active: false },
+    ]
   },
   BUSINESS: {
-    assets: 999999, // Representing Unlimited as a large number for easier comparison
+    name: 'Agency',
+    price: '$129',
+    description: 'Scalable AI power for profit-focused agencies and teams.',
+    assets: 999999,
     checks: 999999999,
     webhooks: 50,
     interval: 10,
@@ -30,7 +51,13 @@ export const PLAN_LIMITS = {
     allowRevalidate: true,
     allowApiKeys: true,
     allowAi: true,
-    features: ['White-label Portals', 'Priority Support', 'Profit Recovery AI']
+    features: [
+      { text: 'Unlimited Assets', active: true },
+      { text: 'Unlimited Checks', active: true },
+      { text: 'Profit Recovery AI', active: true },
+      { text: 'White-label Portals', active: true },
+      { text: '1-Click Reporting', active: true },
+    ]
   }
 } as const;
 
