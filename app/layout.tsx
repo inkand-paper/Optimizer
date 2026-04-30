@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 
-const geistSans = Geist({
+const geistSans = Inter({
   subsets: ["latin"],
   variable: "--font-geist-sans",
 });
 
-const geistMono = Geist_Mono({
+const geistMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
 });
