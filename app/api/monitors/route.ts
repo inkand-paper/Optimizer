@@ -29,11 +29,20 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: 'desc' }
     });
 
-    // Proactive Health Checks: If last check is older than 30s, trigger a fresh one in the background
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: { role: true, plan: true }
+    });
+
+    const userPlan = (user?.plan || 'FREE') as PlanType;
+    const isAdmin = user?.role === 'ADMIN';
+    const checkIntervalSeconds = isAdmin ? 10 : PLAN_LIMITS[userPlan].interval;
+
+    // Proactive Health Checks based on user plan interval
     try {
-      const thirtySecondsAgo = new Date(Date.now() - 30 * 1000);
+      const thresholdTime = new Date(Date.now() - checkIntervalSeconds * 1000);
       monitors.forEach(monitor => {
-        const needsCheck = !monitor.lastChecked || new Date(monitor.lastChecked) < thirtySecondsAgo;
+        const needsCheck = !monitor.lastChecked || new Date(monitor.lastChecked) < thresholdTime;
         
         if (needsCheck) {
           console.log(`[PROACTIVE] Triggering check for ${monitor.name}`);

@@ -48,7 +48,7 @@ export function MonitoringDashboard() {
 
   React.useEffect(() => {
     fetchMonitors();
-    const interval = setInterval(fetchMonitors, 60000); 
+    const interval = setInterval(fetchMonitors, 10000); 
     return () => clearInterval(interval);
   }, []);
 
