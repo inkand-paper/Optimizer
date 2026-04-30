@@ -53,8 +53,6 @@ export function AnalysisReport({ data }: Props) {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* Header Summary */}
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Header Summary */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-8 p-10 bg-white dark:bg-zinc-950 rounded-md border border-zinc-200 dark:border-zinc-800 shadow-2xl relative overflow-hidden group">
