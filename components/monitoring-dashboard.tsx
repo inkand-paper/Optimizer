@@ -19,7 +19,8 @@ interface MonitorItem {
   name: string;
   url: string;
   status: "UP" | "DOWN";
-  latencyHistory: number[];
+  checks?: { latency: number; status: string; createdAt: string }[];
+  latencyHistory?: number[]; // fallback
   lastChecked: string;
 }
 
@@ -162,7 +163,9 @@ export function MonitoringDashboard() {
           </Card>
         ) : (
           monitors.map((m) => {
-            const history = m.latencyHistory || [];
+            const history = m.checks && m.checks.length > 0 
+                ? m.checks.map(c => c.latency).reverse() 
+                : (m.latencyHistory || []);
             const currentLatency = history.length > 0 ? history[history.length - 1] : 0;
             return (
               <Card key={m.id} className="p-0 overflow-hidden bg-card border-border shadow-sm group">

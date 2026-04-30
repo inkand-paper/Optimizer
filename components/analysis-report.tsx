@@ -152,16 +152,35 @@ export function AnalysisReport({ data }: Props) {
         <div className="p-5">
           {/* SEO / Security / Perf tabs */}
           {activeTab < 3 && tabSections[activeTab] && (
-            <div className="space-y-1">
-              {Object.entries(tabSections[activeTab]?.checks || {}).map(([key, val]: [string, any]) => (
-                <IssueRow
-                  key={key}
-                  label={key.replace(/_/g, " ")}
-                  value={typeof val?.value === "string" ? val.value : undefined}
-                  pass={val?.pass ?? val?.status === "good" ?? false}
-                />
-              ))}
-              {!tabSections[activeTab]?.checks && (
+            <div className="space-y-4">
+              <div className="space-y-1">
+                {Object.entries(tabSections[activeTab]?.metrics || {}).map(([key, val]: [string, any]) => (
+                  <IssueRow
+                    key={key}
+                    label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                    value={typeof val === "string" || typeof val === "number" ? String(val) : undefined}
+                    pass={val === true || (typeof val === "number" && val > 0) || (typeof val === "string" && val.length > 0)}
+                  />
+                ))}
+              </div>
+              
+              {tabSections[activeTab]?.suggestions?.length > 0 && (
+                <div className="mt-6 p-4 rounded-card border border-np-gold/20 bg-np-gold/5">
+                  <h4 className="text-[12px] font-semibold text-np-gold uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <Sparkles className="h-3.5 w-3.5" /> Recommendations
+                  </h4>
+                  <ul className="space-y-2">
+                    {tabSections[activeTab].suggestions.map((sugg: string, i: number) => (
+                      <li key={i} className="text-[13px] text-muted-foreground flex items-start gap-2">
+                        <span className="h-1.5 w-1.5 rounded-full bg-np-gold shrink-0 mt-1.5" />
+                        <span>{sugg}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {!tabSections[activeTab]?.metrics && (
                 <p className="text-[13px] text-muted-foreground py-4">No data available for this section.</p>
               )}
             </div>
