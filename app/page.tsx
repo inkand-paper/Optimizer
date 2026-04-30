@@ -148,29 +148,32 @@ export default function Home() {
         </section>
 
         {/* CTA SECTION */}
-        <section className="py-24">
-          <div className="container mx-auto px-4 max-w-4xl">
-            <div className="bg-blue-600 rounded-3xl p-8 md:p-16 text-center text-white shadow-2xl shadow-blue-500/20 relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 -mr-32 -mt-32 rounded-full" />
-               <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 -ml-32 -mb-32 rounded-full" />
+        <section className="py-24 bg-white dark:bg-black">
+          <div className="container mx-auto px-4 max-w-5xl">
+            <div className="bg-zinc-900 dark:bg-zinc-950 rounded-lg p-12 md:p-20 text-center text-white relative overflow-hidden border border-white/5 shadow-2xl">
+               <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/5 rounded-full blur-[100px] -mr-48 -mt-48" />
+               <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-600/5 rounded-full blur-[100px] -ml-48 -mb-48" />
                
-               <h2 className="text-3xl md:text-5xl font-bold mb-6 relative z-10">
-                 Ready to optimize your workflow?
-               </h2>
-               <p className="text-blue-100 mb-10 text-lg relative z-10">
-                 Join developers using NexPulse to manage and monitor any web property.
-                </p>
-               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
-                 <Link href="/register">
-                   <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 border-none px-8">
-                     Start for Free
-                   </Button>
-                 </Link>
-                 <Link href="/login">
-                   <Button variant="ghost" size="lg" className="text-white hover:bg-white/10 px-8">
-                     Sign In
-                   </Button>
-                 </Link>
+               <div className="relative z-10 max-w-2xl mx-auto">
+                 <h2 className="text-4xl md:text-6xl font-black mb-8 tracking-tighter leading-none uppercase">
+                   Ready to Deploy <br />
+                   <span className="text-blue-600">Universal Control?</span>
+                 </h2>
+                 <p className="text-zinc-400 mb-12 text-lg font-bold tracking-tight leading-relaxed">
+                   Join enterprise engineering teams using NexPulse to maintain absolute authority over their digital infrastructure.
+                  </p>
+                 <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                   <Link href="/register">
+                     <Button size="lg" className="h-14 px-12 bg-zinc-50 text-zinc-900 hover:bg-zinc-200 border-0 font-black uppercase tracking-widest text-xs">
+                       Get Started Now
+                     </Button>
+                   </Link>
+                   <Link href="/login">
+                     <Button variant="outline" size="lg" className="h-14 px-12 border-white/10 hover:bg-white/5 text-white font-black uppercase tracking-widest text-xs">
+                       Access Dashboard
+                     </Button>
+                   </Link>
+                 </div>
                </div>
             </div>
           </div>

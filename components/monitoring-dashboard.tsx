@@ -24,6 +24,10 @@ interface Monitor {
   checks: any[];
 }
 
+/**
+ * [PRODUCTION-GRADE] - Monitoring Dashboard
+ * Sovereign Obsidian Aesthetic
+ */
 export function MonitoringDashboard() {
   const [monitors, setMonitors] = React.useState<Monitor[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -31,7 +35,6 @@ export function MonitoringDashboard() {
   const [newName, setNewName] = React.useState("");
   const [newUrl, setNewUrl] = React.useState("");
 
-  // Edit state
   const [editingId, setEditingId] = React.useState<string | null>(null);
   const [editName, setEditName] = React.useState("");
   const [isProcessing, setIsProcessing] = React.useState(false);
@@ -54,15 +57,7 @@ export function MonitoringDashboard() {
   const fetchMonitors = async () => {
     try {
       const res = await fetch("/api/monitors", { credentials: 'include' });
-      
-      if (!res.ok) {
-        const text = await res.text();
-        console.error("Monitor fetch error:", res.status, text);
-        return;
-      }
-
-      const contentType = res.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
+      if (res.ok) {
         const data = await res.json();
         setMonitors(data.monitors || []);
       }
@@ -75,7 +70,6 @@ export function MonitoringDashboard() {
 
   React.useEffect(() => {
     fetchMonitors();
-    // High-frequency polling for "Live" feel (every 10 seconds)
     const interval = setInterval(fetchMonitors, 10000); 
     return () => clearInterval(interval);
   }, []);
@@ -100,37 +94,27 @@ export function MonitoringDashboard() {
         fetchMonitors();
       } else if (res.status === 403) {
         if (currentUserRole === 'ADMIN') {
-          setErrorMessage("Admin Permission Error: Please check your database role.");
+          setErrorMessage("Infrastructure Provisioning Error: Check Permissions.");
         } else {
           setShowPricing(true);
           setErrorMessage(null); 
         }
       } else {
-        setErrorMessage("Failed to add monitor. Please try again.");
+        setErrorMessage("Deployment Failed: Infrastructure mismatch.");
       }
     } catch (err) {
-      setErrorMessage("A network error occurred.");
+      setErrorMessage("Network Interrupt: Deployment stalled.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteMonitor = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this monitor? All historical data will be lost.")) return;
-    
+    if (!confirm("Are you sure you want to decommission this monitor?")) return;
     setIsProcessing(true);
     try {
-      const res = await fetch(`/api/monitors/${id}`, {
-        method: "DELETE",
-        credentials: 'include'
-      });
-      if (res.ok) {
-        setMonitors(monitors.filter(m => m.id !== id));
-      } else {
-        alert("Failed to delete monitor");
-      }
-    } catch (err) {
-      console.error(err);
+      const res = await fetch(`/api/monitors/${id}`, { method: "DELETE", credentials: 'include' });
+      if (res.ok) setMonitors(monitors.filter(m => m.id !== id));
     } finally {
       setIsProcessing(false);
     }
@@ -150,11 +134,7 @@ export function MonitoringDashboard() {
         const data = await res.json();
         setMonitors(monitors.map(m => m.id === id ? { ...m, name: data.monitor.name } : m));
         setEditingId(null);
-      } else {
-        alert("Failed to update monitor");
       }
-    } catch (err) {
-      console.error(err);
     } finally {
       setIsProcessing(false);
     }
@@ -162,220 +142,161 @@ export function MonitoringDashboard() {
 
   if (loading && monitors.length === 0) {
     return (
-      <Card className="p-12 text-center text-zinc-500">
-        <Activity className="h-8 w-8 animate-pulse mx-auto mb-4 opacity-20" />
-        <p className="text-sm font-bold">Initializing Health Checks...</p>
+      <Card className="p-12 text-center bg-zinc-50 dark:bg-black border-zinc-200 dark:border-zinc-800">
+        <Activity className="h-8 w-8 animate-pulse mx-auto mb-4 text-blue-600 opacity-20" />
+        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Initializing Infrastructure Checks...</p>
       </Card>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Activity className="h-5 w-5 text-blue-600" />
-          <h2 className="text-xl font-bold font-display">Real-Time Monitoring</h2>
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-md bg-blue-600 flex items-center justify-center text-white shadow-xl shadow-blue-500/20">
+            <Activity className="h-5 w-5" />
+          </div>
+          <div>
+            <h2 className="text-xl font-black uppercase tracking-tight">Real-Time Infrastructure</h2>
+            <p className="text-[9px] text-zinc-500 font-black uppercase tracking-widest">Global Asset Monitoring</p>
+          </div>
         </div>
-        <Button size="sm" onClick={() => setIsAdding(!isAdding)}>
-          {isAdding ? "Cancel" : <><Plus className="h-4 w-4 mr-1" /> Add Target</>}
+        <Button size="sm" onClick={() => setIsAdding(!isAdding)} className="h-10 px-6 font-black uppercase tracking-widest text-[10px]">
+          {isAdding ? "Cancel" : <><Plus className="h-3 w-3 mr-2" /> Provision Target</>}
         </Button>
       </div>
 
       {isAdding && (
-        <Card className="p-4 border-dashed border-zinc-300 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/50 transition-all duration-300 animate-in fade-in slide-in-from-top-4">
+        <Card className="p-6 bg-zinc-50 dark:bg-black border-zinc-200 dark:border-zinc-800 animate-in fade-in slide-in-from-top-4">
           <form onSubmit={handleAddMonitor} className="flex flex-col sm:grid sm:grid-cols-3 gap-3">
             <Input 
-              placeholder="Service Name (e.g. Production API)" 
+              placeholder="Infrastructure ID (e.g. Production)" 
               value={newName}
               onChange={(e) => { setNewName(e.target.value); setErrorMessage(null); }}
-              className="h-10 sm:h-9"
+              className="h-12 bg-white dark:bg-zinc-950 font-bold"
               required
             />
             <Input 
-              placeholder="https://api.myapp.com/health" 
+              placeholder="https://infrastructure-endpoint.io" 
               value={newUrl}
               onChange={(e) => { setNewUrl(e.target.value); setErrorMessage(null); }}
-              className="h-10 sm:h-9"
+              className="h-12 bg-white dark:bg-zinc-950 font-bold"
               required
             />
-            <Button type="submit" disabled={loading} className="h-10 sm:h-9">
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Deploy Monitor"}
+            <Button type="submit" disabled={loading} className="h-12 font-black uppercase tracking-widest text-xs">
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Execute Provisioning"}
             </Button>
           </form>
           
-          <p className="mt-2 text-[10px] text-zinc-400 italic">
-            Note: Target URL must start with **https://** for secure monitoring.
-          </p>
-          
           {errorMessage && (
-            <div className="mt-4 p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-900/30 rounded-2xl animate-in zoom-in-95">
-              <div className="flex items-start gap-3">
-                <AlertTriangle className="h-4 w-4 text-rose-500 mt-0.5 shrink-0" />
-                <div className="flex-1">
-                  <p className="text-xs font-bold text-rose-700 dark:text-rose-400 mb-1">{errorMessage}</p>
-                  
-                  {/* [MONETIZATION] Only show upgrade prompts to non-admins */}
-                  {currentUserRole !== 'ADMIN' ? (
-                    <>
-                      <p className="text-[10px] text-rose-600/70 dark:text-rose-500/70 leading-relaxed mb-3">
-                        Your current plan has reached its intelligence capacity. Upgrade to Professional for 25,000 checks or Agency for unlimited assets.
-                      </p>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="p-2 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20 cursor-pointer hover:bg-blue-700 transition-colors" onClick={() => setShowPricing(true)}>
-                          <p className="text-[9px] font-black uppercase tracking-widest opacity-80 mb-0.5">Most Popular</p>
-                          <p className="text-xs font-bold">Pro ($29)</p>
-                        </div>
-                        <div className="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 cursor-pointer hover:bg-zinc-50 transition-colors" onClick={() => setShowPricing(true)}>
-                          <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-0.5">Scalable</p>
-                          <p className="text-xs font-bold">Agency ($129)</p>
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <p className="text-[10px] text-rose-600/70 dark:text-rose-500/70 leading-relaxed mb-3 italic">
-                      Admin Hint: Check the URL format. It must start with **https://**.
-                    </p>
-                  )}
-                </div>
-              </div>
+            <div className="mt-4 p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 rounded-md">
+              <p className="text-[10px] font-black uppercase tracking-widest text-red-600">{errorMessage}</p>
             </div>
           )}
         </Card>
       )}
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         {monitors.map((m) => (
-          <Card key={m.id} className="p-0 overflow-hidden group hover:shadow-md transition-shadow relative">
-            <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between border-b bg-white dark:bg-zinc-950 relative gap-4">
+          <Card key={m.id} className="p-0 overflow-hidden bg-white dark:bg-black border-zinc-200 dark:border-zinc-800 shadow-sm group">
+            <div className="p-5 flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-100 dark:border-zinc-900 relative gap-6">
               <div className="flex items-center gap-4 min-w-0 flex-1">
                 <div className={cn(
-                  "h-12 w-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
-                  m.status === 'UP' ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400" : "bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400"
+                  "h-14 w-14 rounded-md flex items-center justify-center shrink-0 border",
+                  m.status === 'UP' 
+                    ? "bg-zinc-50 dark:bg-zinc-950 border-emerald-500/20 text-emerald-500" 
+                    : "bg-red-50 dark:bg-red-950/20 border-red-500/20 text-red-500"
                 )}>
-                  {m.status === 'UP' ? <CheckCircle2 className="h-6 w-6" /> : <AlertTriangle className="h-6 w-6 animate-pulse" />}
+                  {m.status === 'UP' ? <CheckCircle2 className="h-7 w-7" /> : <AlertTriangle className="h-7 w-7 animate-pulse" />}
                 </div>
                 
                 <div className="min-w-0 flex-1">
                   {editingId === m.id ? (
-                    <form onSubmit={(e) => handleEditSubmit(m.id, e)} className="flex items-center gap-2 max-w-sm">
-                      <Input 
-                        value={editName} 
-                        onChange={(e) => setEditName(e.target.value)} 
-                        className="h-7 text-sm" 
-                        autoFocus
-                      />
-                      <Button size="sm" type="submit" disabled={isProcessing} className="h-7 px-2 bg-blue-600 text-white">Save</Button>
-                      <Button size="sm" type="button" variant="ghost" onClick={() => setEditingId(null)} className="h-7 px-2"><X className="h-4 w-4"/></Button>
+                    <form onSubmit={(e) => handleEditSubmit(m.id, e)} className="flex items-center gap-2">
+                      <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="h-8 font-bold text-xs" autoFocus />
+                      <Button size="sm" type="submit" disabled={isProcessing} className="h-8 px-4 text-[9px] font-black uppercase tracking-widest">Save</Button>
+                      <Button size="sm" type="button" variant="ghost" onClick={() => setEditingId(null)} className="h-8 w-8"><X className="h-4 w-4"/></Button>
                     </form>
                   ) : (
                     <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-base truncate">{m.name}</h3>
-                      <button 
-                        onClick={() => { setEditingId(m.id); setEditName(m.name); }}
-                        className="p-1 text-zinc-400 hover:text-blue-500 transition-opacity"
-                        title="Edit Name"
-                      >
+                      <h3 className="font-black text-lg uppercase tracking-tight truncate">{m.name}</h3>
+                      <button onClick={() => { setEditingId(m.id); setEditName(m.name); }} className="p-1 text-zinc-300 hover:text-blue-600 transition-colors">
                         <Edit2 className="h-3 w-3" />
                       </button>
                     </div>
                   )}
-                  <div className="flex items-center gap-1.5 mt-0.5">
+                  <div className="flex items-center gap-1.5 mt-1">
                     <Globe className="h-3 w-3 text-zinc-400" />
-                    <p className="text-xs text-zinc-500 truncate max-w-[150px] sm:max-w-none">{m.url}</p>
+                    <p className="text-[10px] text-zinc-500 font-bold tracking-tight truncate">{m.url}</p>
                   </div>
                 </div>
               </div>
               
-              <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 pt-2 sm:pt-0 border-t sm:border-0 border-zinc-100 dark:border-zinc-900">
+              <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2">
                 <div className={cn(
-                  "text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest",
-                  m.status === 'UP' ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400"
+                  "text-[9px] font-black px-3 py-1 rounded-sm uppercase tracking-[0.2em] border",
+                  m.status === 'UP' 
+                    ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-500" 
+                    : "bg-red-500/5 border-red-500/20 text-red-500"
                 )}>
                   {m.status}
                 </div>
-                {m.lastChecked && (
-                  <p className="text-[10px] text-zinc-400">
-                    {new Date(m.lastChecked).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </p>
-                )}
+                <p className="text-[9px] text-zinc-400 font-black uppercase tracking-widest">
+                  {new Date(m.lastChecked).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                </p>
               </div>
 
-              {/* Delete Button (absolute positioning top-right, visible on hover) */}
               <button 
                 onClick={() => handleDeleteMonitor(m.id)}
-                disabled={isProcessing}
-                className="absolute top-2 right-2 p-1.5 text-zinc-300 hover:text-rose-500 hover:bg-rose-50 rounded-md opacity-0 group-hover:opacity-100 transition-all"
-                title="Delete Monitor"
+                className="absolute top-2 right-2 p-1.5 text-zinc-200 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-all"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-3 w-3" />
               </button>
             </div>
             
-            <div className="p-4 bg-zinc-50/50 dark:bg-zinc-900/10 flex flex-col gap-3">
-              <div className="flex justify-between items-end text-xs text-zinc-500">
-                <span className="font-medium">Recent Check Latency</span>
-                <span className="font-mono text-zinc-700 dark:text-zinc-300">
-                  {m.checks.length > 0 ? `${m.checks[0].latency}ms` : 'No data'}
+            <div className="p-6 bg-zinc-50/50 dark:bg-zinc-950/50 flex flex-col gap-4">
+              <div className="flex justify-between items-end text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                <span>Infrastructure Latency Matrix</span>
+                <span className="text-zinc-900 dark:text-zinc-100 tabular-nums">
+                  {m.checks.length > 0 ? `${m.checks[0].latency}ms` : 'NO DATA'}
                 </span>
               </div>
-              <div className="flex gap-[2px] h-16 items-end border-b border-zinc-200 dark:border-zinc-800/50 pb-1 relative group/chart">
+              <div className="flex gap-[1px] h-14 items-end relative group/chart">
                 {(() => {
-                  const visibleChecks = m.checks.slice(0, 40).reverse();
-                  const maxLatency = Math.max(...visibleChecks.map(c => c.latency), 100); // Dynamic ceiling
+                  const visibleChecks = m.checks.slice(0, 60).reverse();
+                  const maxLatency = Math.max(...visibleChecks.map(c => c.latency), 100);
                   
                   return visibleChecks.map((c: any, i: number) => {
-                    const heightPct = Math.max(8, (c.latency / maxLatency) * 100);
-                    const isLatest = i === visibleChecks.length - 1;
-                    
+                    const heightPct = Math.max(10, (c.latency / maxLatency) * 100);
                     return (
                       <div 
                         key={i} 
                         className={cn(
-                          "flex-1 rounded-t-sm transition-all duration-500 hover:brightness-110 relative",
-                          c.status === 'UP' 
-                            ? "bg-gradient-to-t from-emerald-500/10 to-emerald-500/40" 
-                            : "bg-rose-500",
-                          isLatest && "animate-pulse brightness-125 shadow-[0_0_10px_rgba(16,185,129,0.2)]"
+                          "flex-1 rounded-t-[1px] transition-all duration-300",
+                          c.status === 'UP' ? "bg-emerald-500/30" : "bg-red-600"
                         )}
                         style={{ height: `${heightPct}%` }}
-                        title={`${c.status} - ${c.latency}ms at ${new Date(c.createdAt).toLocaleTimeString()}`}
                       />
                     );
                   });
                 })()}
                 {m.checks.length === 0 && (
-                  <div className="absolute inset-0 flex items-center justify-center text-[10px] font-medium text-zinc-400 uppercase tracking-tighter">
+                  <div className="absolute inset-0 flex items-center justify-center text-[9px] font-black uppercase tracking-widest text-zinc-500">
                     <Loader2 className="h-3 w-3 animate-spin mr-2" />
-                    Gathering Intelligence...
+                    Gathering Metrics...
                   </div>
                 )}
               </div>
-              <div className="flex justify-between text-[10px] text-zinc-400">
-                <span>Older</span>
-                <span>Now</span>
+              <div className="flex justify-between text-[8px] font-black uppercase tracking-widest text-zinc-400">
+                <span>HISTORICAL</span>
+                <span>REAL-TIME</span>
               </div>
             </div>
           </Card>
         ))}
       </div>
 
-      {monitors.length === 0 && !isAdding && (
-        <div className="p-12 text-center border-2 border-dashed rounded-2xl bg-zinc-50/50 dark:bg-zinc-900/20">
-          <Activity className="h-8 w-8 text-zinc-300 mx-auto mb-4" />
-          <h3 className="font-bold text-zinc-600 dark:text-zinc-400">No monitoring targets active</h3>
-          <p className="text-xs text-zinc-500 mt-1">Add your website or API URL to start tracking uptime and performance.</p>
-          <Button variant="outline" size="sm" className="mt-4" onClick={() => setIsAdding(true)}>
-            Add First Monitor
-          </Button>
-        </div>
-      )}
-
-      <PricingModal 
-        isOpen={showPricing} 
-        onClose={() => setShowPricing(false)} 
-        currentPlan={currentUserPlan} 
-      />
+      <PricingModal isOpen={showPricing} onClose={() => setShowPricing(false)} currentPlan={currentUserPlan} />
     </div>
   );
 }
-

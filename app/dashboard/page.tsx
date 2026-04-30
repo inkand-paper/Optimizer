@@ -317,115 +317,119 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950 overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-black overflow-x-hidden">
       <Navbar />
       
       <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-10 mb-24 md:mb-0">
         <div className="flex flex-col md:flex-row gap-6 lg:gap-16 items-stretch md:items-start">
           
           {/* SIDEBAR NAVIGATION (Desktop Only) */}
-          <div className="hidden md:flex flex-col w-72 shrink-0 space-y-2 sticky top-[100px]">
-            <div className="px-4 mb-8 flex items-center justify-between">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.3em] text-zinc-400 opacity-60">NexPulse Command</h2>
-              {user?.role === 'ADMIN' && (
-                <Link href="/dashboard/admin" title="Admin Portal">
-                  <ShieldAlert className="h-4 w-4 text-blue-600 hover:scale-110 transition-transform cursor-pointer" />
-                </Link>
-              )}
+          <div className="hidden md:flex flex-col w-72 shrink-0 space-y-1 sticky top-[100px]">
+            <div className="px-4 mb-6">
+              <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 opacity-60">NexPulse Command</h2>
             </div>
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
                 className={cn(
-                  "flex items-center gap-3 px-5 py-3.5 rounded-2xl text-sm font-semibold transition-all group",
+                  "flex items-center gap-3 px-5 py-3 rounded-md text-sm font-black uppercase tracking-widest transition-all group",
                   activeTab === tab.id 
-                    ? "bg-blue-600 text-white shadow-xl shadow-blue-600/20" 
-                    : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                    ? "bg-zinc-900 text-zinc-50 dark:bg-zinc-50 dark:text-zinc-900 shadow-sm" 
+                    : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900/50"
                 )}
               >
-                <tab.icon className={cn("h-4 w-4 transition-transform group-hover:scale-110", activeTab === tab.id ? "text-white" : "text-zinc-400")} />
+                <tab.icon className={cn("h-4 w-4 transition-transform group-hover:scale-110", activeTab === tab.id ? "text-blue-600" : "text-zinc-400")} />
                 {tab.label}
               </button>
             ))}
             
-            <div className="pt-8 px-3">
-              <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 mb-4">System Health</h2>
-              <Card className="p-4 bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800">
+            <div className="pt-8 px-4">
+              <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-4">System Health</h2>
+              <div className="p-4 rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
                 <div className="flex items-center justify-between mb-3">
                   <div className={cn("h-2 w-2 rounded-full animate-pulse", health?.status === 'healthy' ? "bg-green-500" : "bg-red-500")} />
-                  <span className="text-[9px] font-bold text-zinc-400">{health?.status?.toUpperCase()}</span>
+                  <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">{health?.status || 'OFFLINE'}</span>
                 </div>
                 <div className="h-1 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
                   <div className="h-full bg-green-500 w-full" />
                 </div>
-                <p className="text-[9px] text-zinc-500 mt-2">v{health?.version}</p>
-              </Card>
+                <div className="flex items-center justify-between mt-3">
+                  <p className="text-[9px] text-zinc-500 font-black">v{health?.version || '1.0.0'}</p>
+                  {user?.role === 'ADMIN' && (
+                    <Link href="/dashboard/admin" className="text-blue-600 hover:text-blue-500 transition-colors">
+                      <ShieldAlert className="h-3 w-3" />
+                    </Link>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
           {/* MAIN CONTENT AREA */}
-          <div className="flex-1 space-y-8">
+          <div className="flex-1 space-y-10">
             
-            {/* COMMON HEADER SECTION (Visible on all tabs) */}
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            {/* COMMON HEADER SECTION */}
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-100 dark:border-zinc-900 pb-8">
               <div className="min-w-0">
-                <h1 className="text-2xl md:text-3xl font-bold tracking-tight capitalize">{activeTab}</h1>
-                <p className="text-sm text-zinc-500 truncate">Manage your {activeTab} settings and analytics</p>
+                <h1 className="text-3xl md:text-5xl font-black tracking-tighter uppercase leading-none">{activeTab}</h1>
+                <p className="text-xs text-zinc-500 font-black uppercase tracking-[0.2em] mt-2">Manage infrastructure and global analytics</p>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="hidden sm:flex flex-col items-end mr-2">
+              <div className="flex items-center gap-4 bg-zinc-50 dark:bg-zinc-950 p-2 rounded-md border border-zinc-200 dark:border-zinc-800">
+                <div className="flex flex-col items-end mr-4 pl-2">
                    <div className="flex items-center gap-2">
-                     <p className="text-xs font-bold leading-none">{user?.name}</p>
+                     <p className="text-xs font-black uppercase tracking-tight">{user?.name}</p>
                      <span className={cn(
-                       "text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-widest",
-                       user?.role === 'ADMIN' ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-md" :
+                       "text-[8px] px-2 py-0.5 rounded-sm font-black uppercase tracking-widest",
+                       user?.role === 'ADMIN' ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900" :
                        user?.plan === 'FREE' ? "bg-zinc-100 text-zinc-500" : 
-                       user?.plan === 'PRO' ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" :
-                       "bg-purple-600 text-white shadow-lg shadow-purple-600/20"
+                       "bg-blue-600 text-white"
                      )}>
                        {user?.role === 'ADMIN' ? 'ADMIN' : (user?.plan || 'FREE')}
                      </span>
                    </div>
-                   <p className="text-[10px] text-zinc-500">{user?.email}</p>
+                   <p className="text-[9px] text-zinc-400 font-bold tracking-tight">{user?.email}</p>
                 </div>
-                <Button variant="ghost" size="icon" onClick={handleLogout} className="rounded-full hover:bg-red-50 hover:text-red-500">
+                <Button variant="ghost" size="icon" onClick={handleLogout} className="h-10 w-10 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20">
                    <LogOut className="h-4 w-4" />
                 </Button>
               </div>
             </div>
 
             {/* TAB CONTENT */}
-            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
               {activeTab === "monitoring" && (
-                <div className="space-y-8">
+                <div className="space-y-10">
                   <PulseTrigger />
                   <MonitoringDashboard />
                 </div>
               )}
               
               {activeTab === "audits" && (
-                <div className="space-y-8">
-                  <Card className="p-6 border-blue-100 dark:border-blue-900/30 bg-white dark:bg-zinc-950 overflow-hidden relative">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="h-10 w-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
-                        <Search className="h-5 w-5" />
+                <div className="space-y-10">
+                  <Card className="p-8 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                      <Search className="h-32 w-32 text-blue-600" />
+                    </div>
+                    <div className="flex items-center gap-4 mb-8 relative z-10">
+                      <div className="h-12 w-12 rounded-md bg-blue-600 flex items-center justify-center text-white shadow-xl shadow-blue-500/20">
+                        <Search className="h-6 w-6" />
                       </div>
                       <div>
-                        <h2 className="text-xl font-bold font-display">Website Analyzer</h2>
-                        <p className="text-xs text-zinc-500">Scan any URL for SEO and Performance optimization scores</p>
+                        <h2 className="text-xl font-black uppercase tracking-tight">Website Analyzer</h2>
+                        <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mt-1">SEO & Infrastructure Audit Engine</p>
                       </div>
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="flex flex-col sm:flex-row gap-3 relative z-10">
                       <Input 
-                        placeholder="https://your-website.com" 
+                        placeholder="https://infrastructure-target.com" 
                         value={analyzeUrl}
                         onChange={(e) => setAnalyzeUrl(e.target.value)}
-                        className="flex-1"
+                        className="flex-1 h-14 bg-zinc-50 dark:bg-zinc-950 font-bold"
                       />
-                      <Button onClick={runAnalyzer} disabled={analyzeLoading || !analyzeUrl}>
+                      <Button onClick={runAnalyzer} disabled={analyzeLoading || !analyzeUrl} className="h-14 px-8 font-black uppercase tracking-widest text-xs">
                         {analyzeLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <FileText className="h-4 w-4 mr-2" />}
-                        Run Audit
+                        Execute Audit
                       </Button>
                     </div>
                   </Card>
@@ -437,43 +441,46 @@ export default function DashboardPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                   <div className="space-y-8">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-bold">Access Tokens</h2>
-                      <Button variant="outline" size="sm" onClick={() => fetchKeys()}>
-                        <RefreshCw className="h-3 w-3 mr-2" /> Sync
+                      <h2 className="text-xl font-black uppercase tracking-tight">Access Control</h2>
+                      <Button variant="outline" size="sm" onClick={() => fetchKeys()} className="font-black uppercase tracking-widest text-[10px]">
+                        <RefreshCw className="h-3 w-3 mr-2" /> Sync Tokens
                       </Button>
                     </div>
 
                     {newKey && (
-                      <Card className="bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-800 p-6 relative">
-                        <h3 className="font-bold text-emerald-800 dark:text-emerald-400 mb-2">Key Generated!</h3>
-                        <div className="flex items-center gap-2 bg-white dark:bg-zinc-900 p-3 rounded-lg border font-mono text-xs break-all">
+                      <Card className="bg-emerald-50 dark:bg-emerald-950 border-emerald-200 dark:border-emerald-800 p-8 relative">
+                        <div className="flex items-center gap-2 mb-4">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                          <h3 className="font-black text-xs uppercase tracking-widest text-emerald-800 dark:text-emerald-400">Token Generated</h3>
+                        </div>
+                        <div className="flex items-center gap-2 bg-white dark:bg-black p-4 rounded-md border border-emerald-200 dark:border-emerald-800 font-mono text-xs break-all font-black">
                           {newKey}
-                          <button onClick={() => copyToClipboard(newKey)} className="ml-auto p-1 text-zinc-400 hover:text-emerald-600">
-                             {copied ? <CheckCircle2 className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                          <button onClick={() => copyToClipboard(newKey)} className="ml-auto p-2 text-zinc-400 hover:text-emerald-600 transition-colors">
+                             {copied ? <CheckCircle2 className="h-5 w-5 text-emerald-500" /> : <Copy className="h-5 w-5" />}
                           </button>
                         </div>
-                        <p className="text-[10px] text-emerald-600 mt-2">Make sure to copy this now. It will not be shown again.</p>
+                        <p className="text-[10px] text-emerald-600 mt-4 font-bold uppercase tracking-widest">Store this securely. It will not be shown again.</p>
                       </Card>
                     )}
 
-                    <Card className="p-0 overflow-hidden">
-                      <div className="p-4 border-b bg-zinc-50/50 flex flex-col gap-3">
-                        <p className="text-[10px] font-bold uppercase text-zinc-400">Generate New Machine Key</p>
-                        <form onSubmit={handleCreateKey} className="flex flex-col sm:flex-row gap-2">
-                          <Input name="keyName" placeholder="Key name (e.g. CI/CD)" className="h-9" required />
-                          <Button size="sm" type="submit" disabled={creatingKey}>
-                            {creatingKey ? <Loader2 className="h-3 w-3 animate-spin" /> : "Create"}
+                    <Card className="p-0 overflow-hidden bg-white dark:bg-black border-zinc-200 dark:border-zinc-800">
+                      <div className="p-6 border-b border-zinc-100 dark:border-zinc-900 bg-zinc-50/50 dark:bg-zinc-950/50">
+                        <p className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] mb-4">Provision New Machine Key</p>
+                        <form onSubmit={handleCreateKey} className="flex flex-col sm:flex-row gap-3">
+                          <Input name="keyName" placeholder="Endpoint Identifier" className="h-12 bg-white dark:bg-black font-bold" required />
+                          <Button type="submit" disabled={creatingKey} className="h-12 px-6 font-black uppercase tracking-widest text-[10px]">
+                            {creatingKey ? <Loader2 className="h-3 w-3 animate-spin" /> : "Deploy Key"}
                           </Button>
                         </form>
                       </div>
-                      <div className="divide-y divide-zinc-100 dark:divide-zinc-800 max-h-[300px] overflow-y-auto">
+                      <div className="divide-y divide-zinc-100 dark:divide-zinc-900 max-h-[400px] overflow-y-auto">
                         {keys.map(k => (
-                          <div key={k.id} className="p-4 flex justify-between items-center group hover:bg-zinc-100 dark:hover:bg-zinc-900/50 transition-colors">
+                          <div key={k.id} className="p-5 flex justify-between items-center group hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors">
                             <div className="min-w-0">
-                              <p className="text-sm font-bold truncate">{k.name}</p>
-                              <p className="text-[10px] text-zinc-500">Issued {new Date(k.createdAt).toLocaleDateString()}</p>
+                              <p className="text-sm font-black uppercase tracking-tight truncate">{k.name}</p>
+                              <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest mt-1">Issued {new Date(k.createdAt).toLocaleDateString()}</p>
                             </div>
-                            <Button variant="ghost" size="icon" onClick={() => handleDeleteKey(k.id)} className="opacity-0 group-hover:opacity-100 text-zinc-400 hover:text-red-500">
+                            <Button variant="ghost" size="icon" onClick={() => handleDeleteKey(k.id)} className="opacity-0 group-hover:opacity-100 text-zinc-400 hover:text-red-500 transition-all">
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
@@ -481,23 +488,31 @@ export default function DashboardPage() {
                       </div>
                     </Card>
                   </div>
-                  <Card className="p-0 overflow-hidden border-2 border-zinc-200 dark:border-zinc-800 shadow-xl bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white p-6">
-                    <div className="flex items-center gap-2 mb-4 text-blue-400">
-                      <ShieldCheck className="h-5 w-5" />
-                      <h3 className="font-bold text-sm">Security Playground</h3>
+
+                  <Card className="p-8 border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-black shadow-2xl relative group overflow-hidden">
+                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                      <ShieldCheck className="h-32 w-32 text-blue-600" />
                     </div>
-                    <p className="text-[11px] text-zinc-400 mb-6">Test your machine handshakes before production deployment.</p>
-                    <div className="space-y-4">
-                      <div className="space-y-1">
-                        <label className="text-[9px] font-bold uppercase opacity-60">API Key</label>
-                        <PasswordInput className="bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700" value={playgroundKey} onChange={(e) => setPlaygroundKey(e.target.value)} />
+                    <div className="flex items-center gap-3 mb-8 relative z-10">
+                      <div className="h-10 w-10 rounded-md bg-zinc-900 dark:bg-zinc-50 flex items-center justify-center text-white dark:text-zinc-900 shadow-xl">
+                        <Terminal className="h-5 w-5 text-blue-500" />
                       </div>
-                      <div className="space-y-1">
-                        <label className="text-[9px] font-bold uppercase opacity-60">Cache Tag</label>
-                        <Input className="bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700" placeholder="e.g. products" value={playgroundTag} onChange={(e) => setPlaygroundTag(e.target.value)} />
+                      <div>
+                        <h3 className="font-black text-xl uppercase tracking-tight">Security Playground</h3>
+                        <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mt-1">Simulate Machine Handshakes</p>
                       </div>
-                      <Button className="w-full bg-blue-600 h-10 text-xs font-bold" onClick={runPlayground} disabled={playgroundLoading || !playgroundKey}>
-                        {playgroundLoading ? "Verifying..." : "Run Security Check"}
+                    </div>
+                    <div className="space-y-6 relative z-10">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Authorized Key</label>
+                        <PasswordInput className="h-12 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 font-bold" value={playgroundKey} onChange={(e) => setPlaygroundKey(e.target.value)} />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Namespace / Tag</label>
+                        <Input className="h-12 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 font-bold" placeholder="e.g. products-v2" value={playgroundTag} onChange={(e) => setPlaygroundTag(e.target.value)} />
+                      </div>
+                      <Button className="w-full h-14 font-black uppercase tracking-[0.2em] text-xs" onClick={runPlayground} disabled={playgroundLoading || !playgroundKey}>
+                        {playgroundLoading ? "Authenticating..." : "Execute Security Check"}
                       </Button>
                     </div>
                   </Card>
@@ -505,13 +520,13 @@ export default function DashboardPage() {
               )}
 
               {activeTab === "webhooks" && (
-                <div className="max-w-3xl">
+                <div className="max-w-4xl">
                   <WebhookManager onLimitReached={() => setShowPricing(true)} />
                 </div>
               )}
 
               {activeTab === "logs" && (
-                <div className="max-w-3xl">
+                <div className="max-w-4xl">
                   <ActivityLogs />
                 </div>
               )}
@@ -521,7 +536,7 @@ export default function DashboardPage() {
       </main>
 
       {/* MOBILE BOTTOM NAVIGATION */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-t px-6 pb-6 pt-3 flex justify-between items-center shadow-[0_-8px_30px_rgb(0,0,0,0.04)]">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-black/95 backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 px-6 pb-6 pt-3 flex justify-between items-center shadow-2xl">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -529,16 +544,16 @@ export default function DashboardPage() {
             className="flex flex-col items-center gap-1 group relative"
           >
             <div className={cn(
-              "h-10 w-10 rounded-2xl flex items-center justify-center transition-all duration-300",
+              "h-12 w-12 rounded-md flex items-center justify-center transition-all duration-300",
               activeTab === tab.id 
-                ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30 -translate-y-1" 
-                : "text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-xl" 
+                : "text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-900"
             )}>
-              <tab.icon className="h-5 w-5" />
+              <tab.icon className={cn("h-5 w-5", activeTab === tab.id && "text-blue-500")} />
             </div>
             <span className={cn(
-              "text-[9px] font-bold transition-all duration-300",
-              activeTab === tab.id ? "text-blue-600 opacity-100" : "text-zinc-400 opacity-60"
+              "text-[9px] font-black uppercase tracking-widest transition-all duration-300",
+              activeTab === tab.id ? "text-zinc-900 dark:text-white" : "text-zinc-400"
             )}>
               {tab.label.split(' ')[0]}
             </span>

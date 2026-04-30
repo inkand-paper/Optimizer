@@ -1,7 +1,12 @@
 import * as React from "react";
 import { Card, Button, Input } from "./ui-elements";
 import { Zap, Loader2, CheckCircle2, ShieldCheck } from "lucide-react";
+import { cn } from "@/lib/utils";
 
+/**
+ * [PRODUCTION-GRADE] - Pulse Command Center
+ * Sovereign Obsidian Aesthetic
+ */
 export function PulseTrigger() {
   const [target, setTarget] = React.useState("");
   const [type, setType] = React.useState<"tag" | "path">("tag");
@@ -14,11 +19,9 @@ export function PulseTrigger() {
     setSuccess(false);
 
     try {
-      // In a real scenario, the secret would be handled securely
-      // For this dashboard tool, we'll call our revalidate API
       const storedUser = localStorage.getItem("user");
       const user = storedUser ? JSON.parse(storedUser) : null;
-      const userEmail = user?.email || "tabir8431@gmail.com"; // Fallback to your main email
+      const userEmail = user?.email || "tabir8431@gmail.com";
 
       const res = await fetch("/api/revalidate", {
         method: "POST",
@@ -34,45 +37,55 @@ export function PulseTrigger() {
         setSuccess(true);
         setTimeout(() => setSuccess(false), 3000);
       } else {
-        alert("Pulse failed. Check your REVALIDATE_SECRET.");
+        alert("Pulse execution failed. Terminal response error.");
       }
     } catch (err) {
-      alert("Error sending pulse");
+      alert("Error dispatching pulse sequence.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-blue-50 to-white dark:from-zinc-900 dark:to-black border-blue-500/20 relative overflow-hidden group">
+    <Card className="p-8 bg-white dark:bg-black border-zinc-200 dark:border-zinc-800 relative overflow-hidden group shadow-sm">
       <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-        <Zap className="h-24 w-24 text-blue-500" />
+        <Zap className="h-32 w-32 text-blue-600" />
       </div>
 
       <div className="relative z-10">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
-            <Zap className="h-4 w-4 text-blue-400" />
+        <div className="flex items-center gap-4 mb-8">
+          <div className="h-12 w-12 rounded-md bg-blue-600 flex items-center justify-center text-white shadow-xl shadow-blue-500/20">
+            <Zap className="h-6 w-6" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-zinc-900 dark:text-white">Pulse Command Center</h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">Manual Cache Optimization Trigger</p>
+            <h3 className="text-xl font-black uppercase tracking-tight">Pulse Command Center</h3>
+            <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">Manual Cache Optimization Console</p>
           </div>
         </div>
 
-        <form onSubmit={handlePulse} className="space-y-4">
-          <div className="flex gap-2 p-1 bg-zinc-100 dark:bg-zinc-800/50 rounded-lg w-fit">
+        <form onSubmit={handlePulse} className="space-y-6">
+          <div className="flex gap-1 p-1 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md w-fit">
             <button
               type="button"
               onClick={() => setType("tag")}
-              className={`px-3 py-1 text-xs rounded-md transition-all ${type === 'tag' ? 'bg-blue-600 text-white shadow-lg' : 'text-zinc-400 hover:text-zinc-200'}`}
+              className={cn(
+                "px-5 py-2 text-[10px] font-black uppercase tracking-widest rounded-sm transition-all",
+                type === 'tag' 
+                  ? 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900 shadow-sm' 
+                  : 'text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+              )}
             >
               By Tag
             </button>
             <button
               type="button"
               onClick={() => setType("path")}
-              className={`px-3 py-1 text-xs rounded-md transition-all ${type === 'path' ? 'bg-blue-600 text-white shadow-lg' : 'text-zinc-400 hover:text-zinc-200'}`}
+              className={cn(
+                "px-5 py-2 text-[10px] font-black uppercase tracking-widest rounded-sm transition-all",
+                type === 'path' 
+                  ? 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900 shadow-sm' 
+                  : 'text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+              )}
             >
               By Path
             </button>
@@ -81,27 +94,29 @@ export function PulseTrigger() {
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
               <Input
-                placeholder={type === 'tag' ? "e.g. products-list" : "e.g. /blog/post-1"}
+                placeholder={type === 'tag' ? "NAMESPACE (e.g. products-list)" : "ENDPOINT (e.g. /blog/post-1)"}
                 value={target}
                 onChange={(e) => setTarget(e.target.value)}
-                className="bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white pl-9 h-11 sm:h-9"
+                className="bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 font-black text-xs h-14 pl-12 uppercase tracking-tight"
                 required
               />
-              <ShieldCheck className="absolute left-3 top-3 sm:top-2.5 h-4 w-4 text-zinc-500" />
+              <ShieldCheck className="absolute left-4 top-5 h-4 w-4 text-zinc-400" />
             </div>
             <Button 
               type="submit" 
               disabled={loading || !target}
-              className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20 min-w-[120px] h-11 sm:h-9"
+              className="h-14 px-10 font-black uppercase tracking-widest text-xs min-w-[180px]"
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : success ? <CheckCircle2 className="h-4 w-4" /> : "Send Pulse"}
+              {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : success ? <CheckCircle2 className="h-5 w-5" /> : "Dispatch Pulse"}
             </Button>
           </div>
 
           {success && (
-            <p className="text-[10px] text-emerald-400 font-medium animate-in fade-in slide-in-from-left-2">
-              ✨ Optimization Pulse dispatched successfully! Check your email.
-            </p>
+            <div className="p-4 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 rounded-md animate-in fade-in slide-in-from-left-4">
+              <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-black uppercase tracking-widest">
+                Optimization dispatched. Infrastructure endpoint updated.
+              </p>
+            </div>
           )}
         </form>
       </div>
