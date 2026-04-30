@@ -93,13 +93,16 @@ export default function DashboardPage() {
 
     fetchKeys();
     fetchHealth();
-    const userStr = localStorage.getItem("user");
     if (userStr) {
       try {
         const u = JSON.parse(userStr);
         if (u.plan) setCurrentUserPlan(u.plan);
       } catch (e) {}
     }
+
+    const handleOpenPricing = () => setShowPricing(true);
+    window.addEventListener('open-pricing', handleOpenPricing);
+    return () => window.removeEventListener('open-pricing', handleOpenPricing);
   }, []);
 
   async function fetchHealth() {

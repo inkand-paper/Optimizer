@@ -23,13 +23,17 @@ export async function POST(request: NextRequest) {
     }
 
     const hashedKey = crypto.createHash('sha256').update(apiKey).digest('hex');
-    const dbKey = await prisma.apiKey.findUnique({ where: { keyHash: hashedKey } });
+    const dbKey = await prisma.apiKey.findUnique({ 
+      where: { keyHash: hashedKey },
+      include: { user: true }
+    });
 
     if (!dbKey) {
       return NextResponse.json({ error: 'Unauthorized', message: 'Invalid API Key' }, { status: 401 });
     }
 
     currentUserId = dbKey.userId;
+    const userPlan = dbKey.user.plan;
 
     // 2. Parse Body
     let body: AnalyzeRequest;
@@ -47,9 +51,14 @@ export async function POST(request: NextRequest) {
     // 3. Perform Advanced Analysis
     const auditResult = await runFullAudit(url);
 
-    // 3.5 Generate AI Diagnosis (Optional/Async for performance)
+    // 3.5 Generate AI Diagnosis (Gated by Plan)
+    const { PLAN_LIMITS } = await import('@/lib/plans');
     const { getAiDiagnosis } = await import('@/lib/ai');
-    const aiInsight = await getAiDiagnosis(auditResult);
+    
+    let aiInsight = null;
+    if (PLAN_LIMITS[userPlan].allowAi) {
+      aiInsight = await getAiDiagnosis(auditResult);
+    }
 
     // 4. Log Activity
     await logActivity({

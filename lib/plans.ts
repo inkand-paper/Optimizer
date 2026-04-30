@@ -7,7 +7,8 @@ export const PLAN_LIMITS = {
     retentionDays: 7,
     allowRevalidate: false,
     allowApiKeys: false,
-    features: ['Discord Alerts', 'Standard Monitoring']
+    allowAi: false,
+    features: ['Discord Alerts', 'Standard Monitoring', 'Technical Audits']
   },
   PRO: {
     assets: 10,
@@ -17,7 +18,8 @@ export const PLAN_LIMITS = {
     retentionDays: 30,
     allowRevalidate: false,
     allowApiKeys: true,
-    features: ['Slack/Discord Alerts', 'Performance Diagnosis', 'API Access']
+    allowAi: true,
+    features: ['Slack/Discord Alerts', 'AI Genius Diagnosis', 'Performance Insights']
   },
   BUSINESS: {
     assets: 999999, // Representing Unlimited as a large number for easier comparison
@@ -27,7 +29,8 @@ export const PLAN_LIMITS = {
     retentionDays: 365,
     allowRevalidate: true,
     allowApiKeys: true,
-    features: ['White-label Portals', 'Priority Support', 'Profit Recovery Audit']
+    allowAi: true,
+    features: ['White-label Portals', 'Priority Support', 'Profit Recovery AI']
   }
 } as const;
 

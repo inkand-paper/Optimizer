@@ -87,8 +87,8 @@ export default function Home() {
                   features: [
                     { text: "1 Production Site", active: true },
                     { text: "500 Checks / mo", active: true },
-                    { text: "50 Global Purges / mo", active: true },
-                    { text: "Performance Diagnosis", active: false },
+                    { text: "Technical Audits", active: true },
+                    { text: "AI Genius Diagnosis", active: false },
                     { text: "White-label Portals", active: false },
                   ]
                 },
@@ -103,8 +103,8 @@ export default function Home() {
                   features: [
                     { text: "10 Universal Assets", active: true },
                     { text: "25,000 Checks / mo", active: true },
-                    { text: "2,500 Purges / mo", active: true },
-                    { text: "Performance Diagnosis", active: true },
+                    { text: "AI Genius Diagnosis", active: true },
+                    { text: "Performance Insights", active: true },
                     { text: "White-label Portals", active: false },
                   ]
                 },
@@ -118,8 +118,8 @@ export default function Home() {
                   popular: false,
                   features: [
                     { text: "Unlimited Assets", active: true },
-                    { text: "Unlimited Checks / mo", active: true },
-                    { text: "Unlimited Purges / mo", active: true },
+                    { text: "Unlimited Checks", active: true },
+                    { text: "Profit Recovery AI", active: true },
                     { text: "White-label Portals", active: true },
                     { text: "1-Click Reporting", active: true },
                   ]
