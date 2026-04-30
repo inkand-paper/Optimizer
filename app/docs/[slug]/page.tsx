@@ -153,8 +153,8 @@ export default async function DocDetail({ params }: { params: Promise<{ slug: st
           />
 
           <div className="mt-32 p-12 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md relative overflow-hidden">
-            <div class="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_var(--tw-gradient-stops))] from-blue-600/5 via-transparent to-transparent opacity-50" />
-            <div class="relative z-10">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_var(--tw-gradient-stops))] from-blue-600/5 via-transparent to-transparent opacity-50" />
+            <div className="relative z-10">
               <h4 className="text-xl font-black mb-8 uppercase tracking-tighter">Support Escalation Matrix</h4>
               <div className="grid sm:grid-cols-2 gap-4">
                  <Link href="mailto:tabir8431@gmail.com" className="p-6 rounded-md bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 hover:border-blue-600 transition-all shadow-sm group">
