@@ -27,33 +27,33 @@ export function PricingModal({ isOpen, onClose, currentPlan = "FREE" }: PricingM
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="relative w-full max-w-6xl bg-white dark:bg-black rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/90 backdrop-blur-sm animate-in fade-in duration-300">
+      <div className="relative w-full max-w-6xl bg-card rounded-card border border-border shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300">
         
         {/* Modal Header */}
-        <div className="p-6 border-b border-zinc-100 dark:border-zinc-900 flex items-center justify-between bg-zinc-50 dark:bg-zinc-900/50">
+        <div className="p-5 border-b border-border flex items-center justify-between bg-muted/20">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-md bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+            <div className="h-10 w-10 rounded-ui bg-np-gold/10 flex items-center justify-center text-np-gold border border-np-gold/20 shadow-sm">
               <Zap className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-xl font-black tracking-tight">Scale Your NexPulse</h2>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-widest">Universal Infrastructure Monitoring</p>
+              <h2 className="text-[16px] font-semibold tracking-tight uppercase">Scale Your NexPulse</h2>
+              <p className="label-category text-[10px] mt-0.5">Universal Infrastructure Monitoring</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-md transition-colors"
+            className="p-2 text-muted-foreground hover:bg-muted rounded-ui transition-colors"
           >
-            <X className="h-5 w-5 text-zinc-500" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Modal Content */}
         <div className="flex-1 overflow-y-auto p-6 sm:p-10">
-          <div className="text-center mb-12">
-            <h3 className="text-2xl md:text-4xl font-black mb-3 tracking-tight">Select Your Mission Control</h3>
-            <p className="text-zinc-500 dark:text-zinc-400 font-bold max-w-xl mx-auto text-sm">Choose the architecture that matches your growth and unlock universal monitoring authority.</p>
+          <div className="text-center mb-10">
+            <h3 className="text-3xl font-semibold mb-3 tracking-tight uppercase">Select Your Mission Control</h3>
+            <p className="text-muted-foreground max-w-xl mx-auto text-[14px]">Choose the architecture that matches your growth and unlock universal monitoring authority.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -62,50 +62,52 @@ export function PricingModal({ isOpen, onClose, currentPlan = "FREE" }: PricingM
               const isPro = key === 'PRO';
 
               return (
-                <Card 
+                <div 
                   key={key}
                   className={cn(
-                    "relative p-8 flex flex-col h-full transition-all duration-300 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950",
-                    isPro && "border-blue-600 ring-2 ring-blue-600/20 dark:ring-blue-500/20 shadow-2xl shadow-blue-500/10 z-10"
+                    "relative p-8 flex flex-col h-full transition-all duration-300 rounded-card bg-card border border-border",
+                    isPro && "border-np-gold ring-1 ring-np-gold shadow-lg shadow-np-gold/5 z-10 np-grid-bg overflow-hidden"
                   )}
                 >
-                  <div className="mb-8">
-                    <div className="flex items-center justify-between mb-4">
-                      <h4 className="text-xl font-black tracking-tighter uppercase">{plan.name}</h4>
+                  {isPro && <div className="absolute top-0 right-0 w-32 h-32 bg-np-gold/10 rounded-full blur-[40px] -mr-10 -mt-10 pointer-events-none" />}
+                  
+                  <div className="mb-6 relative z-10">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-[16px] font-bold tracking-tight uppercase">{plan.name}</h4>
                       {isPro && (
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em] bg-blue-600 text-white px-2.5 py-1 rounded-sm shadow-lg">Recommended</span>
+                        <span className="text-[10px] font-semibold uppercase tracking-widest bg-np-gold text-white px-2.5 py-1 rounded-sm shadow-sm">Recommended</span>
                       )}
                     </div>
-                    <div className="flex items-baseline gap-2 mb-4">
-                      <span className="text-4xl font-black tracking-tighter">{plan.price}</span>
-                      <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">/mo</span>
+                    <div className="flex items-baseline gap-2 mb-3">
+                      <span className="text-3xl font-bold tracking-tight">{plan.price}</span>
+                      <span className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">/mo</span>
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-tight text-zinc-500 dark:text-zinc-400 leading-relaxed min-h-[40px]">
+                    <p className="label-category text-muted-foreground leading-relaxed min-h-[40px] text-[11px]">
                       {plan.description}
                     </p>
                   </div>
 
-                  <div className="space-y-6 mb-8 flex-grow">
-                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 border-b border-zinc-100 dark:border-zinc-900 pb-2">Capabilities Matrix</p>
-                    <ul className="space-y-3.5">
-                      <li className="flex items-center gap-3 text-xs font-black uppercase tracking-tight">
-                        <div className="h-5 w-5 rounded-sm flex items-center justify-center shrink-0 bg-blue-600 text-white shadow-sm">
-                          <Check className="h-3 w-3" />
+                  <div className="space-y-5 mb-8 flex-grow relative z-10">
+                    <p className="label-category text-muted-foreground border-b border-border pb-2 text-[10px]">Capabilities Matrix</p>
+                    <ul className="space-y-3">
+                      <li className="flex items-center gap-3 text-[12px] font-semibold uppercase tracking-tight text-foreground">
+                        <div className="h-5 w-5 rounded-ui flex items-center justify-center shrink-0 bg-np-gold/10 text-np-gold border border-np-gold/20">
+                          <Check className="h-3.5 w-3.5" />
                         </div>
-                        <span className="text-zinc-900 dark:text-zinc-100">
+                        <span>
                           {plan.checks.toLocaleString()} Checks
                         </span>
                       </li>
                       {plan.features.map((feature, i) => (
                         <li key={i} className={cn(
-                          "flex items-start gap-3 text-xs leading-tight transition-colors",
-                          feature.active ? "text-zinc-900 dark:text-zinc-100 font-black uppercase tracking-tight" : "text-zinc-300 dark:text-zinc-700 font-bold uppercase tracking-tight"
+                          "flex items-start gap-3 text-[12px] transition-colors",
+                          feature.active ? "text-foreground font-semibold uppercase tracking-tight" : "text-muted-foreground uppercase tracking-tight"
                         )}>
                           <div className={cn(
-                            "h-5 w-5 rounded-sm flex items-center justify-center shrink-0 border",
-                            feature.active ? "bg-zinc-900 dark:bg-white border-zinc-900 dark:border-white text-white dark:text-zinc-900" : "bg-transparent border-zinc-100 dark:border-zinc-800 text-zinc-200"
+                            "h-5 w-5 rounded-ui flex items-center justify-center shrink-0",
+                            feature.active ? "bg-muted text-foreground border border-border" : "bg-transparent border border-border text-muted-foreground"
                           )}>
-                            <Check className="h-3 w-3" />
+                            <Check className="h-3.5 w-3.5" />
                           </div>
                           <span className="flex-1 mt-0.5">{feature.text}</span>
                         </li>
@@ -118,33 +120,33 @@ export function PricingModal({ isOpen, onClose, currentPlan = "FREE" }: PricingM
                     disabled={isCurrent || loadingPlan !== null}
                     onClick={() => handleUpgrade(key)}
                     className={cn(
-                      "w-full font-black text-[10px] uppercase tracking-[0.2em] h-14",
-                      isPro && "bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-xl shadow-blue-500/20"
+                      "w-full uppercase tracking-widest text-[11px] h-12 relative z-10",
+                      isPro && "shadow-md"
                     )}
                   >
                     {loadingPlan === key ? "Calibrating..." : isCurrent ? "Active Console" : "Initialize Engine"}
                   </Button>
-                </Card>
+                </div>
               );
             })}
           </div>
         </div>
 
         {/* Modal Footer */}
-        <div className="p-6 border-t border-zinc-100 dark:border-zinc-900 bg-zinc-50 dark:bg-zinc-900/50 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-zinc-400">
-            <span className="flex items-center gap-1"><Shield className="h-3 w-3 text-blue-500" /> Enterprise Security</span>
-            <span className="flex items-center gap-1"><Globe className="h-3 w-3 text-blue-500" /> Global Monitoring</span>
+        <div className="p-5 border-t border-border bg-muted/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-4 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+            <span className="flex items-center gap-1.5"><Shield className="h-3.5 w-3.5 text-np-gold" /> Enterprise Security</span>
+            <span className="flex items-center gap-1.5"><Globe className="h-3.5 w-3.5 text-np-gold" /> Global Monitoring</span>
           </div>
-          <div className="flex items-center gap-2">
-            <p className="text-[10px] text-zinc-500 font-bold mr-4">Local Payment Support Available</p>
+          <div className="flex items-center gap-4">
+            <p className="text-[10px] text-muted-foreground font-semibold">Local Payment Support Available</p>
             <Button 
               variant="outline" 
               size="sm" 
-              className="text-[10px] font-black uppercase tracking-widest h-8"
+              className="text-[10px] font-semibold uppercase tracking-widest h-9"
               onClick={() => window.open('https://wa.me/8801345808742?text=I want to pay via bKash', '_blank')}
             >
-              <MessageCircle className="h-3 w-3 mr-2 text-green-500" /> Chat with Sales
+              <MessageCircle className="h-3.5 w-3.5 mr-2 text-np-teal" /> Chat with Sales
             </Button>
           </div>
         </div>

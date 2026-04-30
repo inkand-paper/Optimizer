@@ -1,66 +1,43 @@
+"use client";
+
 import * as React from "react";
-import { Card, Button, Input } from "./ui-elements";
+import { Card, Button, Input, StatusDot, Badge } from "./ui-elements";
 import { 
   Activity, 
+  Globe, 
+  CheckCircle2, 
+  XCircle, 
+  Trash2, 
   Plus, 
-  Globe,
-  Trash2,
-  Edit2,
   Loader2,
-  CheckCircle2,
-  AlertTriangle,
-  X,
-  Crown
+  AlertCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { PricingModal } from "./pricing-modal";
 
-interface Monitor {
+interface MonitorItem {
   id: string;
   name: string;
   url: string;
-  status: 'UP' | 'DOWN' | 'DEGRADED';
+  status: "UP" | "DOWN";
+  latencyHistory: number[];
   lastChecked: string;
-  checks: any[];
 }
 
-/**
- * [PRODUCTION-GRADE] - Monitoring Dashboard
- * Sovereign Obsidian Aesthetic
- */
 export function MonitoringDashboard() {
-  const [monitors, setMonitors] = React.useState<Monitor[]>([]);
+  const [monitors, setMonitors] = React.useState<MonitorItem[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [isAdding, setIsAdding] = React.useState(false);
-  const [newName, setNewName] = React.useState("");
-  const [newUrl, setNewUrl] = React.useState("");
-
-  const [editingId, setEditingId] = React.useState<string | null>(null);
-  const [editName, setEditName] = React.useState("");
-  const [isProcessing, setIsProcessing] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
-  const [showPricing, setShowPricing] = React.useState(false);
-  const [currentUserPlan, setCurrentUserPlan] = React.useState("FREE");
-  const [currentUserRole, setCurrentUserRole] = React.useState("DEVELOPER");
-
-  React.useEffect(() => {
-    const userStr = localStorage.getItem("user");
-    if (userStr) {
-      try {
-        const u = JSON.parse(userStr);
-        if (u.plan) setCurrentUserPlan(u.plan);
-        if (u.role) setCurrentUserRole(u.role);
-      } catch (e) {}
-    }
-  }, []);
+  
+  const [name, setName] = React.useState("");
+  const [url, setUrl] = React.useState("");
+  const [addingState, setAddingState] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState("");
 
   const fetchMonitors = async () => {
     try {
       const res = await fetch("/api/monitors", { credentials: 'include' });
-      if (res.ok) {
-        const data = await res.json();
-        setMonitors(data.monitors || []);
-      }
+      const data = await res.json();
+      if (res.ok) setMonitors(data.monitors);
     } catch (err) {
       console.error("Failed to fetch monitors", err);
     } finally {
@@ -70,233 +47,203 @@ export function MonitoringDashboard() {
 
   React.useEffect(() => {
     fetchMonitors();
-    const interval = setInterval(fetchMonitors, 10000); 
+    const interval = setInterval(fetchMonitors, 60000); 
     return () => clearInterval(interval);
   }, []);
 
-  const handleAddMonitor = async (e: React.FormEvent) => {
+  const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setAddingState(true);
+    setErrorMessage("");
 
     try {
       const res = await fetch("/api/monitors", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: 'include',
-        body: JSON.stringify({ name: newName, url: newUrl }),
+        body: JSON.stringify({ name, url }),
       });
-      
       if (res.ok) {
         setIsAdding(false);
-        setNewName("");
-        setNewUrl("");
-        setErrorMessage(null);
+        setName("");
+        setUrl("");
         fetchMonitors();
-      } else if (res.status === 403) {
-        if (currentUserRole === 'ADMIN') {
-          setErrorMessage("Infrastructure Provisioning Error: Check Permissions.");
-        } else {
-          setShowPricing(true);
-          setErrorMessage(null); 
-        }
       } else {
-        setErrorMessage("Deployment Failed: Infrastructure mismatch.");
+        const data = await res.json();
+        setErrorMessage(data.message || "Failed to provision asset.");
       }
     } catch (err) {
-      setErrorMessage("Network Interrupt: Deployment stalled.");
+      setErrorMessage("Network anomaly. Provisioning aborted.");
     } finally {
-      setLoading(false);
+      setAddingState(false);
     }
   };
 
-  const handleDeleteMonitor = async (id: string) => {
-    if (!confirm("Are you sure you want to decommission this monitor?")) return;
-    setIsProcessing(true);
+  const handleDelete = async (id: string) => {
+    if (!confirm("Decommission this asset?")) return;
     try {
       const res = await fetch(`/api/monitors/${id}`, { method: "DELETE", credentials: 'include' });
       if (res.ok) setMonitors(monitors.filter(m => m.id !== id));
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleEditSubmit = async (id: string, e: React.FormEvent) => {
-    e.preventDefault();
-    setIsProcessing(true);
-    try {
-      const res = await fetch(`/api/monitors/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        credentials: 'include',
-        body: JSON.stringify({ name: editName })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setMonitors(monitors.map(m => m.id === id ? { ...m, name: data.monitor.name } : m));
-        setEditingId(null);
-      }
-    } finally {
-      setIsProcessing(false);
+    } catch (err) {
+      console.error(err);
     }
   };
 
   if (loading && monitors.length === 0) {
     return (
-      <Card className="p-12 text-center bg-zinc-50 dark:bg-black border-zinc-200 dark:border-zinc-800">
-        <Activity className="h-8 w-8 animate-pulse mx-auto mb-4 text-blue-600 opacity-20" />
-        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Initializing Infrastructure Checks...</p>
+      <Card className="p-12 text-center bg-card border-border">
+        <Activity className="h-8 w-8 animate-pulse mx-auto mb-4 text-np-gold opacity-20" />
+        <p className="label-category text-muted-foreground">Initializing Infrastructure Checks...</p>
       </Card>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-md bg-blue-600 flex items-center justify-center text-white shadow-xl shadow-blue-500/20">
+      <div className="flex items-center justify-between bg-card p-4 rounded-card border border-border shadow-sm">
+        <div className="flex items-center gap-4">
+          <div className="h-10 w-10 rounded-ui bg-np-gold/10 flex items-center justify-center text-np-gold border border-np-gold/20">
             <Activity className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-xl font-black uppercase tracking-tight">Real-Time Infrastructure</h2>
-            <p className="text-[9px] text-zinc-500 font-black uppercase tracking-widest">Global Asset Monitoring</p>
+            <h2 className="text-[16px] font-semibold tracking-tight uppercase">Real-Time Infrastructure</h2>
+            <p className="label-category text-[10px] mt-0.5">Global Asset Monitoring</p>
           </div>
         </div>
-        <Button size="sm" onClick={() => setIsAdding(!isAdding)} className="h-11 px-6 font-black uppercase tracking-[0.2em] text-[9px] bg-zinc-900 text-white dark:bg-white dark:text-black hover:bg-blue-600 dark:hover:bg-blue-600 dark:hover:text-white transition-all shadow-xl">
-          {isAdding ? "Cancel" : <><Plus className="h-4 w-4 mr-2" /> Provision Target</>}
+        <Button size="sm" onClick={() => setIsAdding(!isAdding)} className="h-10 px-6 font-semibold uppercase tracking-widest text-[11px]">
+          {isAdding ? "Cancel" : <><Plus className="h-3 w-3 mr-1.5" /> Provision Target</>}
         </Button>
       </div>
 
       {isAdding && (
-        <Card className="p-6 bg-zinc-50 dark:bg-black border-zinc-200 dark:border-zinc-800 animate-in fade-in slide-in-from-top-4">
-          <form onSubmit={handleAddMonitor} className="flex flex-col sm:grid sm:grid-cols-3 gap-3">
-            <Input 
-              placeholder="Infrastructure ID (e.g. Production)" 
-              value={newName}
-              onChange={(e) => { setNewName(e.target.value); setErrorMessage(null); }}
-              className="h-12 bg-white dark:bg-zinc-950 font-bold"
-              required
-            />
-            <Input 
-              placeholder="https://infrastructure-endpoint.io" 
-              value={newUrl}
-              onChange={(e) => { setNewUrl(e.target.value); setErrorMessage(null); }}
-              className="h-12 bg-white dark:bg-zinc-950 font-bold"
-              required
-            />
-            <Button type="submit" disabled={loading} className="h-12 font-black uppercase tracking-widest text-xs">
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Execute Provisioning"}
+        <Card className="p-6 bg-muted border-border animate-in fade-in slide-in-from-top-4">
+          <form onSubmit={handleAdd} className="space-y-5 max-w-2xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="label-category text-[10px]">Asset Identity</label>
+                <Input 
+                  placeholder="e.g. Primary Gateway" 
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="h-11 bg-card font-semibold uppercase text-[12px]"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="label-category text-[10px]">Endpoint URL</label>
+                <Input 
+                  placeholder="https://api.gateway.com/health" 
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  className="h-11 bg-card font-mono text-[12px]"
+                  required
+                />
+              </div>
+            </div>
+            
+            {errorMessage && (
+              <div className="p-3 bg-np-crimson/10 border border-np-crimson/20 rounded-ui flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-np-crimson" />
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-np-crimson">{errorMessage}</p>
+              </div>
+            )}
+
+            <Button type="submit" className="w-full h-11 uppercase tracking-widest text-[11px]" disabled={!name || !url || addingState}>
+              {addingState ? <Loader2 className="h-4 w-4 animate-spin" /> : "Deploy Monitoring Probe"}
             </Button>
           </form>
-          
-          {errorMessage && (
-            <div className="mt-4 p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 rounded-md">
-              <p className="text-[10px] font-black uppercase tracking-widest text-red-600">{errorMessage}</p>
-            </div>
-          )}
         </Card>
       )}
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        {monitors.map((m) => (
-          <Card key={m.id} className="p-0 overflow-hidden bg-white dark:bg-black border-zinc-200 dark:border-zinc-800 shadow-sm group">
-            <div className="p-5 flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-100 dark:border-zinc-900 relative gap-6">
-              <div className="flex items-center gap-4 min-w-0 flex-1">
-                <div className={cn(
-                  "h-14 w-14 rounded-md flex items-center justify-center shrink-0 border",
-                  m.status === 'UP' 
-                    ? "bg-zinc-50 dark:bg-zinc-950 border-emerald-500/20 text-emerald-500" 
-                    : "bg-red-50 dark:bg-red-950/20 border-red-500/20 text-red-500"
-                )}>
-                  {m.status === 'UP' ? <CheckCircle2 className="h-7 w-7" /> : <AlertTriangle className="h-7 w-7 animate-pulse" />}
-                </div>
-                
-                <div className="min-w-0 flex-1">
-                  {editingId === m.id ? (
-                    <form onSubmit={(e) => handleEditSubmit(m.id, e)} className="flex items-center gap-2">
-                      <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="h-8 font-bold text-xs" autoFocus />
-                      <Button size="sm" type="submit" disabled={isProcessing} className="h-8 px-4 text-[9px] font-black uppercase tracking-widest">Save</Button>
-                      <Button size="sm" type="button" variant="ghost" onClick={() => setEditingId(null)} className="h-8 w-8"><X className="h-4 w-4"/></Button>
-                    </form>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-black text-lg uppercase tracking-tight truncate">{m.name}</h3>
-                      <button onClick={() => { setEditingId(m.id); setEditName(m.name); }} className="p-1 text-zinc-300 hover:text-blue-600 transition-colors">
-                        <Edit2 className="h-3 w-3" />
+      <div className="space-y-4">
+        {monitors.length === 0 ? (
+          <Card className="p-16 text-center border-dashed">
+            <p className="label-category text-muted-foreground">No assets provisioned. Infrastructure empty.</p>
+          </Card>
+        ) : (
+          monitors.map((m) => {
+            const history = m.latencyHistory || [];
+            const currentLatency = history.length > 0 ? history[history.length - 1] : 0;
+            return (
+              <Card key={m.id} className="p-0 overflow-hidden bg-card border-border shadow-sm group">
+                <div className="p-5 flex items-center justify-between border-b border-border bg-muted/20">
+                  <div className="flex items-center gap-4">
+                    <div className={cn(
+                      "h-12 w-12 rounded-ui border flex items-center justify-center shrink-0",
+                      m.status === 'UP' ? "bg-np-teal/10 border-np-teal/20 text-np-teal" : "bg-np-crimson/10 border-np-crimson/20 text-np-crimson"
+                    )}>
+                      {m.status === 'UP' ? <CheckCircle2 className="h-5 w-5" /> : <XCircle className="h-5 w-5" />}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-3 mb-1">
+                        <h3 className="text-[18px] font-bold tracking-tight uppercase">{m.name}</h3>
+                        <Globe className="h-3.5 w-3.5 text-muted-foreground" />
+                      </div>
+                      <p className="text-[11px] text-muted-foreground font-mono flex items-center gap-2">
+                        {m.url}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end gap-2">
+                    <div className="flex items-center gap-3">
+                      <Badge variant={m.status === 'UP' ? 'success' : 'danger'} className="text-[10px] px-2.5 py-1">
+                        {m.status}
+                      </Badge>
+                      <button 
+                        onClick={() => handleDelete(m.id)}
+                        className="opacity-0 group-hover:opacity-100 p-2 text-muted-foreground hover:text-np-crimson transition-all"
+                      >
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
-                  )}
-                  <div className="flex items-center gap-1.5 mt-1">
-                    <Globe className="h-3 w-3 text-zinc-400" />
-                    <p className="text-[10px] text-zinc-500 font-bold tracking-tight truncate">{m.url}</p>
+                    <p className="mono-gold text-[10px] opacity-70">
+                      {new Date(m.lastChecked).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                    </p>
                   </div>
                 </div>
-              </div>
-              
-              <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2">
-                <div className={cn(
-                  "text-[9px] font-black px-3 py-1 rounded-sm uppercase tracking-[0.2em] border",
-                  m.status === 'UP' 
-                    ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-500" 
-                    : "bg-red-500/5 border-red-500/20 text-red-500"
-                )}>
-                  {m.status}
-                </div>
-                <p className="text-[9px] text-zinc-400 font-black uppercase tracking-widest">
-                  {new Date(m.lastChecked).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                </p>
-              </div>
 
-              <button 
-                onClick={() => handleDeleteMonitor(m.id)}
-                className="absolute top-2 right-2 p-1.5 text-zinc-200 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-all"
-              >
-                <Trash2 className="h-3 w-3" />
-              </button>
-            </div>
-            
-            <div className="p-6 bg-zinc-50/50 dark:bg-zinc-950/50 flex flex-col gap-4">
-              <div className="flex justify-between items-end text-[10px] font-black uppercase tracking-widest text-zinc-500">
-                <span>Infrastructure Latency Matrix</span>
-                <span className="text-zinc-900 dark:text-zinc-100 tabular-nums">
-                  {m.checks.length > 0 ? `${m.checks[0].latency}ms` : 'NO DATA'}
-                </span>
-              </div>
-              <div className="flex gap-[1px] h-14 items-end relative group/chart">
-                {(() => {
-                  const visibleChecks = m.checks.slice(0, 60).reverse();
-                  const maxLatency = Math.max(...visibleChecks.map(c => c.latency), 100);
+                {/* Graph Area */}
+                <div className="p-6 bg-np-obsidian">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="label-category text-[9px] text-np-slate">Infrastructure Latency Matrix</span>
+                    <span className="mono-gold text-[12px] font-bold">{currentLatency}MS</span>
+                  </div>
                   
-                  return visibleChecks.map((c: any, i: number) => {
-                    const heightPct = Math.max(10, (c.latency / maxLatency) * 100);
-                    return (
-                      <div 
-                        key={i} 
-                        className={cn(
-                          "flex-1 rounded-t-[1px] transition-all duration-300",
-                          c.status === 'UP' ? "bg-emerald-500/30" : "bg-red-600"
-                        )}
-                        style={{ height: `${heightPct}%` }}
-                      />
-                    );
-                  });
-                })()}
-                {m.checks.length === 0 && (
-                  <div className="absolute inset-0 flex items-center justify-center text-[9px] font-black uppercase tracking-widest text-zinc-500">
-                    <Loader2 className="h-3 w-3 animate-spin mr-2" />
-                    Gathering Metrics...
+                  <div className="h-16 flex items-end gap-1 w-full mt-2">
+                    {/* Render exact history if exists, else filler */}
+                    {history.length > 0 ? (
+                      history.map((lat, i) => {
+                        const heightPercent = Math.max(10, Math.min(100, (lat / 1000) * 100));
+                        const isHigh = lat > 800;
+                        return (
+                          <div 
+                            key={i} 
+                            className={cn(
+                              "flex-1 rounded-t-[2px] transition-all duration-500",
+                              isHigh ? "bg-np-crimson" : "bg-np-teal"
+                            )}
+                            style={{ height: `${heightPercent}%`, opacity: (i + 1) / history.length }}
+                            title={`${lat}ms`}
+                          />
+                        )
+                      })
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-[10px] uppercase font-bold text-np-slate tracking-widest border border-dashed border-np-slate/20">
+                        Gathering Telemetry...
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-              <div className="flex justify-between text-[8px] font-black uppercase tracking-widest text-zinc-400">
-                <span>HISTORICAL</span>
-                <span>REAL-TIME</span>
-              </div>
-            </div>
-          </Card>
-        ))}
+                  
+                  <div className="flex justify-between mt-3 text-[8px] font-black uppercase tracking-[0.2em] text-np-slate">
+                    <span>Historical</span>
+                    <span>Real-Time</span>
+                  </div>
+                </div>
+              </Card>
+            )
+          })
+        )}
       </div>
-
-      <PricingModal isOpen={showPricing} onClose={() => setShowPricing(false)} currentPlan={currentUserPlan} />
     </div>
   );
 }

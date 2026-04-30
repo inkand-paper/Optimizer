@@ -3,9 +3,9 @@ import fs from "fs";
 import path from "path";
 import Link from "next/link";
 import { Navbar } from "@/components/navbar";
-import { ArrowLeft, BookOpen, Clock, Tag, ChevronRight } from "lucide-react";
+import { ArrowLeft, BookOpen, Clock, Mail, Github } from "lucide-react";
 import { notFound } from "next/navigation";
-import { Button } from "@/components/ui-elements";
+import { Card } from "@/components/ui-elements";
 
 import { MermaidInitializer } from "@/components/mermaid-initializer";
 
@@ -16,9 +16,9 @@ function renderMarkdownAsCards(md: string) {
   const intro = sections.shift() || "";
 
   const renderedIntro = intro
-    .replace(/^# (.*$)/gm, '<h1 class="text-4xl md:text-7xl font-black mb-10 tracking-tighter text-zinc-900 dark:text-white uppercase leading-[0.9]">$1</h1>')
-    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-black text-zinc-900 dark:text-white uppercase tracking-tight">$1</strong>')
-    .split('\n\n').filter(Boolean).map(p => p.startsWith('<') ? p : `<p class="text-lg text-zinc-500 dark:text-zinc-400 font-bold tracking-tight leading-relaxed mb-10 uppercase">${p}</p>`).join('\n');
+    .replace(/^# (.*$)/gm, '<h1 class="text-4xl md:text-5xl font-semibold mb-6 tracking-tight text-foreground">$1</h1>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-foreground">$1</strong>')
+    .split('\n\n').filter(Boolean).map(p => p.startsWith('<') ? p : `<p class="text-[16px] text-muted-foreground leading-relaxed mb-6">${p}</p>`).join('\n');
 
   const renderedSections = sections.map(section => {
     const rawSection = section.replace(/^## /, '');
@@ -34,9 +34,9 @@ function renderMarkdownAsCards(md: string) {
     content = content.replace(/```(\w+)\n([\s\S]*?)```/g, (match, lang, code) => {
       const displayLang = lang.toUpperCase();
       return `<div class="relative my-8">
-        <div class="flex items-center gap-2 px-4 py-2 rounded-t-card" style="background:#16191E;border:0.5px solid rgba(255,255,255,0.07);border-bottom:none">
+        <div class="flex items-center gap-2 px-4 py-2.5 rounded-t-card" style="background:#0D0F11;border:0.5px solid rgba(255,255,255,0.07);border-bottom:none">
           <span class="h-2 w-2 rounded-full" style="background:#B48C3C"></span>
-          <span style="font-family:var(--font-mono);font-size:11px;color:#B48C3C;letter-spacing:0.08em">${displayLang}</span>
+          <span class="mono-gold font-semibold">${displayLang}</span>
         </div>
         <pre class="np-codeblock rounded-t-none rounded-b-card overflow-x-auto np-scroll" style="margin:0">
           <code class="language-${lang}">${code.trim()}</code>
@@ -55,36 +55,36 @@ function renderMarkdownAsCards(md: string) {
       rows.shift(); 
       
       const headerCells = headerRow.split('|').filter(c => c.trim() !== "").map(c => c.trim());
-      const headerHtml = `<thead class="bg-zinc-50 dark:bg-zinc-900"><tr>${headerCells.map(c => `<th class="p-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">${c}</th>`).join('')}</tr></thead>`;
+      const headerHtml = `<thead class="bg-muted/40"><tr>${headerCells.map(c => `<th class="px-5 py-3.5 label-category text-muted-foreground border-b border-border">${c}</th>`).join('')}</tr></thead>`;
       
       const bodyRowsHtml = rows.map(row => {
         const cells = row.split('|').filter(c => c.trim() !== "").map(c => c.trim());
-        return `<tr class="border-b border-zinc-100 dark:border-zinc-900 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50 transition-colors">${cells.map(c => `<td class="p-5 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-tight">${c}</td>`).join('')}</tr>`;
+        return `<tr class="border-b border-border hover:bg-muted/20 transition-colors">${cells.map(c => `<td class="px-5 py-3.5 text-[13px] font-medium text-foreground">${c}</td>`).join('')}</tr>`;
       }).join('');
       
-      return `<div class="overflow-x-auto my-10 border border-zinc-200 dark:border-zinc-800 rounded-md shadow-sm"><table class="w-full text-left border-collapse">${headerHtml}<tbody class="divide-y border-zinc-100 dark:divide-zinc-900">${bodyRowsHtml}</tbody></table></div>`;
+      return `<div class="overflow-x-auto my-8 border border-border rounded-ui shadow-sm"><table class="w-full text-left border-collapse bg-card">${headerHtml}<tbody class="divide-y divide-border">${bodyRowsHtml}</tbody></table></div>`;
     });
 
     // 5. Basic Inline
     content = content
-      .replace(/^### (.*$)/gm, '<h3 class="text-2xl font-black mb-6 mt-12 text-zinc-900 dark:text-white uppercase tracking-tighter border-b border-zinc-100 dark:border-zinc-900 pb-2">$1</h3>')
-      .replace(/\*\*(.*?)\*\*/g, '<strong class="font-black text-zinc-900 dark:text-white uppercase tracking-tight">$1</strong>')
-      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-blue-600 hover:text-blue-500 font-black uppercase tracking-tight transition-colors underline decoration-2 underline-offset-4">$1</a>')
-      .replace(/^> (.*$)/gm, '<div class="bg-zinc-50 dark:bg-zinc-900/50 border-l-4 border-blue-600 p-6 my-10 rounded-sm shadow-sm"><p class="text-xs font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-400 leading-loose">$1</p></div>')
-      .replace(/^\- (.*$)/gm, '<li class="flex items-start gap-4 mb-4"><div class="h-2 w-2 rounded-sm bg-blue-600 mt-1.5 shrink-0 shadow-lg shadow-blue-500/20"></div><span class="text-xs font-black uppercase tracking-tight text-zinc-600 dark:text-zinc-400 leading-relaxed">$1</span></li>');
+      .replace(/^### (.*$)/gm, '<h3 class="text-[20px] font-semibold mb-4 mt-10 text-foreground">$1</h3>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-foreground">$1</strong>')
+      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-np-gold hover:text-np-gold/80 transition-colors underline decoration-1 underline-offset-4">$1</a>')
+      .replace(/^> (.*$)/gm, '<div class="bg-np-gold/5 border-l-2 border-np-gold p-4 my-8 rounded-r-ui"><p class="text-[14px] font-medium text-muted-foreground">$1</p></div>')
+      .replace(/^\- (.*$)/gm, '<li class="flex items-start gap-3 mb-3"><div class="h-1.5 w-1.5 rounded-full bg-np-gold mt-2 shrink-0"></div><span class="text-[14px] text-muted-foreground leading-relaxed">$1</span></li>');
 
     // 6. Paragraphs
     content = content.split('\n\n').filter(Boolean).map(p => {
       const trimmed = p.trim();
       if (trimmed.startsWith('<div') || trimmed.startsWith('<section') || trimmed.startsWith('<h3') || trimmed.startsWith('<li')) return trimmed;
-      return `<p class="mb-6 text-xs font-bold uppercase tracking-tight text-zinc-500 dark:text-zinc-400 leading-relaxed">${trimmed}</p>`;
+      return `<p class="mb-4 text-[14px] text-muted-foreground leading-relaxed">${trimmed}</p>`;
     }).join('\n');
 
     return `
-      <section id="${sectionId}" class="mb-16 scroll-mt-32">
-        <div class="bg-white dark:bg-zinc-950 rounded-md p-8 md:p-16 border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden group">
-          <div class="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-blue-600/10 transition-all duration-700" />
-          <h2 class="text-3xl md:text-5xl font-black mb-12 tracking-tighter text-zinc-900 dark:text-white uppercase leading-none border-l-4 border-blue-600 pl-8">${title}</h2>
+      <section id="${sectionId}" class="mb-12 scroll-mt-32">
+        <div class="np-card p-6 md:p-10 relative overflow-hidden group">
+          <div class="absolute -top-16 -right-16 w-32 h-32 bg-np-gold/5 rounded-full blur-3xl group-hover:bg-np-gold/10 transition-colors duration-700 pointer-events-none" />
+          <h2 class="text-2xl md:text-3xl font-semibold mb-8 text-foreground border-l-2 border-np-gold pl-5">${title}</h2>
           <div class="prose prose-zinc dark:prose-invert max-w-none">
             ${content}
           </div>
@@ -116,27 +116,27 @@ export default async function DocDetail({ params }: { params: Promise<{ slug: st
     const { renderedIntro, renderedSections } = renderMarkdownAsCards(content);
 
     return (
-      <div className="min-h-screen flex flex-col bg-white dark:bg-black">
+      <div className="min-h-screen flex flex-col bg-background">
         <MermaidInitializer />
         <Navbar />
         
-        <main className="flex-1 w-full max-w-[1000px] mx-auto px-4 py-20 md:py-32">
+        <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-16 md:py-24">
           <Link 
             href="/docs" 
-            className="inline-flex items-center gap-2 text-zinc-400 hover:text-blue-600 transition-all mb-16 group font-black text-[10px] uppercase tracking-[0.3em]"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-np-gold transition-colors mb-12 group font-semibold text-[11px] uppercase tracking-widest"
           >
             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-            Return to Protocols
+            Return to Knowledge Base
           </Link>
 
-          <div className="flex items-center gap-6 mb-12 border-b border-zinc-100 dark:border-zinc-900 pb-8">
-            <div className="px-3 py-1 rounded-sm bg-blue-600 text-white text-[9px] font-black uppercase tracking-[0.3em] flex items-center gap-2 shadow-lg shadow-blue-500/20">
-              <BookOpen className="h-3 w-3 fill-current" /> 
-              <span>Engineering Guideline</span>
+          <div className="flex items-center gap-4 mb-10 pb-6 border-b border-border">
+            <div className="px-3 py-1.5 rounded-ui bg-np-gold/10 text-np-gold text-[11px] font-semibold uppercase tracking-widest flex items-center gap-1.5 border border-np-gold/20">
+              <BookOpen className="h-3.5 w-3.5" /> 
+              <span>Protocol Document</span>
             </div>
-            <div className="flex items-center gap-2 text-[9px] font-black text-zinc-400 uppercase tracking-[0.3em]">
-              <Clock className="h-3 w-3" /> 
-              <span>Transmission: 5m</span>
+            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">
+              <Clock className="h-3.5 w-3.5" /> 
+              <span>5m Read</span>
             </div>
           </div>
 
@@ -146,26 +146,27 @@ export default async function DocDetail({ params }: { params: Promise<{ slug: st
           />
 
           <div 
-            className="docs-content mt-16"
+            className="docs-content mt-12"
             dangerouslySetInnerHTML={{ __html: renderedSections }}
           />
 
-          <div className="mt-32 p-12 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md relative overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_var(--tw-gradient-stops))] from-blue-600/5 via-transparent to-transparent opacity-50" />
+          {/* Support CTA Footer matching other pages */}
+          <Card className="mt-20 p-10 text-center relative overflow-hidden">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-40 bg-np-gold/5 blur-[60px] pointer-events-none" />
             <div className="relative z-10">
-              <h4 className="text-xl font-black mb-8 uppercase tracking-tighter">Support Escalation Matrix</h4>
-              <div className="grid sm:grid-cols-2 gap-4">
-                 <Link href="mailto:tabir8431@gmail.com" className="p-6 rounded-md bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 hover:border-blue-600 transition-all shadow-sm group">
-                    <p className="font-black text-xs mb-1 uppercase tracking-tight text-zinc-900 dark:text-white group-hover:text-blue-600 transition-colors">Direct Engineering Liaison</p>
-                    <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">SLA: 24 Hour Response Time</p>
+              <h4 className="text-[20px] font-semibold mb-4 tracking-tight">Need further clarification?</h4>
+              <p className="text-[14px] text-muted-foreground mb-6">Our engineering team is available for direct support.</p>
+              <div className="flex justify-center gap-4">
+                 <Link href="mailto:tabir8431@gmail.com" className="np-btn-primary h-10 px-6 text-[13px] gap-2">
+                    <Mail className="h-4 w-4" /> Email Support
                  </Link>
-                 <Link href="https://github.com/inkand-paper/Optimizer" className="p-6 rounded-md bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 hover:border-blue-600 transition-all shadow-sm group">
-                    <p className="font-black text-xs mb-1 uppercase tracking-tight text-zinc-900 dark:text-white group-hover:text-blue-600 transition-colors">Protocol Issue Log</p>
-                    <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Public Repository Tracking</p>
+                 <Link href="https://github.com/inkand-paper/Optimizer" className="np-btn-outline h-10 px-6 text-[13px] gap-2">
+                    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.021c0 4.428 2.865 8.185 6.839 9.504.5.092.682-.217.682-.483 0-.237-.009-.868-.013-1.703-2.782.605-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482C19.138 20.2 22 16.447 22 12.021 22 6.484 17.523 2 12 2z"/></svg> 
+                    Open Issue
                  </Link>
               </div>
             </div>
-          </div>
+          </Card>
         </main>
       </div>
     );
