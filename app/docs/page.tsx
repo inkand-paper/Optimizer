@@ -1,7 +1,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/navbar";
-import { Card } from "@/components/ui-elements";
+import { Card, Button } from "@/components/ui-elements";
 import { 
   Book, 
   Terminal, 
