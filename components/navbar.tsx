@@ -2,177 +2,130 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { ThemeToggle } from "./theme-toggle";
-import { Activity, LogOut, LayoutDashboard, UserPlus, LogIn, BookOpen, Menu, X, ShieldAlert } from "lucide-react";
+import { Activity, Menu, X, BookOpen, LayoutDashboard, LogIn, LogOut, UserPlus } from "lucide-react";
 
-/**
- * [PRODUCTION-GRADE] - Navbar
- * Sovereign Obsidian Aesthetic
- */
 export function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [isAdmin, setIsAdmin] = React.useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await fetch('/api/auth/me');
-        if (res.ok) {
-          const data = await res.json();
-          setIsLoggedIn(true);
-          setIsAdmin(data.user?.role === 'ADMIN');
-        } else {
-          setIsLoggedIn(false);
-          setIsAdmin(false);
-        }
-      } catch {
-        setIsLoggedIn(false);
-        setIsAdmin(false);
-      }
-    };
-    
-    checkAuth();
-  }, []);
+    fetch("/api/auth/me")
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => {
+        setIsLoggedIn(!!d?.success);
+        setIsAdmin(d?.user?.role === "ADMIN");
+      })
+      .catch(() => {});
+  }, [pathname]);
 
   async function handleLogout() {
-    await fetch('/api/auth/logout', { method: 'POST' });
+    await fetch("/api/auth/logout", { method: "POST" });
     localStorage.removeItem("user");
     setIsLoggedIn(false);
     setIsAdmin(false);
-    setIsMobileMenuOpen(false);
+    setOpen(false);
     router.push("/login");
   }
 
-  const LinkItem = ({ href, icon: Icon, children, className = "" }: any) => (
-    <Link 
-      href={href} 
-      onClick={() => setIsMobileMenuOpen(false)}
-      className={`flex items-center gap-3 ${className}`}
-    >
-      <Icon className="h-4 w-4 text-blue-600" /> <span className="uppercase tracking-[0.2em]">{children}</span>
-    </Link>
-  );
+  const navLink =
+    "text-[13px] font-medium text-np-slate hover:text-foreground transition-colors";
 
   return (
-    <nav className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black sticky top-0 z-50">
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 font-black text-xl tracking-tighter z-50">
-          <Activity className="h-6 w-6 text-blue-600" />
-          <span className="text-zinc-900 dark:text-white uppercase tracking-tighter">NexPulse</span>
+    <header
+      style={{ borderBottom: "0.5px solid var(--border)" }}
+      className="sticky top-0 z-50 bg-background/95 backdrop-blur-md"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-6">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2 font-semibold text-[15px] shrink-0">
+          <Activity className="h-5 w-5 text-np-gold" />
+          <span className="text-foreground">NexPulse</span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-8 h-full">
-          <Link 
-            href="/docs" 
-            className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-white transition-colors"
-          >
-            Docs
-          </Link>
+        {/* Desktop links */}
+        <nav className="hidden md:flex items-center gap-6">
+          <Link href="/docs" className={navLink}>Docs</Link>
           {isLoggedIn ? (
-            <div className="flex items-center gap-6">
+            <>
               {isAdmin && (
-                <Link 
-                  href="/dashboard/admin" 
-                  className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-white transition-colors"
-                >
-                  Admin
-                </Link>
+                <Link href="/dashboard/admin" className={navLink}>Admin</Link>
               )}
-              <Link 
-                href="/dashboard" 
-                className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-white transition-colors"
-              >
-                Dashboard
-              </Link>
-              <button 
-                onClick={handleLogout}
-                className="text-[10px] font-black uppercase tracking-[0.3em] text-red-500 hover:text-red-600 transition-colors"
-              >
+              <Link href="/dashboard" className={navLink}>Dashboard</Link>
+              <button onClick={handleLogout} className="text-[13px] font-medium text-np-crimson hover:opacity-80 transition-opacity">
                 Logout
               </button>
-            </div>
+            </>
           ) : (
-            <div className="flex items-center gap-6">
-              <Link 
-                href="/login" 
-                className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-white transition-colors"
-              >
-                Login
-              </Link>
-              <Link 
-                href="/register" 
-                className="bg-zinc-900 text-zinc-50 dark:bg-zinc-50 dark:text-zinc-900 px-6 py-2 rounded-md text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:bg-blue-600 hover:text-white flex items-center gap-1"
+            <>
+              <Link href="/login" className={navLink}>Login</Link>
+              <Link
+                href="/register"
+                className="np-btn-primary text-[13px] h-9 px-4"
               >
                 Get Started
               </Link>
-            </div>
+            </>
           )}
-          <div className="border-l border-zinc-200 dark:border-zinc-800 pl-6 h-6 flex items-center">
-            <ThemeToggle />
-          </div>
-        </div>
-
-        {/* Mobile Navigation Toggle - Ensure Visibility */}
-        <div className="flex md:hidden items-center gap-2 z-50">
           <ThemeToggle />
-          <button 
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-3 text-zinc-900 dark:text-white"
+        </nav>
+
+        {/* Mobile toggle */}
+        <div className="flex md:hidden items-center gap-2">
+          <ThemeToggle />
+          <button
+            onClick={() => setOpen(!open)}
+            className="p-2 rounded-ui text-np-slate hover:text-foreground transition-colors"
             aria-label="Toggle menu"
           >
-            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
-
       </div>
 
-      {/* Mobile Menu Drawer */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 top-16 bg-white dark:bg-black z-40 flex flex-col px-8 py-10 animate-in slide-in-from-top-4 duration-300">
-          <div className="flex flex-col gap-8">
-            <LinkItem href="/docs" icon={BookOpen} className="text-sm font-black text-zinc-900 dark:text-white">
-              Documentation
-            </LinkItem>
-            
-            {isLoggedIn ? (
-              <>
-                <LinkItem href="/dashboard" icon={LayoutDashboard} className="text-sm font-black text-zinc-900 dark:text-white">
-                  Dashboard
-                </LinkItem>
-                {isAdmin && (
-                  <LinkItem href="/dashboard/admin" icon={ShieldAlert} className="text-sm font-black text-zinc-900 dark:text-white">
-                    Admin Portal
-                  </LinkItem>
-                )}
-                <div className="h-px bg-zinc-100 dark:bg-zinc-900 my-4" />
-                <button 
-                  onClick={handleLogout}
-                  className="flex items-center gap-4 text-sm font-black uppercase tracking-[0.2em] text-red-600 dark:text-red-500 w-full text-left"
-                >
-                  <LogOut className="h-5 w-5" /> Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <LinkItem href="/login" icon={LogIn} className="text-sm font-black text-zinc-900 dark:text-white">
-                  Login
-                </LinkItem>
-                <Link 
-                  href="/register" 
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-5 text-sm font-black uppercase tracking-[0.3em] bg-zinc-900 text-zinc-50 dark:bg-zinc-50 dark:text-zinc-900 rounded-md flex items-center justify-center mt-6 shadow-xl"
-                >
-                  Get Started
+      {/* Mobile drawer */}
+      {open && (
+        <div
+          style={{ borderTop: "0.5px solid var(--border)" }}
+          className="md:hidden bg-background px-4 py-5 flex flex-col gap-4"
+        >
+          <Link href="/docs" onClick={() => setOpen(false)} className="flex items-center gap-3 text-[14px] font-medium">
+            <BookOpen className="h-4 w-4 text-np-gold" /> Docs
+          </Link>
+          {isLoggedIn ? (
+            <>
+              <Link href="/dashboard" onClick={() => setOpen(false)} className="flex items-center gap-3 text-[14px] font-medium">
+                <LayoutDashboard className="h-4 w-4 text-np-gold" /> Dashboard
+              </Link>
+              {isAdmin && (
+                <Link href="/dashboard/admin" onClick={() => setOpen(false)} className="flex items-center gap-3 text-[14px] font-medium">
+                  Dashboard — Admin
                 </Link>
-              </>
-            )}
-          </div>
+              )}
+              <button onClick={handleLogout} className="flex items-center gap-3 text-[14px] font-medium text-np-crimson">
+                <LogOut className="h-4 w-4" /> Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" onClick={() => setOpen(false)} className="flex items-center gap-3 text-[14px] font-medium">
+                <LogIn className="h-4 w-4 text-np-gold" /> Login
+              </Link>
+              <Link
+                href="/register"
+                onClick={() => setOpen(false)}
+                className="np-btn-primary w-full justify-center"
+              >
+                <UserPlus className="h-4 w-4 mr-2" /> Get Started
+              </Link>
+            </>
+          )}
         </div>
       )}
-    </nav>
+    </header>
   );
 }

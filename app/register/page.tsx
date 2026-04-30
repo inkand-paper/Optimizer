@@ -3,152 +3,104 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Navbar } from "@/components/navbar";
 import { Card, Button, Input, PasswordInput } from "@/components/ui-elements";
-import { Activity, Loader2, Sparkles } from "lucide-react";
+import { Activity, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 
-/**
- * [ENTRY-LEVEL DEFINITION] - Register Page
- * Sovereign Obsidian Aesthetic
- */
 export default function RegisterPage() {
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState("");
-  const [isSent, setIsSent] = React.useState(false);
+  const [error, setError]     = React.useState("");
+  const [sent, setSent]       = React.useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    const formData = new FormData(e.currentTarget);
-    const name = formData.get("name");
-    const email = formData.get("email");
-    const password = formData.get("password");
-
+    setLoading(true); setError("");
+    const fd = new FormData(e.currentTarget);
     try {
-      const res = await fetch("/api/auth/register", {
+      const r = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({
+          name:     fd.get("name"),
+          email:    fd.get("email"),
+          password: fd.get("password"),
+        }),
       });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        if (data.emailVerified) {
-          localStorage.setItem("user", JSON.stringify(data.user));
-          router.push("/dashboard");
-        } else {
-          setIsSent(true);
-        }
-      } else {
-        setError(data.message || "Registration failed. This email may already be in use.");
-      }
-    } catch (err) {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  if (isSent) {
-    return (
-      <div className="flex-1 flex flex-col bg-white dark:bg-black min-h-screen">
-        <Navbar />
-        <main className="flex-1 flex items-center justify-center p-6 py-12">
-          <Card className="w-full max-w-md p-10 text-center border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-black/50 backdrop-blur-xl">
-            <div className="h-16 w-16 rounded-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center mx-auto mb-6 shadow-xl">
-              <Activity className="h-8 w-8 text-blue-600 animate-pulse" />
-            </div>
-            <h1 className="text-3xl font-black tracking-tighter text-zinc-900 dark:text-white uppercase mb-4 leading-none">
-              Deploying Handshake
-            </h1>
-            <p className="text-zinc-500 dark:text-zinc-400 text-[10px] font-black uppercase tracking-[0.3em] mb-10 leading-relaxed">
-              We&apos;ve dispatched a verification link to your infrastructure endpoint. Please authenticate to proceed.
-            </p>
-            <Link href="/login">
-               <Button className="w-full h-14 font-black uppercase tracking-[0.2em] text-xs">Access Gateway</Button>
-            </Link>
-          </Card>
-        </main>
-      </div>
-    );
+      const d = await r.json();
+      if (r.ok) setSent(true);
+      else setError(d.message || "Registration failed");
+    } catch { setError("Something went wrong. Please try again."); }
+    finally { setLoading(false); }
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-white dark:bg-black min-h-screen">
-      <Navbar />
-      <main className="flex-1 flex items-center justify-center p-6 py-12 relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[140px] pointer-events-none" />
-        
-        <Card className="w-full max-w-md p-10 relative z-10 border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-black/50 backdrop-blur-xl shadow-2xl">
-          <div className="flex flex-col items-center gap-2 mb-10 text-center">
-            <div className="h-14 w-14 rounded-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center mb-4 shadow-xl">
-              <Sparkles className="h-7 w-7 text-blue-600" />
-            </div>
-            <h1 className="text-3xl font-black tracking-tighter text-zinc-900 dark:text-white uppercase leading-none">
-              Initialize Unit
-            </h1>
-            <p className="text-zinc-500 dark:text-zinc-400 text-[10px] font-black uppercase tracking-[0.3em] mt-2">
-              Architect Your Digital Infrastructure
-            </p>
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-np-gold/5 rounded-full blur-[100px] pointer-events-none" />
+
+      <div className="relative w-full max-w-sm">
+        {/* Logo */}
+        <div className="flex flex-col items-center mb-8">
+          <div
+            className="h-11 w-11 rounded-card flex items-center justify-center mb-4"
+            style={{ background: "rgba(180,140,60,0.12)", border: "0.5px solid var(--np-gold)" }}
+          >
+            <Activity className="h-5 w-5 text-np-gold" />
           </div>
+          <h1 className="text-[22px] font-semibold tracking-tight">Create your account</h1>
+          <p className="text-[13px] text-muted-foreground mt-1">Start monitoring in minutes</p>
+        </div>
 
-          <form onSubmit={handleSubmit} method="POST" className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500" htmlFor="name">Full Identity</label>
-              <Input 
-                id="name" 
-                name="name" 
-                placeholder="John Doe" 
-                required 
-                className="h-12 bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 font-bold"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500" htmlFor="email">Email Address</label>
-              <Input 
-                id="email" 
-                name="email" 
-                type="email" 
-                placeholder="infrastructure@nexpulse.io" 
-                required 
-                className="h-12 bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 font-bold"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500" htmlFor="password">Security Key</label>
-              <PasswordInput 
-                id="password" 
-                name="password" 
-                placeholder="••••••••"
-                required 
-                className="h-12 bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 font-bold"
-              />
-              <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1">Min. 8 Alpha-Numerics</p>
-            </div>
-
-            {error && (
-              <div className="p-4 text-[10px] font-black uppercase tracking-widest text-red-600 bg-red-50 dark:bg-red-900/10 rounded-md border border-red-100 dark:border-red-900/20">
-                {error}
-              </div>
-            )}
-
-            <Button type="submit" className="w-full h-14 font-black uppercase tracking-[0.2em] text-xs" disabled={loading}>
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Deploy Architecture"}
-            </Button>
-          </form>
-
-          <p className="mt-8 text-center text-[9px] text-zinc-400 font-black uppercase tracking-[0.2em]">
-            Authorized Operator?{" "}
-            <Link href="/login" className="text-blue-600 hover:text-blue-500 transition-colors">
-              Access Gateway
+        {sent ? (
+          <Card className="p-8 text-center">
+            <CheckCircle2 className="h-10 w-10 text-np-teal mx-auto mb-4" />
+            <h2 className="text-[16px] font-semibold mb-2">Check your inbox</h2>
+            <p className="text-[13px] text-muted-foreground mb-6">
+              We sent a verification link to your email. Click it to activate your account.
+            </p>
+            <Link href="/login" className="np-btn-primary w-full justify-center">
+              Go to sign in
             </Link>
-          </p>
-        </Card>
-      </main>
+          </Card>
+        ) : (
+          <Card className="p-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="label-category" htmlFor="name">Full name</label>
+                <Input id="name" name="name" type="text" placeholder="Jane Smith" required autoFocus />
+              </div>
+              <div className="space-y-1.5">
+                <label className="label-category" htmlFor="email">Email</label>
+                <Input id="email" name="email" type="email" placeholder="you@company.com" required />
+              </div>
+              <div className="space-y-1.5">
+                <label className="label-category" htmlFor="password">Password</label>
+                <PasswordInput id="password" name="password" required />
+              </div>
+
+              {error && (
+                <div
+                  className="flex items-center gap-2.5 p-3 rounded-ui text-[13px]"
+                  style={{ background: "rgba(163,45,45,0.08)", border: "0.5px solid var(--np-crimson)", color: "var(--np-crimson)" }}
+                >
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  {error}
+                </div>
+              )}
+
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create account"}
+              </Button>
+            </form>
+          </Card>
+        )}
+
+        <p className="text-center text-[13px] text-muted-foreground mt-5">
+          Already have an account?{" "}
+          <Link href="/login" className="font-medium" style={{ color: "var(--np-gold)" }}>
+            Sign in
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

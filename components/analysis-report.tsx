@@ -1,42 +1,67 @@
+"use client";
+
 import * as React from "react";
-import { Card, Button } from "./ui-elements";
-import { 
-  CheckCircle2, 
-  XCircle, 
-  Search, 
-  ShieldCheck, 
-  Zap, 
-  Download,
-  AlertCircle,
-  Globe,
-  Lock,
-  ArrowRight,
-  Sparkles,
-  Crown
+import { Card, Button, StatusDot } from "./ui-elements";
+import {
+  CheckCircle2, XCircle, AlertCircle, Globe, Lock,
+  Zap, Search, ShieldCheck, Download, Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { AnalyzeResponse } from "@/lib/types";
 import ReactMarkdown from "react-markdown";
 
-interface Props {
-  data: AnalyzeResponse;
+interface Props { data: AnalyzeResponse; }
+
+function ScoreRing({ score }: { score: number }) {
+  const color =
+    score >= 80 ? "var(--np-teal)" :
+    score >= 50 ? "var(--np-gold)" :
+    "var(--np-crimson)";
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <div
+        className="relative h-20 w-20 rounded-full flex items-center justify-center"
+        style={{ background: `conic-gradient(${color} ${score * 3.6}deg, var(--muted) 0deg)` }}
+      >
+        <div className="h-14 w-14 rounded-full bg-card flex items-center justify-center">
+          <span className="text-[18px] font-semibold" style={{ color }}>{score}</span>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-/**
- * [PRODUCTION-GRADE] - Advanced Analysis Report
- * Sovereign Obsidian Aesthetic
- */
+function IssueRow({ label, value, pass }: { label: string; value?: string; pass: boolean }) {
+  return (
+    <div
+      className="flex items-start justify-between gap-4 py-3"
+      style={{ borderBottom: "0.5px solid var(--border)" }}
+    >
+      <div className="flex items-center gap-2.5 min-w-0">
+        {pass
+          ? <CheckCircle2 className="h-4 w-4 shrink-0 text-np-teal" />
+          : <XCircle     className="h-4 w-4 shrink-0 text-np-crimson" />}
+        <span className="text-[13px] font-medium truncate">{label}</span>
+      </div>
+      {value && <span className="text-[12px] text-muted-foreground shrink-0 font-mono">{value}</span>}
+    </div>
+  );
+}
+
 export function AnalysisReport({ data }: Props) {
   const { results, success } = data;
+  const [activeTab, setActiveTab] = React.useState(0);
 
   if (!success || !results) {
     return (
-      <Card className="p-6 border-red-200 bg-red-50 dark:bg-red-900/10 text-red-700 dark:text-red-400">
-        <div className="flex items-center gap-2">
-          <AlertCircle className="h-5 w-5" />
-          <h3 className="font-bold">Scan Failed</h3>
+      <Card className="p-5 flex items-center gap-3" style={{ borderLeft: "3px solid var(--np-crimson)" }}>
+        <AlertCircle className="h-5 w-5 text-np-crimson shrink-0" />
+        <div>
+          <p className="text-[13px] font-semibold text-np-crimson">Scan failed</p>
+          <p className="text-[12px] text-muted-foreground mt-0.5">
+            {(data as any).message || "Could not analyse the URL. Check the URL and your API key."}
+          </p>
         </div>
-        <p className="text-sm mt-2 opacity-80">{(data as any).message || "Could not analyze the website. Please check the URL and your API Key."}</p>
       </Card>
     );
   }
@@ -44,208 +69,126 @@ export function AnalysisReport({ data }: Props) {
   const { overallScore, sections } = results;
 
   const downloadReport = () => {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `audit-${results.url.replace(/https?:\/\//, '').replace(/\//g, '-')}.json`;
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href = url; a.download = `audit-${results.url.replace(/https?:\/\//, "").replace(/\//g, "-")}.json`;
     a.click();
   };
 
+  const tabs = [
+    { label: "SEO",       icon: Search    },
+    { label: "Security",  icon: ShieldCheck },
+    { label: "Perf",      icon: Zap       },
+    { label: "AI",        icon: Sparkles  },
+  ];
+
+  const seoSection  = sections?.seo;
+  const secSection  = sections?.security;
+  const perfSection = sections?.performance;
+  const aiSection   = sections?.ai || sections?.genius;
+
+  const tabSections = [seoSection, secSection, perfSection, null];
+
+  const scoreColor = (s: number) =>
+    s >= 80 ? "var(--np-teal)" : s >= 50 ? "var(--np-gold)" : "var(--np-crimson)";
+
   return (
-    <div className="space-y-12 animate-slide-up">
-      {/* Header Summary - Stepped Progression Header */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-10 p-12 bg-card rounded-md border border-zinc-200/50 dark:border-white/5 soft-diffusion relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/[0.03] rounded-full blur-[100px] -mr-32 -mt-32 pointer-events-none" />
-        
-        <div className="z-10 w-full md:w-auto">
-          <div className="text-blue-600 text-[10px] font-black uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
-             <div className="h-1 w-4 bg-blue-600 rounded-full" />
-             Technical Protocol Audit
+    <div className="space-y-5 np-slide-up">
+      {/* ── Summary header ── */}
+      <Card className="p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 mb-6">
+          <div>
+            <p className="label-category mb-1">Audit complete</p>
+            <h2 className="text-[15px] font-semibold truncate max-w-xs">{results.url}</h2>
           </div>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter truncate max-w-full sm:max-w-md uppercase text-zinc-900 dark:text-white leading-none">
-            {results.url.replace(/https?:\/\//, '')}
-          </h1>
-          <p className="text-[10px] text-zinc-500 mt-6 font-black uppercase tracking-[0.2em] flex items-center gap-2 leading-none">
-            <span className="text-blue-600">Transmission Log:</span> {new Date(data.timestamp).toLocaleString()}
-          </p>
-        </div>
-        
-        <div className="flex items-center justify-between md:justify-end gap-16 z-10 w-full md:w-auto border-t md:border-t-0 md:border-l border-zinc-100 dark:border-zinc-900/50 pt-10 md:pt-0 md:pl-16">
-          <div className="text-center">
-            <div className={cn(
-              "text-8xl font-black tracking-tighter leading-none mb-3",
-              overallScore >= 80 ? "text-blue-600" : 
-              overallScore >= 50 ? "text-zinc-900 dark:text-white" : "text-red-600"
-            )}>
-              {overallScore}
-            </div>
-            <p className="text-[9px] uppercase font-black tracking-[0.3em] text-zinc-400">Health Protocol: {overallScore >= 80 ? "Optimal" : "Degraded"}</p>
-          </div>
-          <Button variant="outline" size="lg" onClick={downloadReport} className="h-16 px-10 border-zinc-200 dark:border-white/10 hover:border-blue-600 hover:text-blue-600 transition-all shadow-sm">
-            <Download className="h-4 w-4 mr-3" /> <span className="text-[11px] font-black uppercase tracking-[0.2em]">Export Audit</span>
+          <Button variant="outline" size="sm" onClick={downloadReport}>
+            <Download className="h-3.5 w-3.5 mr-1.5" /> Export JSON
           </Button>
         </div>
-      </div>
 
-      {/* AI Genius Diagnosis Section - Field Note Style */}
-      {data.aiInsight && (
-        <Card className="p-0 overflow-hidden relative group">
-          <div className="absolute inset-0 engineering-grid opacity-[0.03] dark:opacity-[0.05] pointer-events-none" />
-          
-          <div className="p-12 md:p-20 relative z-10">
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-8 mb-16 border-b border-zinc-100 dark:border-zinc-900/50 pb-10">
-              <div className="h-20 w-20 rounded-md bg-blue-600 flex items-center justify-center text-white shadow-xl shadow-blue-600/30 tactile-button">
-                <Sparkles className="h-10 w-10" />
-              </div>
-              <div>
-                <div className="text-blue-600 text-[10px] font-black uppercase tracking-[0.4em] mb-2 flex items-center gap-2">
-                   Protocol Interpretation v4.0
-                </div>
-                <h3 className="font-black text-4xl text-zinc-900 dark:text-white uppercase tracking-tighter leading-none">Genius Diagnosis</h3>
-              </div>
-            </div>
-
-            <div className="prose prose-zinc dark:prose-invert max-w-none">
-              <div 
-                className={cn(
-                  "text-zinc-600 dark:text-zinc-400 leading-relaxed text-sm font-bold uppercase tracking-tight",
-                  "prose-headings:text-zinc-900 dark:prose-headings:text-white prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tighter prose-headings:mb-8 prose-headings:mt-16 prose-headings:border-l-4 prose-headings:border-blue-600 prose-headings:pl-8",
-                  "prose-strong:text-blue-600 dark:prose-strong:text-blue-600 prose-strong:font-black",
-                  "prose-ul:list-none prose-ul:pl-0 prose-ul:space-y-6 prose-li:flex prose-li:items-start prose-li:gap-5 prose-li:before:content-[''] prose-li:before:h-2 prose-li:before:w-2 prose-li:before:bg-blue-600 prose-li:before:mt-1.5 prose-li:before:shrink-0 prose-li:before:shadow-[0_0_10px_rgba(37,99,235,0.4)]",
-                  "prose-code:font-mono prose-code:bg-zinc-100 dark:prose-code:bg-zinc-900 prose-code:px-2 prose-code:py-1 prose-code:rounded-sm prose-code:text-blue-600 dark:prose-code:text-blue-500"
-                )}
-              >
-                <ReactMarkdown>
-                  {data.aiInsight}
-                </ReactMarkdown>
-              </div>
-            </div>
-
-            <div className="mt-16 flex items-center gap-5 p-8 rounded-md bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30">
-              <ShieldCheck className="h-6 w-6 text-blue-600" />
-              <p className="text-[12px] text-zinc-600 dark:text-zinc-400 font-black uppercase tracking-[0.2em] leading-relaxed">
-                <span className="text-blue-600 font-black">Handshake Status:</span> Universal Intelligence Protocol Executed. Interpretation verified for production deployment.
-              </p>
-            </div>
-          </div>
-        </Card>
-      )}
-
-      {/* Upgrade Prompt - Human-Tech Edition */}
-      {!data.aiInsight && (
-        <Card className="p-16 md:p-32 text-center relative overflow-hidden group">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-600/[0.05] via-transparent to-transparent opacity-50" />
-          <div className="relative z-10 max-w-2xl mx-auto">
-            <div className="h-24 w-24 rounded-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 flex items-center justify-center mx-auto mb-12 text-zinc-400 group-hover:text-blue-600 transition-all duration-700 shadow-xl dark:glass-edge">
-              <Lock className="h-12 w-12" />
-            </div>
-            <div className="text-blue-600 text-[10px] font-black uppercase tracking-[0.4em] mb-4">Encrypted Protocol</div>
-            <h3 className="font-black text-5xl mb-8 tracking-tighter uppercase leading-none text-zinc-900 dark:text-white">Unlock <span className="text-blue-600">Genius</span> Intelligence</h3>
-            <p className="text-zinc-500 dark:text-zinc-400 mb-16 text-xl font-bold tracking-tight uppercase max-w-xl mx-auto leading-relaxed">
-              Activate the enterprise liaison to unlock profit recovery audits and human-curated architectural action plans.
-            </p>
-            <Button 
-              size="lg"
-              onClick={() => window.dispatchEvent(new CustomEvent('open-pricing'))}
-              className="h-18 px-16 shadow-2xl"
+        {/* Score cards */}
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { label: "SEO",       score: seoSection?.score  ?? overallScore?.seo  ?? 0 },
+            { label: "Security",  score: secSection?.score  ?? overallScore?.security ?? 0 },
+            { label: "Performance", score: perfSection?.score ?? overallScore?.performance ?? 0 },
+          ].map((s) => (
+            <div
+              key={s.label}
+              className="flex flex-col items-center gap-3 p-4 rounded-card"
+              style={{ background: "var(--muted)", border: "0.5px solid var(--border)" }}
             >
-              <Crown className="h-5 w-5 mr-4" /> <span className="text-xs">Initialize Professional Protocol</span>
-            </Button>
-          </div>
-        </Card>
-      )}
-
-      {/* Main Sections Grid - Stepped Progression */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        <AuditSection 
-          title="SEO Protocols" 
-          icon={<Search className="h-6 w-6" />} 
-          score={sections.seo.score}
-          metrics={[
-            { label: "Identity Tag", value: sections.seo.metrics.hasTitle ? "DETECTED" : "MISSING", success: sections.seo.metrics.hasTitle },
-            { label: "Description", value: sections.seo.metrics.hasDescription ? "DETECTED" : "MISSING", success: sections.seo.metrics.hasDescription },
-            { label: "H1 Hierarchy", value: sections.seo.metrics.h1Count === 1 ? "OPTIMAL" : `${sections.seo.metrics.h1Count} UNITS`, success: sections.seo.metrics.h1Count === 1 },
-          ]}
-          suggestions={sections.seo.suggestions}
-        />
-
-        <AuditSection 
-          title="Security Matrix" 
-          icon={<ShieldCheck className="h-6 w-6" />} 
-          score={sections.security.score}
-          metrics={[
-            { label: "SSL/HTTPS", value: sections.security.metrics.isHttps ? "ENCRYPTED" : "INSECURE", success: sections.security.metrics.isHttps },
-            { label: "CSP Shield", value: sections.security.metrics.hasCsp ? "ACTIVE" : "MISSING", success: sections.security.metrics.hasCsp },
-            { label: "HSTS Status", value: sections.security.metrics.hasHsts ? "ARMED" : "INACTIVE", success: sections.security.metrics.hasHsts },
-          ]}
-          suggestions={sections.security.suggestions}
-        />
-
-        <AuditSection 
-          title="Web Vitals" 
-          icon={<Zap className="h-6 w-6" />} 
-          score={sections.performance.score}
-          metrics={[
-            { label: "TTFB / LOAD", value: `${sections.performance.metrics.loadTimeMs}MS`, success: sections.performance.metrics.loadTimeMs < 1000 },
-            { label: "Compression", value: sections.performance.metrics.isCompressed ? "ENABLED" : "MISSING", success: sections.performance.metrics.isCompressed },
-            { label: "Script Payload", value: `${sections.performance.metrics.scriptCount} UNITS`, success: sections.performance.metrics.scriptCount < 15 },
-          ]}
-          suggestions={sections.performance.suggestions}
-        />
-      </div>
-    </div>
-  );
-}
-
-function AuditSection({ title, icon, score, metrics, suggestions }: any) {
-  return (
-    <Card className="p-0 overflow-hidden border border-zinc-200 dark:border-zinc-800 flex flex-col h-full bg-white dark:bg-zinc-950 shadow-sm hover:shadow-xl transition-all duration-300">
-      <div className="p-6 flex items-center justify-between border-b border-zinc-100 dark:border-zinc-900 bg-zinc-50/30 dark:bg-zinc-900/30">
-        <div className="flex items-center gap-4">
-          <div className="h-12 w-12 rounded-md flex items-center justify-center text-blue-600 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-sm">
-            {icon}
-          </div>
-          <span className="font-black text-[10px] uppercase tracking-[0.3em] text-zinc-900 dark:text-white leading-none">{title}</span>
+              <ScoreRing score={s.score} />
+              <p className="label-category">{s.label}</p>
+            </div>
+          ))}
         </div>
-        <div className={cn(
-          "text-2xl font-black tabular-nums tracking-tighter leading-none",
-          score >= 80 ? "text-blue-600" : "text-zinc-900 dark:text-white"
-        )}>{score}</div>
-      </div>
+      </Card>
 
-      <div className="p-8 space-y-6 flex-1">
-        {metrics.map((m: any, i: number) => (
-          <div key={i} className="flex items-center justify-between border-b border-zinc-50 dark:border-zinc-900 pb-4 last:border-0 last:pb-0">
-            <span className="text-[9px] font-black text-zinc-400 uppercase tracking-[0.2em]">{m.label}</span>
-            <div className="flex items-center gap-3">
-              <span className={cn("text-[10px] font-black tracking-tight", m.success ? "text-zinc-900 dark:text-zinc-100" : "text-red-600")}>
-                {m.value}
-              </span>
-              <div className={cn("h-4 w-4 rounded-full flex items-center justify-center", m.success ? "bg-blue-600/10 text-blue-600" : "bg-red-600/10 text-red-600")}>
-                {m.success ? <CheckCircle2 className="h-2.5 w-2.5" /> : <XCircle className="h-2.5 w-2.5" />}
-              </div>
-            </div>
-          </div>
-        ))}
+      {/* ── Tabbed report ── */}
+      <Card>
+        {/* Tab bar */}
+        <div className="flex" style={{ borderBottom: "0.5px solid var(--border)" }}>
+          {tabs.map((t, i) => (
+            <button
+              key={t.label}
+              onClick={() => setActiveTab(i)}
+              className={cn(
+                "flex items-center gap-2 px-5 py-3.5 text-[13px] font-medium transition-colors",
+                activeTab === i
+                  ? "text-np-gold border-b-2 border-np-gold -mb-px"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <t.icon className="h-3.5 w-3.5" />
+              {t.label}
+            </button>
+          ))}
+        </div>
 
-        {suggestions.length > 0 && (
-          <div className="mt-8 pt-8 border-t-2 border-zinc-50 dark:border-zinc-900">
-            <p className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-4 flex items-center gap-2">
-              <div className="h-1 w-4 bg-blue-600" />
-              <span>Optimization Sequence</span>
-            </p>
-            <div className="space-y-4">
-              {suggestions.slice(0, 3).map((s: string, i: number) => (
-                <div key={i} className="flex items-start gap-4 group">
-                  <div className="h-2 w-2 rounded-sm bg-blue-600/30 mt-1.5 shrink-0 group-hover:bg-blue-600 transition-colors" />
-                  <p className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-normal font-black uppercase tracking-tight">{s}</p>
-                </div>
+        <div className="p-5">
+          {/* SEO / Security / Perf tabs */}
+          {activeTab < 3 && tabSections[activeTab] && (
+            <div className="space-y-1">
+              {Object.entries(tabSections[activeTab]?.checks || {}).map(([key, val]: [string, any]) => (
+                <IssueRow
+                  key={key}
+                  label={key.replace(/_/g, " ")}
+                  value={typeof val?.value === "string" ? val.value : undefined}
+                  pass={val?.pass ?? val?.status === "good" ?? false}
+                />
               ))}
+              {!tabSections[activeTab]?.checks && (
+                <p className="text-[13px] text-muted-foreground py-4">No data available for this section.</p>
+              )}
             </div>
-          </div>
-        )}
-      </div>
-    </Card>
+          )}
+
+          {/* AI / Genius tab */}
+          {activeTab === 3 && (
+            <div>
+              {aiSection ? (
+                <div className="np-diagnosis">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Sparkles className="h-4 w-4 text-np-gold" />
+                    <span className="text-[12px] font-semibold text-np-gold uppercase tracking-wide">
+                      Genius Diagnosis
+                    </span>
+                  </div>
+                  <div className="text-[13px] leading-relaxed text-[#E2E0D8] prose-invert max-w-none">
+                    <ReactMarkdown>{aiSection.diagnosis || aiSection.content || "No diagnosis available."}</ReactMarkdown>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-[13px] text-muted-foreground py-4">
+                  AI diagnosis not available. Upgrade your plan to unlock Genius analysis.
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      </Card>
+    </div>
   );
 }

@@ -1,89 +1,90 @@
 import * as React from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/navbar";
-import { Card, Button } from "@/components/ui-elements";
-import { 
-  Book, 
-  Terminal, 
-  Smartphone, 
-  Compass, 
-  ArrowRight,
-  Shield,
-  Zap,
-  Activity,
-  Webhook
-} from "lucide-react";
+import { Card } from "@/components/ui-elements";
+import { Book, Terminal, Smartphone, Compass, ArrowRight, Activity, Mail } from "lucide-react";
+
+const categories = [
+  {
+    icon: Compass,
+    title: "Getting Started",
+    description: "Core concepts and quick-start guides to get NexPulse running in minutes.",
+    links: [
+      { label: "Core Concepts", href: "/docs/concepts" },
+      { label: "Master Guide",  href: "/docs/master"   },
+    ],
+  },
+  {
+    icon: Terminal,
+    title: "Technical Reference",
+    description: "API endpoints, integration snippets, and webhook event schemas.",
+    links: [
+      { label: "Implementation",  href: "/docs/master#web-implementation-javascript-node-js" },
+      { label: "API Reference",   href: "/docs/api"                                          },
+      { label: "Webhook Events",  href: "/docs/master#webhooks"                              },
+    ],
+  },
+  {
+    icon: Smartphone,
+    title: "Mobile & SDKs",
+    description: "Connect Android and iOS apps to the NexPulse pulse engine.",
+    links: [
+      { label: "iOS (Swift)",    href: "/docs/master#ios-implementation-swift"          },
+      { label: "Android (Kotlin)", href: "/docs/master#android-implementation-kotlin"  },
+    ],
+  },
+];
 
 export default function DocsPage() {
-  const categories = [
-    {
-      title: "Getting Started",
-      description: "Learn the core concepts and get NexPulse running in minutes.",
-      icon: <Compass className="h-6 w-6 text-blue-600" />,
-      links: [
-        { label: "Core Concepts", href: "/docs/concepts", file: "CONCEPTS.md" },
-        { label: "Master Guide", href: "/docs/master", file: "MASTER_GUIDE.md" },
-      ]
-    },
-    {
-      title: "Technical Specs",
-      description: "Detailed API documentation and integration snippets.",
-      icon: <Terminal className="h-6 w-6 text-blue-600" />,
-      links: [
-        { label: "Implementation", href: "/docs/master#web-implementation-javascript-node-js" },
-        { label: "API Reference", href: "/docs/api" },
-        { label: "Webhook Events", href: "/docs/master#webhooks" },
-      ]
-    },
-    {
-      title: "Mobile & SDKs",
-      description: "Connect your Android or iOS apps to NexPulse.",
-      icon: <Smartphone className="h-6 w-6 text-blue-600" />,
-      links: [
-        { label: "iOS Integration", href: "/docs/master#ios-implementation-swift" },
-        { label: "Android Integration", href: "/docs/master#android-implementation-kotlin" },
-      ]
-    }
-  ];
-
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-black">
+    <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
-      
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-20 md:py-32">
-        <div className="max-w-4xl mb-24">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-blue-600 text-white font-black text-[9px] uppercase tracking-[0.3em] mb-8 shadow-lg shadow-blue-500/20">
-            <Book className="h-3 w-3 fill-current" /> 
-            <span>Knowledge Base v2.0</span>
-          </div>
-          <h1 className="text-5xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.85] uppercase text-zinc-900 dark:text-white">
-            Architecting <br />
-            <span className="text-blue-600">Universal Authority</span>
+
+      <main className="flex-1 max-w-5xl mx-auto px-4 py-16 md:py-24 w-full">
+        {/* Header */}
+        <div className="mb-14">
+          <p className="label-category mb-3 flex items-center gap-2">
+            <Book className="h-3.5 w-3.5 text-np-gold" />
+            Knowledge base · v2.0
+          </p>
+          <h1 className="text-4xl md:text-6xl font-semibold tracking-tight leading-tight mb-4">
+            Documentation
           </h1>
-          <p className="text-lg md:text-xl text-zinc-500 dark:text-zinc-400 font-bold tracking-tight leading-relaxed max-w-2xl uppercase">
-            From high-level system analogies to machine-level API protocols. Everything required to maintain absolute control over your infrastructure.
+          <p className="text-[16px] text-muted-foreground max-w-xl leading-relaxed">
+            From high-level concepts to machine-level API protocols — everything required
+            to maintain absolute control over your infrastructure.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {categories.map((cat, i) => (
-            <Card key={i} className="p-8 flex flex-col h-full border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-sm hover:shadow-xl transition-all duration-300">
-              <div className="h-14 w-14 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-md flex items-center justify-center shadow-md mb-8">
-                {React.cloneElement(cat.icon as React.ReactElement<any>, { className: "h-7 w-7 text-blue-600" })}
+        {/* Category cards */}
+        <div className="grid md:grid-cols-3 gap-4 mb-16">
+          {categories.map((cat) => (
+            <Card key={cat.title} className="p-6 flex flex-col gap-5">
+              {/* Icon */}
+              <div
+                className="h-10 w-10 rounded-ui flex items-center justify-center"
+                style={{ background: "rgba(180,140,60,0.10)" }}
+              >
+                <cat.icon className="h-5 w-5 text-np-gold" />
               </div>
-              <h3 className="text-2xl font-black uppercase tracking-tighter mb-4">{cat.title}</h3>
-              <p className="text-zinc-500 dark:text-zinc-400 text-[10px] font-black uppercase tracking-widest mb-10 flex-1 leading-relaxed">
-                {cat.description}
-              </p>
-              <div className="space-y-3">
-                {cat.links.map((link, j) => (
-                  <Link 
-                    key={j} 
-                    href={link.href} 
-                    className="flex items-center justify-between group p-4 rounded-md border border-zinc-100 dark:border-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-all"
+
+              <div className="flex-1">
+                <h2 className="text-[15px] font-semibold mb-1.5">{cat.title}</h2>
+                <p className="text-[13px] text-muted-foreground leading-relaxed">{cat.description}</p>
+              </div>
+
+              <div className="space-y-1.5">
+                {cat.links.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="flex items-center justify-between group px-3 py-2.5 rounded-ui transition-colors hover:bg-muted"
+                    style={{ border: "0.5px solid var(--border)" }}
                   >
-                    <span className="text-xs font-black uppercase tracking-tight text-zinc-600 dark:text-zinc-400 group-hover:text-blue-600 transition-colors">{link.label}</span>
-                    <ArrowRight className="h-4 w-4 text-zinc-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
+                    <span className="text-[13px] font-medium group-hover:text-np-gold transition-colors">
+                      {link.label}
+                    </span>
+                    <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-np-gold group-hover:translate-x-0.5 transition-all" />
                   </Link>
                 ))}
               </div>
@@ -91,42 +92,40 @@ export default function DocsPage() {
           ))}
         </div>
 
-        {/* HELP SECTION */}
-        <div className="mt-32 p-12 md:p-24 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md text-center relative overflow-hidden shadow-sm">
-          <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-600/5 via-transparent to-transparent opacity-50" />
-          <div className="relative z-10 max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-zinc-900 dark:bg-white text-white dark:text-black font-black text-[9px] uppercase tracking-[0.3em] mb-8">
-              <Activity className="h-3 w-3 fill-current" />
-              <span>Network Support</span>
+        {/* Support CTA */}
+        <Card className="p-10 md:p-14 text-center relative overflow-hidden">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-40 bg-np-gold/5 blur-[60px] pointer-events-none" />
+          <div className="relative">
+            <div
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-ui mb-5 text-[11px] font-semibold"
+              style={{ background: "rgba(180,140,60,0.10)", color: "var(--np-gold)" }}
+            >
+              <Activity className="h-3.5 w-3.5" /> Support
             </div>
-            <h2 className="text-4xl md:text-6xl font-black mb-8 tracking-tighter leading-none uppercase text-zinc-900 dark:text-white">
-              Stalled Deployment? <br />
-              <span className="text-blue-600">Connect to Engineering</span>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-3">
+              Stalled on something?
             </h2>
-            <p className="text-zinc-500 dark:text-zinc-400 mb-12 text-sm md:text-lg font-bold tracking-tight leading-relaxed uppercase">
-              Our support team maintains active protocols on Discord and via encrypted email. We are here to ensure your architecture remains optimal.
+            <p className="text-muted-foreground text-[15px] mb-7 max-w-md mx-auto leading-relaxed">
+              Our engineering team is active on Discord and email. Response within 24 hours.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="mailto:nexpulse.team@gmail.com">
-                <Button size="lg" className="h-16 px-12 bg-zinc-900 text-white dark:bg-white dark:text-black font-black uppercase tracking-[0.2em] text-xs shadow-xl">
-                  Email Support
-                </Button>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Link href="mailto:nexpulse.team@gmail.com" className="np-btn-primary h-10 px-6 text-[13px] gap-2">
+                <Mail className="h-4 w-4" /> Email support
               </Link>
-              <Link href="https://discord.gg/R35wamng">
-                <Button variant="outline" size="lg" className="h-16 px-12 font-black uppercase tracking-[0.2em] text-xs border-zinc-200 dark:border-zinc-800">
-                  Join Discord
-                </Button>
+              <Link href="https://discord.gg/R35wamng" className="np-btn-outline h-10 px-6 text-[13px]">
+                Join Discord
               </Link>
             </div>
           </div>
-        </div>
+        </Card>
       </main>
-      
-      <footer className="border-t border-zinc-100 dark:border-zinc-900 py-16 bg-white dark:bg-black">
-        <div className="container mx-auto px-4 text-center">
-           <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">
-             © 2026 NexPulse Universal Infrastructure. All Protocols Reserved.
-           </p>
+
+      <footer
+        className="py-8"
+        style={{ borderTop: "0.5px solid var(--border)" }}
+      >
+        <div className="max-w-5xl mx-auto px-4 text-center">
+          <p className="label-category">© 2026 NexPulse Universal Infrastructure</p>
         </div>
       </footer>
     </div>

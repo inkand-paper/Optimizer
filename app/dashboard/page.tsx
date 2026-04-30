@@ -3,603 +3,418 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Navbar } from "@/components/navbar";
-import { Card, Button, Input, PasswordInput } from "@/components/ui-elements";
+import { cn } from "@/lib/utils";
+import { Card, Button, Input, PasswordInput, StatusDot } from "@/components/ui-elements";
 import { AnalysisReport } from "@/components/analysis-report";
 import { ActivityLogs } from "@/components/activity-logs";
 import { WebhookManager } from "@/components/webhook-manager";
 import { MonitoringDashboard } from "@/components/monitoring-dashboard";
 import { PulseTrigger } from "@/components/pulse-trigger";
 import { PricingModal } from "@/components/pricing-modal";
-import { 
-  Key, 
-  Trash2, 
-  Plus, 
-  Clock, 
-  Terminal, 
-  ShieldCheck, 
-  Copy, 
-  CheckCircle2,
-  Loader2,
-  RefreshCw,
-  LogOut,
-  Search,
-  AlertTriangle,
-  FileText,
-  Activity,
-  Webhook,
-  ShieldAlert,
-  BarChart4
+import {
+  Activity, Key, Trash2, Plus, Terminal, ShieldCheck, Copy,
+  CheckCircle2, Loader2, RefreshCw, LogOut, Search, FileText,
+  Webhook, ShieldAlert, BarChart4, ChevronRight,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
-interface ApiKey {
-  id: string;
-  name: string;
-  createdAt: string;
-  lastUsedAt: string | null;
-}
+interface ApiKey { id: string; name: string; createdAt: string; lastUsedAt: string | null; }
 
-/**
- * [ENTRY-LEVEL DEFINITION] - Dashboard
- * Think of this as your personal control tower. From here, you see all the 
- * "access badges" (API Keys) you've issued and can manage them.
- */
+type Tab = "monitoring" | "audits" | "keys" | "webhooks" | "logs";
+
+const TABS: { id: Tab; label: string; icon: React.ElementType }[] = [
+  { id: "monitoring", label: "Monitoring",  icon: Activity  },
+  { id: "audits",     label: "Audits",      icon: Search    },
+  { id: "keys",       label: "API Keys",    icon: Key       },
+  { id: "webhooks",   label: "Webhooks",    icon: Webhook   },
+  { id: "logs",       label: "Logs",        icon: FileText  },
+];
+
 export default function DashboardPage() {
   const router = useRouter();
-  const [user, setUser] = React.useState<any>(null);
-  const [keys, setKeys] = React.useState<ApiKey[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [creatingKey, setCreatingKey] = React.useState(false);
-  const [newKey, setNewKey] = React.useState<string | null>(null);
-  const [copied, setCopied] = React.useState(false);
+  const [user, setUser]           = React.useState<any>(null);
+  const [keys, setKeys]           = React.useState<ApiKey[]>([]);
+  const [loading, setLoading]     = React.useState(true);
+  const [activeTab, setActiveTab] = React.useState<Tab>("monitoring");
+  const [health, setHealth]       = React.useState<any>(null);
+  const [showPricing, setShowPricing] = React.useState(false);
+  const [currentUserPlan, setCurrentUserPlan] = React.useState("FREE");
 
-  // Playground States
+  // Key creation
+  const [creatingKey, setCreatingKey] = React.useState(false);
+  const [newKey, setNewKey]           = React.useState<string | null>(null);
+  const [copied, setCopied]           = React.useState(false);
+
+  // Playground
   const [playgroundKey, setPlaygroundKey] = React.useState("");
   const [playgroundTag, setPlaygroundTag] = React.useState("");
   const [playgroundResult, setPlaygroundResult] = React.useState<any>(null);
   const [playgroundLoading, setPlaygroundLoading] = React.useState(false);
-  const [showPricing, setShowPricing] = React.useState(false);
-  const [currentUserPlan, setCurrentUserPlan] = React.useState("FREE");
 
-  // Analysis States
-  const [analyzeUrl, setAnalyzeUrl] = React.useState("");
+  // Analyzer
+  const [analyzeUrl, setAnalyzeUrl]       = React.useState("");
   const [analyzeResult, setAnalyzeResult] = React.useState<any>(null);
   const [analyzeLoading, setAnalyzeLoading] = React.useState(false);
 
-  // Health State
-  const [health, setHealth] = React.useState<any>(null);
-
-  const [mounted, setMounted] = React.useState(false);
-
   React.useEffect(() => {
-    setMounted(true);
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser));
         const u = JSON.parse(storedUser);
-        if (u.plan) setCurrentUserPlan(u.plan);
-      } catch (e) {
-        console.error("Malformed user data in storage");
-      }
+        setUser(u);
+        setCurrentUserPlan(u.plan || "FREE");
+      } catch {}
     }
-    
-    // [SYNC] Fetch fresh user data from server
-    fetch("/api/auth/me", { credentials: 'include' })
-      .then(res => {
-        if (!res.ok) { 
-          // Only redirect if we don't have a stored user as a fallback
-          if (!storedUser) router.push("/login"); 
-          return null; 
-        }
-        return res.json();
-      })
-      .then(data => {
-        if (data?.success && data.user) {
-          setUser(data.user);
-          setCurrentUserPlan(data.user.plan || "FREE");
-          localStorage.setItem("user", JSON.stringify(data.user));
-        }
-      })
-      .catch(() => {
-        if (!localStorage.getItem("user")) router.push("/login");
-      });
 
-    const storedPlaygroundKey = localStorage.getItem("active_api_key");
-    if (storedPlaygroundKey) setPlaygroundKey(storedPlaygroundKey);
+    fetch("/api/auth/me", { credentials: "include" })
+      .then((r) => { if (!r.ok) { if (!storedUser) router.push("/login"); return null; } return r.json(); })
+      .then((d) => { if (d?.success) { setUser(d.user); setCurrentUserPlan(d.user.plan || "FREE"); localStorage.setItem("user", JSON.stringify(d.user)); } })
+      .catch(() => { if (!localStorage.getItem("user")) router.push("/login"); });
+
+    const sk = localStorage.getItem("active_api_key");
+    if (sk) setPlaygroundKey(sk);
 
     fetchKeys();
     fetchHealth();
 
-    const handleOpenPricing = () => setShowPricing(true);
-    window.addEventListener('open-pricing', handleOpenPricing);
-    return () => window.removeEventListener('open-pricing', handleOpenPricing);
+    const onPricing = () => setShowPricing(true);
+    window.addEventListener("open-pricing", onPricing);
+    return () => window.removeEventListener("open-pricing", onPricing);
   }, []);
 
-
   async function fetchHealth() {
-    try {
-      const res = await fetch("/api/health");
-      const data = await res.json();
-      setHealth(data);
-    } catch (err) {
-      console.error("Health check failed");
-    }
+    try { const r = await fetch("/api/health"); setHealth(await r.json()); } catch {}
   }
 
   async function fetchKeys() {
     try {
-      const res = await fetch("/api/keys", { credentials: 'include' });
-      const data = await res.json();
-      if (res.ok) {
-        setKeys(data.keys);
-        
-        // Auto-select the first key for the playground/analyzer if not set
-        if (!playgroundKey && data.keys?.length > 0) {
-          const sessionKey = localStorage.getItem("active_api_key");
-          if (sessionKey) setPlaygroundKey(sessionKey);
-        }
-      }
-    } catch (err) {
-      console.error("Failed to fetch keys", err);
-      router.push("/login");
-    } finally {
-      setLoading(false);
-    }
+      const r = await fetch("/api/keys", { credentials: "include" });
+      const d = await r.json();
+      if (r.ok) setKeys(d.keys);
+    } catch { router.push("/login"); }
+    finally { setLoading(false); }
   }
 
   async function handleCreateKey(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setCreatingKey(true);
-    const formData = new FormData(e.currentTarget);
-    const name = formData.get("keyName");
-
+    const name = new FormData(e.currentTarget).get("keyName");
     try {
-      const res = await fetch("/api/keys", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: 'include',
-        body: JSON.stringify({ name }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setNewKey(data.apiKey);
-        setPlaygroundKey(data.apiKey); 
-        localStorage.setItem("active_api_key", data.apiKey);
-        
-        setPlaygroundResult({ 
-          success: true, 
-          message: "Handshake verified. Your new machine key is active and authorized.", 
-          status: 200,
-          timestamp: new Date().toISOString()
-        });
-
-        fetchKeys();
-      } else if (res.status === 403) {
-        if (user?.role === 'ADMIN') {
-          alert(data.message || "Admin access error");
-        } else {
-          setShowPricing(true);
-        }
-      } else {
-        alert(data.message || "Failed to create key");
-      }
-    } catch (err) {
-      alert("Failed to create key");
-    } finally {
-      setCreatingKey(false);
-    }
+      const r = await fetch("/api/keys", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify({ name }) });
+      const d = await r.json();
+      if (r.ok) { setNewKey(d.apiKey); setPlaygroundKey(d.apiKey); localStorage.setItem("active_api_key", d.apiKey); fetchKeys(); }
+      else if (r.status === 403) { if (user?.role !== "ADMIN") setShowPricing(true); }
+      else alert(d.message || "Failed");
+    } catch { alert("Failed to create key"); }
+    finally { setCreatingKey(false); }
   }
 
   async function handleDeleteKey(id: string) {
-    if (!confirm("Are you sure you want to revoke this key? Any app using it will lose access immediately.")) return;
-    
+    if (!confirm("Revoke this key? Apps using it will lose access immediately.")) return;
     try {
-      const res = await fetch(`/api/keys/${id}`, {
-        method: "DELETE",
-        credentials: 'include'
-      });
-      if (res.ok) {
-        setKeys(keys.filter(k => k.id !== id));
-      }
-    } catch (err) {
-      alert("Failed to delete key");
-    }
+      const r = await fetch(`/api/keys/${id}`, { method: "DELETE", credentials: "include" });
+      if (r.ok) setKeys(keys.filter((k) => k.id !== id));
+    } catch { alert("Failed to delete key"); }
   }
 
   async function runPlayground() {
     if (!playgroundKey || !playgroundTag) return;
-    setPlaygroundLoading(true);
-    setPlaygroundResult(null);
-
+    setPlaygroundLoading(true); setPlaygroundResult(null);
     try {
-      const res = await fetch("/api/revalidate", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${playgroundKey}`
-        },
-        body: JSON.stringify({ tag: playgroundTag || undefined }),
-      });
-      const data = await res.json();
-      setPlaygroundResult({ ...data, status: res.status });
-    } catch (err) {
-      setPlaygroundResult({ error: "Network error", message: "Failed to reach API", status: 500 });
-    } finally {
-      setPlaygroundLoading(false);
-    }
+      const r = await fetch("/api/revalidate", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${playgroundKey}` }, body: JSON.stringify({ tag: playgroundTag }) });
+      setPlaygroundResult({ ...(await r.json()), status: r.status });
+    } catch { setPlaygroundResult({ error: "Network error", status: 500 }); }
+    finally { setPlaygroundLoading(false); }
   }
 
   async function runAnalyzer() {
     if (!analyzeUrl) return;
-    setAnalyzeLoading(true);
-    setAnalyzeResult(null);
-
-    if (!playgroundKey) {
-      // Try to find a raw key created in this session
-      const sessionKey = localStorage.getItem("active_api_key");
-      if (sessionKey) {
-        setPlaygroundKey(sessionKey);
-      } else {
-        alert("Please create an API Key in the 'API Keys' tab first to authorize the scanner.");
-        setAnalyzeLoading(false);
-        return;
-      }
-    }
-
-    const tokenToUse = playgroundKey || localStorage.getItem("active_api_key");
-
+    const token = playgroundKey || localStorage.getItem("active_api_key");
+    if (!token) { alert("Create an API key first."); return; }
+    setAnalyzeLoading(true); setAnalyzeResult(null);
     try {
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${tokenToUse}`
-        },
-        body: JSON.stringify({ url: analyzeUrl }),
-      });
-      const data = await res.json();
-      setAnalyzeResult(data);
-    } catch (err) {
-      alert("Scan failed");
-    } finally {
-      setAnalyzeLoading(false);
-    }
+      const r = await fetch("/api/analyze", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ url: analyzeUrl }) });
+      setAnalyzeResult(await r.json());
+    } catch { alert("Scan failed"); }
+    finally { setAnalyzeLoading(false); }
   }
 
   function handleLogout() {
-    localStorage.removeItem("token");
     localStorage.removeItem("user");
     router.push("/login");
   }
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const copyKey = (t: string) => { navigator.clipboard.writeText(t); setCopied(true); setTimeout(() => setCopied(false), 2000); };
 
-  // Tab State for Mobile
-  const [activeTab, setActiveTab] = React.useState<"monitoring" | "audits" | "keys" | "webhooks" | "logs">("monitoring");
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <Loader2 className="h-6 w-6 animate-spin text-np-gold" />
+    </div>
+  );
 
-  const tabs = [
-    { id: "monitoring", label: "Monitoring", icon: Activity },
-    { id: "audits", label: "Audits", icon: Search },
-    { id: "keys", label: "API Keys", icon: Key },
-    { id: "webhooks", label: "Webhooks", icon: Webhook },
-    { id: "logs", label: "Logs", icon: FileText },
-  ];
+  if (user && !user.emailVerified) return (
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <Card className="w-full max-w-sm p-8 text-center">
+        <ShieldAlert className="h-8 w-8 text-np-crimson mx-auto mb-4" />
+        <h1 className="text-lg font-semibold mb-2">Verify your email</h1>
+        <p className="text-[13px] text-muted-foreground mb-6">Check your inbox and click the activation link to unlock the dashboard.</p>
+        <Button onClick={() => window.location.reload()} className="w-full">I&apos;ve verified</Button>
+        <Button variant="ghost" onClick={handleLogout} className="w-full mt-2 text-muted-foreground">Logout</Button>
+      </Card>
+    </div>
+  );
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-950">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-      </div>
-    );
-  }
-
-  if (user && !user.emailVerified) {
-    return (
-      <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950">
-        <Navbar />
-        <main className="flex-1 flex items-center justify-center p-6 py-12">
-          <Card className="w-full max-w-md p-8 text-center border-rose-100 dark:border-rose-900/30">
-            <div className="h-16 w-16 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center mx-auto mb-6">
-              <ShieldAlert className="h-8 w-8 text-rose-600" />
-            </div>
-            <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-2">
-              Verify your email
-            </h1>
-            <p className="text-zinc-500 dark:text-zinc-400 text-sm mb-8 leading-relaxed">
-              Your account is currently limited. Please check your email inbox and click the verification link to unlock the NexPulse dashboard.
-            </p>
-            <div className="space-y-3">
-              <Button onClick={() => window.location.reload()} className="w-full">
-                 I&apos;ve verified my email
-              </Button>
-              <Button variant="ghost" onClick={handleLogout} className="w-full text-zinc-500">
-                 Logout
-              </Button>
-            </div>
-          </Card>
-        </main>
-      </div>
-    );
-  }
-
+  /* ──────────── MAIN LAYOUT ──────────── */
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-black overflow-x-hidden">
-      <Navbar />
-      
-      <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-10 mb-24 md:mb-0">
-        <div className="flex flex-col md:flex-row gap-6 lg:gap-16 items-stretch md:items-start">
-          
-          {/* SIDEBAR NAVIGATION (Desktop Only) */}
-          <div className="hidden md:flex flex-col w-72 shrink-0 space-y-2 sticky top-[100px]">
-            <div className="px-5 mb-8">
-              <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 opacity-60">System Protocol</h2>
-            </div>
-            <div className="space-y-4"> {/* Grouped Intent */}
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={cn(
-                    "flex items-center gap-4 px-6 py-4 rounded-md text-[10px] font-black uppercase tracking-[0.2em] transition-all group relative",
-                    activeTab === tab.id 
-                      ? "text-blue-600 dark:text-white" 
-                      : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
-                  )}
-                >
-                  {/* Tactile Indicator (Floating Pill) */}
-                  {activeTab === tab.id && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 bg-blue-600 rounded-r-full shadow-[0_0_15px_rgba(37,99,235,0.4)]" />
-                  )}
-                  
-                  <tab.icon className={cn(
-                    "h-4 w-4 transition-all duration-300", 
-                    activeTab === tab.id ? "text-blue-600 scale-110" : "text-zinc-400 group-hover:scale-110"
-                  )} />
-                  
-                  <span className="relative flex items-center gap-2">
-                    {tab.label}
-                    {/* Micro-Dash Hover Feedback */}
-                    <span className="h-0.5 w-0 bg-blue-600 transition-all duration-300 group-hover:w-2" />
-                  </span>
-                </button>
-              ))}
-            </div>
-            
-            <div className="pt-12 px-5">
-              <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-6">Engine Telemetry</h2>
-              <Card className="p-6 border border-zinc-200/50 dark:border-white/5 bg-white dark:bg-zinc-900/50 backdrop-blur-sm shadow-sm">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className={cn("h-2 w-2 rounded-full", health?.status === 'healthy' ? "bg-blue-600 shadow-[0_0_10px_rgba(37,99,235,0.4)]" : "bg-red-500 animate-pulse")} />
-                    <span className="text-[9px] font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-widest">{health?.status || 'OFFLINE'}</span>
-                  </div>
-                  <span className="text-[8px] text-zinc-400 font-bold uppercase tracking-widest leading-none">v{health?.version || '1.0.0'}</span>
-                </div>
-                <p className="text-[9px] text-zinc-500 font-bold uppercase tracking-tighter mb-4 leading-relaxed">
-                  {health?.status === 'healthy' ? "Infrastructure heartbeat is stable and responsive." : "Anomaly detected in local protocol stream."}
-                </p>
-                <div className="h-1 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-blue-600 w-full transition-all duration-1000" />
-                </div>
-              </Card>
+    <div className="min-h-screen flex bg-background">
+      {/* ── Sidebar ────────────────────────────── */}
+      <aside
+        className="hidden md:flex flex-col w-56 shrink-0 sticky top-0 h-screen overflow-y-auto"
+        style={{ borderRight: "0.5px solid var(--border)" }}
+      >
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2 px-5 h-14 shrink-0" style={{ borderBottom: "0.5px solid var(--border)" }}>
+          <Activity className="h-4 w-4 text-np-gold" />
+          <span className="text-[14px] font-semibold">NexPulse</span>
+        </Link>
+
+        {/* Nav items */}
+        <nav className="flex-1 py-4 px-2 space-y-0.5">
+          <p className="label-category px-3 py-2">Workspace</p>
+          {TABS.map((t) => {
+            const active = activeTab === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setActiveTab(t.id)}
+                className={cn(
+                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-[6px] text-[13px] font-medium transition-all",
+                  active
+                    ? "np-sidebar-active"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                )}
+              >
+                <t.icon className="h-4 w-4 shrink-0" />
+                {t.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Health widget */}
+        <div className="p-3" style={{ borderTop: "0.5px solid var(--border)" }}>
+          <div className="np-card p-3 flex items-center gap-3">
+            <StatusDot status={health?.status === "healthy" ? "healthy" : "error"} />
+            <div className="min-w-0">
+              <p className="text-[12px] font-medium truncate">{health?.status || "Offline"}</p>
+              <p className="label-category text-[10px]">Infrastructure</p>
             </div>
           </div>
-
-          {/* MAIN CONTENT AREA */}
-          <div className="flex-1 space-y-12">
-            
-            {/* COMMON HEADER SECTION - Header-Label Combo */}
-            <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between border-b border-zinc-100 dark:border-zinc-900 pb-10">
-              <div className="min-w-0">
-                <div className="text-blue-600 text-[10px] font-black uppercase tracking-[0.3em] mb-2 flex items-center gap-2">
-                   <div className="h-1 w-4 bg-blue-600 rounded-full" />
-                   Active Node: {activeTab}
-                </div>
-                <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase leading-none text-zinc-900 dark:text-white">
-                  {activeTab === 'monitoring' ? 'Command Center' : activeTab}
-                </h1>
-                <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.2em] mt-4 flex items-center gap-2">
-                   <span className="text-blue-600">Context:</span> System heartbeat is stable.
-                </p>
-              </div>
-              
-              <div className="flex items-center gap-4 bg-zinc-50/50 dark:bg-zinc-950/50 p-2 rounded-md border border-zinc-200/50 dark:border-white/5 backdrop-blur-md">
-                <div className="flex flex-col items-end mr-4 pl-3">
-                   <div className="flex items-center gap-3">
-                     <p className="text-xs font-black uppercase tracking-tight text-zinc-900 dark:text-white">{user?.name}</p>
-                     <span className={cn(
-                       "text-[8px] px-2 py-0.5 rounded-sm font-black uppercase tracking-widest shadow-sm",
-                       user?.role === 'ADMIN' ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900" :
-                       user?.plan === 'FREE' ? "bg-zinc-100 text-zinc-500 border border-zinc-200/50" : 
-                       "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
-                     )}>
-                       {user?.role === 'ADMIN' ? 'ADMIN' : (user?.plan || 'FREE')}
-                     </span>
-                   </div>
-                   <p className="text-[9px] text-zinc-400 font-bold tracking-widest uppercase">{user?.email}</p>
-                </div>
-                <Button variant="ghost" size="icon" onClick={handleLogout} className="h-11 w-11 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 group">
-                   <LogOut className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-                </Button>
-              </div>
+          {/* User */}
+          <div className="mt-2 flex items-center justify-between px-1">
+            <div className="min-w-0">
+              <p className="text-[12px] font-medium truncate">{user?.name}</p>
+              <p className="label-category text-[10px] truncate">{user?.plan || "FREE"}</p>
             </div>
-
-            {/* TAB CONTENT - Stepped Progression */}
-            <div className="space-y-12 animate-slide-up">
-              {activeTab === "monitoring" && (
-                <div className="space-y-10">
-                  <PulseTrigger />
-                  <MonitoringDashboard />
-                </div>
-              )}
-              
-              {activeTab === "audits" && (
-                <div className="space-y-10">
-                  <Card className="p-8 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                      <Search className="h-32 w-32 text-blue-600" />
-                    </div>
-                    <div className="flex items-center gap-4 mb-8 relative z-10">
-                      <div className="h-12 w-12 rounded-md bg-blue-600 flex items-center justify-center text-white shadow-xl shadow-blue-500/20">
-                        <Search className="h-6 w-6" />
-                      </div>
-                      <div>
-                        <h2 className="text-xl font-black uppercase tracking-tight">Website Analyzer</h2>
-                        <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mt-1">SEO & Infrastructure Audit Engine</p>
-                      </div>
-                    </div>
-                    <div className="flex flex-col sm:flex-row gap-3 relative z-10">
-                      <Input 
-                        placeholder="https://infrastructure-target.com" 
-                        value={analyzeUrl}
-                        onChange={(e) => setAnalyzeUrl(e.target.value)}
-                        className="flex-1 h-14 bg-zinc-50 dark:bg-zinc-950 font-bold"
-                      />
-                      <Button onClick={runAnalyzer} disabled={analyzeLoading || !analyzeUrl} className="h-14 px-8 font-black uppercase tracking-widest text-xs">
-                        {analyzeLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <FileText className="h-4 w-4 mr-2" />}
-                        Execute Audit
-                      </Button>
-                    </div>
-                  </Card>
-                  {analyzeResult && <AnalysisReport data={analyzeResult} />}
-                </div>
-              )}
-
-              {activeTab === "keys" && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-                  <div className="space-y-8">
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-black uppercase tracking-tight">Access Control</h2>
-                      <Button variant="outline" size="sm" onClick={() => fetchKeys()} className="font-black uppercase tracking-widest text-[10px]">
-                        <RefreshCw className="h-3 w-3 mr-2" /> Sync Tokens
-                      </Button>
-                    </div>
-
-                    {newKey && (
-                      <Card className="bg-emerald-50 dark:bg-emerald-950 border-emerald-200 dark:border-emerald-800 p-8 relative">
-                        <div className="flex items-center gap-2 mb-4">
-                          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                          <h3 className="font-black text-xs uppercase tracking-widest text-emerald-800 dark:text-emerald-400">Token Generated</h3>
-                        </div>
-                        <div className="flex items-center gap-2 bg-white dark:bg-black p-4 rounded-md border border-emerald-200 dark:border-emerald-800 font-mono text-xs break-all font-black">
-                          {newKey}
-                          <button onClick={() => copyToClipboard(newKey)} className="ml-auto p-2 text-zinc-400 hover:text-emerald-600 transition-colors">
-                             {copied ? <CheckCircle2 className="h-5 w-5 text-emerald-500" /> : <Copy className="h-5 w-5" />}
-                          </button>
-                        </div>
-                        <p className="text-[10px] text-emerald-600 mt-4 font-bold uppercase tracking-widest">Store this securely. It will not be shown again.</p>
-                      </Card>
-                    )}
-
-                    <Card className="p-0 overflow-hidden bg-white dark:bg-black border-zinc-200 dark:border-zinc-800">
-                      <div className="p-6 border-b border-zinc-100 dark:border-zinc-900 bg-zinc-50/50 dark:bg-zinc-950/50">
-                        <p className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] mb-4">Provision New Machine Key</p>
-                        <form onSubmit={handleCreateKey} className="flex flex-col sm:flex-row gap-3">
-                          <Input name="keyName" placeholder="Endpoint Identifier" className="h-12 bg-white dark:bg-black font-bold" required />
-                          <Button type="submit" disabled={creatingKey} className="h-12 px-6 font-black uppercase tracking-widest text-[10px]">
-                            {creatingKey ? <Loader2 className="h-3 w-3 animate-spin" /> : "Deploy Key"}
-                          </Button>
-                        </form>
-                      </div>
-                      <div className="divide-y divide-zinc-100 dark:divide-zinc-900 max-h-[400px] overflow-y-auto">
-                        {keys.map(k => (
-                          <div key={k.id} className="p-5 flex justify-between items-center group hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors">
-                            <div className="min-w-0">
-                              <p className="text-sm font-black uppercase tracking-tight truncate">{k.name}</p>
-                              <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest mt-1">Issued {new Date(k.createdAt).toLocaleDateString()}</p>
-                            </div>
-                            <Button variant="ghost" size="icon" onClick={() => handleDeleteKey(k.id)} className="opacity-0 group-hover:opacity-100 text-zinc-400 hover:text-red-500 transition-all">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    </Card>
-                  </div>
-
-                  <Card className="p-8 border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-black shadow-2xl relative group overflow-hidden">
-                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                      <ShieldCheck className="h-32 w-32 text-blue-600" />
-                    </div>
-                    <div className="flex items-center gap-3 mb-8 relative z-10">
-                      <div className="h-10 w-10 rounded-md bg-zinc-900 dark:bg-zinc-50 flex items-center justify-center text-white dark:text-zinc-900 shadow-xl">
-                        <Terminal className="h-5 w-5 text-blue-500" />
-                      </div>
-                      <div>
-                        <h3 className="font-black text-xl uppercase tracking-tight">Security Playground</h3>
-                        <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mt-1">Simulate Machine Handshakes</p>
-                      </div>
-                    </div>
-                    <div className="space-y-6 relative z-10">
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Authorized Key</label>
-                        <PasswordInput className="h-12 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 font-bold" value={playgroundKey} onChange={(e) => setPlaygroundKey(e.target.value)} />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Namespace / Tag</label>
-                        <Input className="h-12 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 font-bold" placeholder="e.g. products-v2" value={playgroundTag} onChange={(e) => setPlaygroundTag(e.target.value)} />
-                      </div>
-                      <Button className="w-full h-14 font-black uppercase tracking-[0.2em] text-xs" onClick={runPlayground} disabled={playgroundLoading || !playgroundKey}>
-                        {playgroundLoading ? "Authenticating..." : "Execute Security Check"}
-                      </Button>
-                    </div>
-                  </Card>
-                </div>
-              )}
-
-              {activeTab === "webhooks" && (
-                <div className="max-w-4xl">
-                  <WebhookManager onLimitReached={() => setShowPricing(true)} />
-                </div>
-              )}
-
-              {activeTab === "logs" && (
-                <div className="max-w-4xl">
-                  <ActivityLogs />
-                </div>
-              )}
-            </div>
+            <button onClick={handleLogout} className="p-1.5 rounded-ui text-np-slate hover:text-np-crimson transition-colors">
+              <LogOut className="h-3.5 w-3.5" />
+            </button>
           </div>
         </div>
-      </main>
+      </aside>
 
-      {/* MOBILE BOTTOM NAVIGATION */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-black/95 backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 px-6 pb-6 pt-3 flex justify-between items-center shadow-2xl">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
-            className="flex flex-col items-center gap-1 group relative"
-          >
-            <div className={cn(
-              "h-12 w-12 rounded-md flex items-center justify-center transition-all duration-300",
-              activeTab === tab.id 
-                ? "bg-blue-600 text-white shadow-xl" 
-                : "text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-900"
-            )}>
-              <tab.icon className={cn("h-5 w-5", activeTab === tab.id ? "text-white" : "text-zinc-400")} />
+      {/* ── Main content ───────────────────────── */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Top bar */}
+        <header
+          className="h-14 flex items-center justify-between px-6 shrink-0"
+          style={{ borderBottom: "0.5px solid var(--border)" }}
+        >
+          <div>
+            <h1 className="text-[15px] font-semibold capitalize">{activeTab === "monitoring" ? "Command Center" : activeTab}</h1>
+            <p className="label-category text-[10px]">NexPulse Dashboard</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="mono-gold text-[11px] hidden sm:block">{user?.email}</span>
+            <button onClick={handleLogout} className="md:hidden p-2 rounded-ui text-np-slate hover:text-np-crimson transition-colors">
+              <LogOut className="h-4 w-4" />
+            </button>
+          </div>
+        </header>
+
+        {/* Tab content */}
+        <main className="flex-1 p-6 overflow-auto np-scroll">
+
+          {/* MONITORING */}
+          {activeTab === "monitoring" && (
+            <div className="space-y-6 max-w-5xl">
+              <PulseTrigger />
+              <MonitoringDashboard />
             </div>
-            <span className={cn(
-              "text-[9px] font-black uppercase tracking-widest transition-all duration-300",
-              activeTab === tab.id ? "text-blue-600 dark:text-white" : "text-zinc-400"
-            )}>
-              {tab.label.split(' ')[0]}
-            </span>
-          </button>
-        ))}
+          )}
+
+          {/* AUDITS */}
+          {activeTab === "audits" && (
+            <div className="space-y-5 max-w-3xl">
+              <Card className="p-6">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="h-9 w-9 rounded-ui flex items-center justify-center bg-np-gold/10">
+                    <Search className="h-4 w-4 text-np-gold" />
+                  </div>
+                  <div>
+                    <h2 className="text-[14px] font-semibold">Website Analyser</h2>
+                    <p className="label-category text-[10px]">SEO &amp; infrastructure audit engine</p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="https://your-site.com"
+                    value={analyzeUrl}
+                    onChange={(e) => setAnalyzeUrl(e.target.value)}
+                    className="flex-1"
+                  />
+                  <Button onClick={runAnalyzer} disabled={analyzeLoading || !analyzeUrl} className="shrink-0">
+                    {analyzeLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Scan"}
+                  </Button>
+                </div>
+              </Card>
+              {analyzeResult && <AnalysisReport data={analyzeResult} />}
+            </div>
+          )}
+
+          {/* API KEYS */}
+          {activeTab === "keys" && (
+            <div className="grid lg:grid-cols-2 gap-5 max-w-5xl items-start">
+              {/* Left — key list */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-[14px] font-semibold">Access keys</h2>
+                  <Button variant="outline" size="sm" onClick={fetchKeys}>
+                    <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Refresh
+                  </Button>
+                </div>
+
+                {newKey && (
+                  <Card className="p-4" style={{ borderLeft: "3px solid var(--np-teal)" }}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <CheckCircle2 className="h-4 w-4 text-np-teal" />
+                      <span className="text-[12px] font-semibold text-np-teal">Key generated — copy now</span>
+                    </div>
+                    <div className="flex items-center gap-2 bg-np-obsidian rounded-ui p-3 font-mono text-[12px] text-np-gold break-all">
+                      <span className="flex-1">{newKey}</span>
+                      <button onClick={() => copyKey(newKey)} className="shrink-0 text-np-slate hover:text-np-gold transition-colors">
+                        {copied ? <CheckCircle2 className="h-4 w-4 text-np-teal" /> : <Copy className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </Card>
+                )}
+
+                <Card className="overflow-hidden">
+                  <div className="p-4" style={{ borderBottom: "0.5px solid var(--border)" }}>
+                    <p className="label-category mb-3">Provision new key</p>
+                    <form onSubmit={handleCreateKey} className="flex gap-2">
+                      <Input name="keyName" placeholder="Key name" className="flex-1" required />
+                      <Button type="submit" disabled={creatingKey} size="sm">
+                        {creatingKey ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <><Plus className="h-3.5 w-3.5 mr-1" />Create</>}
+                      </Button>
+                    </form>
+                  </div>
+                  <div className="divide-y divide-border">
+                    {keys.length === 0 && (
+                      <p className="p-5 text-[13px] text-muted-foreground text-center">No keys yet</p>
+                    )}
+                    {keys.map((k) => (
+                      <div key={k.id} className="flex items-center justify-between px-4 py-3 group hover:bg-muted/40 transition-colors">
+                        <div className="min-w-0">
+                          <p className="text-[13px] font-medium truncate">{k.name}</p>
+                          <p className="mono-gold text-[11px]">
+                            Issued {new Date(k.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => handleDeleteKey(k.id)}
+                          className="opacity-0 group-hover:opacity-100 np-btn-danger h-8 px-3 text-[12px] transition-opacity"
+                        >
+                          Revoke
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              </div>
+
+              {/* Right — playground */}
+              <Card className="p-6">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="h-9 w-9 rounded-ui flex items-center justify-center bg-np-gold/10">
+                    <Terminal className="h-4 w-4 text-np-gold" />
+                  </div>
+                  <div>
+                    <h3 className="text-[14px] font-semibold">Revalidation Playground</h3>
+                    <p className="label-category text-[10px]">Test cache purge handshakes</p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <label className="label-category text-[10px] block mb-1.5">API key</label>
+                    <PasswordInput value={playgroundKey} onChange={(e) => setPlaygroundKey(e.target.value)} />
+                  </div>
+                  <div>
+                    <label className="label-category text-[10px] block mb-1.5">Cache tag / path</label>
+                    <Input placeholder="e.g. products-v2" value={playgroundTag} onChange={(e) => setPlaygroundTag(e.target.value)} />
+                  </div>
+                  <Button className="w-full" onClick={runPlayground} disabled={playgroundLoading || !playgroundKey}>
+                    {playgroundLoading ? "Running..." : "Execute purge"}
+                  </Button>
+                </div>
+                {playgroundResult && (
+                  <div className="mt-4 np-codeblock text-[12px]">
+                    {JSON.stringify(playgroundResult, null, 2)}
+                  </div>
+                )}
+              </Card>
+            </div>
+          )}
+
+          {/* WEBHOOKS */}
+          {activeTab === "webhooks" && (
+            <div className="max-w-3xl">
+              <WebhookManager onLimitReached={() => setShowPricing(true)} />
+            </div>
+          )}
+
+          {/* LOGS */}
+          {activeTab === "logs" && (
+            <div className="max-w-3xl">
+              <ActivityLogs />
+            </div>
+          )}
+        </main>
       </div>
 
-      <PricingModal 
-        isOpen={showPricing} 
-        onClose={() => setShowPricing(false)} 
-        currentPlan={currentUserPlan} 
-      />
+      {/* Mobile bottom nav */}
+      <div
+        className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center h-16 px-2 bg-background/95 backdrop-blur-md"
+        style={{ borderTop: "0.5px solid var(--border)" }}
+      >
+        {TABS.map((t) => {
+          const active = activeTab === t.id;
+          return (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(t.id)}
+              className={cn(
+                "flex flex-col items-center gap-1 p-2 rounded-ui transition-all",
+                active ? "text-np-gold" : "text-np-slate"
+              )}
+            >
+              <t.icon className="h-5 w-5" />
+              <span className="text-[9px] font-semibold uppercase tracking-wide">{t.label.split(" ")[0]}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <PricingModal isOpen={showPricing} onClose={() => setShowPricing(false)} currentPlan={currentUserPlan} />
     </div>
   );
 }

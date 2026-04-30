@@ -9,53 +9,43 @@ const config: Config = {
   darkMode: "class",
   theme: {
     extend: {
-      screens: {
-        'xs': '375px',
+      screens: { xs: "375px" },
+      fontFamily: {
+        sans: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "monospace"],
       },
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },
-      },
-      fontFamily: {
-        sans: ["var(--font-inter)"],
-        mono: ["var(--font-mono)"],
+        /* Warm Obsidian tokens */
+        "np-gold":     "#B48C3C",
+        "np-teal":     "#1D9E75",
+        "np-crimson":  "#A32D2D",
+        "np-ink":      "#1A1A18",
+        "np-vellum":   "#F5F3EE",
+        "np-obsidian": "#0D0F11",
+        "np-steel":    "#16191E",
+        "np-slate":    "#6B6A66",
+        /* Semantic aliases */
+        background:    "var(--background)",
+        foreground:    "var(--foreground)",
+        card:          "var(--card)",
+        "card-foreground": "var(--card-foreground)",
+        muted:         "var(--muted)",
+        "muted-foreground": "var(--muted-foreground)",
+        primary:       "var(--primary)",
+        "primary-foreground": "var(--primary-foreground)",
+        secondary:     "var(--secondary)",
+        border:        "var(--border)",
+        input:         "var(--input)",
+        ring:          "var(--ring)",
+        destructive:   "var(--destructive)",
       },
       borderRadius: {
-        lg: "var(--radius)",
-
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        card: "12px",
+        ui:   "8px",
+        xl:   "12px",
+        lg:   "8px",
+        md:   "6px",
+        sm:   "4px",
       },
     },
   },

@@ -28,26 +28,24 @@ function renderMarkdownAsCards(md: string) {
     let content = lines.join('\n');
 
     // 1. Handle Mermaid
-    content = content.replace(/```mermaid\n([\s\S]*?)```/g, '<div class="mermaid bg-zinc-50 dark:bg-zinc-950 p-8 rounded-md border border-zinc-200 dark:border-zinc-800 my-10 flex justify-center shadow-sm">$1</div>');
+    content = content.replace(/```mermaid\n([\s\S]*?)```/g, '<div class="mermaid my-8 flex justify-center p-8 rounded-card" style="background:#0D0F11;border:0.5px solid rgba(180,140,60,0.2)">$1</div>');
 
     // 2. Handle Highlighted Code Blocks
     content = content.replace(/```(\w+)\n([\s\S]*?)```/g, (match, lang, code) => {
       const displayLang = lang.toUpperCase();
-      return `<div class="relative group my-10">
-        <div class="absolute -top-3 right-4 flex items-center gap-2 px-3 py-1 bg-zinc-900 dark:bg-white border border-zinc-800 dark:border-zinc-200 rounded-sm shadow-xl z-10">
-          <div class="h-2 w-2 rounded-full bg-blue-500"></div>
-          <span class="text-[9px] font-black uppercase tracking-[0.2em] text-white dark:text-zinc-900">${displayLang}</span>
+      return `<div class="relative my-8">
+        <div class="flex items-center gap-2 px-4 py-2 rounded-t-card" style="background:#16191E;border:0.5px solid rgba(255,255,255,0.07);border-bottom:none">
+          <span class="h-2 w-2 rounded-full" style="background:#B48C3C"></span>
+          <span style="font-family:var(--font-mono);font-size:11px;color:#B48C3C;letter-spacing:0.08em">${displayLang}</span>
         </div>
-        <div class="rounded-md overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-xl">
-          <pre class="bg-zinc-950 text-zinc-100 p-8 pt-10 overflow-x-auto custom-scrollbar !whitespace-pre">
-            <code class="language-${lang} text-xs font-mono leading-relaxed !whitespace-pre !break-normal inline-block min-w-full">${code.trim()}</code>
-          </pre>
-        </div>
+        <pre class="np-codeblock rounded-t-none rounded-b-card overflow-x-auto np-scroll" style="margin:0">
+          <code class="language-${lang}">${code.trim()}</code>
+        </pre>
       </div>`;
     });
 
     // 3. Handle Standard Code Blocks
-    content = content.replace(/```([\s\S]*?)```/g, '<div class="relative group my-10"><div class="rounded-md overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-xl"><pre class="bg-zinc-950 text-zinc-100 p-8 overflow-x-auto custom-scrollbar !whitespace-pre"><code class="text-xs font-mono leading-relaxed !whitespace-pre !break-normal inline-block min-w-full">$1</code></pre></div></div>');
+    content = content.replace(/```([\s\S]*?)```/g, '<div class="my-8"><pre class="np-codeblock rounded-card overflow-x-auto np-scroll" style="margin:0"><code>$1</code></pre></div>');
 
     // 4. Tables
     content = content.replace(/((?:\|.+\|\n?)+)/g, (match) => {
