@@ -60,6 +60,7 @@ export interface AnalyzeResponse {
       performance: { score: number; metrics: any; suggestions: string[] };
     };
   };
+  aiInsight?: string | null;
   timestamp: string;
 }
 

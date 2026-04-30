@@ -47,6 +47,10 @@ export async function POST(request: NextRequest) {
     // 3. Perform Advanced Analysis
     const auditResult = await runFullAudit(url);
 
+    // 3.5 Generate AI Diagnosis (Optional/Async for performance)
+    const { getAiDiagnosis } = await import('@/lib/ai');
+    const aiInsight = await getAiDiagnosis(auditResult);
+
     // 4. Log Activity
     await logActivity({
       type: 'ANALYZE',
@@ -56,9 +60,10 @@ export async function POST(request: NextRequest) {
       details: { url, score: auditResult.overallScore }
     });
 
-    const response: AnalyzeResponse = {
+    const response: AnalyzeResponse & { aiInsight?: string | null } = {
       success: true,
       results: auditResult,
+      aiInsight,
       timestamp: new Date().toISOString()
     };
 
