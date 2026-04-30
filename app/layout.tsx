@@ -1,17 +1,25 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 
-const geistSans = Inter({
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-geist-sans",
+  display: "swap",
 });
 
-const geistMono = JetBrains_Mono({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
+  display: "swap",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -32,23 +40,6 @@ export const metadata: Metadata = {
     locale: "en_US",
     type: "website",
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "NexPulse",
-    description: "The universal performance command centre.",
-    creator: "@abirmajid",
-  },
-};
-
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  name: "NexPulse",
-  operatingSystem: "Web",
-  applicationCategory: "DeveloperApplication",
-  description:
-    "Universal high-performance cache revalidation and health monitoring for all modern web frameworks.",
-  url: "https://nextjs-optimizer-suite.vercel.app",
 };
 
 export default function RootLayout({
@@ -58,16 +49,9 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${jetbrainsMono.variable}`}
     >
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      </head>
-      <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-np-gold/20 selection:text-np-gold">
+      <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
