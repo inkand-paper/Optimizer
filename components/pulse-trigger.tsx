@@ -71,7 +71,7 @@ export function PulseTrigger() {
               className={cn(
                 "px-5 py-2 text-[10px] font-black uppercase tracking-widest rounded-sm transition-all",
                 type === 'tag' 
-                  ? 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900 shadow-sm' 
+                  ? 'bg-blue-600 text-white shadow-sm' 
                   : 'text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
               )}
             >
@@ -83,7 +83,7 @@ export function PulseTrigger() {
               className={cn(
                 "px-5 py-2 text-[10px] font-black uppercase tracking-widest rounded-sm transition-all",
                 type === 'path' 
-                  ? 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900 shadow-sm' 
+                  ? 'bg-blue-600 text-white shadow-sm' 
                   : 'text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
               )}
             >
@@ -105,9 +105,9 @@ export function PulseTrigger() {
             <Button 
               type="submit" 
               disabled={loading || !target}
-              className="h-14 px-10 font-black uppercase tracking-widest text-xs min-w-[180px]"
+              className="h-14 px-10 font-black uppercase tracking-widest text-[10px] min-w-[180px] bg-zinc-900 text-white dark:bg-white dark:text-black hover:bg-blue-600 dark:hover:bg-blue-600 dark:hover:text-white transition-all shadow-xl"
             >
-              {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : success ? <CheckCircle2 className="h-5 w-5" /> : "Dispatch Pulse"}
+              {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : success ? <CheckCircle2 className="h-5 w-5" /> : "Dispatch Sequence"}
             </Button>
           </div>
 

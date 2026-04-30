@@ -65,48 +65,45 @@ export function PricingModal({ isOpen, onClose, currentPlan = "FREE" }: PricingM
                 <Card 
                   key={key}
                   className={cn(
-                    "relative p-8 flex flex-col h-full transition-all duration-300",
-                    isPro && "border-blue-600 ring-1 ring-blue-600 shadow-2xl shadow-blue-500/10 z-10 bg-zinc-950 text-white"
+                    "relative p-8 flex flex-col h-full transition-all duration-300 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950",
+                    isPro && "border-blue-600 ring-2 ring-blue-600/20 dark:ring-blue-500/20 shadow-2xl shadow-blue-500/10 z-10"
                   )}
                 >
                   <div className="mb-8">
                     <div className="flex items-center justify-between mb-4">
-                      <h4 className="text-lg font-black tracking-tight">{plan.name}</h4>
+                      <h4 className="text-xl font-black tracking-tighter uppercase">{plan.name}</h4>
                       {isPro && (
-                        <span className="text-[10px] font-black uppercase tracking-widest bg-blue-600 text-white px-2 py-0.5 rounded-sm">Recommended</span>
+                        <span className="text-[9px] font-black uppercase tracking-[0.2em] bg-blue-600 text-white px-2.5 py-1 rounded-sm shadow-lg">Recommended</span>
                       )}
                     </div>
-                    <div className="flex items-baseline gap-1 mb-4">
-                      <span className="text-4xl font-black">{plan.price}</span>
-                      <span className="text-sm text-zinc-500">/month</span>
+                    <div className="flex items-baseline gap-2 mb-4">
+                      <span className="text-4xl font-black tracking-tighter">{plan.price}</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">/mo</span>
                     </div>
-                    <p className={cn(
-                      "text-xs font-bold leading-relaxed",
-                      isPro ? "text-zinc-400" : "text-zinc-500"
-                    )}>
+                    <p className="text-[10px] font-black uppercase tracking-tight text-zinc-500 dark:text-zinc-400 leading-relaxed min-h-[40px]">
                       {plan.description}
                     </p>
                   </div>
 
-                  <div className="space-y-4 mb-8 flex-grow">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Infrastructure Capabilities</p>
-                    <ul className="space-y-2.5">
-                      <li className="flex items-center gap-3 text-[11px] font-bold">
-                        <div className="h-5 w-5 rounded-full flex items-center justify-center shrink-0 bg-blue-600/10">
-                          <Check className="h-3 w-3 text-blue-500" />
+                  <div className="space-y-6 mb-8 flex-grow">
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 border-b border-zinc-100 dark:border-zinc-900 pb-2">Capabilities Matrix</p>
+                    <ul className="space-y-3.5">
+                      <li className="flex items-center gap-3 text-xs font-black uppercase tracking-tight">
+                        <div className="h-5 w-5 rounded-sm flex items-center justify-center shrink-0 bg-blue-600 text-white shadow-sm">
+                          <Check className="h-3 w-3" />
                         </div>
-                        <span className={isPro ? "text-zinc-100" : "text-zinc-900 dark:text-zinc-100"}>
-                          {plan.checks.toLocaleString()} Intelligence Checks
+                        <span className="text-zinc-900 dark:text-zinc-100">
+                          {plan.checks.toLocaleString()} Checks
                         </span>
                       </li>
                       {plan.features.map((feature, i) => (
                         <li key={i} className={cn(
-                          "flex items-start gap-3 text-[11px] font-bold leading-tight",
-                          feature.active ? (isPro ? "text-zinc-100" : "text-zinc-900 dark:text-zinc-100") : "text-zinc-500 opacity-50"
+                          "flex items-start gap-3 text-xs leading-tight transition-colors",
+                          feature.active ? "text-zinc-900 dark:text-zinc-100 font-black uppercase tracking-tight" : "text-zinc-300 dark:text-zinc-700 font-bold uppercase tracking-tight"
                         )}>
                           <div className={cn(
-                            "h-5 w-5 rounded-full flex items-center justify-center shrink-0",
-                            feature.active ? "bg-blue-600/10 text-blue-500" : "bg-zinc-100 dark:bg-zinc-900 text-zinc-400"
+                            "h-5 w-5 rounded-sm flex items-center justify-center shrink-0 border",
+                            feature.active ? "bg-zinc-900 dark:bg-white border-zinc-900 dark:border-white text-white dark:text-zinc-900" : "bg-transparent border-zinc-100 dark:border-zinc-800 text-zinc-200"
                           )}>
                             <Check className="h-3 w-3" />
                           </div>
@@ -121,11 +118,11 @@ export function PricingModal({ isOpen, onClose, currentPlan = "FREE" }: PricingM
                     disabled={isCurrent || loadingPlan !== null}
                     onClick={() => handleUpgrade(key)}
                     className={cn(
-                      "w-full font-black text-xs uppercase tracking-widest h-12",
-                      isPro && "bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-lg shadow-blue-500/20"
+                      "w-full font-black text-[10px] uppercase tracking-[0.2em] h-14",
+                      isPro && "bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-xl shadow-blue-500/20"
                     )}
                   >
-                    {loadingPlan === key ? "Calibrating..." : isCurrent ? "Current Engine" : "Upgrade Now"}
+                    {loadingPlan === key ? "Calibrating..." : isCurrent ? "Active Console" : "Initialize Engine"}
                   </Button>
                 </Card>
               );

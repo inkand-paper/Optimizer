@@ -161,8 +161,8 @@ export function MonitoringDashboard() {
             <p className="text-[9px] text-zinc-500 font-black uppercase tracking-widest">Global Asset Monitoring</p>
           </div>
         </div>
-        <Button size="sm" onClick={() => setIsAdding(!isAdding)} className="h-10 px-6 font-black uppercase tracking-widest text-[10px]">
-          {isAdding ? "Cancel" : <><Plus className="h-3 w-3 mr-2" /> Provision Target</>}
+        <Button size="sm" onClick={() => setIsAdding(!isAdding)} className="h-11 px-6 font-black uppercase tracking-[0.2em] text-[9px] bg-zinc-900 text-white dark:bg-white dark:text-black hover:bg-blue-600 dark:hover:bg-blue-600 dark:hover:text-white transition-all shadow-xl">
+          {isAdding ? "Cancel" : <><Plus className="h-4 w-4 mr-2" /> Provision Target</>}
         </Button>
       </div>
 

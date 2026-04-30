@@ -63,13 +63,13 @@ export default function Home() {
         </section>
 
         {/* PRICING SECTION */}
-        <section className="py-24 relative overflow-hidden bg-zinc-50/50 dark:bg-black/50" id="pricing">
+        <section className="py-24 relative overflow-hidden bg-white dark:bg-black" id="pricing">
           <div className="container mx-auto px-4 relative z-10">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-black mb-4 tracking-tight">
+              <h2 className="text-3xl md:text-5xl font-black mb-4 tracking-tight uppercase">
                 Enterprise Infrastructure
               </h2>
-              <p className="text-zinc-500 dark:text-zinc-400 max-w-xl mx-auto text-lg font-bold">
+              <p className="text-zinc-500 dark:text-zinc-400 max-w-xl mx-auto text-[10px] font-black uppercase tracking-[0.3em]">
                 Universal monitoring for teams of all sizes.
               </p>
             </div>
@@ -79,66 +79,70 @@ export default function Home() {
                 <Card 
                   key={key}
                   className={cn(
-                    "relative p-8 flex flex-col h-full transition-all duration-300",
-                    key === 'PRO' && "border-blue-600 ring-1 ring-blue-600 shadow-xl shadow-blue-500/10 md:scale-105 z-10 bg-zinc-950 text-white"
+                    "relative p-8 flex flex-col h-full transition-all duration-300 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950",
+                    key === 'PRO' && "border-blue-600 ring-2 ring-blue-600/20 dark:ring-blue-500/20 shadow-2xl shadow-blue-500/10 md:scale-105 z-10"
                   )}
                 >
                   {key === 'PRO' && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-sm shadow-lg">
-                      Recommended
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[9px] font-black uppercase tracking-[0.2em] px-5 py-1.5 rounded-sm shadow-xl">
+                      Production Standard
                     </div>
                   )}
 
-                  <div className="mb-8">
-                    <div className="flex items-center gap-3 mb-4">
+                  <div className="mb-10">
+                    <div className="flex items-center gap-4 mb-6">
                       <div className={cn(
-                        "h-10 w-10 rounded-md flex items-center justify-center",
-                        key === 'PRO' ? "bg-blue-600 text-white" : "bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
+                        "h-12 w-12 rounded-md flex items-center justify-center border",
+                        key === 'PRO' 
+                          ? "bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/20" 
+                          : "bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100"
                       )}>
-                        {key === 'FREE' ? <Globe className="h-5 w-5" /> : key === 'PRO' ? <Zap className="h-5 w-5" /> : <Crown className="h-5 w-5" />}
+                        {key === 'FREE' ? <Globe className="h-6 w-6" /> : key === 'PRO' ? <Zap className="h-6 w-6" /> : <Crown className="h-6 w-6" />}
                       </div>
-                      <h3 className="text-xl font-black">{plan.name}</h3>
+                      <h3 className="text-2xl font-black uppercase tracking-tighter">{plan.name}</h3>
                     </div>
-                    <p className={cn(
-                      "text-sm mb-6 min-h-[40px] font-medium",
-                      key === 'PRO' ? "text-zinc-400" : "text-zinc-500"
-                    )}>
+                    <p className="text-xs mb-8 min-h-[40px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-tight leading-relaxed">
                       {plan.description}
                     </p>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-black">{plan.price}</span>
-                      <span className="text-sm text-zinc-500">/month</span>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-5xl font-black tracking-tighter">{plan.price}</span>
+                      <span className="text-xs font-black uppercase tracking-widest text-zinc-400">/mo</span>
                     </div>
                   </div>
 
-                  <div className="space-y-6 flex-grow">
-                    <div className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
-                      Infrastructure Capabilities
+                  <div className="space-y-8 flex-grow">
+                    <div className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 border-b border-zinc-100 dark:border-zinc-900 pb-2">
+                      Capabilities Matrix
                     </div>
-                    <ul className="space-y-3">
+                    <ul className="space-y-4">
                       {plan.features.map((feature, i) => (
                         <li key={i} className={cn(
-                          "flex items-center gap-3 text-sm transition-colors",
-                          feature.active ? (key === 'PRO' ? "text-zinc-100" : "text-zinc-900 dark:text-zinc-100 font-bold") : "text-zinc-500 opacity-50"
+                          "flex items-center gap-4 text-xs transition-colors",
+                          feature.active ? "text-zinc-900 dark:text-zinc-100 font-black" : "text-zinc-300 dark:text-zinc-700 font-bold"
                         )}>
                           <div className={cn(
-                            "h-5 w-5 rounded-full flex items-center justify-center shrink-0",
-                            feature.active ? "bg-blue-600 text-white" : "bg-zinc-100 dark:bg-zinc-900 text-zinc-400"
+                            "h-5 w-5 rounded-sm flex items-center justify-center shrink-0 border transition-all",
+                            feature.active 
+                              ? "bg-zinc-900 dark:bg-white border-zinc-900 dark:border-white text-white dark:text-zinc-900" 
+                              : "bg-transparent border-zinc-100 dark:border-zinc-800 text-zinc-200"
                           )}>
                             <Check className="h-3 w-3" />
                           </div>
-                          <span className="flex-1">{feature.text}</span>
+                          <span className="uppercase tracking-tight">{feature.text}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  <Link href="/signup" className="mt-10 block w-full">
+                  <Link href="/register" className="mt-12 block w-full">
                     <Button 
-                      className="w-full font-bold h-12"
+                      className={cn(
+                        "w-full h-14 font-black uppercase tracking-[0.2em] text-[10px]",
+                        key === 'PRO' ? "bg-blue-600 text-white shadow-xl shadow-blue-600/20" : ""
+                      )}
                       variant={key === 'PRO' ? 'primary' : 'outline'}
                     >
-                      {key === 'BUSINESS' ? 'Contact Sales' : 'Get Started'}
+                      {key === 'BUSINESS' ? 'Contact Engineering' : 'Initialize Plan'}
                     </Button>
                   </Link>
                 </Card>
@@ -149,28 +153,31 @@ export default function Home() {
 
         {/* CTA SECTION */}
         <section className="py-24 bg-white dark:bg-black">
-          <div className="container mx-auto px-4 max-w-5xl">
-            <div className="bg-zinc-900 dark:bg-zinc-950 rounded-lg p-12 md:p-20 text-center text-white relative overflow-hidden border border-white/5 shadow-2xl">
-               <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/5 rounded-full blur-[100px] -mr-48 -mt-48" />
-               <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-600/5 rounded-full blur-[100px] -ml-48 -mb-48" />
+          <div className="container mx-auto px-4 max-w-6xl">
+            <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md p-12 md:p-24 text-center relative overflow-hidden shadow-sm">
+               <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-600/5 via-transparent to-transparent opacity-50" />
                
-               <div className="relative z-10 max-w-2xl mx-auto">
-                 <h2 className="text-4xl md:text-6xl font-black mb-8 tracking-tighter leading-none uppercase">
-                   Ready to Deploy <br />
-                   <span className="text-blue-600">Universal Control?</span>
+               <div className="relative z-10 max-w-3xl mx-auto">
+                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-blue-600 text-white font-black text-[9px] uppercase tracking-[0.3em] mb-8">
+                   <Zap className="h-3 w-3 fill-current" />
+                   <span>Ready for Deployment</span>
+                 </div>
+                 <h2 className="text-4xl md:text-7xl font-black mb-8 tracking-tighter leading-[0.85] uppercase text-zinc-900 dark:text-white">
+                   The Engine of <br />
+                   <span className="text-blue-600">Universal Control</span>
                  </h2>
-                 <p className="text-zinc-400 mb-12 text-lg font-bold tracking-tight leading-relaxed">
-                   Join enterprise engineering teams using NexPulse to maintain absolute authority over their digital infrastructure.
+                 <p className="text-zinc-500 dark:text-zinc-400 mb-12 text-sm md:text-lg font-bold tracking-tight leading-relaxed uppercase">
+                   Join engineering teams worldwide using NexPulse to maintain absolute authority over global infrastructure.
                   </p>
-                 <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                    <Link href="/register">
-                     <Button size="lg" className="h-14 px-12 bg-zinc-50 text-zinc-900 hover:bg-zinc-200 border-0 font-black uppercase tracking-widest text-xs">
+                     <Button size="lg" className="h-16 px-12 bg-zinc-900 text-white dark:bg-white dark:text-black font-black uppercase tracking-[0.2em] text-xs">
                        Get Started Now
                      </Button>
                    </Link>
                    <Link href="/login">
-                     <Button variant="outline" size="lg" className="h-14 px-12 border-white/10 hover:bg-white/5 text-white font-black uppercase tracking-widest text-xs">
-                       Access Dashboard
+                     <Button variant="outline" size="lg" className="h-16 px-12 font-black uppercase tracking-[0.2em] text-xs border-zinc-200 dark:border-zinc-800">
+                       Access Console
                      </Button>
                    </Link>
                  </div>
