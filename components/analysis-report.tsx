@@ -196,7 +196,7 @@ export function AnalysisReport({ data }: Props) {
                       Genius Diagnosis
                     </span>
                   </div>
-                  <div className="text-[13px] leading-relaxed text-[#E2E0D8] prose-invert max-w-none">
+                  <div className="text-[13px] leading-relaxed max-w-none">
                     <ReactMarkdown>{typeof aiSection === 'string' ? aiSection : (aiSection.diagnosis || aiSection.content || "No diagnosis available.")}</ReactMarkdown>
                   </div>
                 </div>

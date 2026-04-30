@@ -117,7 +117,7 @@ export function MonitoringDashboard() {
       </div>
 
       {isAdding && (
-        <Card className="p-6 bg-muted border-border animate-in fade-in slide-in-from-top-4">
+        <Card className="p-6 bg-muted dark:bg-np-obsidian border-border animate-in fade-in slide-in-from-top-4">
           <form onSubmit={handleAdd} className="space-y-5 max-w-2xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -169,7 +169,7 @@ export function MonitoringDashboard() {
             const currentLatency = history.length > 0 ? history[history.length - 1] : 0;
             return (
               <Card key={m.id} className="p-0 overflow-hidden bg-card border-border shadow-sm group">
-                <div className="p-5 flex items-center justify-between border-b border-border bg-muted/20">
+                <div className="p-5 flex items-center justify-between border-b border-border bg-muted dark:bg-np-obsidian/20">
                   <div className="flex items-center gap-4">
                     <div className={cn(
                       "h-12 w-12 rounded-ui border flex items-center justify-center shrink-0",
@@ -206,7 +206,7 @@ export function MonitoringDashboard() {
                 </div>
 
                 {/* Graph Area */}
-                <div className="p-6 bg-np-obsidian">
+                <div className="p-6 bg-muted dark:bg-np-obsidian">
                   <div className="flex items-center justify-between mb-4">
                     <span className="label-category text-[9px] text-np-slate">Infrastructure Latency Matrix</span>
                     <span className="mono-gold text-[12px] font-bold">{currentLatency}MS</span>
