@@ -13,6 +13,7 @@ import {
   Crown,
   Check
 } from "lucide-react";
+import { PLAN_LIMITS } from "@/lib/plans";
 
 /**
  * [ENTRY-LEVEL DEFINITION] - Landing Page
