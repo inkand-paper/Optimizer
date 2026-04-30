@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { X, Check, Zap, Shield, Crown, Globe, MessageCircle } from "lucide-react";
-import { Button } from "./ui-elements";
+import { Button, Card } from "./ui-elements";
 import { cn } from "@/lib/utils";
 import { PLAN_LIMITS } from "@/lib/plans";
 
