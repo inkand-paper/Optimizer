@@ -128,9 +128,9 @@ export default function Home() {
                 <div 
                   key={plan.id}
                   className={cn(
-                    "relative group p-8 md:p-10 rounded-[40px] border transition-all duration-500 hover:scale-[1.02] flex flex-col",
+                    "relative group p-8 md:p-10 rounded-[40px] border transition-all duration-500 hover:scale-[1.02] flex flex-col h-full",
                     plan.popular 
-                      ? "bg-blue-600 border-blue-500 shadow-2xl shadow-blue-600/20 z-20 scale-105" 
+                      ? "bg-blue-600 border-blue-500 shadow-2xl shadow-blue-600/20 z-20 md:scale-105" 
                       : "bg-white/50 dark:bg-zinc-900/50 backdrop-blur-xl border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700"
                   )}
                 >
@@ -166,15 +166,15 @@ export default function Home() {
                       </div>
                     </div>
     
-                    <div className="space-y-6 flex-1">
+                    <div className="space-y-6 flex-grow">
                        <div className={cn("text-[10px] font-black uppercase tracking-[0.2em]", plan.popular ? "text-white/60" : "text-zinc-400")}>
                           Plan Capabilities
                        </div>
                        <ul className="space-y-4">
                           {plan.features.map((feature, i) => (
-                            <li key={i} className={cn("flex items-center gap-3 text-sm", feature.active ? (plan.popular ? "text-white" : "text-zinc-700 dark:text-zinc-300 font-medium") : "text-zinc-400 opacity-40")}>
-                               <div className={cn("h-5 w-5 rounded-full flex items-center justify-center shrink-0", plan.popular ? "bg-white/20" : "bg-blue-600/10")}>
-                                  <Check className={cn("h-3 w-3", plan.popular ? "text-white" : "text-blue-600")} />
+                            <li key={i} className={cn("flex items-center gap-3 text-sm transition-colors", feature.active ? (plan.popular ? "text-white" : "text-zinc-700 dark:text-zinc-300 font-medium") : (plan.popular ? "text-white/30" : "text-zinc-500/50"))}>
+                               <div className={cn("h-5 w-5 rounded-full flex items-center justify-center shrink-0", plan.popular ? "bg-white/20" : (feature.active ? "bg-blue-600/10" : "bg-zinc-100 dark:bg-zinc-800"))}>
+                                  <Check className={cn("h-3 w-3", plan.popular ? "text-white" : (feature.active ? "text-blue-600" : "text-zinc-400"))} />
                                </div>
                                <span className="flex-1">{feature.text}</span>
                             </li>

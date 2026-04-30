@@ -131,6 +131,7 @@ export default function DashboardPage() {
       }
     } catch (err) {
       console.error("Failed to fetch keys", err);
+      router.push("/login");
     } finally {
       setLoading(false);
     }
