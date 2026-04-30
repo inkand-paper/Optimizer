@@ -242,7 +242,7 @@ export default function DashboardPage() {
         </header>
 
         {/* Tab content */}
-        <main className="flex-1 p-6 overflow-auto np-scroll">
+        <main className="flex-1 p-6 pb-24 md:pb-6 overflow-auto np-scroll">
 
           {/* MONITORING */}
           {activeTab === "monitoring" && (

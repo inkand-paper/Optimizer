@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     const { getAiDiagnosis } = await import('@/lib/ai');
     
     let aiInsight = null;
-    if (PLAN_LIMITS[userPlan].allowAi) {
+    if (PLAN_LIMITS[userPlan].allowAi || dbKey.user.role === 'ADMIN') {
       aiInsight = await getAiDiagnosis(auditResult);
     }
 

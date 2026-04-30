@@ -86,8 +86,7 @@ export function AnalysisReport({ data }: Props) {
   const seoSection  = sections?.seo;
   const secSection  = sections?.security;
   const perfSection = sections?.performance;
-  const s           = sections as any;
-  const aiSection   = s?.ai || s?.genius;
+  const aiSection   = (data as any).aiInsight;
 
 
   const tabSections = [seoSection, secSection, perfSection, null];
@@ -110,7 +109,7 @@ export function AnalysisReport({ data }: Props) {
         </div>
 
         {/* Score cards */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
             { label: "SEO",       score: seoSection?.score  ?? (overallScore as any)?.seo  ?? 0 },
             { label: "Security",  score: secSection?.score  ?? (overallScore as any)?.security ?? 0 },
@@ -198,7 +197,7 @@ export function AnalysisReport({ data }: Props) {
                     </span>
                   </div>
                   <div className="text-[13px] leading-relaxed text-[#E2E0D8] prose-invert max-w-none">
-                    <ReactMarkdown>{aiSection.diagnosis || aiSection.content || "No diagnosis available."}</ReactMarkdown>
+                    <ReactMarkdown>{typeof aiSection === 'string' ? aiSection : (aiSection.diagnosis || aiSection.content || "No diagnosis available.")}</ReactMarkdown>
                   </div>
                 </div>
               ) : (
