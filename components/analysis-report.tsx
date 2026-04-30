@@ -112,9 +112,9 @@ export function AnalysisReport({ data }: Props) {
         {/* Score cards */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: "SEO",       score: seoSection?.score  ?? overallScore?.seo  ?? 0 },
-            { label: "Security",  score: secSection?.score  ?? overallScore?.security ?? 0 },
-            { label: "Performance", score: perfSection?.score ?? overallScore?.performance ?? 0 },
+            { label: "SEO",       score: seoSection?.score  ?? (overallScore as any)?.seo  ?? 0 },
+            { label: "Security",  score: secSection?.score  ?? (overallScore as any)?.security ?? 0 },
+            { label: "Performance", score: perfSection?.score ?? (overallScore as any)?.performance ?? 0 },
           ].map((s) => (
             <div
               key={s.label}
