@@ -28,7 +28,7 @@ export default function DocsPage() {
     {
       title: "Technical Specs",
       description: "Detailed API documentation and integration snippets.",
-      icon: <Terminal className="h-6 w-6 text-purple-600" />,
+      icon: <Terminal className="h-6 w-6 text-blue-600" />,
       links: [
         { label: "Implementation", href: "/docs/master#web-implementation-javascript-node-js" },
         { label: "API Reference", href: "/docs/api" },
@@ -38,7 +38,7 @@ export default function DocsPage() {
     {
       title: "Mobile & SDKs",
       description: "Connect your Android or iOS apps to NexPulse.",
-      icon: <Smartphone className="h-6 w-6 text-green-600" />,
+      icon: <Smartphone className="h-6 w-6 text-blue-600" />,
       links: [
         { label: "iOS Integration", href: "/docs/master#ios-implementation-swift" },
         { label: "Android Integration", href: "/docs/master#android-implementation-kotlin" },
@@ -69,7 +69,7 @@ export default function DocsPage() {
           {categories.map((cat, i) => (
             <Card key={i} className="p-8 flex flex-col h-full border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-sm hover:shadow-xl transition-all duration-300">
               <div className="h-14 w-14 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-md flex items-center justify-center shadow-md mb-8">
-                {React.cloneElement(cat.icon as React.ReactElement, { className: "h-7 w-7 text-blue-600" })}
+                {React.cloneElement(cat.icon as React.ReactElement<any>, { className: "h-7 w-7 text-blue-600" })}
               </div>
               <h3 className="text-2xl font-black uppercase tracking-tighter mb-4">{cat.title}</h3>
               <p className="text-zinc-500 dark:text-zinc-400 text-[10px] font-black uppercase tracking-widest mb-10 flex-1 leading-relaxed">
