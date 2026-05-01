@@ -35,8 +35,6 @@ The Pulse Engine continuously monitors your web properties for downtime.
 - **Smart Alerts**: Instant email notifications for `UP` and `DOWN` status changes.
 - **Latency Tracking**: High-fidelity reporting of response times across global endpoints.
 
-### Pulse Command Center
-The dashboard features a manual **Command Center** allowing administrators to trigger cache optimizations directly from the UI without writing a single line of code.
 
 ### Website Pulse Audit
 The built-in audit engine performs deep-scans on any public URL. It evaluates:
