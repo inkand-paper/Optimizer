@@ -9,7 +9,6 @@ import { AnalysisReport } from "@/components/analysis-report";
 import { ActivityLogs } from "@/components/activity-logs";
 import { WebhookManager } from "@/components/webhook-manager";
 import { MonitoringDashboard } from "@/components/monitoring-dashboard";
-import { PulseTrigger } from "@/components/pulse-trigger";
 import { PricingModal } from "@/components/pricing-modal";
 import {
   Activity, Key, Trash2, Plus, Terminal, ShieldCheck, Copy,
