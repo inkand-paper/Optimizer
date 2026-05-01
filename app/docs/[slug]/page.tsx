@@ -12,8 +12,10 @@ import { MermaidInitializer } from "@/components/mermaid-initializer";
 function renderMarkdownAsCards(md: string) {
   const normalizedMd = md.replace(/\r\n/g, '\n');
   
-  const sections = normalizedMd.split(/\n(?=## )/);
-  const intro = sections.shift() || "";
+  // Split on ## headers but keep the ## in the section
+  const parts = normalizedMd.split(/(?=^## )/m);
+  const intro = parts[0] || "";
+  const sections = parts.slice(1);
 
   const renderedIntro = intro
     .replace(/^# (.*$)/gm, '<h1 class="text-4xl md:text-5xl font-semibold mb-6 tracking-tight text-foreground">$1</h1>')

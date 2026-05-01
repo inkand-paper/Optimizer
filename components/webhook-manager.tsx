@@ -163,8 +163,7 @@ export function WebhookManager({ onLimitReached }: Props) {
 
               {/* Secret — mono as per spec */}
               <div
-                className="flex items-center gap-3 px-3 py-2.5 rounded-ui"
-                style={{ background: "var(--np-obsidian)", border: "0.5px solid rgba(255,255,255,0.07)" }}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-ui bg-muted dark:bg-[#0D0F11] border border-border"
               >
                 <ShieldCheck className="h-3.5 w-3.5 text-np-teal shrink-0" />
                 <span className="mono-gold flex-1 truncate">
