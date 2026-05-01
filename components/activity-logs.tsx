@@ -123,6 +123,11 @@ export function ActivityLogs() {
                       >
                         {log.status}
                       </span>
+                      {log.details?.origin && (
+                        <span className="font-mono text-[11px] text-np-gold bg-np-gold/10 px-1.5 py-0.5 rounded">
+                          {log.details.origin}
+                        </span>
+                      )}
                       {log.details?.durationMs && (
                         <span className="font-mono text-[11px] text-np-slate">
                           {log.details.durationMs}ms
