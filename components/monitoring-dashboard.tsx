@@ -10,7 +10,10 @@ import {
   Trash2, 
   Plus, 
   Loader2,
-  AlertCircle
+  AlertCircle,
+  Edit2,
+  Check,
+  X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +36,10 @@ export function MonitoringDashboard() {
   const [url, setUrl] = React.useState("");
   const [addingState, setAddingState] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
+
+  const [editingId, setEditingId] = React.useState<string | null>(null);
+  const [editName, setEditName] = React.useState("");
+  const [savingEdit, setSavingEdit] = React.useState(false);
 
   const fetchMonitors = async () => {
     try {
@@ -87,6 +94,32 @@ export function MonitoringDashboard() {
       if (res.ok) setMonitors(monitors.filter(m => m.id !== id));
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const startEditing = (m: MonitorItem) => {
+    setEditingId(m.id);
+    setEditName(m.name);
+  };
+
+  const saveEdit = async (id: string) => {
+    if (!editName.trim()) return;
+    setSavingEdit(true);
+    try {
+      const res = await fetch(`/api/monitors/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: 'include',
+        body: JSON.stringify({ name: editName }),
+      });
+      if (res.ok) {
+        setMonitors(monitors.map(m => m.id === id ? { ...m, name: editName } : m));
+        setEditingId(null);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSavingEdit(false);
     }
   };
 
@@ -179,8 +212,33 @@ export function MonitoringDashboard() {
                     </div>
                     <div>
                       <div className="flex items-center gap-3 mb-1">
-                        <h3 className="text-[18px] font-bold tracking-tight uppercase">{m.name}</h3>
-                        <Globe className="h-3.5 w-3.5 text-muted-foreground" />
+                        {editingId === m.id ? (
+                          <div className="flex items-center gap-2">
+                            <Input 
+                              value={editName}
+                              onChange={(e) => setEditName(e.target.value)}
+                              className="h-8 text-[14px] font-bold uppercase w-[200px]"
+                              disabled={savingEdit}
+                              autoFocus
+                            />
+                            <button onClick={() => saveEdit(m.id)} disabled={savingEdit} className="p-1 text-np-teal hover:bg-np-teal/10 rounded">
+                              {savingEdit ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-4 w-4" />}
+                            </button>
+                            <button onClick={() => setEditingId(null)} disabled={savingEdit} className="p-1 text-muted-foreground hover:bg-muted rounded">
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          <>
+                            <h3 className="text-[18px] font-bold tracking-tight uppercase flex items-center gap-2 group/name">
+                              {m.name}
+                              <button onClick={() => startEditing(m)} className="opacity-0 group-hover/name:opacity-100 text-muted-foreground hover:text-np-gold transition-opacity">
+                                <Edit2 className="h-3 w-3" />
+                              </button>
+                            </h3>
+                            <Globe className="h-3.5 w-3.5 text-muted-foreground" />
+                          </>
+                        )}
                       </div>
                       <p className="text-[11px] text-muted-foreground font-mono flex items-center gap-2">
                         {m.url}

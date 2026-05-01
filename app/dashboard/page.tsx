@@ -10,6 +10,7 @@ import { ActivityLogs } from "@/components/activity-logs";
 import { WebhookManager } from "@/components/webhook-manager";
 import { MonitoringDashboard } from "@/components/monitoring-dashboard";
 import { PricingModal } from "@/components/pricing-modal";
+import { ThemeToggle } from "@/components/theme-toggle";
 import {
   Activity, Key, Trash2, Plus, Terminal, ShieldCheck, Copy,
   CheckCircle2, Loader2, RefreshCw, LogOut, Search, FileText,
@@ -233,6 +234,12 @@ export default function DashboardPage() {
             <p className="label-category text-[10px]">NexPulse Dashboard</p>
           </div>
           <div className="flex items-center gap-3">
+            {user?.role === 'ADMIN' && (
+              <Link href="/dashboard/admin" className="text-[12px] font-semibold text-np-gold hover:text-np-teal transition-colors px-2">
+                Admin Panel
+              </Link>
+            )}
+            <ThemeToggle />
             <span className="mono-gold text-[11px] hidden sm:block">{user?.email}</span>
             <button onClick={handleLogout} className="md:hidden p-2 rounded-ui text-np-slate hover:text-np-crimson transition-colors">
               <LogOut className="h-4 w-4" />
