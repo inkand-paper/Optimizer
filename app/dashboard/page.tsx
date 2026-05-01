@@ -267,6 +267,9 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
+            <div className="md:hidden flex items-center">
+              <ThemeToggle />
+            </div>
             <Link href="/docs" className="md:hidden p-2 rounded-ui text-np-slate hover:text-foreground transition-colors" title="Documentation">
               <Book className="h-4 w-4" />
             </Link>
