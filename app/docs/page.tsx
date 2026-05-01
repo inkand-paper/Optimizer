@@ -109,7 +109,7 @@ export default function DocsPage() {
               Our engineering team is active on Discord and email. Response within 24 hours.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <a href="mailto:nexpulse.team@gmail.com" className="np-btn-primary h-10 px-6 text-[13px] gap-2">
+              <a href="https://mail.google.com/mail/?view=cm&fs=1&to=nexpulse.team@gmail.com" target="_blank" rel="noopener noreferrer" className="np-btn-primary h-10 px-6 text-[13px] gap-2">
                 <Mail className="h-4 w-4" /> Email support
               </a>
               <Link href="https://github.com/inkand-paper/Optimizer" className="np-btn-outline h-10 px-6 text-[13px] inline-flex items-center gap-2">

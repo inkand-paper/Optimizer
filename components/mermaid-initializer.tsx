@@ -14,12 +14,17 @@ export function MermaidInitializer() {
     if (typeof window !== "undefined" && window.mermaid) {
       // @ts-ignore
       window.mermaid.initialize({
-        startOnLoad: true,
-        theme: "neutral",
+        startOnLoad: false,
+        theme: "dark",
         securityLevel: "loose",
       });
       // @ts-ignore
-      window.mermaid.contentLoaded();
+      try {
+        // @ts-ignore
+        window.mermaid.init(undefined, '.mermaid');
+      } catch (e) {
+        console.error('Mermaid init error:', e);
+      }
     }
     
     // Trigger Prism highlighting

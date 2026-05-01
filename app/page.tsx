@@ -232,7 +232,7 @@ export default function Home() {
           <div className="flex items-center gap-4 flex-wrap justify-center">
             <Link href="/docs" className="text-[13px] text-muted-foreground hover:text-foreground transition-colors">Docs</Link>
             <Link href="/login" className="text-[13px] text-muted-foreground hover:text-foreground transition-colors">Login</Link>
-            <a href="mailto:nexpulse.team@gmail.com" className="text-muted-foreground hover:text-np-gold transition-colors">
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=nexpulse.team@gmail.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-np-gold transition-colors">
               <Mail className="h-4 w-4" />
             </a>
             <Link href="https://github.com/inkand-paper/Optimizer" target="_blank" aria-label="GitHub" className="text-muted-foreground hover:text-np-gold transition-colors">

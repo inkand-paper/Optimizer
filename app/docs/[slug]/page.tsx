@@ -45,7 +45,7 @@ function renderMarkdownAsCards(md: string) {
 
     // Mermaid diagrams
     content = content.replace(/```mermaid[ \t]*\n([\s\S]*?)```/g, (_m, code) =>
-      `<div class="mermaid np-codeblock" style="border-color:rgba(180,140,60,0.25);padding:2rem;margin:1.5rem 0;display:flex;justify-content:center">${code}</div>`
+      `<pre class="mermaid np-codeblock" style="border-color:rgba(180,140,60,0.25);padding:2rem;margin:1.5rem 0;display:flex;justify-content:center;background:transparent;overflow:hidden">${code}</pre>`
     );
 
     // Fenced code blocks with language
@@ -182,7 +182,7 @@ export default async function DocDetail({ params }: { params: Promise<{ slug: st
               <h4 className="text-[20px] font-semibold mb-4 tracking-tight">Need further clarification?</h4>
               <p className="text-[14px] text-muted-foreground mb-6">Our engineering team is available for direct support.</p>
               <div className="flex justify-center gap-4 flex-wrap">
-                <a href="mailto:nexpulse.team@gmail.com" className="np-btn-primary h-10 px-6 text-[13px] inline-flex items-center gap-2">
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=nexpulse.team@gmail.com" target="_blank" rel="noopener noreferrer" className="np-btn-primary h-10 px-6 text-[13px] inline-flex items-center gap-2">
                   <Mail className="h-4 w-4" /> Email Support
                 </a>
                 <Link href="https://github.com/inkand-paper/Optimizer" className="np-btn-outline h-10 px-6 text-[13px] inline-flex items-center gap-2">
