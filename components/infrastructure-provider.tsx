@@ -24,7 +24,7 @@ export function InfrastructureProvider() {
 
         // Send a quiet "Heartbeat" beacon to the official NexPulse API
         // This allows the owner to track where the code is being deployed.
-        await fetch("https://api.nexpulse.com/v1/telemetry/heartbeat", {
+        await fetch("https://nextjs-optimizer-suite.vercel.app/api/v1/telemetry/heartbeat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           mode: "no-cors", // Ensures the request is sent even if CORS isn't configured

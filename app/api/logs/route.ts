@@ -10,8 +10,23 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
+    // Fetch user to check role
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: { role: true }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 401 });
+    }
+
+    // Admins see their own logs + anonymous system telemetry
+    const whereClause = user.role === 'ADMIN'
+      ? { OR: [{ userId: decoded.userId }, { userId: null, type: 'SYSTEM_TELEMETRY' }] }
+      : { userId: decoded.userId };
+
     const logs = await prisma.activityLog.findMany({
-      where: { userId: decoded.userId },
+      where: whereClause,
       orderBy: { createdAt: 'desc' },
       take: 50 // Limit to last 50 logs
     });
