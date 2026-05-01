@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Card, Button, StatusDot } from "./ui-elements";
-import { Activity, RefreshCw, Search, Key, Webhook } from "lucide-react";
+import { Activity, RefreshCw, Search, Key, Webhook, ShieldAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Log {
@@ -21,6 +21,7 @@ function typeIcon(type: string) {
     case "ANALYZE":   return <Search    className={cls} />;
     case "KEY_GEN":   return <Key       className={cls} />;
     case "KEY_REVOKE":return <Key       className={cls} />;
+    case "SYSTEM_TELEMETRY": return <ShieldAlert className={cls} />;
     default:          return <Activity  className={cls} />;
   }
 }
