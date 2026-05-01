@@ -14,7 +14,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import {
   Activity, Key, Trash2, Plus, Terminal, ShieldCheck, Copy,
   CheckCircle2, Loader2, RefreshCw, LogOut, Search, FileText,
-  Webhook, ShieldAlert, BarChart4, ChevronRight,
+  Webhook, ShieldAlert, BarChart4, ChevronRight, Book, Home
 } from "lucide-react";
 
 interface ApiKey { id: string; name: string; createdAt: string; lastUsedAt: string | null; }
@@ -212,6 +212,17 @@ export default function DashboardPage() {
               </Link>
             </>
           )}
+
+          <div className="pt-4 pb-1">
+            <p className="label-category px-3">Resources</p>
+          </div>
+          <Link
+            href="/docs"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[6px] text-[13px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+          >
+            <Book className="h-4 w-4 shrink-0" />
+            Documentation
+          </Link>
         </nav>
 
         {/* Health widget */}
@@ -243,16 +254,24 @@ export default function DashboardPage() {
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
         <header
-          className="h-14 flex items-center justify-between px-6 shrink-0"
+          className="h-14 flex items-center justify-between px-4 sm:px-6 shrink-0"
           style={{ borderBottom: "0.5px solid var(--border)" }}
         >
-          <div>
-            <h1 className="text-[15px] font-semibold capitalize">{activeTab === "monitoring" ? "Command Center" : activeTab}</h1>
-            <p className="label-category text-[10px]">NexPulse Dashboard</p>
-          </div>
           <div className="flex items-center gap-3">
+            <Link href="/" className="md:hidden flex items-center justify-center p-1.5 rounded-ui bg-np-gold/10 text-np-gold">
+              <Home className="h-4 w-4" />
+            </Link>
+            <div>
+              <h1 className="text-[15px] font-semibold capitalize">{activeTab === "monitoring" ? "Command Center" : activeTab}</h1>
+              <p className="label-category text-[10px] hidden sm:block">NexPulse Dashboard</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link href="/docs" className="md:hidden p-2 rounded-ui text-np-slate hover:text-foreground transition-colors" title="Documentation">
+              <Book className="h-4 w-4" />
+            </Link>
             <span className="mono-gold text-[11px] hidden sm:block">{user?.email}</span>
-            <button onClick={handleLogout} className="md:hidden p-2 rounded-ui text-np-slate hover:text-np-crimson transition-colors">
+            <button onClick={handleLogout} className="md:hidden p-2 rounded-ui text-np-slate hover:text-np-crimson transition-colors" title="Logout">
               <LogOut className="h-4 w-4" />
             </button>
           </div>
