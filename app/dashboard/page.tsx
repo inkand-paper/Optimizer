@@ -247,7 +247,6 @@ export default function DashboardPage() {
           {/* MONITORING */}
           {activeTab === "monitoring" && (
             <div className="space-y-6 w-full">
-              <PulseTrigger />
               <MonitoringDashboard />
             </div>
           )}
