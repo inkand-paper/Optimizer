@@ -198,6 +198,20 @@ export default function DashboardPage() {
               </button>
             );
           })}
+          {user?.role === 'ADMIN' && (
+            <>
+              <div className="pt-4 pb-1">
+                <p className="label-category px-3">System</p>
+              </div>
+              <Link
+                href="/dashboard/admin"
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[6px] text-[13px] font-medium text-np-gold hover:bg-np-gold/10 transition-all"
+              >
+                <ShieldCheck className="h-4 w-4 shrink-0" />
+                Admin Panel
+              </Link>
+            </>
+          )}
         </nav>
 
         {/* Health widget */}
@@ -215,9 +229,12 @@ export default function DashboardPage() {
               <p className="text-[12px] font-medium truncate">{user?.name}</p>
               <p className="label-category text-[10px] truncate">{user?.plan || "FREE"}</p>
             </div>
-            <button onClick={handleLogout} className="p-1.5 rounded-ui text-np-slate hover:text-np-crimson transition-colors">
-              <LogOut className="h-3.5 w-3.5" />
-            </button>
+            <div className="flex items-center gap-0.5">
+              <ThemeToggle />
+              <button onClick={handleLogout} className="p-1.5 rounded-ui text-np-slate hover:text-np-crimson transition-colors" title="Logout">
+                <LogOut className="h-3.5 w-3.5" />
+              </button>
+            </div>
           </div>
         </div>
       </aside>
@@ -234,12 +251,6 @@ export default function DashboardPage() {
             <p className="label-category text-[10px]">NexPulse Dashboard</p>
           </div>
           <div className="flex items-center gap-3">
-            {user?.role === 'ADMIN' && (
-              <Link href="/dashboard/admin" className="text-[12px] font-semibold text-np-gold hover:text-np-teal transition-colors px-2">
-                Admin Panel
-              </Link>
-            )}
-            <ThemeToggle />
             <span className="mono-gold text-[11px] hidden sm:block">{user?.email}</span>
             <button onClick={handleLogout} className="md:hidden p-2 rounded-ui text-np-slate hover:text-np-crimson transition-colors">
               <LogOut className="h-4 w-4" />
