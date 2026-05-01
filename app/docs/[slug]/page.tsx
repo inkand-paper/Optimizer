@@ -44,24 +44,24 @@ function renderMarkdownAsCards(md: string) {
     let content = lines.join("\n");
 
     // Mermaid diagrams
-    content = content.replace(/```mermaid\n([\s\S]*?)```/g, (_m, code) =>
-      `<div class="mermaid" style="background:#0D0F11;border:1px solid rgba(180,140,60,0.25);border-radius:8px;padding:2rem;margin:1.5rem 0;display:flex;justify-content:center">${code}</div>`
+    content = content.replace(/```mermaid[ \t]*\n([\s\S]*?)```/g, (_m, code) =>
+      `<div class="mermaid np-codeblock" style="border-color:rgba(180,140,60,0.25);padding:2rem;margin:1.5rem 0;display:flex;justify-content:center">${code}</div>`
     );
 
     // Fenced code blocks with language
-    content = content.replace(/```(\w+)\n([\s\S]*?)```/g, (_m, lang, code) =>
-      `<div style="margin:1.5rem 0">
-        <div style="background:#0D0F11;border:1px solid rgba(255,255,255,0.07);border-radius:8px 8px 0 0;padding:0.5rem 1rem;display:flex;align-items:center;gap:0.5rem">
+    content = content.replace(/```(\w+)[ \t]*\n([\s\S]*?)```/g, (_m, lang, code) =>
+      `<div class="np-codeblock" style="margin:1.5rem 0;padding:0;overflow:hidden">
+        <div style="border-bottom:1px solid var(--border);padding:0.75rem 1rem;display:flex;align-items:center;gap:0.5rem">
           <span style="height:8px;width:8px;border-radius:50%;background:#B48C3C;display:inline-block"></span>
           <span style="font-family:monospace;color:#B48C3C;font-size:0.75rem;font-weight:600">${lang.toUpperCase()}</span>
         </div>
-        <pre style="background:#0D0F11;color:#E2E0D8;font-family:monospace;font-size:0.85rem;line-height:1.6;padding:1.25rem;margin:0;border-radius:0 0 8px 8px;overflow-x:auto;border:1px solid rgba(255,255,255,0.07);border-top:none"><code>${escapeHtml(code.trim())}</code></pre>
+        <pre style="padding:1.25rem;margin:0;overflow-x:auto;background:transparent;color:inherit;font-family:inherit"><code>${escapeHtml(code.trim())}</code></pre>
       </div>`
     );
 
     // Generic code blocks
-    content = content.replace(/```([\s\S]*?)```/g, (_m, code) =>
-      `<pre style="background:#0D0F11;color:#E2E0D8;font-family:monospace;font-size:0.85rem;line-height:1.6;padding:1.25rem;margin:1.5rem 0;border-radius:8px;overflow-x:auto;border:1px solid rgba(255,255,255,0.07)"><code>${escapeHtml(code.trim())}</code></pre>`
+    content = content.replace(/```[ \t]*\n([\s\S]*?)```/g, (_m, code) =>
+      `<pre class="np-codeblock" style="margin:1.5rem 0"><code>${escapeHtml(code.trim())}</code></pre>`
     );
 
     // Tables
