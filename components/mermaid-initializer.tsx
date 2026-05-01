@@ -54,7 +54,7 @@ export function MermaidInitializer() {
       
       {/* Mermaid Script */}
       <Script
-        src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"
+        src="https://cdn.jsdelivr.net/npm/mermaid@9/dist/mermaid.min.js"
         strategy="afterInteractive"
         onReady={initMermaid}
       />
