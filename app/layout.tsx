@@ -43,6 +43,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { PulseAI } from "@/components/pulse-ai";
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -61,6 +63,7 @@ export default function RootLayout({
         >
           <InfrastructureProvider />
           {children}
+          <PulseAI />
         </ThemeProvider>
       </body>
     </html>
