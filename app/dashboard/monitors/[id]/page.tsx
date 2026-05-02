@@ -97,7 +97,11 @@ export default function MonitorDetailsPage() {
             </div>
             <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
               <div 
-                className="h-full bg-np-gold transition-all duration-500" 
+                className={cn(
+                  "h-full transition-all duration-500",
+                  (latestCheck?.latency || 0) < 300 ? "bg-np-teal" : 
+                  (latestCheck?.latency || 0) < 800 ? "bg-np-gold" : "bg-np-crimson"
+                )}
                 style={{ width: `${Math.min((latestCheck?.latency || 0) / 5, 100)}%` }} 
               />
             </div>
@@ -106,12 +110,15 @@ export default function MonitorDetailsPage() {
           <Card className="p-5 space-y-3">
             <p className="label-category text-[10px]">Authorization Level</p>
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-ui bg-np-teal/10 flex items-center justify-center text-np-teal border border-np-teal/20">
+              <div className={cn(
+                "h-10 w-10 rounded-ui flex items-center justify-center border",
+                monitor?.url?.startsWith('https') ? "bg-np-teal/10 text-np-teal border-np-teal/20" : "bg-np-gold/10 text-np-gold border-np-gold/20"
+              )}>
                 <Shield className="h-5 w-5" />
               </div>
-              <div>
-                <p className="text-[14px] font-bold uppercase">Production</p>
-                <p className="text-[10px] text-muted-foreground">Secure SSL Encrypted</p>
+              <div className="min-w-0">
+                <p className="text-[14px] font-bold uppercase truncate">{monitor?.url?.startsWith('https') ? 'Production' : 'Development'}</p>
+                <p className="text-[10px] text-muted-foreground truncate">{monitor?.url?.startsWith('https') ? 'Secure SSL Encrypted' : 'Insecure / No SSL'}</p>
               </div>
             </div>
           </Card>
@@ -123,21 +130,25 @@ export default function MonitorDetailsPage() {
                 <Clock className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-[14px] font-bold uppercase">99.98%</p>
-                <p className="text-[10px] text-muted-foreground">Last 30-day window</p>
+                <p className="text-[14px] font-bold uppercase">
+                  {monitor?.checks?.length > 0 
+                    ? ((monitor.checks.filter((c: any) => c.status === 'UP').length / monitor.checks.length) * 100).toFixed(2)
+                    : "100.00"}%
+                </p>
+                <p className="text-[10px] text-muted-foreground">Recent window</p>
               </div>
             </div>
           </Card>
 
           <Card className="p-5 space-y-3">
-            <p className="label-category text-[10px]">Deployment Zone</p>
+            <p className="label-category text-[10px]">Monitoring Node</p>
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-ui bg-muted flex items-center justify-center text-np-slate border border-border">
                 <Server className="h-5 w-5" />
               </div>
-              <div>
-                <p className="text-[14px] font-bold uppercase">US-EAST-1</p>
-                <p className="text-[10px] text-muted-foreground">Verified Vercel Edge</p>
+              <div className="min-w-0">
+                <p className="text-[14px] font-bold uppercase">Vercel Edge</p>
+                <p className="text-[10px] text-muted-foreground truncate">Primary Active Link</p>
               </div>
             </div>
           </Card>
