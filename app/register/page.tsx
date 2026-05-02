@@ -97,7 +97,7 @@ export default function RegisterPage() {
                   <span className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-[10px] uppercase tracking-widest font-bold">
-                  <span className="bg-np-ink px-2 text-muted-foreground">Social Connect</span>
+                  <span className="bg-card px-2 text-muted-foreground">Social Connect</span>
                 </div>
               </div>
 
