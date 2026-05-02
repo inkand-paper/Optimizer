@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { ThemeToggle } from "./theme-toggle";
-import { Activity, Menu, X, BookOpen, LayoutDashboard, LogIn, LogOut, UserPlus, User } from "lucide-react";
+import { Activity, Menu, X, BookOpen, LayoutDashboard, LogIn, LogOut, UserPlus, User, HelpCircle } from "lucide-react";
 
 export function Navbar() {
   const router = useRouter();
@@ -50,6 +50,7 @@ export function Navbar() {
         {/* Desktop links */}
         <nav className="hidden md:flex items-center gap-6">
           <Link href="/docs" className={navLink}>Docs</Link>
+          <Link href="/faq" className={navLink}>FAQ</Link>
           {isLoggedIn ? (
             <>
               {isAdmin && (
@@ -96,6 +97,9 @@ export function Navbar() {
         >
           <Link href="/docs" onClick={() => setOpen(false)} className="flex items-center gap-3 text-[14px] font-medium">
             <BookOpen className="h-4 w-4 text-np-gold" /> Docs
+          </Link>
+          <Link href="/faq" onClick={() => setOpen(false)} className="flex items-center gap-3 text-[14px] font-medium">
+            <HelpCircle className="h-4 w-4 text-np-gold" /> FAQ
           </Link>
           {isLoggedIn ? (
             <>
