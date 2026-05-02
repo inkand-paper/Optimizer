@@ -33,6 +33,8 @@ model User {
   image        String?
   emailVerified DateTime?
   verificationToken String? @unique
+  resetToken        String? @unique
+  resetTokenExpiry  DateTime?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   
