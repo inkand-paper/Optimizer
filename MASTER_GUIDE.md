@@ -16,41 +16,48 @@ NexPulse operates as a decoupled three-layer system:
 
 ```mermaid
 flowchart TD
-    subgraph EXTERNAL["[🌐] External Sources"]
-        A1["[📱] External Machine or App"]
-        A2["[👤] NexPulse Dashboard"]
+    subgraph EXTERNAL["External Sources"]
+        A2["NexPulse Dashboard"]
+        A1["External Machine or App"]
     end
 
-    subgraph AUTH["[🔐] Authentication Layer"]
-        B["[⚡] NexPulse Engine"]
-        C[("[🗄️] Hashed Key Store")]
+    subgraph DASH["Dashboard Services"]
+        F3["Deep Audit"]
+        F2["Uptime Monitor"]
+        F1["Key Management"]
     end
 
-    subgraph INTEGRATION["[🔄] Integration Layer"]
-        D["[🎯] Integrated Target System"]
-        E["[✨] End User"]
+    subgraph AUTH["Authentication Layer"]
+        B["NexPulse Engine"]
+        C[("Hashed Key Store")]
     end
 
-    subgraph DASH["[📊] Dashboard Services"]
-        F1["[🔑] Key Management"]
-        F2["[📈] Uptime Monitor"]
-        F3["[🔍] Deep Audit"]
+    subgraph INTEGRATION["Integration Layer"]
+        D["Integrated Target System"]
+        E["End User"]
     end
 
-    A1 -->|1. API Key + Pulse| B
-    B -->|2. Validate| C
-    C -->|3. Hash Match| B
-    B -->|4. Authorize| D
-    D -->|5. Clear Cache| D
-    D -.->|6. Fresh Data| E
-    
-    A2 --> F1
-    A2 --> F2
+    %% Dashboard Connections
     A2 --> F3
-    
-    F1 -.->|Manage Keys| C
-    F2 -.->|Monitor| G[("[🌍] Public URL")]
-    F3 -.->|Deep Scan| D
+    A2 --> F2
+    A2 --> F1
+
+    %% External Flow
+    A1 -->|API Key + Pulse| B
+
+    %% Service Operations
+    F3 -.->|Scan| D
+    F2 -.->|Monitor| G[("Public URL")]
+    F1 -.->|Manage| C
+
+    %% Core Auth Flow
+    B -->|Validate| C
+    C -->|Hash Match| B
+    B -->|Authorize| D
+
+    %% Integration Flow
+    D -->|Clear Cache| D
+    D -.->|Fresh Data| E
 ```
 
 ## Core Features

@@ -31,7 +31,7 @@ export function MermaidInitializer() {
       });
 
       const elements = document.querySelectorAll(".mermaid");
-      elements.forEach((el, index) => {
+      elements.forEach(async (el, index) => {
         if (el.getAttribute("data-processed")) return;
         el.setAttribute("data-processed", "true");
 
@@ -39,9 +39,8 @@ export function MermaidInitializer() {
           const code = el.textContent || "";
           const id = `mermaid-svg-${Date.now()}-${index}`;
           // @ts-ignore
-          window.mermaid.render(id, code, (svgCode) => {
-            el.innerHTML = svgCode;
-          });
+          const { svg } = await window.mermaid.render(id, code);
+          el.innerHTML = svg;
         } catch (e) {
           console.error("Mermaid render error:", e);
         }
