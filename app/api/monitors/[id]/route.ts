@@ -29,6 +29,11 @@ export async function GET(
         checks: {
           orderBy: { createdAt: 'desc' },
           take: 50 // Last 50 checks for history
+        },
+        user: {
+          include: {
+            webhooks: true
+          }
         }
       }
     });

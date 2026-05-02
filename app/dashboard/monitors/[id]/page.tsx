@@ -269,8 +269,21 @@ export default function MonitorDetailsPage() {
                 <div className="pt-4 border-t border-border">
                   <p className="label-category text-[9px] mb-2">Active Notifications</p>
                   <div className="flex flex-wrap gap-2">
-                    <Badge className="bg-np-teal/10 text-np-teal border-np-teal/20">Discord Webhook</Badge>
+                    {/* Always show Email Alert as it's built-in */}
                     <Badge className="bg-np-gold/10 text-np-gold border-np-gold/20">Email Alert</Badge>
+                    
+                    {/* Dynamic Webhooks */}
+                    {monitor?.user?.webhooks?.map((wh: any) => {
+                      const isDiscord = wh.url.includes('discord.com');
+                      const isSlack = wh.url.includes('slack.com');
+                      const label = isDiscord ? 'Discord' : isSlack ? 'Slack' : 'Webhook';
+                      
+                      return (
+                        <Badge key={wh.id} className="bg-np-teal/10 text-np-teal border-np-teal/20">
+                          {label}
+                        </Badge>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
