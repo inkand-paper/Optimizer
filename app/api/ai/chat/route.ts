@@ -27,21 +27,31 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ content: "API key missing. Please configure GEMINI_API_KEY." });
     }
 
-    // Gemini requires the first message to be from the 'user'
+    // Gemini requires strict alternating roles starting with 'user'
+    let lastRole: string | null = null;
     const chatHistory = history
       .map((m: any) => ({
         role: m.role === "user" ? "user" : "model",
         parts: [{ text: m.content }],
       }))
       .filter((m: any, i: number, arr: any[]) => {
-        // Find the first 'user' message and keep everything from there onwards
+        // Find the first 'user' message
         const firstUserIndex = arr.findIndex(msg => msg.role === "user");
-        return i >= firstUserIndex;
+        if (i < firstUserIndex) return false;
+
+        // Skip if same role as last kept message
+        if (m.role === lastRole) return false;
+        lastRole = m.role;
+        return true;
       });
 
-    const chat = model.startChat({
+    const modelWithSystem = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      systemInstruction: SYSTEM_PROMPT 
+    });
+
+    const chat = modelWithSystem.startChat({
       history: chatHistory,
-      systemInstruction: SYSTEM_PROMPT,
     });
 
     const result = await chat.sendMessage(message);
