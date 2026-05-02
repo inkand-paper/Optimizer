@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Card, Button, StatusDot } from "./ui-elements";
-import { Activity, RefreshCw, Search, Key, Webhook, ShieldAlert } from "lucide-react";
+import { Activity, RefreshCw, Search, Key, Webhook, ShieldAlert, ChevronDown, ChevronUp, Database } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Log {
@@ -35,6 +35,7 @@ function dotStatus(status: string): "healthy" | "error" | "warning" {
 export function ActivityLogs() {
   const [logs, setLogs]       = React.useState<Log[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [expandedId, setExpandedId] = React.useState<string | null>(null);
 
   const fetchLogs = async () => {
     try {
@@ -99,7 +100,11 @@ export function ActivityLogs() {
                 style={i < logs.length - 1 ? { borderBottom: "0.5px solid var(--border)" } : {}}
               >
                 {/* Dot */}
-                <div className="relative z-10 mt-0.5 flex items-center justify-center h-6 w-6 rounded-full bg-card shrink-0" style={{ border: "0.5px solid var(--border)" }}>
+                <div 
+                  className="relative z-10 mt-0.5 flex items-center justify-center h-6 w-6 rounded-full bg-card shrink-0 cursor-pointer hover:border-np-gold transition-colors" 
+                  style={{ border: "0.5px solid var(--border)" }}
+                  onClick={() => setExpandedId(expandedId === log.id ? null : log.id)}
+                >
                   <StatusDot status={dotStatus(log.status)} />
                 </div>
 
@@ -141,15 +146,38 @@ export function ActivityLogs() {
                     </div>
                   </div>
 
-                  {/* Timestamp — gold mono as per spec */}
-                  <span className="mono-gold shrink-0 tabular-nums text-[11px] sm:text-[13px]">
-                    {new Date(log.createdAt).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      second: "2-digit",
-                    })}
-                  </span>
+                   {/* Timestamp & Expand — gold mono as per spec */}
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className="mono-gold tabular-nums text-[11px] sm:text-[13px]">
+                      {new Date(log.createdAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                      })}
+                    </span>
+                    <button 
+                      onClick={() => setExpandedId(expandedId === log.id ? null : log.id)}
+                      className="p-1 hover:bg-muted rounded text-muted-foreground transition-colors"
+                    >
+                      {expandedId === log.id ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                    </button>
+                  </div>
                 </div>
+
+                {/* Expanded Details */}
+                {expandedId === log.id && (
+                  <div className="mt-4 w-full animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="p-4 rounded-ui bg-muted/50 border border-border overflow-x-auto">
+                      <div className="flex items-center gap-2 mb-3 text-np-gold">
+                        <Database className="h-3.5 w-3.5" />
+                        <span className="text-[10px] font-bold uppercase tracking-widest">Extended Event Metadata</span>
+                      </div>
+                      <pre className="text-[11px] font-mono leading-relaxed opacity-80">
+                        {JSON.stringify(log.details, null, 2)}
+                      </pre>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>

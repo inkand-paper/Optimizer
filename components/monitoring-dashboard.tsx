@@ -15,6 +15,7 @@ import {
   Check,
   X
 } from "lucide-react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 interface MonitorItem {
@@ -203,17 +204,20 @@ export function MonitoringDashboard() {
             return (
               <Card key={m.id} className="p-0 overflow-hidden bg-card border-border shadow-sm group">
                 <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between border-b border-border bg-muted dark:bg-np-obsidian/20 gap-4">
-                  <div className="flex items-center gap-4">
+                  <Link 
+                    href={`/dashboard/monitors/${m.id}`}
+                    className="flex flex-1 items-center gap-4 min-w-0 hover:opacity-80 transition-opacity"
+                  >
                     <div className={cn(
                       "h-10 w-10 sm:h-12 sm:w-12 rounded-ui border flex items-center justify-center shrink-0",
                       m.status === 'UP' ? "bg-np-teal/10 border-np-teal/20 text-np-teal" : "bg-np-crimson/10 border-np-crimson/20 text-np-crimson"
                     )}>
                       {m.status === 'UP' ? <CheckCircle2 className="h-5 w-5" /> : <XCircle className="h-5 w-5" />}
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <div className="flex items-center gap-3 mb-1">
                         {editingId === m.id ? (
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2" onClick={(e) => e.preventDefault()}>
                             <Input 
                               value={editName}
                               onChange={(e) => setEditName(e.target.value)}
@@ -230,21 +234,21 @@ export function MonitoringDashboard() {
                           </div>
                         ) : (
                           <>
-                            <h3 className="text-[18px] font-bold tracking-tight uppercase flex items-center gap-2 group/name">
+                            <h3 className="text-[16px] sm:text-[18px] font-bold tracking-tight uppercase flex items-center gap-2 group/name truncate">
                               {m.name}
-                              <button onClick={() => startEditing(m)} className="opacity-0 group-hover/name:opacity-100 text-muted-foreground hover:text-np-gold transition-opacity">
+                              <button onClick={(e) => { e.preventDefault(); startEditing(m); }} className="opacity-0 group-hover/name:opacity-100 text-muted-foreground hover:text-np-gold transition-opacity">
                                 <Edit2 className="h-3 w-3" />
                               </button>
                             </h3>
-                            <Globe className="h-3.5 w-3.5 text-muted-foreground" />
+                            <Globe className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                           </>
                         )}
                       </div>
-                      <p className="text-[11px] text-muted-foreground font-mono flex items-center gap-2">
+                      <p className="text-[11px] text-muted-foreground font-mono flex items-center gap-2 truncate">
                         {m.url}
                       </p>
                     </div>
-                  </div>
+                  </Link>
                   <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2">
                     <div className="flex items-center gap-3">
                       <Badge variant={m.status === 'UP' ? 'success' : 'danger'} className="text-[10px] px-2.5 py-1">

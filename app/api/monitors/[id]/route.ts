@@ -2,6 +2,55 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getTokenFromRequest } from '@/lib/auth';
 
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const decoded = getTokenFromRequest(request);
+    if (!decoded) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { id } = await params;
+
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: { role: true }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 401 });
+    }
+
+    const monitor = await prisma.monitor.findUnique({
+      where: { id },
+      include: {
+        checks: {
+          orderBy: { createdAt: 'desc' },
+          take: 50 // Last 50 checks for history
+        }
+      }
+    });
+
+    if (!monitor) {
+      return NextResponse.json({ error: 'Monitor not found' }, { status: 404 });
+    }
+
+    const isOwner = monitor.userId === decoded.userId;
+    const isAdmin = user.role === 'ADMIN';
+
+    if (!isOwner && !isAdmin) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
+    return NextResponse.json({ success: true, monitor });
+  } catch (error) {
+    console.error('Fetch monitor details error:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
+
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

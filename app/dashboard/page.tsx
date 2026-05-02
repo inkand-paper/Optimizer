@@ -14,7 +14,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import {
   Activity, Key, Trash2, Plus, Terminal, ShieldCheck, Copy,
   CheckCircle2, Loader2, RefreshCw, LogOut, Search, FileText,
-  Webhook, ShieldAlert, BarChart4, ChevronRight, Book, Home
+  Webhook, ShieldAlert, BarChart4, ChevronRight, Book, Home, User
 } from "lucide-react";
 
 interface ApiKey { id: string; name: string; createdAt: string; lastUsedAt: string | null; }
@@ -222,6 +222,13 @@ export default function DashboardPage() {
           >
             <Book className="h-4 w-4 shrink-0" />
             Documentation
+          </Link>
+          <Link
+            href="/dashboard/profile"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[6px] text-[13px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+          >
+            <User className="h-4 w-4 shrink-0" />
+            Profile Settings
           </Link>
         </nav>
 
