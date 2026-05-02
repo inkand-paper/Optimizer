@@ -4,7 +4,7 @@ import { getTokenFromRequest } from "@/lib/auth";
 
 export async function PATCH(req: NextRequest) {
   try {
-    const decoded = getTokenFromRequest(req);
+    const decoded = await getTokenFromRequest(req);
     if (!decoded) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

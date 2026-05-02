@@ -9,7 +9,7 @@ export async function DELETE(
 ) {
   let currentUserId: string | undefined = undefined;
   try {
-    const decoded = getTokenFromRequest(req);
+    const decoded = await getTokenFromRequest(req);
     if (!decoded) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

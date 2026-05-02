@@ -7,7 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const decoded = getTokenFromRequest(request);
+    const decoded = await getTokenFromRequest(request);
     if (!decoded) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -56,7 +56,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const decoded = getTokenFromRequest(request);
+    const decoded = await getTokenFromRequest(request);
     if (!decoded) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -110,7 +110,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const decoded = getTokenFromRequest(request);
+    const decoded = await getTokenFromRequest(request);
     if (!decoded) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

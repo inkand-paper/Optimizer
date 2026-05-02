@@ -8,7 +8,7 @@ import { getTokenFromRequest } from '@/lib/auth';
  */
 
 async function ensureAdmin(req: NextRequest) {
-  const decoded = getTokenFromRequest(req);
+  const decoded = await getTokenFromRequest(req);
   if (!decoded) {
     console.warn("[ADMIN SECURITY] No token found in request");
     return null;

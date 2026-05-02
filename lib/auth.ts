@@ -32,21 +32,34 @@ export function verifyJwt(token: string): JwtPayload | null {
   }
 }
 
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "./auth-options";
+
 /**
- * Extracts and verifies a JWT from either:
- * 1. A secure HttpOnly cookie named 'token' (preferred, enterprise-grade)
- * 2. An Authorization: Bearer <token> header (legacy, for API clients)
- * 
- * This dual-support approach ensures zero downtime during migration.
+ * Extracts and verifies a JWT or NextAuth session from:
+ * 1. A secure HttpOnly cookie named 'token'
+ * 2. A NextAuth session (for social logins)
+ * 3. An Authorization: Bearer <token> header
  */
-export function getTokenFromRequest(req: NextRequest): JwtPayload | null {
-  // Priority 1: HttpOnly Cookie (secure browser sessions)
+export async function getTokenFromRequest(req: NextRequest): Promise<JwtPayload | null> {
+  // Priority 1: HttpOnly Cookie (custom JWT)
   const cookieToken = req.cookies.get('token')?.value;
   if (cookieToken) {
-    return verifyJwt(cookieToken);
+    const verified = verifyJwt(cookieToken);
+    if (verified) return verified;
   }
 
-  // Priority 2: Bearer Token (API clients, mobile apps)
+  // Priority 2: NextAuth Session (Social Logins)
+  const session = await getServerSession(authOptions);
+  if (session?.user) {
+    return {
+      userId: (session.user as any).id,
+      email: session.user.email!,
+      role: (session.user as any).role || 'DEVELOPER'
+    };
+  }
+
+  // Priority 3: Bearer Token (API clients)
   const authHeader = req.headers.get('authorization');
   if (authHeader && authHeader.startsWith('Bearer ')) {
     return verifyJwt(authHeader.split(' ')[1]);
