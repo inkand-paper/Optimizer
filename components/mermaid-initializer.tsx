@@ -18,13 +18,23 @@ export function MermaidInitializer() {
         theme: "dark",
         securityLevel: "loose",
       });
-      // @ts-ignore
-      try {
-        // @ts-ignore
-        window.mermaid.init(undefined, '.mermaid');
-      } catch (e) {
-        console.error('Mermaid init error:', e);
-      }
+
+      const elements = document.querySelectorAll('.mermaid');
+      elements.forEach((el, index) => {
+        if (el.getAttribute('data-processed')) return;
+        el.setAttribute('data-processed', 'true');
+        
+        try {
+          const code = el.textContent || '';
+          const id = `mermaid-svg-${Date.now()}-${index}`;
+          // @ts-ignore
+          window.mermaid.render(id, code, (svgCode) => {
+            el.innerHTML = svgCode;
+          });
+        } catch (e) {
+          console.error('Mermaid render error:', e);
+        }
+      });
     }
     
     // Trigger Prism highlighting
