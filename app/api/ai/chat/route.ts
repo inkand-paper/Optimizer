@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
       .filter((m: any, i: number, arr: any[]) => {
         // Find the first 'user' message
         const firstUserIndex = arr.findIndex(msg => msg.role === "user");
-        if (i < firstUserIndex) return false;
+        if (firstUserIndex === -1 || i < firstUserIndex) return false;
 
         // Skip if same role as last kept message
         if (m.role === lastRole) return false;
