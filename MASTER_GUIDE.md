@@ -15,13 +15,13 @@ NexPulse operates as a decoupled three-layer system:
 ### Data Flow Diagram
 ```mermaid
 graph TD
-    A[External Machine / App] -->|API Key + Tag| B{NexPulse Engine}
-    B -->|Validation| C[Hashed Key Check]
-    C -->|Success| D[Target Application Cache]
-    D -->|Fresh Response| E[End User]
-    
-    F[SaaS Dashboard] -->|Management| C
-    F -->|Analysis| G[Public Web Property]
+    A["External Machine or App"] -- "API Key + Pulse" --> B{"NexPulse Engine"}
+    B -- "Validation" --> C["Hashed Key Check"]
+    C -- "Authorized" --> D["Integrated Target System"]
+    D -- "Cache Cleared" --> E["End User Gets Fresh Data"]
+    F["NexPulse Dashboard"] -- "Key Management" --> C
+    F -- "Uptime Monitor" --> G["Any Public URL"]
+    F -- "Deep Audit" --> D
 ```
 
 ## Core Features
