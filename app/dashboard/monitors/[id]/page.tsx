@@ -164,12 +164,14 @@ export default function MonitorDetailsPage() {
                       key={c.id} 
                       className={cn(
                         "flex-1 rounded-t-[2px] transition-all hover:opacity-50 relative group",
-                        c.status === "UP" ? "bg-np-gold" : "bg-np-crimson"
+                        c.status !== "UP" ? "bg-np-crimson" :
+                        c.latency < 300 ? "bg-np-teal" :
+                        c.latency < 800 ? "bg-np-gold" : "bg-np-crimson"
                       )}
                       style={{ height: `${height}%`, minHeight: '4px' }}
                     >
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-20">
-                        <div className="bg-np-ink text-white text-[10px] px-2 py-1 rounded shadow-xl whitespace-nowrap">
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-30">
+                        <div className="bg-np-ink text-white text-[10px] px-2 py-1 rounded shadow-xl whitespace-nowrap border border-white/10">
                           {c.latency}ms · {new Date(c.createdAt).toLocaleTimeString()}
                           {c.message && <p className="text-np-crimson mt-0.5">{c.message}</p>}
                         </div>
