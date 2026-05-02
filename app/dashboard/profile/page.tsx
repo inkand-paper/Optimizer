@@ -2,9 +2,11 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Card, Button, Input, PasswordInput } from "@/components/ui-elements";
-import { User, Shield, Zap, Mail, Calendar, Key, ShieldCheck, Loader2 } from "lucide-react";
+import { Card, Button, Input, PasswordInput, Badge } from "@/components/ui-elements";
+import { User, Shield, Zap, Mail, Calendar, Key, ShieldCheck, Loader2, Camera, CheckCircle2, AlertTriangle } from "lucide-react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { getGravatarUrl } from "@/lib/gravatar";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -85,12 +87,28 @@ export default function ProfilePage() {
           {/* Left Col: Identity Card */}
           <div className="md:col-span-1 space-y-6">
             <Card className="p-6 text-center space-y-4">
-              <div className="h-20 w-20 rounded-full bg-np-gold/10 border-2 border-np-gold/20 flex items-center justify-center mx-auto text-np-gold text-3xl font-bold">
-                {name?.[0] || email?.[0]?.toUpperCase()}
+              <div className="relative group mx-auto w-24">
+                <div className="h-24 w-24 rounded-full overflow-hidden border-2 border-np-gold/20 flex items-center justify-center bg-np-gold/10 text-np-gold text-3xl font-bold">
+                  {user?.email ? (
+                    <img src={getGravatarUrl(user.email)} alt="Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    name?.[0] || "?"
+                  )}
+                </div>
+                <button className="absolute bottom-0 right-0 p-1.5 bg-np-ink border border-border rounded-full text-muted-foreground hover:text-np-gold transition-colors shadow-xl">
+                  <Camera className="h-3.5 w-3.5" />
+                </button>
               </div>
               <div>
                 <h2 className="text-lg font-bold uppercase truncate">{name || "Unnamed Unit"}</h2>
-                <p className="label-category text-[10px] text-np-gold">{user?.role} · {user?.plan} TIER</p>
+                <div className="flex items-center justify-center gap-2 mt-1">
+                  <p className="label-category text-[10px] text-np-gold">{user?.role} · {user?.plan} TIER</p>
+                  {user?.emailVerified ? (
+                    <Badge variant="success" className="h-4 px-1.5 text-[8px] uppercase tracking-tighter">Verified</Badge>
+                  ) : (
+                    <Badge variant="danger" className="h-4 px-1.5 text-[8px] uppercase tracking-tighter">Unverified</Badge>
+                  )}
+                </div>
               </div>
               <div className="pt-4 border-t border-border space-y-3 text-left">
                 <div className="flex items-center gap-3 text-[12px] text-muted-foreground">
@@ -167,9 +185,18 @@ export default function ProfilePage() {
                 Authentication Settings
               </h3>
               <div className="space-y-4">
-                <p className="text-[13px] text-muted-foreground">
-                  Security measures are active. To change your password or enable Two-Factor Authentication, please contact the system administrator.
-                </p>
+                {!user?.emailVerified && (
+                  <div className="p-4 bg-np-crimson/5 border border-np-crimson/20 rounded-ui flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <AlertTriangle className="h-5 w-5 text-np-crimson" />
+                      <div>
+                        <p className="text-[12px] font-bold uppercase text-np-crimson">Email Unverified</p>
+                        <p className="text-[11px] text-muted-foreground">Verify your email to secure your account and enable all features.</p>
+                      </div>
+                    </div>
+                    <Button variant="outline" size="sm" className="h-8 text-[10px] uppercase border-np-crimson/30 hover:bg-np-crimson/10 text-np-crimson">Resend Link</Button>
+                  </div>
+                )}
                 <div className="p-4 bg-muted/40 rounded-ui border border-dashed border-border flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Shield className="h-5 w-5 text-np-slate" />

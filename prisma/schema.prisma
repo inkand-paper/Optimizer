@@ -30,6 +30,7 @@ model User {
   name         String?
   role         Role     @default(DEVELOPER)
   plan         Plan     @default(FREE)
+  image        String?
   emailVerified Boolean  @default(false)
   verificationToken String? @unique
   createdAt    DateTime @default(now())
