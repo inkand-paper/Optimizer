@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
     
     return NextResponse.json({
       success: true,
-      emailVerified,
+      emailVerified: isVerified,
       user: {
         id: newUser.id,
         email: newUser.email,
