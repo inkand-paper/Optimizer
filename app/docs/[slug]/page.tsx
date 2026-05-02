@@ -43,26 +43,37 @@ function renderMarkdownAsCards(md: string) {
     const title = lines.shift() || "";
     let content = lines.join("\n");
 
+    // 1. Extract and protect code blocks
+    const placeholders: string[] = [];
+    
     // Mermaid diagrams
-    content = content.replace(/```mermaid[ \t]*\n([\s\S]*?)```/g, (_m, code) =>
-      `<pre class="mermaid np-codeblock" style="border-color:rgba(180,140,60,0.25);padding:2rem;margin:1.5rem 0;display:flex;justify-content:center;background:transparent;overflow:hidden">${code}</pre>`
-    );
+    content = content.replace(/```mermaid[ \t]*\n([\s\S]*?)```/g, (_m, code) => {
+      const idx = placeholders.length;
+      placeholders.push(`<pre class="mermaid np-codeblock" style="border-color:rgba(180,140,60,0.25);padding:2rem;margin:1.5rem 0;display:flex;justify-content:center;background:transparent;overflow:hidden">${escapeHtml(code.trim())}</pre>`);
+      return `__BLOCK_${idx}__`;
+    });
 
     // Fenced code blocks with language
-    content = content.replace(/```(\w+)[ \t]*\n([\s\S]*?)```/g, (_m, lang, code) =>
-      `<div class="np-codeblock" style="margin:1.5rem 0;padding:0;overflow:hidden">
-        <div style="border-bottom:1px solid var(--border);padding:0.75rem 1rem;display:flex;align-items:center;gap:0.5rem">
-          <span style="height:8px;width:8px;border-radius:50%;background:#B48C3C;display:inline-block"></span>
-          <span style="font-family:monospace;color:#B48C3C;font-size:0.75rem;font-weight:600">${lang.toUpperCase()}</span>
-        </div>
-        <pre style="padding:1.25rem;margin:0;overflow-x:auto;background:transparent;color:inherit;font-family:inherit"><code>${escapeHtml(code.trim())}</code></pre>
-      </div>`
-    );
+    content = content.replace(/```(\w+)[ \t]*\n([\s\S]*?)```/g, (_m, lang, code) => {
+      const idx = placeholders.length;
+      placeholders.push(
+        `<div class="np-codeblock" style="margin:1.5rem 0;padding:0;overflow:hidden">
+          <div style="border-bottom:1px solid var(--border);padding:0.75rem 1rem;display:flex;align-items:center;gap:0.5rem">
+            <span style="height:8px;width:8px;border-radius:50%;background:#B48C3C;display:inline-block"></span>
+            <span style="font-family:monospace;color:#B48C3C;font-size:0.75rem;font-weight:600">${lang.toUpperCase()}</span>
+          </div>
+          <pre style="padding:1.25rem;margin:0;overflow-x:auto;background:transparent;color:inherit;font-family:inherit"><code>${escapeHtml(code.trim())}</code></pre>
+        </div>`
+      );
+      return `__BLOCK_${idx}__`;
+    });
 
     // Generic code blocks
-    content = content.replace(/```[ \t]*\n([\s\S]*?)```/g, (_m, code) =>
-      `<pre class="np-codeblock" style="margin:1.5rem 0"><code>${escapeHtml(code.trim())}</code></pre>`
-    );
+    content = content.replace(/```[ \t]*\n([\s\S]*?)```/g, (_m, code) => {
+      const idx = placeholders.length;
+      placeholders.push(`<pre class="np-codeblock" style="margin:1.5rem 0"><code>${escapeHtml(code.trim())}</code></pre>`);
+      return `__BLOCK_${idx}__`;
+    });
 
     // Tables
     content = content.replace(/((?:\|.+\|\n?)+)/g, (match) => {
@@ -94,7 +105,7 @@ function renderMarkdownAsCards(md: string) {
     // Unordered lists — collect consecutive - lines
     content = content.replace(/(^- .+(\n- .+)*)/gm, (match) => {
       const items = match.split("\n").filter(Boolean).map((line) => {
-        const text = line.replace(/^- /, "").replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/`(.*?)`/g, '<code style="font-family:monospace;font-size:0.85em;background:rgba(128,128,128,0.15);padding:2px 6px;border-radius:4px">$1</code>');
+        const text = line.replace(/^- /, "");
         return `<li style="display:flex;align-items:flex-start;gap:0.75rem;margin-bottom:0.6rem"><span style="height:6px;width:6px;min-width:6px;border-radius:50%;background:#B48C3C;margin-top:0.55rem;display:inline-block"></span><span style="font-size:0.9rem;color:var(--muted-foreground);line-height:1.6">${text}</span></li>`;
       }).join("");
       return `<ul style="margin:1rem 0;padding:0;list-style:none">${items}</ul>`;
@@ -104,8 +115,15 @@ function renderMarkdownAsCards(md: string) {
     content = content.split("\n\n").filter(Boolean).map((p) => {
       const t = p.trim();
       if (t.startsWith("<") || t === "") return t;
+      // If it's just our block placeholder, don't wrap it in <p>
+      if (/^__BLOCK_\d+__$/.test(t)) return t;
       return `<p style="font-size:0.9rem;color:var(--muted-foreground);line-height:1.7;margin-bottom:0.9rem">${t}</p>`;
     }).join("\n");
+
+    // 2. Restore code blocks
+    content = content.replace(/__BLOCK_(\d+)__/g, (_match, p1) => {
+      return placeholders[parseInt(p1, 10)] || _match;
+    });
 
     const sectionId = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
