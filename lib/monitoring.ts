@@ -9,130 +9,66 @@ import { validateSafeUrl } from './ssrf';
  */
 export async function performCheck(monitorId: string, url: string) {
   const startTime = Date.now();
-  
+  let status: 'UP' | 'DOWN' = 'UP';
+  let latency = 0;
+  let message: string | undefined = undefined;
+
+  // 1. Perform the actual network probe (Isolated from DB)
   try {
     const safeUrl = await validateSafeUrl(url);
-
     const response = await fetch(safeUrl, {
       method: 'GET',
       headers: { 'User-Agent': 'NextOptimizerMonitor/1.0' },
-      cache: 'no-store'
+      cache: 'no-store',
+      // [PRODUCTION] Add a timeout to the fetch itself
+      signal: AbortSignal.timeout(10000) 
     });
 
-    const latency = Date.now() - startTime;
-    const status = response.ok ? 'UP' : 'DOWN';
-    const message = response.ok ? undefined : `HTTP ${response.status}: ${response.statusText}`;
+    latency = Date.now() - startTime;
+    status = response.ok ? 'UP' : 'DOWN';
+    if (!response.ok) {
+      message = `HTTP ${response.status}: ${response.statusText}`;
+    }
+  } catch (error) {
+    latency = Date.now() - startTime;
+    status = 'DOWN';
+    message = error instanceof Error ? error.message : 'Connection failed';
+    console.error(`[MONITOR PROBE FAILED] ${url}: ${message}`);
+  }
 
+  // 2. Record the result to the database
+  try {
     // Get current monitor to check for status change
     const monitor = await prisma.monitor.findUnique({
       where: { id: monitorId },
       include: { 
-        user: {
-          select: { name: true, email: true }
-        }
-      }
-    });
-
-    // [SECURITY] If monitor was deleted during the check, stop immediately
-    if (!monitor) {
-      console.log(`[MONITOR] Skip recording check for deleted monitor: ${monitorId}`);
-      return { status, latency, message };
-    }
-
-    // Record the check
-    await prisma.check.create({
-      data: {
-        monitorId,
-        status,
-        latency,
-        message
-      }
-    });
-
-    // Update monitor status
-    await prisma.monitor.update({
-      where: { id: monitorId },
-      data: {
-        status,
-        lastChecked: new Date()
-      }
-    });
-
-    // Dispatch Webhook & Email on change
-    if (monitor.status !== status) {
-      console.log(`[MONITOR CHANGE] ${monitor.name}: ${monitor.status} -> ${status}`);
-      
-      const event = status === 'DOWN' ? 'MONITOR_DOWN' : 'MONITOR_UP';
-      await dispatchWebhook(monitor.userId, event, {
-        monitorId,
-        name: monitor.name,
-        url,
-        latency,
-        message
-      });
-
-      // Send Email Alert
-      if (monitor.user?.email) {
-        console.log(`[EMAIL ALERT] Sending to ${monitor.user.email}`);
-        sendUptimeAlert({
-          email: monitor.user.email,
-          userName: monitor.user.name || 'Developer',
-          name: monitor.name,
-          url,
-          status,
-          message,
-          latency
-        }).catch(console.error);
-      }
-    }
-
-    return { status, latency, message };
-  } catch (error) {
-    const latency = Date.now() - startTime;
-    const status = 'DOWN';
-    const message = error instanceof Error ? error.message : 'Connection failed';
-
-    // Verify the monitor still exists before trying to record an error check
-    const monitor = await prisma.monitor.findUnique({
-      where: { id: monitorId },
-      include: { 
-        user: {
-          select: { name: true, email: true }
-        }
+        user: { select: { name: true, email: true } }
       }
     });
 
     if (!monitor) return { status, latency, message };
 
+    // Record the check
     await prisma.check.create({
-      data: {
-        monitorId,
-        status,
-        latency,
-        message
-      }
+      data: { monitorId, status, latency, message }
     });
 
+    // Update monitor status only if it changed OR to update lastChecked
+    const oldStatus = monitor.status;
     await prisma.monitor.update({
       where: { id: monitorId },
-      data: {
-        status,
-        lastChecked: new Date()
-      }
+      data: { status, lastChecked: new Date() }
     });
 
-    if (monitor.status !== status) {
-      // Dispatch Webhook & Email on change
+    // 3. Dispatch Alerts on status change
+    if (oldStatus !== status) {
+      console.log(`[MONITOR CHANGE] ${monitor.name}: ${oldStatus} -> ${status}`);
+      
       const event = status === 'DOWN' ? 'MONITOR_DOWN' : 'MONITOR_UP';
       await dispatchWebhook(monitor.userId, event, {
-        monitorId,
-        name: monitor.name,
-        url,
-        latency,
-        message
+        monitorId, name: monitor.name, url, latency, message
       });
 
-      // Send Email Alert
       if (monitor.user?.email) {
         sendUptimeAlert({
           email: monitor.user.email,
@@ -147,6 +83,10 @@ export async function performCheck(monitorId: string, url: string) {
     }
 
     return { status, latency, message };
+  } catch (dbError) {
+    // [CRITICAL] If the DB fails, we log it but we don't treat the TARGET as down
+    console.error(`[MONITOR SYSTEM ERROR] Database failure while recording check for ${url}:`, dbError);
+    return { status, latency, message: `System Error: ${dbError instanceof Error ? dbError.message : 'DB Failure'}` };
   }
 }
 
