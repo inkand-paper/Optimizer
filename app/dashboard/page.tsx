@@ -15,7 +15,7 @@ import {
   Activity, Key, Trash2, Plus, Terminal, ShieldCheck, Copy,
   CheckCircle2, Loader2, RefreshCw, LogOut, Search, FileText,
   Webhook, ShieldAlert, BarChart4, ChevronRight, Book, Home, User,
-  Menu, X
+  Menu, X, HelpCircle
 } from "lucide-react";
 
 interface ApiKey { id: string; name: string; createdAt: string; lastUsedAt: string | null; }
@@ -243,6 +243,13 @@ export default function DashboardPage() {
             Documentation
           </Link>
           <Link
+            href="/faq"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[6px] text-[13px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+          >
+            <HelpCircle className="h-4 w-4 shrink-0" />
+            FAQ
+          </Link>
+          <Link
             href="/dashboard/profile"
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[6px] text-[13px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
           >
@@ -329,6 +336,14 @@ export default function DashboardPage() {
               >
                 <Book className="h-4 w-4 text-np-gold" />
                 Documentation
+              </Link>
+              <Link 
+                href="/faq" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-3 p-3 rounded-ui bg-muted/30 text-[14px] font-medium"
+              >
+                <HelpCircle className="h-4 w-4 text-np-gold" />
+                FAQ
               </Link>
               <div className="flex items-center justify-between p-3 rounded-ui bg-muted/30">
                 <div className="flex items-center gap-3 text-[14px] font-medium text-muted-foreground">
