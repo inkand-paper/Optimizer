@@ -25,21 +25,23 @@ Navigation:
 Constraint: Be professional and concise. Use Markdown (bold, lists) to make your replies readable. If asked about audits, remind the user that they can be triggered via the Dashboard or via the API using a Machine Key.`;
 
 /**
- * Primary: Groq (llama3-70b) — Fast, generous free tier.
- * Fallback: Gemini 1.5 Flash — if Groq fails or key is missing.
+ * Primary: Groq (llama-3.3-70b-versatile) — Fast, generous free tier.
  */
-async function runGroq(message: string, history: { role: string; content: string }[]): Promise<string> {
+async function runGroq(
+  message: string,
+  history: { role: string; content: string }[]
+): Promise<string> {
   const messages: Groq.Chat.ChatCompletionMessageParam[] = [
     { role: "system", content: SYSTEM_PROMPT },
     ...history.map((m) => ({
-      role: m.role === "user" ? "user" as const : "assistant" as const,
+      role: m.role === "user" ? ("user" as const) : ("assistant" as const),
       content: m.content,
     })),
     { role: "user", content: message },
   ];
 
   const completion = await groq.chat.completions.create({
-    model: "llama3-70b-8192",
+    model: "llama-3.3-70b-versatile",
     messages,
     temperature: 0.7,
     max_tokens: 1024,
@@ -48,27 +50,39 @@ async function runGroq(message: string, history: { role: string; content: string
   return completion.choices[0]?.message?.content || "No response generated.";
 }
 
-async function runGemini(message: string, history: { role: string; content: string }[]): Promise<string> {
-  let lastRole: string | null = null;
-  const chatHistory = history
-    .map((m) => ({
-      role: m.role === "user" ? "user" : "model",
-      parts: [{ text: m.content }],
-    }))
-    .filter((m) => {
-      const firstUserIndex = history.findIndex((h) => h.role === "user");
-      if (firstUserIndex === -1) return false;
-      if (m.role === lastRole) return false;
-      lastRole = m.role;
-      return true;
-    });
+/**
+ * Fallback: Gemini 1.5 Flash
+ * Fixes the "First content should be with role 'user'" bug by building
+ * a clean, strictly-alternating history starting from the first user message.
+ */
+async function runGemini(
+  message: string,
+  history: { role: string; content: string }[]
+): Promise<string> {
+  // Build a strictly alternating user/model history starting with 'user'
+  const cleanHistory: { role: "user" | "model"; parts: { text: string }[] }[] = [];
+  let expectedRole: "user" | "model" = "user";
+
+  for (const m of history) {
+    const role = m.role === "user" ? "user" : "model";
+    if (role === expectedRole) {
+      cleanHistory.push({ role, parts: [{ text: m.content }] });
+      expectedRole = expectedRole === "user" ? "model" : "user";
+    }
+    // Skip messages that break the alternating pattern
+  }
+
+  // If history ends on 'user' (incomplete exchange), trim it so we can append new user message cleanly
+  if (cleanHistory.length > 0 && cleanHistory[cleanHistory.length - 1].role === "user") {
+    cleanHistory.pop();
+  }
 
   const model = genAI.getGenerativeModel({
     model: "gemini-1.5-flash",
     systemInstruction: SYSTEM_PROMPT,
   });
 
-  const chat = model.startChat({ history: chatHistory });
+  const chat = model.startChat({ history: cleanHistory });
   const result = await chat.sendMessage(message);
   return result.response.text();
 }
@@ -76,30 +90,32 @@ async function runGemini(message: string, history: { role: string; content: stri
 export async function POST(req: NextRequest) {
   try {
     const { message, history } = await req.json();
+    const safeHistory: { role: string; content: string }[] = history || [];
 
     // 1. Try Groq first (primary engine)
     if (process.env.GROQ_API_KEY) {
       try {
-        const text = await runGroq(message, history || []);
+        const text = await runGroq(message, safeHistory);
         return NextResponse.json({ content: text, engine: "groq" });
       } catch (groqError: any) {
-        console.warn("⚡ Groq failed, falling back to Gemini:", groqError?.message);
-        // Fall through to Gemini
+        console.warn("⚡ Groq failed, falling back to Gemini:", groqError?.message || groqError);
       }
     }
 
     // 2. Fallback: Gemini
     if (process.env.GEMINI_API_KEY) {
       try {
-        const text = await runGemini(message, history || []);
+        const text = await runGemini(message, safeHistory);
         return NextResponse.json({ content: text, engine: "gemini" });
       } catch (geminiError: any) {
-        console.error("❌ Gemini also failed:", geminiError?.message);
+        console.error("❌ Gemini also failed:", geminiError?.message || geminiError);
         throw geminiError;
       }
     }
 
-    return NextResponse.json({ content: "No AI engine configured. Please set GROQ_API_KEY or GEMINI_API_KEY." });
+    return NextResponse.json({
+      content: "No AI engine configured. Please set GROQ_API_KEY in your environment variables.",
+    });
   } catch (error) {
     console.error("AI Chat Error:", error);
     return NextResponse.json(
