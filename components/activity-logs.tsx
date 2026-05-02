@@ -108,76 +108,79 @@ export function ActivityLogs() {
                   <StatusDot status={dotStatus(log.status)} />
                 </div>
 
-                {/* Content */}
-                <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-muted-foreground">{typeIcon(log.type)}</span>
-                      <p className="text-[13px] font-medium truncate">{log.action}</p>
-                    </div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span
-                        className={cn(
-                          "inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold",
-                          log.status === "SUCCESS"
-                            ? "np-badge-success"
-                            : log.status === "FAILURE"
-                            ? "np-badge-danger"
-                            : "np-badge-warning"
-                        )}
-                      >
-                        {log.status}
-                      </span>
-                      {log.details?.origin && (
-                        <span className="font-mono text-[11px] text-np-gold bg-np-gold/10 px-1.5 py-0.5 rounded">
-                          {log.details.origin}
-                        </span>
-                      )}
-                      {log.details?.durationMs && (
-                        <span className="font-mono text-[11px] text-np-slate">
-                          {log.details.durationMs}ms
-                        </span>
-                      )}
-                      {log.details?.score !== undefined && (
-                        <span className="font-mono text-[11px] text-np-slate">
-                          score: {log.details.score}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                   {/* Timestamp & Expand — gold mono as per spec */}
-                  <div className="flex items-center gap-3 shrink-0">
-                    <span className="mono-gold tabular-nums text-[11px] sm:text-[13px]">
-                      {new Date(log.createdAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                      })}
-                    </span>
-                    <button 
-                      onClick={() => setExpandedId(expandedId === log.id ? null : log.id)}
-                      className="p-1 hover:bg-muted rounded text-muted-foreground transition-colors"
-                    >
-                      {expandedId === log.id ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Expanded Details */}
-                {expandedId === log.id && (
-                  <div className="mt-4 w-full animate-in fade-in slide-in-from-top-2 duration-200">
-                    <div className="p-4 rounded-ui bg-muted/50 border border-border overflow-x-auto">
-                      <div className="flex items-center gap-2 mb-3 text-np-gold">
-                        <Database className="h-3.5 w-3.5" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest">Extended Event Metadata</span>
+                {/* Main Body */}
+                <div className="flex-1 min-w-0 flex flex-col gap-4">
+                  {/* Content Header */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="text-muted-foreground">{typeIcon(log.type)}</span>
+                        <p className="text-[13px] font-medium truncate">{log.action}</p>
                       </div>
-                      <pre className="text-[11px] font-mono leading-relaxed opacity-80">
-                        {JSON.stringify(log.details, null, 2)}
-                      </pre>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span
+                          className={cn(
+                            "inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold",
+                            log.status === "SUCCESS"
+                              ? "np-badge-success"
+                              : log.status === "FAILURE"
+                              ? "np-badge-danger"
+                              : "np-badge-warning"
+                          )}
+                        >
+                          {log.status}
+                        </span>
+                        {log.details?.origin && (
+                          <span className="font-mono text-[11px] text-np-gold bg-np-gold/10 px-1.5 py-0.5 rounded">
+                            {log.details.origin}
+                          </span>
+                        )}
+                        {log.details?.durationMs && (
+                          <span className="font-mono text-[11px] text-np-slate">
+                            {log.details.durationMs}ms
+                          </span>
+                        )}
+                        {log.details?.score !== undefined && (
+                          <span className="font-mono text-[11px] text-np-slate">
+                            score: {log.details.score}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Timestamp & Expand — gold mono as per spec */}
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span className="mono-gold tabular-nums text-[11px] sm:text-[13px]">
+                        {new Date(log.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        })}
+                      </span>
+                      <button 
+                        onClick={() => setExpandedId(expandedId === log.id ? null : log.id)}
+                        className="p-1 hover:bg-muted rounded text-muted-foreground transition-colors"
+                      >
+                        {expandedId === log.id ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                      </button>
                     </div>
                   </div>
-                )}
+
+                  {/* Expanded Details */}
+                  {expandedId === log.id && (
+                    <div className="w-full animate-in fade-in slide-in-from-top-2 duration-200">
+                      <div className="p-4 rounded-ui bg-muted/50 border border-border overflow-hidden">
+                        <div className="flex items-center gap-2 mb-3 text-np-gold">
+                          <Database className="h-3.5 w-3.5" />
+                          <span className="text-[10px] font-bold uppercase tracking-widest">Extended Event Metadata</span>
+                        </div>
+                        <pre className="text-[11px] font-mono leading-relaxed opacity-80 overflow-x-auto np-scroll pb-2">
+                          {JSON.stringify(log.details, null, 2)}
+                        </pre>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>

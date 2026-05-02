@@ -204,7 +204,7 @@ export default function MonitorDetailsPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[13px] font-bold text-np-crimson uppercase">Infrastructure Offline</p>
-                      <p className="text-[12px] text-muted-foreground font-mono mt-0.5">
+                      <p className="text-[12px] text-muted-foreground font-mono mt-0.5 break-words whitespace-pre-wrap">
                         Cause: {inc.message || "Timeout / Connection Refused"}
                       </p>
                     </div>
