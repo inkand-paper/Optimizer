@@ -49,7 +49,7 @@ function renderMarkdownAsCards(md: string) {
     // Mermaid diagrams
     content = content.replace(/```mermaid[ \t]*\n([\s\S]*?)```/g, (_m, code) => {
       const idx = placeholders.length;
-      placeholders.push(`<pre class="mermaid np-codeblock" style="border-color:rgba(180,140,60,0.25);padding:2rem;margin:1.5rem 0;display:flex;justify-content:center;background:transparent;overflow:hidden">${escapeHtml(code.trim())}</pre>`);
+      placeholders.push(`<pre class="mermaid np-codeblock language-none" style="border-color:rgba(180,140,60,0.25);padding:2rem;margin:1.5rem 0;display:flex;justify-content:center;background:transparent;overflow:hidden">${code.trim()}</pre>`);
       return `__BLOCK_${idx}__`;
     });
 
