@@ -18,6 +18,7 @@ Add these to your Project Settings on Vercel:
 - `GMAIL_USER`: Your support/alert email address.
 - `GMAIL_APP_PASSWORD`: Your Google "App Password".
 - `GEMINI_API_KEY`: Your Google AI key for Pulse-AI.
+- `GROQ_API_KEY`: Your Groq key for Pulse-AI (primary engine — fast & generous free tier).
 - `LEMONSQUEEZY_WEBHOOK_SECRET`: For payment validation.
 
 ## 3. Build Configuration
