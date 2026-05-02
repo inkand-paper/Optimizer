@@ -62,7 +62,7 @@ export function PulseAI() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "fixed bottom-6 right-6 h-14 w-14 rounded-full z-50 flex items-center justify-center transition-all duration-300 shadow-2xl group",
+          "fixed bottom-24 md:bottom-6 right-6 h-14 w-14 rounded-full z-50 flex items-center justify-center transition-all duration-300 shadow-2xl group",
           isOpen ? "rotate-90 scale-90" : "hover:scale-110 active:scale-95"
         )}
         style={{
@@ -90,7 +90,7 @@ export function PulseAI() {
       {/* Chat Window */}
       {isOpen && (
         <div 
-          className="fixed bottom-24 right-6 w-[350px] max-w-[calc(100vw-3rem)] h-[500px] max-h-[calc(100vh-10rem)] bg-card/80 backdrop-blur-xl border border-border rounded-card shadow-2xl z-50 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-300"
+          className="fixed bottom-40 md:bottom-24 right-6 w-[350px] max-w-[calc(100vw-3rem)] h-[500px] max-h-[calc(100vh-10rem)] bg-card/80 backdrop-blur-xl border border-border rounded-card shadow-2xl z-50 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-300"
         >
           {/* Header */}
           <div className="p-4 border-b border-border bg-muted/30 flex items-center justify-between">
