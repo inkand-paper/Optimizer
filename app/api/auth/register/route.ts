@@ -39,7 +39,8 @@ export async function POST(req: NextRequest) {
     
     // Generate verification token
     const verificationToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    const emailVerified = Boolean(isFirstUser || isFounderEmail); // Auto-verify admins (strict boolean)
+    const isVerified = Boolean(isFirstUser || isFounderEmail);
+    const emailVerifiedDate = isVerified ? new Date() : null;
 
     const newUser = await prisma.user.create({
       data: {
@@ -48,13 +49,13 @@ export async function POST(req: NextRequest) {
         name: parsedData.name,
         role: role as any,
         plan: plan as any,
-        emailVerified,
-        verificationToken: emailVerified ? null : verificationToken
+        emailVerified: emailVerifiedDate,
+        verificationToken: isVerified ? null : verificationToken
       }
     });
 
     // Send verification email if not auto-verified
-    if (!emailVerified) {
+    if (!isVerified) {
        const { sendVerificationEmail } = await import('@/lib/mail');
        await sendVerificationEmail({
           email: newUser.email,

@@ -35,6 +35,13 @@ export async function POST(req: NextRequest) {
     }
     
     // Verify password
+    if (!user.passwordHash) {
+      return NextResponse.json(
+        { error: 'Unauthorized', message: 'This account uses social login. Please sign in with Google or GitHub.' },
+        { status: 401 }
+      );
+    }
+
     const isPasswordValid = await comparePasswords(parsedData.password, user.passwordHash);
     
     if (!isPasswordValid) {
