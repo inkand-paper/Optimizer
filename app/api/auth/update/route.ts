@@ -9,11 +9,16 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { name } = await req.json();
+    const { name, image } = await req.json();
+    
+    // [SECURITY] Ensure Base64 image is not too large (> 2MB)
+    if (image && image.length > 2 * 1024 * 1024) {
+      return NextResponse.json({ error: "Image too large" }, { status: 400 });
+    }
 
     const updatedUser = await prisma.user.update({
       where: { id: decoded.userId },
-      data: { name },
+      data: { name, image },
     });
 
     return NextResponse.json({
@@ -24,6 +29,7 @@ export async function PATCH(req: NextRequest) {
         name: updatedUser.name,
         role: updatedUser.role,
         plan: updatedUser.plan,
+        image: updatedUser.image,
         emailVerified: updatedUser.emailVerified,
       },
     });

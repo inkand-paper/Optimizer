@@ -17,6 +17,8 @@ export default function ProfilePage() {
 
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
+  const [image, setImage] = React.useState<string | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     fetch("/api/auth/me", { credentials: "include" })
@@ -26,6 +28,7 @@ export default function ProfilePage() {
           setUser(d.user);
           setName(d.user.name || "");
           setEmail(d.user.email || "");
+          setImage(d.user.image || null);
         } else {
           router.push("/login");
         }
@@ -43,7 +46,7 @@ export default function ProfilePage() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name, image }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -59,6 +62,21 @@ export default function ProfilePage() {
       setMessage({ type: "error", text: "Network anomaly detected." });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        setMessage({ type: "error", text: "Image too large (max 2MB)." });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -89,15 +107,27 @@ export default function ProfilePage() {
             <Card className="p-6 text-center space-y-4">
               <div className="relative group mx-auto w-24">
                 <div className="h-24 w-24 rounded-full overflow-hidden border-2 border-np-gold/20 flex items-center justify-center bg-np-gold/10 text-np-gold text-3xl font-bold">
-                  {user?.email ? (
+                  {image ? (
+                    <img src={image} alt="Avatar" className="w-full h-full object-cover" />
+                  ) : user?.email ? (
                     <img src={getGravatarUrl(user.email)} alt="Avatar" className="w-full h-full object-cover" />
                   ) : (
                     name?.[0] || "?"
                   )}
                 </div>
-                <button className="absolute bottom-0 right-0 p-1.5 bg-np-ink border border-border rounded-full text-muted-foreground hover:text-np-gold transition-colors shadow-xl">
+                <button 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute bottom-0 right-0 p-1.5 bg-np-ink border border-border rounded-full text-muted-foreground hover:text-np-gold transition-colors shadow-xl"
+                >
                   <Camera className="h-3.5 w-3.5" />
                 </button>
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  className="hidden" 
+                  accept="image/*" 
+                  onChange={handleImageChange}
+                />
               </div>
               <div>
                 <h2 className="text-lg font-bold uppercase truncate">{name || "Unnamed Unit"}</h2>
