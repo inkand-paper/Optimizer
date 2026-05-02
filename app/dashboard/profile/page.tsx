@@ -52,7 +52,7 @@ export default function ProfilePage() {
       if (res.ok) {
         setMessage({ type: "success", text: "Identity updated successfully." });
         // Update local user state
-        const updatedUser = { ...user, name };
+        const updatedUser = { ...user, name, image };
         setUser(updatedUser);
         localStorage.setItem("user", JSON.stringify(updatedUser));
       } else {
