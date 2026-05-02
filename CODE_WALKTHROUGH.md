@@ -94,27 +94,54 @@ if (tag) {
 
 ---
 
-## 5. UI Structure & Theming
-- **`components/ui-elements.tsx`**: Contains our "Design System". All buttons, cards, and inputs live here to ensure they look the same everywhere.
-- **`app/globals.css`**: Defines our "Dark Mode" colors. We use the `.dark` class logic to switch background and text colors instantly.
-- **`components/navbar.tsx`**: A smart component that checks if `localStorage.getItem("token")` exists to decide whether to show "Login" or "Dashboard".
+## 5. AI Integration (`app/api/ai/chat/route.ts`)
+The intelligence layer of NexPulse.
+```typescript
+// 1. We load the Gemini Pro model.
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+// 2. We inject a System Prompt that defines the AI's persona and rules.
+const SYSTEM_PROMPT = `You are Pulse-AI...`;
+
+// 3. We maintain chat history to allow for conversational context.
+const chat = model.startChat({ history: chatHistory });
+```
+
+---
+
+## 6. Global Security Proxy (`proxy.ts`)
+Every API call passes through this "Shield" before reaching the business logic.
+```typescript
+// 1. We handle CORS by checking the Origin against NEXT_PUBLIC_APP_URL.
+if (isProduction && !isExactMatch && !authHeader) return 403;
+
+// 2. We inject security headers (Anti-Clickjacking, etc.).
+response.headers.set('X-Frame-Options', 'DENY');
+
+// 3. We log diagnostics to help developers debug API timing in production.
+console.log(`📱 API Call: ${request.method} ${request.nextUrl.pathname}`);
+```
 
 ---
 
 ## 📂 Project Directory Map
 - `/app`: The heart of the project. Contains every Page and API endpoint.
-- `/prisma`: The blueprint for your Database tables (Users and Keys).
-- `/components`: Reusable puzzle pieces like the Navbar and Theme Toggle.
-- `/lib`: Helper functions (The "Brain" behind the scenes).
-- `/public`: Static images and logos.
+- `/core`: The "Pulse Engine" logic (Analyzers, Monitoring core).
+- `/lib`: Shared utilities (Database, Auth, Mail, Logging).
+- `/scripts`: Diagnostic and administrative utilities.
+- `/cli`: The standalone `njo` command-line tool.
 
 ---
 
-## 6. Stability & Performance (Crucial for Dev)
-To ensure the dev server doesn't crash or hang the PC, we've optimized the `package.json` scripts:
-- **Memory Limit**: Uses `NODE_OPTIONS='--max-old-space-size=2560'` to prevent system-wide RAM exhaustion.
-- **Webpack Engine**: Uses the `--webpack` flag to reduce compilation overhead compared to experimental engines.
+## 7. Stability & Performance
+The project is optimized for high-concurrency environments:
+- **Memory Management**: Uses increased heap limits in `package.json` to prevent crashes during heavy builds.
+- **SSRF Shield**: Uses a custom URL validation layer (`lib/ssrf.ts`) to prevent server-side request forgery attacks.
+- **Hybrid Mailing**: Uses Nodemailer with Gmail App Passwords for free, reliable production delivery.
 
-## 7. UX Optimizations (Dashboard)
-- **Persistent Keys**: The active API key is stored in `localStorage` so it survives page refreshes.
-- **Auto-Authorization**: Creating a new key automatically "fills" the playground, making the Website Analyzer ready for work instantly.
+---
+
+## 8. UX Optimizations (Dashboard)
+- **Auth Resilience**: Added an `authLoading` state to the dashboard to eliminate verification screen flickering.
+- **Smart Forms**: Forgot password and reset password flows handle secure token validation and user feedback.
+- **Mobile First**: Uses a custom hybrid navigation model to ensure the UI feels native on both iOS and Android.

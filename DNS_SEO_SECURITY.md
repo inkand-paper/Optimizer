@@ -28,3 +28,5 @@ If you haven't already, add this to link your domain to Google Search Console.
 *   [x] **Dynamic Sitemap & Robots**: (Automated in `/app`)
 *   [x] **Hydration Fix**: (Fonts and Scripts optimized for React 19)
 *   [x] **Login Privacy**: (POST method enforced)
+*   [x] **Global Security Proxy**: (Centralized CORS and Security Header enforcement in `proxy.ts`)
+*   [x] **SSRF Shield**: (Internal network protection for monitoring probes in `lib/ssrf.ts`)

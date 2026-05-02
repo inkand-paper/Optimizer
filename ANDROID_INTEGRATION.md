@@ -49,6 +49,32 @@ fun triggerNexPulse(tag: String, apiKey: String) {
         }
     })
 }
+
+### Audit Integration
+To trigger a deep audit (SEO/Security/Performance) from Android:
+```kotlin
+fun triggerAudit(targetUrl: String, apiKey: String) {
+    val client = OkHttpClient()
+    val jsonBody = "{\"url\": \"$targetUrl\"}"
+    val body = jsonBody.toRequestBody("application/json".toMediaType())
+    
+    val request = Request.Builder()
+        .url("https://nextjs-optimizer-suite.vercel.app/api/analyze")
+        .addHeader("Authorization", "Bearer $apiKey")
+        .post(body)
+        .build()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onResponse(call: Call, response: Response) {
+            if (response.isSuccessful) {
+                val resultJson = response.body?.string()
+                // Process audit results
+            }
+        }
+        override fun onFailure(call: Call, e: IOException) {}
+    })
+}
+```
 ```
 
 ---

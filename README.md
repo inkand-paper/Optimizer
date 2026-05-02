@@ -9,8 +9,10 @@ NexPulse is a unified platform designed to monitor and optimize web properties r
 - **Universal Monitoring**: High-precision tracking of uptime and latency for any public URL.
 - **Advanced Website Analysis**: In-depth audits of SEO metadata, security configurations (SSL/Headers), and performance metrics.
 - **Integrated Webhooks**: Native support for Discord, Slack, and Zapier with professional embed formatting.
+- **Pulse-AI Technical Assistant**: An autonomous AI agent integrated into the dashboard to assist with technical implementation and diagnostic analysis.
 - **Responsive Management Interface**: A premium dashboard featuring a hybrid navigation model (Desktop Sidebar & Mobile Bottom Navigation).
-- **Secure Machine Integration**: High-entropy API keys for seamless integration with mobile applications (Android/iOS) and backend services.
+- **Secure Machine Integration**: High-entropy API keys (SHA-256 hashed) for seamless integration with mobile applications (Android/iOS) and backend services.
+- **Advanced Authentication**: Secure login, email verification, and a robust password recovery system.
 - **Technical Sandbox**: Interactive environment for testing API handshakes and optimization logic.
 
 ## Documentation

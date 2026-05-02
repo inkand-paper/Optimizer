@@ -13,6 +13,12 @@ Follow these steps to move from Local Development to Production.
 Add these to your Project Settings on Vercel:
 - `DATABASE_URL`: Your Supabase Pooler string.
 - `JWT_SECRET`: A long, random string for auth security.
+- `NEXT_PUBLIC_APP_URL`: Your production URL (e.g., `https://osakagroupbd.com`).
+- `NEXTAUTH_URL`: Your production URL.
+- `GMAIL_USER`: Your support/alert email address.
+- `GMAIL_APP_PASSWORD`: Your Google "App Password".
+- `GEMINI_API_KEY`: Your Google AI key for Pulse-AI.
+- `LEMONSQUEEZY_WEBHOOK_SECRET`: For payment validation.
 
 ## 3. Build Configuration
 - [ ] Ensure `package.json` has `"postinstall": "prisma generate"`.
