@@ -32,7 +32,7 @@ export function MermaidInitializer() {
           },
         });
 
-        const elements = document.querySelectorAll(".mermaid");
+        const elements = document.querySelectorAll<HTMLElement>(".mermaid");
         
         // Remove data-processed so they re-render if the slug changed
         elements.forEach(el => {
