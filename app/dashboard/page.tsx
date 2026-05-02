@@ -401,7 +401,7 @@ export default function DashboardPage() {
                     <p className="label-category mb-3">Provision new key</p>
                     <form onSubmit={handleCreateKey} className="flex flex-col sm:flex-row gap-2">
                       <Input name="keyName" placeholder="Key name" className="sm:flex-1" required />
-                      <Button type="submit" disabled={creatingKey} size="sm" className="w-full sm:w-auto">
+                      <Button type="submit" disabled={creatingKey} size="md" className="w-full sm:w-auto">
                         {creatingKey ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <><Plus className="h-3.5 w-3.5 mr-1" />Create</>}
                       </Button>
                     </form>
