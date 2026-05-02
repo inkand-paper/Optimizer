@@ -19,12 +19,12 @@ Consider an automated cleaning robot. You would not provide the robot with your 
 
 **In Practice**: You generate a machine key (`opt_...`) in the dashboard. This key is used by your external applications to authenticate with the NexPulse Pulse Engine.
 
-## 3. Website Analysis (The Inspector Analogy)
-The NexPulse Analyzer acts as a digital quality inspector for your web properties.
+## 3. Website Analysis (The Authorized Inspector Analogy)
+The NexPulse Analyzer acts as an authorized digital quality inspector for your web properties.
 
-Imagine a health inspector visiting a restaurant. They evaluate cleanliness, safety equipment, and service speed, providing a standardized score at the end of the visit.
+Imagine a specialized fire inspector. They don't just look at the outside of a building; they have a **Master Key** (the API Key) that allows them to enter, check internal systems, and verify safety protocols that aren't visible to the public.
 
-**In Practice**: The analyzer "visits" a target URL, evaluates SEO metadata, security headers, and performance metrics, then generates a comprehensive **Pulse Score**.
+**In Practice**: The analyzer uses your machine key to "enter" the target system's integration layer, evaluating deep SEO metadata, security headers, and internal performance metrics to generate a comprehensive **Pulse Score**.
 
 ## 4. Security and Hashing (The Shredder Analogy)
 To ensure the highest level of security, NexPulse never stores raw API keys or passwords.

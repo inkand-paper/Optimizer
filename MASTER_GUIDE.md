@@ -37,10 +37,9 @@ The Pulse Engine continuously monitors your web properties for downtime.
 
 
 ### Website Pulse Audit
-The built-in audit engine performs deep-scans on any public URL. It evaluates:
-- **SEO**: Meta tags, heading hierarchy, and social graph data.
-- **Security**: SSL validity, HSTS, and Content Security Policy (CSP) headers.
-- **Performance**: Time-to-First-Byte (TTFB) and script density.
+The built-in audit engine performs multi-dimensional scans on web properties. 
+- **Security & Access**: While simple scans can be initiated via the Dashboard, all programmatic audits via the Pulse API **require a verified Machine API Key**.
+- **Integrated Intelligence**: Audits are most effective when NexPulse is integrated into the target system, allowing for deep diagnostic reporting on SEO, Security (SSL/HSTS), and Performance (TTFB/Script density).
 
 ### Security and Hashing
 Machine-level security is handled via high-entropy API keys.

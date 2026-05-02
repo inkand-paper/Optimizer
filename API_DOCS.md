@@ -34,10 +34,10 @@ Triggers an instant cache purge for a specific tag or path across your connected
 }
 ```
 
-### 3. On-Demand Audit
+### 3. On-Demand Audit (Integrated Systems)
 **POST** `/api/analyze`
 
-Triggers a deep-scan of any public URL for SEO, Security, and Performance.
+Triggers a deep-scan of an integrated public URL for SEO, Security, and Performance. **Requires API Key.**
 
 **Request Payload**:
 ```json
