@@ -27,11 +27,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ content: "API key missing. Please configure GEMINI_API_KEY." });
     }
 
-    // Format history for Gemini
-    const chatHistory = history.map((m: any) => ({
-      role: m.role === "user" ? "user" : "model",
-      parts: [{ text: m.content }],
-    }));
+    // Gemini requires the first message to be from the 'user'
+    const chatHistory = history
+      .map((m: any) => ({
+        role: m.role === "user" ? "user" : "model",
+        parts: [{ text: m.content }],
+      }))
+      .filter((m: any, i: number, arr: any[]) => {
+        // Find the first 'user' message and keep everything from there onwards
+        const firstUserIndex = arr.findIndex(msg => msg.role === "user");
+        return i >= firstUserIndex;
+      });
 
     const chat = model.startChat({
       history: chatHistory,
