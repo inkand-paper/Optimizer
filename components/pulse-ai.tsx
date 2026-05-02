@@ -73,10 +73,7 @@ export function PulseAI() {
         {isOpen ? (
           <X className="h-6 w-6 text-white" />
         ) : (
-          <div className="relative">
-            <Activity className="h-6 w-6 text-white" />
-            <div className="absolute -top-1 -right-1 h-3 w-3 bg-np-teal rounded-full border-2 border-white dark:border-np-obsidian" />
-          </div>
+          <Activity className="h-6 w-6 text-white" />
         )}
         
         {/* Tooltip */}
