@@ -102,10 +102,8 @@ export default function ForgotPasswordPage() {
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send Reset Link"}
               </Button>
 
-              <Button asChild variant="ghost" className="w-full text-[11px] uppercase tracking-widest hover:bg-transparent">
-                <Link href="/login" className="flex items-center gap-2">
-                  <ArrowLeft className="h-3.5 w-3.5" /> Back to Sign In
-                </Link>
+              <Button variant="ghost" className="w-full text-[11px] uppercase tracking-widest hover:bg-transparent" onClick={() => window.location.href = "/login"}>
+                <ArrowLeft className="h-3.5 w-3.5 mr-2" /> Back to Sign In
               </Button>
             </form>
           )}
