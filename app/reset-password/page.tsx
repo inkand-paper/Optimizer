@@ -63,8 +63,8 @@ function ResetPasswordForm() {
         <AlertCircle className="h-10 w-10 text-np-crimson mx-auto" />
         <p className="text-[14px] font-bold">Invalid Reset Link</p>
         <p className="text-[13px] text-muted-foreground">This link is invalid or has expired.</p>
-        <Button asChild className="w-full h-10 text-[11px] uppercase tracking-widest">
-          <Link href="/forgot-password">Request New Link</Link>
+        <Button className="w-full h-10 text-[11px] uppercase tracking-widest" onClick={() => router.push("/forgot-password")}>
+          Request New Link
         </Button>
       </div>
     );

@@ -74,8 +74,8 @@ export default function ForgotPasswordPage() {
                   If an account exists, you'll receive a link to reset your password shortly.
                 </p>
               </div>
-              <Button asChild variant="outline" className="w-full mt-4 h-10 text-[11px] uppercase tracking-widest">
-                <Link href="/login">Back to Sign In</Link>
+              <Button variant="outline" className="w-full mt-4 h-10 text-[11px] uppercase tracking-widest" onClick={() => window.location.href = "/login"}>
+                Back to Sign In
               </Button>
             </div>
           ) : (
