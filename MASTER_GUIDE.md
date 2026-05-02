@@ -13,15 +13,44 @@ NexPulse operates as a decoupled three-layer system:
 3.  **Pulse Engine (API)**: A high-concurrency API layer that validates incoming machine requests and dispatches optimization signals.
 
 ### Data Flow Diagram
+
 ```mermaid
-graph TD
-    A[External Machine or App] -->|API Key and Pulse| B{NexPulse Engine}
-    B -->|Validation| C[Hashed Key Check]
-    C -->|Authorized| D[Integrated Target System]
-    D -->|Cache Cleared| E[End User Gets Fresh Data]
-    F[NexPulse Dashboard] -->|Key Management| C
-    F -->|Uptime Monitor| G[Any Public URL]
-    F -->|Deep Audit| D
+flowchart TD
+    subgraph EXTERNAL["[🌐] External Sources"]
+        A1["[📱] External Machine or App"]
+        A2["[👤] NexPulse Dashboard"]
+    end
+
+    subgraph AUTH["[🔐] Authentication Layer"]
+        B["[⚡] NexPulse Engine"]
+        C[("[🗄️] Hashed Key Store")]
+    end
+
+    subgraph INTEGRATION["[🔄] Integration Layer"]
+        D["[🎯] Integrated Target System"]
+        E["[✨] End User"]
+    end
+
+    subgraph DASH["[📊] Dashboard Services"]
+        F1["[🔑] Key Management"]
+        F2["[📈] Uptime Monitor"]
+        F3["[🔍] Deep Audit"]
+    end
+
+    A1 -->|1. API Key + Pulse| B
+    B -->|2. Validate| C
+    C -->|3. Hash Match| B
+    B -->|4. Authorize| D
+    D -->|5. Clear Cache| D
+    D -.->|6. Fresh Data| E
+    
+    A2 --> F1
+    A2 --> F2
+    A2 --> F3
+    
+    F1 -.->|Manage Keys| C
+    F2 -.->|Monitor| G[("[🌍] Public URL")]
+    F3 -.->|Deep Scan| D
 ```
 
 ## Core Features
