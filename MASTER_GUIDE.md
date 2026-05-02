@@ -41,6 +41,24 @@ The built-in audit engine performs multi-dimensional scans on web properties.
 - **Security & Access**: While simple scans can be initiated via the Dashboard, all programmatic audits via the Pulse API **require a verified Machine API Key**.
 - **Integrated Intelligence**: Audits are most effective when NexPulse is integrated into the target system, allowing for deep diagnostic reporting on SEO, Security (SSL/HSTS), and Performance (TTFB/Script density).
 
+### Pulse-AI (Technical Assistant)
+NexPulse includes **Pulse-AI**, an autonomous technical agent located at the bottom-right of the dashboard. Pulse-AI is trained on the NexPulse protocol and can assist with API implementation, webhook setup, and interpreting diagnostic reports.
+
+### Advanced Monitoring Details
+Selecting any monitor opens the **Advanced Details** view, providing:
+- **High-Fidelity Charts**: Real-time latency and status history.
+- **Trigger Intelligence**: Visibility into active webhooks and email alerts linked to the specific target.
+- **System Metrics**: Monitoring node information and SSL certificate status.
+
+### Activity & Audit Logs
+The **Activity Logs** section provides a complete transparency layer for your account. It records all significant events, including:
+- **API handshakes** and revalidation pulses.
+- **Administrative changes** (Key generation, monitor deletions).
+- **Security events** (Login attempts, password resets).
+
+### Profile & Identity
+The **Profile** section allows for granular management of user data, including secure password updates, plan visibility, and profile image customization.
+
 ### Security and Hashing
 Machine-level security is handled via high-entropy API keys.
 - **Generation**: A unique key is generated once.

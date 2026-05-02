@@ -12,6 +12,8 @@ const categories = [
     links: [
       { label: "Core Concepts", href: "/docs/concepts" },
       { label: "Master Guide",  href: "/docs/master"   },
+      { label: "AI Assistant",  href: "/docs/master#pulse-ai-technical-assistant" },
+      { label: "Dashboard Features", href: "/docs/master#advanced-monitoring-details" },
     ],
   },
   {
