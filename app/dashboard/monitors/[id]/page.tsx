@@ -259,17 +259,17 @@ export default function MonitorDetailsPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <p className="label-category text-[9px]">Check Frequency</p>
-                    <p className="text-[13px] font-bold">5 Minutes</p>
+                    <p className="text-[13px] font-bold">Standard (5m)</p>
                   </div>
                   <div className="space-y-1">
                     <p className="label-category text-[9px]">Timeout Threshold</p>
-                    <p className="text-[13px] font-bold">5000ms</p>
+                    <p className="text-[13px] font-bold">5s (Auto)</p>
                   </div>
                 </div>
                 <div className="pt-4 border-t border-border">
-                  <p className="label-category text-[9px] mb-2">Connected Triggers</p>
+                  <p className="label-category text-[9px] mb-2">Active Notifications</p>
                   <div className="flex flex-wrap gap-2">
-                    <Badge className="bg-np-teal/10 text-np-teal border-np-teal/20">Slack Hook</Badge>
+                    <Badge className="bg-np-teal/10 text-np-teal border-np-teal/20">Discord Webhook</Badge>
                     <Badge className="bg-np-gold/10 text-np-gold border-np-gold/20">Email Alert</Badge>
                   </div>
                 </div>
