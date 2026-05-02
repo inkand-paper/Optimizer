@@ -142,7 +142,7 @@ export function ActivityLogs() {
                   </div>
 
                   {/* Timestamp — gold mono as per spec */}
-                  <span className="mono-gold shrink-0 tabular-nums">
+                  <span className="mono-gold shrink-0 tabular-nums text-[11px] sm:text-[13px]">
                     {new Date(log.createdAt).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",

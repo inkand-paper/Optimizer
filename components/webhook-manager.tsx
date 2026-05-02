@@ -100,7 +100,7 @@ export function WebhookManager({ onLimitReached }: Props) {
 
           <div className="space-y-1.5">
             <label className="label-category text-[10px]">Trigger matrix</label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {EVENT_OPTIONS.map((ev) => {
                 const active = selectedEvents.includes(ev.id);
                 return (

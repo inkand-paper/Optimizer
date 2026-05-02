@@ -134,17 +134,17 @@ export function MonitoringDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between bg-card p-4 rounded-card border border-border shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-card p-4 rounded-card border border-border shadow-sm gap-4">
         <div className="flex items-center gap-4">
-          <div className="h-10 w-10 rounded-ui bg-np-gold/10 flex items-center justify-center text-np-gold border border-np-gold/20">
+          <div className="h-10 w-10 rounded-ui bg-np-gold/10 flex items-center justify-center text-np-gold border border-np-gold/20 shrink-0">
             <Activity className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-[16px] font-semibold tracking-tight uppercase">Real-Time Infrastructure</h2>
+            <h2 className="text-[14px] sm:text-[16px] font-semibold tracking-tight uppercase">Real-Time Infrastructure</h2>
             <p className="label-category text-[10px] mt-0.5">Global Asset Monitoring</p>
           </div>
         </div>
-        <Button size="sm" onClick={() => setIsAdding(!isAdding)} className="h-10 px-6 font-semibold uppercase tracking-widest text-[11px]">
+        <Button size="sm" onClick={() => setIsAdding(!isAdding)} className="h-10 px-6 font-semibold uppercase tracking-widest text-[11px] w-full sm:w-auto">
           {isAdding ? "Cancel" : <><Plus className="h-3 w-3 mr-1.5" /> Provision Target</>}
         </Button>
       </div>
@@ -202,10 +202,10 @@ export function MonitoringDashboard() {
             const currentLatency = history.length > 0 ? history[history.length - 1] : 0;
             return (
               <Card key={m.id} className="p-0 overflow-hidden bg-card border-border shadow-sm group">
-                <div className="p-5 flex items-center justify-between border-b border-border bg-muted dark:bg-np-obsidian/20">
+                <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between border-b border-border bg-muted dark:bg-np-obsidian/20 gap-4">
                   <div className="flex items-center gap-4">
                     <div className={cn(
-                      "h-12 w-12 rounded-ui border flex items-center justify-center shrink-0",
+                      "h-10 w-10 sm:h-12 sm:w-12 rounded-ui border flex items-center justify-center shrink-0",
                       m.status === 'UP' ? "bg-np-teal/10 border-np-teal/20 text-np-teal" : "bg-np-crimson/10 border-np-crimson/20 text-np-crimson"
                     )}>
                       {m.status === 'UP' ? <CheckCircle2 className="h-5 w-5" /> : <XCircle className="h-5 w-5" />}
@@ -217,7 +217,7 @@ export function MonitoringDashboard() {
                             <Input 
                               value={editName}
                               onChange={(e) => setEditName(e.target.value)}
-                              className="h-8 text-[14px] font-bold uppercase w-[200px]"
+                              className="h-8 text-[14px] font-bold uppercase flex-1 min-w-0"
                               disabled={savingEdit}
                               autoFocus
                             />
@@ -245,14 +245,14 @@ export function MonitoringDashboard() {
                       </p>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-2">
+                  <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2">
                     <div className="flex items-center gap-3">
                       <Badge variant={m.status === 'UP' ? 'success' : 'danger'} className="text-[10px] px-2.5 py-1">
                         {m.status}
                       </Badge>
                       <button 
                         onClick={() => handleDelete(m.id)}
-                        className="opacity-0 group-hover:opacity-100 p-2 text-muted-foreground hover:text-np-crimson transition-all"
+                        className="sm:opacity-0 group-hover:opacity-100 p-2 text-muted-foreground hover:text-np-crimson transition-all"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>

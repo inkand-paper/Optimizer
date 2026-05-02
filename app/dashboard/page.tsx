@@ -303,14 +303,14 @@ export default function DashboardPage() {
                     <p className="label-category text-[10px]">SEO &amp; infrastructure audit engine</p>
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <Input
                     placeholder="https://your-site.com"
                     value={analyzeUrl}
                     onChange={(e) => setAnalyzeUrl(e.target.value)}
                     className="flex-1"
                   />
-                  <Button onClick={runAnalyzer} disabled={analyzeLoading || !analyzeUrl} className="shrink-0">
+                  <Button onClick={runAnalyzer} disabled={analyzeLoading || !analyzeUrl} className="shrink-0 w-full sm:w-auto">
                     {analyzeLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Scan"}
                   </Button>
                 </div>
@@ -349,9 +349,9 @@ export default function DashboardPage() {
                 <Card className="overflow-hidden">
                   <div className="p-4" style={{ borderBottom: "0.5px solid var(--border)" }}>
                     <p className="label-category mb-3">Provision new key</p>
-                    <form onSubmit={handleCreateKey} className="flex gap-2">
+                    <form onSubmit={handleCreateKey} className="flex flex-col sm:flex-row gap-2">
                       <Input name="keyName" placeholder="Key name" className="flex-1" required />
-                      <Button type="submit" disabled={creatingKey} size="sm">
+                      <Button type="submit" disabled={creatingKey} size="sm" className="w-full sm:w-auto">
                         {creatingKey ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <><Plus className="h-3.5 w-3.5 mr-1" />Create</>}
                       </Button>
                     </form>

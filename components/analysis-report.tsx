@@ -130,13 +130,13 @@ export function AnalysisReport({ data }: Props) {
       {/* ── Tabbed report ── */}
       <Card>
         {/* Tab bar */}
-        <div className="flex" style={{ borderBottom: "0.5px solid var(--border)" }}>
+        <div className="flex overflow-x-auto np-scroll-hide no-scrollbar" style={{ borderBottom: "0.5px solid var(--border)" }}>
           {tabs.map((t, i) => (
             <button
               key={t.label}
               onClick={() => setActiveTab(i)}
               className={cn(
-                "flex items-center gap-2 px-5 py-3.5 text-[13px] font-medium transition-colors",
+                "flex items-center gap-2 px-5 py-3.5 text-[13px] font-medium transition-colors shrink-0",
                 activeTab === i
                   ? "text-np-gold border-b-2 border-np-gold -mb-px"
                   : "text-muted-foreground hover:text-foreground"
