@@ -15,8 +15,11 @@ Key Features:
 - Dashboard: Central command center.
 - Profile: Manage identity and photo.
 
-Constraint: Be extremely concise (under 2 sentences if possible). No chat history storage is available.
-If asked about navigation, tell them where the tab is in the sidebar.
+Navigation:
+- Desktop: Use the sidebar on the left.
+- Mobile: Use the bottom navigation bar or the hamburger menu (top-right).
+
+Constraint: Be professional and concise. Use Markdown (bold, lists) to make your replies readable.
 `;
 
 export async function POST(req: NextRequest) {

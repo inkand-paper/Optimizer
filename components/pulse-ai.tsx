@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { Sparkles, X, Send, Loader2, Bot, User, MessageSquare } from "lucide-react";
+import { Activity, X, Send, Loader2, Bot, User, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
+import ReactMarkdown from "react-markdown";
 
 interface Message {
   role: "user" | "assistant";
@@ -38,7 +39,7 @@ export function PulseAI() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           message: input,
-          history: messages.slice(-4) // Only send last 4 messages to save tokens
+          history: messages.slice(-4) 
         }),
       });
 
@@ -73,7 +74,7 @@ export function PulseAI() {
           <X className="h-6 w-6 text-white" />
         ) : (
           <div className="relative">
-            <Sparkles className="h-6 w-6 text-white animate-pulse" />
+            <Activity className="h-6 w-6 text-white" />
             <div className="absolute -top-1 -right-1 h-3 w-3 bg-np-teal rounded-full border-2 border-white dark:border-np-obsidian" />
           </div>
         )}
@@ -95,7 +96,7 @@ export function PulseAI() {
           <div className="p-4 border-b border-border bg-muted/30 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="h-8 w-8 rounded-ui bg-np-gold/10 flex items-center justify-center">
-                <Bot className="h-4 w-4 text-np-gold" />
+                <Activity className="h-4 w-4 text-np-gold" />
               </div>
               <div>
                 <p className="text-[13px] font-bold uppercase tracking-tight">Pulse-AI</p>
@@ -121,13 +122,13 @@ export function PulseAI() {
                   "h-7 w-7 rounded-full flex items-center justify-center shrink-0",
                   m.role === "user" ? "bg-np-gold/10 text-np-gold" : "bg-muted text-muted-foreground"
                 )}>
-                  {m.role === "user" ? <User className="h-3.5 w-3.5" /> : <Bot className="h-3.5 w-3.5" />}
+                  {m.role === "user" ? <User className="h-3.5 w-3.5" /> : <Activity className="h-3.5 w-3.5" />}
                 </div>
                 <div className={cn(
-                  "max-w-[80%] p-3 rounded-ui text-[12.5px] leading-relaxed",
+                  "max-w-[80%] p-3 rounded-ui text-[12.5px] leading-relaxed prose prose-invert prose-p:my-0 prose-sm",
                   m.role === "user" ? "bg-np-gold text-white" : "bg-muted/50 border border-border"
                 )}>
-                  {m.content}
+                  <ReactMarkdown>{m.content}</ReactMarkdown>
                 </div>
               </div>
             ))}
