@@ -55,30 +55,34 @@ export default function MonitorDetailsPage() {
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header Navigation */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
-          <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="p-2 hover:bg-muted rounded-ui transition-colors text-muted-foreground hover:text-foreground">
+        <div className="flex flex-col gap-6 mb-2">
+          <div className="flex items-start gap-4">
+            <Link href="/dashboard" className="mt-1 p-2 hover:bg-muted rounded-ui transition-colors text-muted-foreground hover:text-foreground shrink-0">
               <ArrowLeft className="h-5 w-5" />
             </Link>
-            <div>
-              <h1 className="text-2xl font-bold uppercase tracking-tight flex items-center gap-3">
-                {monitor?.name}
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="text-2xl font-bold uppercase tracking-tight truncate max-w-full">
+                  {monitor?.name}
+                </h1>
                 <Badge variant={monitor?.status === 'UP' ? 'success' : 'danger'} className="text-[10px] px-2 py-0.5">
                   {monitor?.status}
                 </Badge>
-              </h1>
-              <p className="text-[12px] text-muted-foreground font-mono flex items-center gap-1.5 mt-0.5">
-                <Globe className="h-3 w-3" /> {monitor?.url}
+              </div>
+              <p className="text-[12px] text-muted-foreground font-mono flex items-center gap-1.5 mt-1 truncate">
+                <Globe className="h-3 w-3 shrink-0" /> 
+                <span className="truncate">{monitor?.url}</span>
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={fetchDetails} disabled={refreshing}>
-              <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5", refreshing && "animate-spin")} />
-              Sync
+          
+          <div className="flex flex-wrap items-center gap-3 pl-[52px] sm:pl-0 sm:justify-end sm:mt-[-54px]">
+            <Button variant="outline" size="sm" onClick={fetchDetails} disabled={refreshing} className="h-9 px-4 text-[11px] uppercase tracking-widest">
+              <RefreshCw className={cn("h-3.5 w-3.5 mr-2", refreshing && "animate-spin")} />
+              Sync Telemetry
             </Button>
-            <a href={monitor?.url} target="_blank" rel="noopener noreferrer" className="np-btn-outline h-9 px-3 text-[12px] flex items-center gap-1.5">
-              <ExternalLink className="h-3.5 w-3.5" /> Visit
+            <a href={monitor?.url} target="_blank" rel="noopener noreferrer" className="np-btn-outline h-9 px-4 text-[11px] uppercase tracking-widest flex items-center gap-2">
+              <ExternalLink className="h-3.5 w-3.5" /> Visit Site
             </a>
           </div>
         </div>
