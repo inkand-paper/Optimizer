@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || "");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 const SYSTEM_PROMPT = `
@@ -23,8 +23,8 @@ export async function POST(req: NextRequest) {
   try {
     const { message, history } = await req.json();
 
-    if (!process.env.GOOGLE_API_KEY) {
-      return NextResponse.json({ content: "API key missing. Please configure GOOGLE_API_KEY." });
+    if (!process.env.GEMINI_API_KEY) {
+      return NextResponse.json({ content: "API key missing. Please configure GEMINI_API_KEY." });
     }
 
     // Format history for Gemini
