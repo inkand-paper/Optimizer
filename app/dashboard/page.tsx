@@ -39,6 +39,7 @@ export default function DashboardPage() {
   const [health, setHealth]       = React.useState<any>(null);
   const [showPricing, setShowPricing] = React.useState(false);
   const [currentUserPlan, setCurrentUserPlan] = React.useState("FREE");
+  const [authLoading, setAuthLoading] = React.useState(true);
 
   // Key creation
   const [creatingKey, setCreatingKey] = React.useState(false);
@@ -68,9 +69,26 @@ export default function DashboardPage() {
     }
 
     fetch("/api/auth/me", { credentials: "include" })
-      .then((r) => { if (!r.ok) { if (!storedUser) router.push("/login"); return null; } return r.json(); })
-      .then((d) => { if (d?.success) { setUser(d.user); setCurrentUserPlan(d.user.plan || "FREE"); localStorage.setItem("user", JSON.stringify(d.user)); } })
-      .catch(() => { if (!localStorage.getItem("user")) router.push("/login"); });
+      .then((r) => { 
+        if (!r.ok) { 
+          if (!storedUser) router.push("/login"); 
+          setAuthLoading(false);
+          return null; 
+        } 
+        return r.json(); 
+      })
+      .then((d) => { 
+        if (d?.success) { 
+          setUser(d.user); 
+          setCurrentUserPlan(d.user.plan || "FREE"); 
+          localStorage.setItem("user", JSON.stringify(d.user)); 
+        }
+        setAuthLoading(false);
+      })
+      .catch(() => { 
+        if (!localStorage.getItem("user")) router.push("/login");
+        setAuthLoading(false);
+      });
 
     const sk = localStorage.getItem("active_api_key");
     if (sk) setPlaygroundKey(sk);
@@ -147,7 +165,7 @@ export default function DashboardPage() {
 
   const copyKey = (t: string) => { navigator.clipboard.writeText(t); setCopied(true); setTimeout(() => setCopied(false), 2000); };
 
-  if (loading) return (
+  if (loading || authLoading) return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <Loader2 className="h-6 w-6 animate-spin text-np-gold" />
     </div>
@@ -155,7 +173,7 @@ export default function DashboardPage() {
 
   if (user && !user.emailVerified) return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-sm p-8 text-center">
+      <Card className="w-full max-w-sm p-8 text-center animate-in fade-in zoom-in-95 duration-300">
         <ShieldAlert className="h-8 w-8 text-np-crimson mx-auto mb-4" />
         <h1 className="text-lg font-semibold mb-2">Verify your email</h1>
         <p className="text-[13px] text-muted-foreground mb-6">Check your inbox and click the activation link to unlock the dashboard.</p>
