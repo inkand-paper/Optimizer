@@ -14,7 +14,8 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import {
   Activity, Key, Trash2, Plus, Terminal, ShieldCheck, Copy,
   CheckCircle2, Loader2, RefreshCw, LogOut, Search, FileText,
-  Webhook, ShieldAlert, BarChart4, ChevronRight, Book, Home, User
+  Webhook, ShieldAlert, BarChart4, ChevronRight, Book, Home, User,
+  Menu, X
 } from "lucide-react";
 
 interface ApiKey { id: string; name: string; createdAt: string; lastUsedAt: string | null; }
@@ -43,6 +44,7 @@ export default function DashboardPage() {
   const [creatingKey, setCreatingKey] = React.useState(false);
   const [newKey, setNewKey]           = React.useState<string | null>(null);
   const [copied, setCopied]           = React.useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   // Playground
   const [playgroundKey, setPlaygroundKey] = React.useState("");
@@ -162,7 +164,6 @@ export default function DashboardPage() {
       </Card>
     </div>
   );
-
   /* ──────────── MAIN LAYOUT ──────────── */
   return (
     <div className="min-h-screen flex bg-background">
@@ -261,7 +262,7 @@ export default function DashboardPage() {
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
         <header
-          className="h-14 flex items-center justify-between px-4 sm:px-6 shrink-0"
+          className="h-14 flex items-center justify-between px-4 sm:px-6 shrink-0 relative z-[60]"
           style={{ borderBottom: "0.5px solid var(--border)" }}
         >
           <div className="flex items-center gap-3">
@@ -273,18 +274,60 @@ export default function DashboardPage() {
               <p className="label-category text-[10px] hidden sm:block">NexPulse Dashboard</p>
             </div>
           </div>
+
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="md:hidden flex items-center">
-              <ThemeToggle />
-            </div>
-            <Link href="/docs" className="md:hidden p-2 rounded-ui text-np-slate hover:text-foreground transition-colors" title="Documentation">
-              <Book className="h-4 w-4" />
-            </Link>
             <span className="mono-gold text-[11px] hidden sm:block">{user?.email}</span>
-            <button onClick={handleLogout} className="md:hidden p-2 rounded-ui text-np-slate hover:text-np-crimson transition-colors" title="Logout">
+            <div className="md:hidden flex items-center">
+              <button 
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 rounded-ui text-np-slate hover:text-foreground transition-colors"
+              >
+                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </button>
+            </div>
+            <button onClick={handleLogout} className="hidden md:block p-2 rounded-ui text-np-slate hover:text-np-crimson transition-colors" title="Logout">
               <LogOut className="h-4 w-4" />
             </button>
           </div>
+
+          {/* Mobile Drawer Overlay */}
+          {mobileMenuOpen && (
+            <div 
+              className="md:hidden absolute top-14 left-0 right-0 bg-background/98 backdrop-blur-xl p-4 shadow-2xl space-y-4 animate-in slide-in-from-top-2 duration-200"
+              style={{ borderBottom: "0.5px solid var(--border)" }}
+            >
+              <Link 
+                href="/dashboard/profile" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-3 p-3 rounded-ui bg-muted/30 text-[14px] font-medium"
+              >
+                <User className="h-4 w-4 text-np-gold" />
+                Profile Settings
+              </Link>
+              <Link 
+                href="/docs" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-3 p-3 rounded-ui bg-muted/30 text-[14px] font-medium"
+              >
+                <Book className="h-4 w-4 text-np-gold" />
+                Documentation
+              </Link>
+              <div className="flex items-center justify-between p-3 rounded-ui bg-muted/30">
+                <div className="flex items-center gap-3 text-[14px] font-medium text-muted-foreground">
+                  <ShieldCheck className="h-4 w-4 text-np-gold" />
+                  Appearance
+                </div>
+                <ThemeToggle />
+              </div>
+              <button 
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 p-3 rounded-ui bg-np-crimson/5 text-np-crimson text-[14px] font-medium"
+              >
+                <LogOut className="h-4 w-4" />
+                Logout System
+              </button>
+            </div>
+          )}
         </header>
 
         {/* Tab content */}
