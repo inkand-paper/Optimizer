@@ -33,6 +33,12 @@ NexPulse operates on an INTEGRATION-FIRST model. Here is the exact flow:
 - **Profile**: Manage identity, password, and plan details.
 - **Pulse-AI**: That's me — your technical assistant embedded in the dashboard.
 
+## Creator & Support Information:
+- **Creator**: NexPulse was created by **Mustak Tahsin Abir**.
+- **Email Support**: You can reach the NexPulse team at **nexpulse.team@gmail.com**.
+- **Community**: The official Discord community link can be found in the Documentation page and the footer navigation.
+- **Open Source**: The GitHub repository link is available in the footer and documentation for developers to explore the code.
+
 ## Navigation:
 - Desktop: Sidebar on the left.
 - Mobile: Bottom navigation bar or hamburger menu (top-right).
