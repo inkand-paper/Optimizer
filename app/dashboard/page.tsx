@@ -11,6 +11,9 @@ import { WebhookManager } from "@/components/webhook-manager";
 import { MonitoringDashboard } from "@/components/monitoring-dashboard";
 import { PricingModal } from "@/components/pricing-modal";
 import { ThemeToggle } from "@/components/theme-toggle";
+import type { AnalyzeResponse } from "@/lib/types";
+
+
 import {
   Activity, Key, Plus, Terminal, ShieldCheck, Copy,
   CheckCircle2, Loader2, RefreshCw, LogOut, Search, FileText,
@@ -56,7 +59,7 @@ export default function DashboardPage() {
 
   // Analyzer
   const [analyzeUrl, setAnalyzeUrl]       = React.useState("");
-  const [analyzeResult, setAnalyzeResult] = React.useState<Record<string, unknown> | null>(null);
+  const [analyzeResult, setAnalyzeResult] = React.useState<AnalyzeResponse | null>(null);
   const [analyzeLoading, setAnalyzeLoading] = React.useState(false);
 
   React.useEffect(() => {
