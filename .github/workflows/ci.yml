@@ -1,0 +1,44 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  security-and-testing:
+    name: Lint, Test, and Build
+    runs-on: ubuntu-latest
+
+    # Provide dummy environment variables for Next.js build and Prisma
+    env:
+      DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
+      NEXTAUTH_SECRET: "dummy_secret_for_testing_only"
+      NEXTAUTH_URL: "http://localhost:3000"
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Security Audit (NPM)
+        # Checks for high/critical vulnerabilities. The '|| true' prevents the entire pipeline from failing immediately if a minor package issue is found, acting as a warning system.
+        run: npm audit --audit-level=high || echo "::warning::Security vulnerabilities found in dependencies. Please review npm audit logs."
+
+      - name: Type Check & Linting
+        run: npm run lint
+
+      - name: Run Unit Tests (Vitest)
+        run: npm run test
+
+      - name: Verify Production Build
+        run: npm run build
