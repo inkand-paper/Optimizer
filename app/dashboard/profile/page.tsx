@@ -7,6 +7,7 @@ import { User, Shield, Mail, Calendar, Key, ShieldCheck, Loader2, Camera, AlertT
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { getGravatarUrl } from "@/lib/gravatar";
+import Image from "next/image";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -108,9 +109,9 @@ export default function ProfilePage() {
               <div className="relative group mx-auto w-24">
                 <div className="h-24 w-24 rounded-full overflow-hidden border-2 border-np-gold/20 flex items-center justify-center bg-np-gold/10 text-np-gold text-3xl font-bold">
                   {image ? (
-                    <img src={image} alt="Avatar" className="w-full h-full object-cover" />
+                    <Image src={image} alt="Avatar" className="w-full h-full object-cover" />
                   ) : user?.email ? (
-                    <img src={getGravatarUrl(user.email!)} alt="Avatar" className="w-full h-full object-cover" />
+                    <Image src={getGravatarUrl(user.email!)} alt="Avatar" className="w-full h-full object-cover" />
                   ) : (
                     name?.[0] || "?"
                   )}
