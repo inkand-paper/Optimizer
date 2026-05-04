@@ -131,21 +131,21 @@ export function ActivityLogs() {
                         >
                           {log.status}
                         </span>
-                        {log.details?.origin && (
-  <span className="font-mono text-[11px] text-np-gold bg-np-gold/10 px-1.5 py-0.5 rounded">
-    {String(log.details.origin)}
-  </span>
-)}
-{log.details?.durationMs && (
-  <span className="font-mono text-[11px] text-np-slate">
-    {String(log.details.durationMs)}ms
-  </span>
-)}
-{log.details?.score !== undefined && (
-  <span className="font-mono text-[11px] text-np-slate">
-    score: {String(log.details.score)}
-  </span>
-)}
+                        {Boolean(log.details?.origin) && (
+                          <span className="font-mono text-[11px] text-np-gold bg-np-gold/10 px-1.5 py-0.5 rounded">
+                            {String(log.details.origin)}
+                          </span>
+                        )}
+                        {Boolean(log.details?.durationMs) && (
+                          <span className="font-mono text-[11px] text-np-slate">
+                            {String(log.details.durationMs)}ms
+                          </span>
+                        ) }
+                        {log.details?.score !== undefined && (
+                          <span className="font-mono text-[11px] text-np-slate">
+                            score: {String(log.details.score)}
+                          </span>
+                        )}
                       </div>
                     </div>
 
