@@ -33,8 +33,8 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async session({ session, user }) {
       if (session.user) {
-        (session.user as Record<string, unknown>).id = user.id;
-        (session.user as Record<string, unknown>).role = (user as Record<string, unknown>).role;
+        (session.user as unknown as Record<string, unknown>).id = user.id;
+        (session.user as unknown as Record<string, unknown>).role = (user as unknown as Record<string, unknown>).role;
       }
       return session;
     },
