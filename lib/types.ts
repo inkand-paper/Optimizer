@@ -1,3 +1,7 @@
+import type { SeoMetrics } from '@/core/analyzer/seo';
+import type { SecurityMetrics } from '@/core/analyzer/security';
+import type { PerformanceMetrics } from '@/core/analyzer/performance';
+
 // Request types
 export interface RevalidateRequest {
   path?: string;
