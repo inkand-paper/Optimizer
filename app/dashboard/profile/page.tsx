@@ -10,7 +10,7 @@ import { getGravatarUrl } from "@/lib/gravatar";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [user, setUser] = React.useState<{ name?: string; email?: string; role?: string; plan?: string; emailVerified?: boolean; createdAt?: string; image?: string } | null>(null);
+  const [user, setUser] = React.useState<{ name?: string; email?: string; role?: string; plan?: string; emailVerified?: boolean; createdAt?: string; image?: string | null } | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
   const [message, setMessage] = React.useState({ type: "", text: "" });
