@@ -136,7 +136,7 @@ export default function MonitorDetailsPage() {
               </div>
               <div>
                 <p className="text-[14px] font-bold uppercase">
-                  {monitor?.checks?.length > 0 
+                  {(monitor?.checks?.length ?? 0) > 0
                     ? ((monitor.checks.filter((c: MonitorCheck) => c.status === 'UP').length / monitor.checks.length) * 100).toFixed(2)
                     : "100.00"}%
                 </p>
