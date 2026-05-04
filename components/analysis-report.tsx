@@ -196,7 +196,7 @@ export function AnalysisReport({ data }: Props) {
                     </span>
                   </div>
                   <div className="text-[13px] leading-relaxed max-w-none">
-                    <ReactMarkdown>{typeof aiSection === 'string' ? aiSection : (aiSection.diagnosis || aiSection.content || "No diagnosis available.")}</ReactMarkdown>
+                    <ReactMarkdown>{aiSection || "No diagnosis available."}</ReactMarkdown>
                   </div>
                 </div>
               ) : (
