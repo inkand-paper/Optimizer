@@ -37,7 +37,7 @@ export default function DashboardPage() {
   const [keys, setKeys]           = React.useState<ApiKey[]>([]);
   const [loading, setLoading]     = React.useState(true);
   const [activeTab, setActiveTab] = React.useState<Tab>("monitoring");
-  const [health, setHealth]       = React.useState<Record<string, unknown> | null>(null);
+  const [health, setHealth]       = React.useState<{ status?: string } | null>(null);
   const [showPricing, setShowPricing] = React.useState(false);
   const [currentUserPlan, setCurrentUserPlan] = React.useState("FREE");
   const [authLoading, setAuthLoading] = React.useState(true);
