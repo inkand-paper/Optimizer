@@ -34,8 +34,8 @@ async function processRevalidation(
   }
   
   if (tag) {
-    // @ts-expect-error Next.js might warn about extra args here in some versions
-    revalidateTag(tag, 'max'); 
+    
+    revalidateTag(tag, 'max');
     
     if (currentUserId) {
       await logActivity({
@@ -69,7 +69,6 @@ async function processRevalidation(
     });
   } 
   else if (path) {
-    // @ts-expect-error Next.js might warn about extra args here in some versions
     revalidatePath(path); 
     
     if (currentUserId) {
