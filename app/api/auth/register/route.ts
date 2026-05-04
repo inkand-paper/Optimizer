@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
         passwordHash: hashed,
         name: parsedData.name,
         role: role as import("@prisma/client").Role,
-        plan: plan as import("@prisma/client").PlanTier,
+        plan: plan as import("@prisma/client").Plan,
         emailVerified: emailVerifiedDate,
         verificationToken: isVerified ? null : verificationToken
       }
