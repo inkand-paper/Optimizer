@@ -1,8 +1,9 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { AnalyzeResponse } from "./types";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
-export async function getAiDiagnosis(auditData: Record<string, unknown>) {
+export async function getAiDiagnosis(auditData: AnalyzeResponse["results"]) {
   try {
     if (!process.env.GEMINI_API_KEY) {
       return null;
