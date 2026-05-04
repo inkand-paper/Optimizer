@@ -59,7 +59,7 @@ export function AnalysisReport({ data }: Props) {
         <div>
           <p className="text-[13px] font-semibold text-np-crimson">Scan failed</p>
           <p className="text-[12px] text-muted-foreground mt-0.5">
-            {(data as Record<string, unknown>).message as string || "Could not analyse the URL. Check the URL and your API key."}
+            {(data as unknown as Record<string, unknown>).message as string || "Could not analyse the URL. Check the URL and your API key."}
           </p>
         </div>
       </Card>
