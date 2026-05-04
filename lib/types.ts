@@ -55,12 +55,12 @@ export interface AnalyzeResponse {
     url: string;
     overallScore: number;
     sections: {
-      seo: { score: number; metrics: Record<string, unknown>; suggestions: string[] };
-      security: { score: number; metrics: Record<string, unknown>; suggestions: string[] };
-      performance: { score: number; metrics: Record<string, unknown>; suggestions: string[] };
+      seo: { score: number; metrics: SeoMetrics; suggestions: string[] };
+      security: { score: number; metrics: SecurityMetrics; suggestions: string[] };
+      performance: { score: number; metrics: PerformanceMetrics; suggestions: string[] };
     };
   };
   aiInsight?: string | null;
   timestamp: string;
 }
-
+
