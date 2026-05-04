@@ -155,12 +155,21 @@ export default async function DocDetail({ params }: { params: Promise<{ slug: st
   const fileName = fileMap[slug];
   if (!fileName) notFound();
 
+  let content: string;
+  let renderedIntro: string;
+  let renderedSections: string;
+
   try {
     const filePath = path.join(process.cwd(), fileName);
-    const content = fs.readFileSync(filePath, "utf-8");
-    const { renderedIntro, renderedSections } = renderMarkdownAsCards(content);
+    content = fs.readFileSync(filePath, "utf-8");
+    const rendered = renderMarkdownAsCards(content);
+    renderedIntro = rendered.renderedIntro;
+    renderedSections = rendered.renderedSections;
+  } catch {
+    notFound();
+  }
 
-    return (
+  return (
       <div className="min-h-screen flex flex-col bg-background">
         <MermaidInitializer />
         <Navbar />
@@ -215,7 +224,4 @@ export default async function DocDetail({ params }: { params: Promise<{ slug: st
         </main>
       </div>
     );
-  } catch (e) {
-    notFound();
-  }
 }

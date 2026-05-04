@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Activity, X, Send, Loader2, Bot, User, MessageSquare } from "lucide-react";
+import { Activity, X, Send, Loader2, Bot, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
 
@@ -49,7 +49,7 @@ export function PulseAI() {
       } else {
         setMessages((prev) => [...prev, { role: "assistant", content: "Signal lost. Please retry." }]);
       }
-    } catch (err) {
+    } catch {
       setMessages((prev) => [...prev, { role: "assistant", content: "Communication failure." }]);
     } finally {
       setLoading(false);

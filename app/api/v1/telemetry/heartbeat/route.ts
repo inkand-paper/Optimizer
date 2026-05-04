@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
 
     // We return a 204 No Content to be as stealthy and lightweight as possible
     return new NextResponse(null, { status: 204 });
-  } catch (error) {
+  } catch {
     // Silently fail to not give away the endpoint's purpose via errors
     return new NextResponse(null, { status: 204 });
   }

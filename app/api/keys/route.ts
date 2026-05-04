@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Validation Error', message: (error as any).errors }, { status: 400 });
+      return NextResponse.json({ error: 'Validation Error', message: error.errors }, { status: 400 });
     }
     console.error('Create key error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

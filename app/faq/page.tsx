@@ -155,7 +155,7 @@ export default function FaqPage() {
           </h1>
           <p className="text-[16px] text-muted-foreground max-w-xl mx-auto leading-relaxed">
             Everything you need to know about NexPulse — from integration to security.
-            Can't find what you're looking for? Ask{" "}
+            Can&apos;t find what you&apos;re looking for? Ask{" "}
             <span className="font-semibold text-foreground">Pulse-AI</span> in the dashboard.
           </p>
         </div>

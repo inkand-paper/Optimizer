@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Card, Button, StatusDot } from "./ui-elements";
-import { Activity, RefreshCw, Search, Key, Webhook, ShieldAlert, ChevronDown, ChevronUp, Database } from "lucide-react";
+import { Card, StatusDot } from "./ui-elements";
+import { Activity, RefreshCw, Search, Key, ShieldAlert, ChevronDown, ChevronUp, Database } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Log {
@@ -11,7 +11,7 @@ interface Log {
   action: string;
   status: string;
   createdAt: string;
-  details: any;
+  details: Record<string, unknown>;
 }
 
 function typeIcon(type: string) {
@@ -47,6 +47,7 @@ export function ActivityLogs() {
   };
 
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchLogs();
     const iv = setInterval(fetchLogs, 30000);
     return () => clearInterval(iv);

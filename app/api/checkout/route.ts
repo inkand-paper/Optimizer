@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createCheckout } from "@lemonsqueezy/lemonsqueezy.js";
 import { getTokenFromRequest } from "@/lib/auth";
-import { PLAN_LIMITS, PlanType } from "@/lib/plans";
+
 import "@/lib/lemonsqueezy"; // Ensure setup runs
 
 export async function POST(req: NextRequest) {
@@ -46,11 +46,11 @@ export async function POST(req: NextRequest) {
       url: data?.data.attributes.url 
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Checkout error:', error);
     return NextResponse.json({ 
       error: 'Internal Server Error', 
-      message: error.message 
+      message: error instanceof Error ? error.message : String(error)
     }, { status: 500 });
   }
 }

@@ -4,7 +4,7 @@ import * as React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, Button, PasswordInput } from "@/components/ui-elements";
 import { Activity, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
-import Link from "next/link";
+
 import { Suspense } from "react";
 
 function ResetPasswordForm() {

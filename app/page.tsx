@@ -5,14 +5,10 @@ import { PLAN_LIMITS } from "@/lib/plans";
 import {
   Activity,
   ArrowRight,
-  Globe,
   Zap,
   Shield,
   BarChart3,
-  Database,
-  Smartphone,
   Check,
-  Crown,
   Mail,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -165,7 +161,7 @@ export default function Home() {
                     </div>
 
                     <ul className="space-y-2.5">
-                      {plan.features.map((f: any, i: number) => (
+                      {plan.features.map((f: { active: boolean; text: string }, i: number) => (
                         <li
                           key={i}
                           className={cn("flex items-center gap-2.5 text-[13px]", !f.active && "opacity-35")}

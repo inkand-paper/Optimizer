@@ -47,8 +47,8 @@ export async function POST(req: NextRequest) {
         email: parsedData.email,
         passwordHash: hashed,
         name: parsedData.name,
-        role: role as any,
-        plan: plan as any,
+        role: role as import("@prisma/client").Role,
+        plan: plan as import("@prisma/client").PlanTier,
         emailVerified: emailVerifiedDate,
         verificationToken: isVerified ? null : verificationToken
       }
@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation Error', message: (error as any).errors },
+        { error: 'Validation Error', message: error.errors },
         { status: 400 }
       );
     }

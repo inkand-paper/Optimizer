@@ -119,8 +119,8 @@ export async function POST(req: NextRequest) {
       try {
         const text = await runGroq(message, safeHistory);
         return NextResponse.json({ content: text, engine: "groq" });
-      } catch (groqError: any) {
-        console.warn("⚡ Groq failed, falling back to Gemini:", groqError?.message || groqError);
+      } catch (groqError: unknown) {
+        console.warn("⚡ Groq failed, falling back to Gemini:", groqError instanceof Error ? groqError.message : String(groqError));
       }
     }
 
@@ -129,8 +129,8 @@ export async function POST(req: NextRequest) {
       try {
         const text = await runGemini(message, safeHistory);
         return NextResponse.json({ content: text, engine: "gemini" });
-      } catch (geminiError: any) {
-        console.error("❌ Gemini also failed:", geminiError?.message || geminiError);
+      } catch (geminiError: unknown) {
+        console.error("❌ Gemini also failed:", geminiError instanceof Error ? geminiError.message : String(geminiError));
         throw geminiError;
       }
     }

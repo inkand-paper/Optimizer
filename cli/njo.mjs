@@ -42,6 +42,7 @@ function loadConfig() {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function saveConfig(cfg) {
   const dir = join(homedir(), '.njo');
   mkdirSync(dir, { recursive: true });
@@ -216,7 +217,7 @@ async function cmdCron(opts) {
       } else {
         console.error(fmt(c.red, `  [${time}] Error triggering monitors: ${data?.error || 'Unknown error'}`));
       }
-    } catch (e) {
+    } catch {
       console.error(fmt(c.red, `  [${new Date().toLocaleTimeString()}] Network error reaching API`));
     }
   };

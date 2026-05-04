@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, users });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 });
   }
 }
@@ -75,7 +75,7 @@ export async function PATCH(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, user: updatedUser });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to update user' }, { status: 500 });
   }
 }

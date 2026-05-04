@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
+
 import { Card, Button, Input } from "@/components/ui-elements";
 import { Activity, Loader2, CheckCircle2, ArrowLeft } from "lucide-react";
 
@@ -58,7 +58,7 @@ export default function ForgotPasswordPage() {
             Reset Password
           </h1>
           <p className="text-[13px] mt-1 text-np-slate">
-            We'll send a recovery link to your inbox
+            We&apos;ll send a recovery link to your inbox
           </p>
         </div>
 
@@ -71,7 +71,7 @@ export default function ForgotPasswordPage() {
               <div className="space-y-1">
                 <p className="text-[14px] font-bold uppercase tracking-tight">Check your email</p>
                 <p className="text-[13px] text-muted-foreground">
-                  If an account exists, you'll receive a link to reset your password shortly.
+                  If an account exists, you&apos;ll receive a link to reset your password shortly.
                 </p>
               </div>
               <Button variant="outline" className="w-full mt-4 h-10 text-[11px] uppercase tracking-widest" onClick={() => window.location.href = "/login"}>

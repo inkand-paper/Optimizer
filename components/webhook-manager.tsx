@@ -32,7 +32,10 @@ export function WebhookManager({ onLimitReached }: Props) {
     finally { setLoading(false); }
   };
 
-  React.useEffect(() => { fetchWebhooks(); }, []);
+  React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchWebhooks();
+  }, []);
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -126,7 +129,7 @@ export function WebhookManager({ onLimitReached }: Props) {
             </div>
           </div>
 
-          <Button className="w-full" onClick={handleAdd as any} disabled={!url || selectedEvents.length === 0 || loading}>
+          <Button className="w-full" onClick={(e) => handleAdd(e)} disabled={!url || selectedEvents.length === 0 || loading}>
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Register webhook"}
           </Button>
         </div>

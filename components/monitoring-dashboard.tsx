@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Card, Button, Input, StatusDot, Badge } from "./ui-elements";
+import { Card, Button, Input, Badge } from "./ui-elements";
 import { 
   Activity, 
   Globe, 
@@ -55,6 +55,7 @@ export function MonitoringDashboard() {
   };
 
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchMonitors();
     const interval = setInterval(fetchMonitors, 10000); 
     return () => clearInterval(interval);
@@ -81,7 +82,7 @@ export function MonitoringDashboard() {
         const data = await res.json();
         setErrorMessage(data.message || "Failed to provision asset.");
       }
-    } catch (err) {
+    } catch {
       setErrorMessage("Network anomaly. Provisioning aborted.");
     } finally {
       setAddingState(false);

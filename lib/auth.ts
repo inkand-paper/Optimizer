@@ -21,13 +21,13 @@ export async function comparePasswords(plain: string, hashed: string): Promise<b
 }
 
 export function signJwt(payload: JwtPayload, expiresIn = '7d'): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: expiresIn as any });
+  return jwt.sign(payload, JWT_SECRET, { expiresIn });
 }
 
 export function verifyJwt(token: string): JwtPayload | null {
   try {
     return jwt.verify(token, JWT_SECRET) as JwtPayload;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -53,9 +53,9 @@ export async function getTokenFromRequest(req: NextRequest): Promise<JwtPayload 
   const session = await getServerSession(authOptions);
   if (session?.user) {
     return {
-      userId: (session.user as any).id,
+      userId: (session.user as Record<string, unknown>).id as string,
       email: session.user.email!,
-      role: (session.user as any).role || 'DEVELOPER'
+      role: ((session.user as Record<string, unknown>).role as string) || 'DEVELOPER'
     };
   }
 

@@ -8,7 +8,7 @@ interface LogOptions {
   action: string;
   status: ActivityStatus;
   userId?: string;
-  details?: any;
+  details?: Record<string, unknown>;
 }
 
 /**

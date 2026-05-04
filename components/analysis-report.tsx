@@ -1,9 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { Card, Button, StatusDot } from "./ui-elements";
+import { Card, Button } from "./ui-elements";
 import {
-  CheckCircle2, XCircle, AlertCircle, Globe, Lock,
+  CheckCircle2, XCircle, AlertCircle,
   Zap, Search, ShieldCheck, Download, Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -59,7 +59,7 @@ export function AnalysisReport({ data }: Props) {
         <div>
           <p className="text-[13px] font-semibold text-np-crimson">Scan failed</p>
           <p className="text-[12px] text-muted-foreground mt-0.5">
-            {(data as any).message || "Could not analyse the URL. Check the URL and your API key."}
+            {(data as Record<string, unknown>).message as string || "Could not analyse the URL. Check the URL and your API key."}
           </p>
         </div>
       </Card>
@@ -86,13 +86,12 @@ export function AnalysisReport({ data }: Props) {
   const seoSection  = sections?.seo;
   const secSection  = sections?.security;
   const perfSection = sections?.performance;
-  const aiSection   = (data as any).aiInsight;
+  const aiSection   = data.aiInsight;
 
 
   const tabSections = [seoSection, secSection, perfSection, null];
 
-  const scoreColor = (s: number) =>
-    s >= 80 ? "var(--np-teal)" : s >= 50 ? "var(--np-gold)" : "var(--np-crimson)";
+
 
   return (
     <div className="space-y-5 np-slide-up">
@@ -111,9 +110,9 @@ export function AnalysisReport({ data }: Props) {
         {/* Score cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
-            { label: "SEO",       score: seoSection?.score  ?? (overallScore as any)?.seo  ?? 0 },
-            { label: "Security",  score: secSection?.score  ?? (overallScore as any)?.security ?? 0 },
-            { label: "Performance", score: perfSection?.score ?? (overallScore as any)?.performance ?? 0 },
+            { label: "SEO",       score: seoSection?.score  ?? (overallScore as unknown as Record<string, number>)?.seo  ?? 0 },
+            { label: "Security",  score: secSection?.score  ?? (overallScore as unknown as Record<string, number>)?.security ?? 0 },
+            { label: "Performance", score: perfSection?.score ?? (overallScore as unknown as Record<string, number>)?.performance ?? 0 },
           ].map((s) => (
             <div
               key={s.label}
@@ -153,7 +152,7 @@ export function AnalysisReport({ data }: Props) {
           {activeTab < 3 && tabSections[activeTab] && (
             <div className="space-y-4">
               <div className="space-y-1">
-                {Object.entries(tabSections[activeTab]?.metrics || {}).map(([key, val]: [string, any]) => (
+                {Object.entries(tabSections[activeTab]?.metrics || {}).map(([key, val]: [string, unknown]) => (
                   <IssueRow
                     key={key}
                     label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}

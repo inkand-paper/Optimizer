@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
-export async function getAiDiagnosis(auditData: any) {
+export async function getAiDiagnosis(auditData: Record<string, unknown>) {
   try {
     if (!process.env.GEMINI_API_KEY) {
       return null;

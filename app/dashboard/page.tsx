@@ -12,13 +12,14 @@ import { MonitoringDashboard } from "@/components/monitoring-dashboard";
 import { PricingModal } from "@/components/pricing-modal";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
-  Activity, Key, Trash2, Plus, Terminal, ShieldCheck, Copy,
+  Activity, Key, Plus, Terminal, ShieldCheck, Copy,
   CheckCircle2, Loader2, RefreshCw, LogOut, Search, FileText,
-  Webhook, ShieldAlert, BarChart4, ChevronRight, Book, Home, User,
+  Webhook, ShieldAlert, Book, Home, User,
   Menu, X, HelpCircle
 } from "lucide-react";
 
 interface ApiKey { id: string; name: string; createdAt: string; lastUsedAt: string | null; }
+interface UserProfile { id?: string; name?: string; email?: string; role?: string; plan?: string; emailVerified?: boolean; }
 
 type Tab = "monitoring" | "audits" | "keys" | "webhooks" | "logs";
 
@@ -32,11 +33,11 @@ const TABS: { id: Tab; label: string; icon: React.ElementType }[] = [
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [user, setUser]           = React.useState<any>(null);
+  const [user, setUser]           = React.useState<UserProfile | null>(null);
   const [keys, setKeys]           = React.useState<ApiKey[]>([]);
   const [loading, setLoading]     = React.useState(true);
   const [activeTab, setActiveTab] = React.useState<Tab>("monitoring");
-  const [health, setHealth]       = React.useState<any>(null);
+  const [health, setHealth]       = React.useState<Record<string, unknown> | null>(null);
   const [showPricing, setShowPricing] = React.useState(false);
   const [currentUserPlan, setCurrentUserPlan] = React.useState("FREE");
   const [authLoading, setAuthLoading] = React.useState(true);
@@ -50,12 +51,12 @@ export default function DashboardPage() {
   // Playground
   const [playgroundKey, setPlaygroundKey] = React.useState("");
   const [playgroundTag, setPlaygroundTag] = React.useState("");
-  const [playgroundResult, setPlaygroundResult] = React.useState<any>(null);
+  const [playgroundResult, setPlaygroundResult] = React.useState<Record<string, unknown> | null>(null);
   const [playgroundLoading, setPlaygroundLoading] = React.useState(false);
 
   // Analyzer
   const [analyzeUrl, setAnalyzeUrl]       = React.useState("");
-  const [analyzeResult, setAnalyzeResult] = React.useState<any>(null);
+  const [analyzeResult, setAnalyzeResult] = React.useState<Record<string, unknown> | null>(null);
   const [analyzeLoading, setAnalyzeLoading] = React.useState(false);
 
   React.useEffect(() => {
@@ -63,6 +64,7 @@ export default function DashboardPage() {
     if (storedUser) {
       try {
         const u = JSON.parse(storedUser);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setUser(u);
         setCurrentUserPlan(u.plan || "FREE");
       } catch {}
@@ -99,6 +101,7 @@ export default function DashboardPage() {
     const onPricing = () => setShowPricing(true);
     window.addEventListener("open-pricing", onPricing);
     return () => window.removeEventListener("open-pricing", onPricing);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function fetchHealth() {

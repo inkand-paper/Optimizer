@@ -44,9 +44,9 @@ export function MermaidInitializer() {
         }
 
         // Trigger Prism highlighting natively
-        // @ts-ignore
+        // @ts-expect-error Wait for dynamic import resolution
         if (typeof window !== "undefined" && window.Prism) {
-          // @ts-ignore
+          // @ts-expect-error Wait for dynamic import resolution
           window.Prism.highlightAll();
         }
       } catch (error) {

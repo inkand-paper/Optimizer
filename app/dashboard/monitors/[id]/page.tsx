@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Card, Button, Badge, StatusDot } from "@/components/ui-elements";
+import { Card, Button, Badge } from "@/components/ui-elements";
 import { 
   ArrowLeft, Activity, Globe, Clock, Server, 
   AlertCircle, CheckCircle2, BarChart3, Shield,
@@ -11,10 +11,13 @@ import {
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
+interface MonitorCheck { id: string; status: string; latency: number; message?: string; createdAt: string; }
+interface MonitorData { id: string; name: string; url: string; status: string; checks: MonitorCheck[]; user?: { webhooks?: { id: string; url: string }[] }; }
+
 export default function MonitorDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
-  const [monitor, setMonitor] = React.useState<any>(null);
+  const [monitor, setMonitor] = React.useState<MonitorData | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -34,9 +37,11 @@ export default function MonitorDetailsPage() {
   };
 
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchDetails();
     const iv = setInterval(fetchDetails, 30000);
     return () => clearInterval(iv);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   if (loading) {
@@ -49,7 +54,7 @@ export default function MonitorDetailsPage() {
 
   const latestCheck = monitor?.checks?.[0];
   const history = monitor?.checks?.slice().reverse() || [];
-  const incidents = monitor?.checks?.filter((c: any) => c.status !== "UP") || [];
+  const incidents = monitor?.checks?.filter((c: MonitorCheck) => c.status !== "UP") || [];
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -132,7 +137,7 @@ export default function MonitorDetailsPage() {
               <div>
                 <p className="text-[14px] font-bold uppercase">
                   {monitor?.checks?.length > 0 
-                    ? ((monitor.checks.filter((c: any) => c.status === 'UP').length / monitor.checks.length) * 100).toFixed(2)
+                    ? ((monitor.checks.filter((c: MonitorCheck) => c.status === 'UP').length / monitor.checks.length) * 100).toFixed(2)
                     : "100.00"}%
                 </p>
                 <p className="text-[10px] text-muted-foreground">Recent window</p>
@@ -168,7 +173,7 @@ export default function MonitorDetailsPage() {
               </div>
               
               <div className="h-[240px] flex items-end gap-1 px-2">
-                {history.length > 0 ? history.map((c: any, i: number) => {
+                {history.length > 0 ? history.map((c: MonitorCheck) => {
                   const height = Math.min((c.latency / 800) * 100, 100);
                   return (
                     <div 
@@ -214,7 +219,7 @@ export default function MonitorDetailsPage() {
                 </span>
               </div>
               <div className="divide-y divide-border">
-                {incidents.length > 0 ? incidents.map((inc: any) => (
+                {incidents.length > 0 ? incidents.map((inc: MonitorCheck) => (
                   <div key={inc.id} className="p-4 flex items-start gap-4">
                     <div className="h-8 w-8 rounded-full bg-np-crimson/10 flex items-center justify-center shrink-0">
                       <XCircle className="h-4 w-4 text-np-crimson" />
@@ -273,7 +278,7 @@ export default function MonitorDetailsPage() {
                     <Badge className="bg-np-gold/10 text-np-gold border-np-gold/20">Email Alert</Badge>
                     
                     {/* Dynamic Webhooks */}
-                    {monitor?.user?.webhooks?.map((wh: any) => {
+                    {monitor?.user?.webhooks?.map((wh: { id: string; url: string }) => {
                       const isDiscord = wh.url.includes('discord.com');
                       const isSlack = wh.url.includes('slack.com');
                       const label = isDiscord ? 'Discord' : isSlack ? 'Slack' : 'Webhook';

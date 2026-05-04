@@ -7,7 +7,7 @@ import { validateSafeUrl } from './ssrf';
  * Sends JSON payloads to registered external endpoints.
  */
 
-export async function dispatchWebhook(userId: string, event: string, payload: any) {
+export async function dispatchWebhook(userId: string, event: string, payload: Record<string, unknown>) {
   const webhooks = await prisma.webhook.findMany({
     where: { 
       userId,

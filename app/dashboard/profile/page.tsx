@@ -2,15 +2,15 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Card, Button, Input, PasswordInput, Badge } from "@/components/ui-elements";
-import { User, Shield, Zap, Mail, Calendar, Key, ShieldCheck, Loader2, Camera, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Card, Button, Input, Badge } from "@/components/ui-elements";
+import { User, Shield, Mail, Calendar, Key, ShieldCheck, Loader2, Camera, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { getGravatarUrl } from "@/lib/gravatar";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [user, setUser] = React.useState<any>(null);
+  const [user, setUser] = React.useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
   const [message, setMessage] = React.useState({ type: "", text: "" });
@@ -58,7 +58,7 @@ export default function ProfilePage() {
       } else {
         setMessage({ type: "error", text: data.message || "Failed to update." });
       }
-    } catch (err) {
+    } catch {
       setMessage({ type: "error", text: "Network anomaly detected." });
     } finally {
       setSaving(false);

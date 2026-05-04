@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Navbar } from "@/components/navbar";
-import { Users, Shield, Zap, Search, ArrowLeft, Trash2, UserCheck, ShieldAlert } from "lucide-react";
+import { Users, Zap, Search, ArrowLeft, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Card, Button, Input } from "@/components/ui-elements";
@@ -31,7 +31,7 @@ export default function AdminPortal() {
       const res = await fetch("/api/admin/users", { credentials: 'include' });
       const data = await res.json();
       if (data.success) setUsers(data.users);
-    } catch (err) {
+    } catch {
       console.error("Failed to load admin data");
     } finally {
       setLoading(false);
@@ -39,10 +39,11 @@ export default function AdminPortal() {
   };
 
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchUsers();
   }, []);
 
-  const updateUser = async (userId: string, data: any) => {
+  const updateUser = async (userId: string, data: Record<string, unknown>) => {
     setUpdatingId(userId);
     try {
       const res = await fetch("/api/admin/users", {
@@ -57,7 +58,7 @@ export default function AdminPortal() {
          const errorData = await res.json();
          alert(errorData.error || "Failed to update user");
       }
-    } catch (err) {
+    } catch {
       alert("Network error: Update failed");
     } finally {
       setUpdatingId(null);
@@ -80,7 +81,7 @@ export default function AdminPortal() {
       } else {
         alert(data.error || "Failed to delete user");
       }
-    } catch (err) {
+    } catch {
       console.error("Delete failed");
     } finally {
       setUpdatingId(null);

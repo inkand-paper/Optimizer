@@ -35,7 +35,7 @@ export function InfrastructureProvider() {
           }),
           keepalive: true,
         });
-      } catch (err) {
+      } catch {
         // Silent failure to prevent breaking the UI if the API is unreachable
       }
     };

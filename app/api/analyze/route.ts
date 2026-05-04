@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import crypto from 'crypto';
-import type { AnalyzeRequest, AnalyzeResponse, ErrorResponse } from '@/lib/types';
+import type { AnalyzeRequest, AnalyzeResponse } from '@/lib/types';
 import { runFullAudit } from '@/core/analyzer';
 import { logActivity } from '@/lib/logger';
 

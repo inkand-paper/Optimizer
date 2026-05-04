@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { revalidateTag, revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import crypto from 'crypto';
-import type { RevalidateRequest } from '@/lib/types';
+
 import { logActivity } from '@/lib/logger';
 import { dispatchWebhook } from '@/lib/webhooks';
 import { sendPulseAlert } from '@/lib/mail';
@@ -12,7 +12,7 @@ async function processRevalidation(
   tag: string | undefined,
   path: string | undefined,
   currentUserId: string | undefined,
-  dbKey: any,
+  dbKey: { user?: { email: string | null; name: string | null } } | null,
   startTime: number
 ) {
   if (!path && !tag) {
@@ -34,7 +34,7 @@ async function processRevalidation(
   }
   
   if (tag) {
-    // @ts-ignore
+    // @ts-expect-error Next.js might warn about extra args here in some versions
     revalidateTag(tag, 'max'); 
     
     if (currentUserId) {
@@ -69,7 +69,7 @@ async function processRevalidation(
     });
   } 
   else if (path) {
-    // @ts-ignore
+    // @ts-expect-error Next.js might warn about extra args here in some versions
     revalidatePath(path); 
     
     if (currentUserId) {
