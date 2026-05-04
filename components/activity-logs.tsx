@@ -133,7 +133,7 @@ export function ActivityLogs() {
                         </span>
                         {log.details?.origin && (
                           <span className="font-mono text-[11px] text-np-gold bg-np-gold/10 px-1.5 py-0.5 rounded">
-                            {log.details.origin}
+                             {log.details.origin}
                           </span>
                         )}
                         {log.details?.durationMs && (
@@ -143,7 +143,7 @@ export function ActivityLogs() {
                         )}
                         {log.details?.score !== undefined && (
                           <span className="font-mono text-[11px] text-np-slate">
-                            score: {log.details.score}
+                            score: {String(log.details.score)}
                           </span>
                         )}
                       </div>
