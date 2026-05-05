@@ -23,6 +23,19 @@ enum Plan {
   BUSINESS
 }
 
+enum CodeReviewSource {
+  GITHUB
+  ZIP
+  PASTE
+}
+
+enum CodeReviewStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
 model User {
   id           String   @id @default(uuid())
   email        String   @unique
@@ -35,6 +48,8 @@ model User {
   verificationToken String? @unique
   resetToken        String? @unique
   resetTokenExpiry  DateTime?
+  githubAccessToken String? //For code review Github connect (separate from login)
+  githubUserName String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   
@@ -44,6 +59,7 @@ model User {
   activityLogs ActivityLog[]
   monitors     Monitor[]
   webhooks     Webhook[]
+  codeReviews CodeReview[]
 }
 
 model Account {
@@ -151,3 +167,25 @@ model ActivityLog {
   @@index([userId])
 }
 
+model CodeReview {
+  id           String           @id @default(uuid())
+  userId       String
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  source       CodeReviewSource // GITHUB | ZIP | PASTE
+  repoUrl      String? // if source = GITHUB
+  repoName     String? // e.g. "inkand-paper/Optimizer"
+  repoBranch   String?          @default("main")
+  fileName     String? // if source = ZIP or PASTE
+  status       CodeReviewStatus @default(PENDING)
+  score        Int? // 0-100 overall quality score
+  language     String? // detected or user-specified language
+  linesOfCode  Int?
+  filesReviewed Int?
+  result       Json? // Full structured AI review output (see types.ts)
+  error        String? // if status = FAILED
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@index([userId])
+  @@index([userId, createdAt])
+}
