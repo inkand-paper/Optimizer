@@ -4,7 +4,6 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { 
-  ShieldCheck, 
   History, 
   Plus, 
   Loader2, 
@@ -12,11 +11,10 @@ import {
   FolderArchive, 
   Terminal,
   Clock,
-  Search,
   Trash2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Card, Badge, Button, Input, StatusDot } from "@/components/ui-elements";
+import { Card, Badge, Button, Input } from "@/components/ui-elements";
 
 type TabType = "github" | "zip" | "paste";
 
@@ -46,7 +44,6 @@ export function CodeAuditConsole() {
   const [loading, setLoading] = React.useState(true);
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState("");
-  const [success, setSuccess] = React.useState("");
   const [usage, setUsage] = React.useState(0);
   const [limit, setLimit] = React.useState(3);
   const [tab, setTab] = React.useState<TabType>("github");
@@ -63,6 +60,7 @@ export function CodeAuditConsole() {
   React.useEffect(() => {
     loadReviews();
     const github = searchParams.get("github");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (github === "connected") setGithubConnected(true);
   }, [searchParams]);
 
@@ -112,7 +110,7 @@ export function CodeAuditConsole() {
   }
 
   async function submitReview() {
-    setError(""); setSuccess(""); setSubmitting(true); setLogs([]);
+    setError(""); setSubmitting(true); setLogs([]);
     const startTime = Date.now();
     try {
       let res: Response;
@@ -160,8 +158,6 @@ export function CodeAuditConsole() {
                 setLogs(prev => [...prev, { msg: data.log, type: data.type || "info" }]);
               }
               if (data.done && data.review) {
-                const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-                setSuccess(`Neural Audit Complete · ${elapsed}s`);
                 setTimeout(() => router.push(`/dashboard/code-review/${data.review.id}`), 1500);
               }
             } catch {
@@ -170,8 +166,8 @@ export function CodeAuditConsole() {
           }
         }
       }
-    } catch (err: any) {
-      setError(err.message || "Connection refused");
+    } catch (err: unknown) {
+      setError((err as Error).message || "Connection refused");
     } finally {
       setSubmitting(false);
     }

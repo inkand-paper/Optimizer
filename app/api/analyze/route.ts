@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     
     let aiInsight = null;
     if (PLAN_LIMITS[userPlan].allowAi || dbKey.user.role === 'ADMIN') {
-      aiInsight = await getAiDiagnosis(auditResult as any);
+      aiInsight = await getAiDiagnosis(auditResult as unknown as AnalyzeResponse["results"]);
     }
 
     // 4. Log Activity

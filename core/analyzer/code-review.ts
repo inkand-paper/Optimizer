@@ -130,8 +130,8 @@ async function callGroq(sys: string, user: string, retries = 5): Promise<string>
 
       const data = await res.json();
       return data.choices?.[0]?.message?.content ?? "";
-    } catch (e: any) {
-      if (e.message === "TOO_LARGE") throw e;
+    } catch (e: unknown) {
+      if (e instanceof Error && e.message === "TOO_LARGE") throw e;
       await sleep(2000);
     }
   }
@@ -158,11 +158,11 @@ async function auditFile(file: CodeFile): Promise<FileReview> {
       language: detectLanguage(file.path),
       score: parsed.score ?? 85,
       summary: parsed.summary ?? "",
-      issues: (parsed.issues ?? []).map((iss: any) => ({ ...iss, codeSnippet: iss.codeSnippet?.trim() })),
+      issues: (parsed.issues ?? []).map((iss: LineIssue) => ({ ...iss, codeSnippet: iss.codeSnippet?.trim() })),
       positives: parsed.positives ?? [],
       hash 
     };
-  } catch (err: any) {
+  } catch {
     return { path: file.path, language: detectLanguage(file.path), score: 100, summary: "Skipped.", issues: [], positives: [], hash };
   }
 }
@@ -238,20 +238,26 @@ async function finalizeReport(fileReviews: FileReview[], originalFiles: CodeFile
   };
 
   if (onProgress) onProgress("[FINAL] Collate findings...");
+  
+  interface SynthesisResult {
+    overallScore?: number;
+    summary?: string;
+    recommendations?: string[];
+  }
 
-  let global: any = { overallScore: avg, summary: "Audit complete.", recommendations: [] };
+  let globalResult: SynthesisResult = { overallScore: avg, summary: "Audit complete.", recommendations: [] };
   try {
     const sys = `Synthesize these code audit results. Return JSON: { "overallScore": 0-100, "summary": "2-3 sentence executive summary", "recommendations": ["actionable tip 1", "tip 2", "tip 3"] }`;
     const summaries = fileReviews.filter(r => r.issues.length > 0).slice(0, 15)
       .map(r => `${r.path} (score:${r.score}, issues:${r.issues.length})`).join("\n");
     const raw = await globalRequestQueue.add(() => callGroq(sys, `FILES:\n${summaries}`), { priority: 1 });
-    if (raw) global = JSON.parse(raw.replace(/```json\n?|```\n?/g, ""));
+    if (raw) globalResult = JSON.parse(raw.replace(/```json\n?|```\n?/g, ""));
   } catch { }
 
   return {
-    overallScore: global.overallScore ?? avg,
-    grade: getGrade(global.overallScore ?? avg),
-    summary: global.summary ?? "Audit complete.",
+    overallScore: globalResult.overallScore ?? avg,
+    grade: getGrade(globalResult.overallScore ?? avg),
+    summary: globalResult.summary ?? "Audit complete.",
     linesOfCode: totalLines,
     filesReviewed: fileReviews.length,
     language: detectLanguage(originalFiles[0]?.path ?? ""),
@@ -268,7 +274,7 @@ async function finalizeReport(fileReviews: FileReview[], originalFiles: CodeFile
         return (rank[a.severity] ?? 3) - (rank[b.severity] ?? 3);
       })
       .slice(0, 15),
-    recommendations: global.recommendations ?? [],
+    recommendations: globalResult.recommendations ?? [],
   };
 }
 
@@ -291,8 +297,9 @@ export async function fetchGitHubFiles(repo: string, token: string, branch = "ma
   const tree = await treeRes.json();
   if (!tree.tree) throw new Error("Could not read repository tree structure.");
 
-  const validFiles = (tree.tree as any[])
-    .filter((i: any) => 
+  interface GitNode { type: string; path: string; size?: number; }
+  const validFiles = (tree.tree as GitNode[])
+    .filter((i: GitNode) => 
       i.type === "blob" && 
       CODE_EXT.test(i.path) && 
       !SKIP_PATTERN.test(i.path) && 
@@ -304,7 +311,7 @@ export async function fetchGitHubFiles(repo: string, token: string, branch = "ma
     throw new Error("No compatible source files found in the repository (checked first 150 nodes).");
   }
 
-  const results = await Promise.all(validFiles.map(async (i: any) => {
+  const results = await Promise.all(validFiles.map(async (i: GitNode) => {
     try {
       const r = await fetch(`https://api.github.com/repos/${repo}/contents/${i.path}?ref=${activeBranch}`, { headers });
       if (!r.ok) return null;

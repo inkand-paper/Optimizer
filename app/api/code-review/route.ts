@@ -149,7 +149,7 @@ export async function POST(req: NextRequest) {
       
       const cachedMap: Record<string, FileReview> = {};
       cachedEntries.forEach(entry => {
-        cachedMap[entry.hash] = entry.review as any as FileReview;
+        cachedMap[entry.hash] = entry.review as unknown as FileReview;
       });
 
       if (cachedEntries.length > 0) {
@@ -175,7 +175,7 @@ export async function POST(req: NextRequest) {
             hash: f.hash!,
             path: f.path,
             language: f.language,
-            review: f as any
+            review: f as unknown as import("@prisma/client").Prisma.InputJsonValue
           })),
           skipDuplicates: true
         });
@@ -199,7 +199,7 @@ export async function POST(req: NextRequest) {
           language: result.language,
           linesOfCode: result.linesOfCode,
           filesReviewed: result.filesReviewed,
-          result: slimResult as any,
+          result: slimResult as unknown as import("@prisma/client").Prisma.InputJsonValue,
         },
       });
 
@@ -207,10 +207,10 @@ export async function POST(req: NextRequest) {
         sendLog(`[DONE] ${result.filesReviewed} files analyzed in ${elapsedSec}s · Score: ${result.overallScore}/100`, "success");
         await writer.write(encoder.encode(`data: ${JSON.stringify({ review: updated, result, done: true })}\n\n`));
       }
-    } catch (err: any) {
-      if (!isClosed && err.name !== "AbortError") {
+    } catch (err: unknown) {
+      if (!isClosed && (err as Error).name !== "AbortError") {
         console.error("[CODE_REVIEW_POST]", err);
-        sendLog(err.message || "Audit failed", "error");
+        sendLog((err as Error).message || "Audit failed", "error");
       }
     } finally {
       if (!isClosed) {

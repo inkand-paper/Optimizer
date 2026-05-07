@@ -14,42 +14,20 @@ import {
   CheckCircle2,
   ChevronDown,
   ChevronUp,
-  Terminal,
   Clock,
   ArrowRight,
   Loader2,
-  AlertCircle,
   Shield,
-  Activity,
-  LogOut,
-  User,
-  Home,
-  Menu,
-  X,
-  Book,
-  Layers,
-  HelpCircle,
-  Key,
-  Webhook,
-  FileText,
   Search
 } from "lucide-react";
 import type { CodeReviewResult, LineIssue, FileReview } from "@/core/analyzer/code-review";
 import { cn } from "@/lib/utils";
-import { Card, Badge, Button, StatusDot } from "@/components/ui-elements";
+import { Card } from "@/components/ui-elements";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useRouter } from "next/navigation";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const TABS = [
-  { id: "monitoring", label: "Monitoring",   icon: Activity, href: "/dashboard?tab=monitoring" },
-  { id: "seo",        label: "SEO Analyzer", icon: Search, href: "/dashboard?tab=seo" },
-  { id: "audits",     label: "Code Audit",   icon: ShieldCheck, href: "/dashboard?tab=audits" },
-  { id: "keys",       label: "API Keys",     icon: Key, href: "/dashboard?tab=keys" },
-  { id: "webhooks",   label: "Webhooks",     icon: Webhook, href: "/dashboard?tab=webhooks" },
-  { id: "logs",       label: "Logs",         icon: FileText, href: "/dashboard?tab=logs" },
-];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -244,23 +222,16 @@ function FileAccordion({ file }: { file: FileReview }) {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-export default function ReviewResultPage({ params }: { params: any }) {
-  const unwrappedParams = React.use(params as any) as { id: string };
+export default function ReviewResultPage({ params }: { params: Promise<{ id: string }> }) {
+  const unwrappedParams = React.use(params);
   const { id } = unwrappedParams;
-  const router = useRouter();
 
   const [result, setResult] = React.useState<CodeReviewResult | null>(null);
-  const [reviewMeta, setReviewMeta] = React.useState<any>(null);
+  const [reviewMeta, setReviewMeta] = React.useState<{ repoName?: string; fileName?: string; source?: string; createdAt?: string } | null>(null);
   const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState("");
   const [activeTab, setActiveTab] = React.useState<"overview" | "files" | "issues">("overview");
-  const [user, setUser] = React.useState<any>(null);
-  const [health] = React.useState({ status: "healthy" });
 
   React.useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
-    
     fetch(`/api/code-review/${id}`, { credentials: "include" })
       .then((r) => r.json())
       .then((data) => {
@@ -269,11 +240,9 @@ export default function ReviewResultPage({ params }: { params: any }) {
         setReviewMeta(data);
         setResult(data.result as CodeReviewResult);
       })
-      .catch((e) => setError(e.message))
+      .catch(() => { })
       .finally(() => setLoading(false));
   }, [id]);
-
-  const handleLogout = () => { localStorage.removeItem("user"); router.push("/login"); };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="h-6 w-6 animate-spin text-np-gold" /></div>;
 
@@ -368,7 +337,7 @@ export default function ReviewResultPage({ params }: { params: any }) {
                <div className="space-y-6">
                   {activeTab === "overview" && topIssues.map((issue, i) => <IssueCard key={i} issue={issue} />)}
                   {activeTab === "files" && (result?.files || []).map((file, i) => <FileAccordion key={i} file={file} />)}
-                  {activeTab === "issues" && allIssues.map((issue, i) => <IssueCard key={i} issue={issue as any} />)}
+                  {activeTab === "issues" && allIssues.map((issue, i) => <IssueCard key={i} issue={issue as (LineIssue & { filePath?: string })} />)}
                </div>
             </div>
          </div>

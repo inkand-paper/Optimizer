@@ -20,7 +20,7 @@ import {
   Activity, Key, Plus, Terminal, ShieldCheck, Copy,
   CheckCircle2, Loader2, RefreshCw, LogOut, Search, FileText,
   Webhook, ShieldAlert, Book, Home, User,
-  Menu, X, HelpCircle, ChevronRight
+  Menu, X, HelpCircle
 } from "lucide-react";
 
 interface ApiKey { id: string; name: string; createdAt: string; lastUsedAt: string | null; }
@@ -51,10 +51,11 @@ export default function DashboardPage() {
 
   React.useEffect(() => {
     const tabParam = searchParams.get("tab") as Tab;
-    if (tabParam && TABS.some(t => t.id === tabParam)) {
+    if (tabParam && TABS.some(t => t.id === tabParam) && tabParam !== activeTab) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveTab(tabParam);
     }
-  }, [searchParams]);
+  }, [searchParams, activeTab]);
 
   // Key creation
   const [creatingKey, setCreatingKey] = React.useState(false);
