@@ -130,7 +130,9 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         source = body.source;
         if (source === "GITHUB") {
-          repoName = (body.repoName || "").trim();
+          const name = (body.repoName || "").trim();
+          if (!name) throw new Error("Repository name is required for GitHub audits.");
+          repoName = name;
           repoBranch = (body.branch || "main").trim();
           files = await fetchGitHubFiles(repoName, dbUser.githubAccessToken!, repoBranch);
         } else {

@@ -17,14 +17,12 @@ import {
   Clock,
   ArrowRight,
   Loader2,
-  Shield,
-  Search
+  Shield
 } from "lucide-react";
 import type { CodeReviewResult, LineIssue, FileReview } from "@/core/analyzer/code-review";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui-elements";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { useRouter } from "next/navigation";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 

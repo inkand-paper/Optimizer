@@ -111,7 +111,6 @@ export function CodeAuditConsole() {
 
   async function submitReview() {
     setError(""); setSubmitting(true); setLogs([]);
-    const startTime = Date.now();
     try {
       let res: Response;
       const body = tab === "github" 
