@@ -281,7 +281,7 @@ export function CodeAuditConsole() {
                            <div className="h-10 w-10 rounded-ui bg-muted flex items-center justify-center text-muted-foreground/60 group-hover:text-np-gold transition-colors">
                               {r.source === "GITHUB" ? <GitBranch className="h-5 w-5" /> : r.source === "ZIP" ? <FolderArchive className="h-5 w-5" /> : <Terminal className="h-5 w-5" />}
                            </div>
-                           <Badge variant={r.status === "COMPLETED" ? "outline" : "warning"} className="text-[9px] px-2 py-0.5 tracking-widest">{r.status}</Badge>
+                           <Badge variant={r.status === "COMPLETED" ? "success" : "warning"} className="text-[9px] px-2 py-0.5 tracking-widest">{r.status}</Badge>
                         </div>
                         <div>
                           <h4 className="text-[15px] font-semibold truncate text-foreground/80 group-hover:text-foreground mb-1 pr-12">{r.repoName ?? r.fileName ?? "Source Node"}</h4>
