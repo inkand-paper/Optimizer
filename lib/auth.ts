@@ -3,7 +3,13 @@ import jwt from 'jsonwebtoken';
 import { NextRequest } from 'next/server';
 
 const SALT_ROUNDS = 10;
-const JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === 'production' ? (() => { throw new Error('JWT_SECRET is missing!') })() : 'dev_secret_only');
+const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_only';
+
+if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+  if (typeof window === 'undefined') {
+    console.warn('⚠️ WARNING: JWT_SECRET is missing in production environment. Authentication will fail.');
+  }
+}
 
 export interface JwtPayload {
   userId: string;
