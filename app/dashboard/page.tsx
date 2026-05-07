@@ -8,7 +8,9 @@ import { Card, Button, Input, PasswordInput, StatusDot } from "@/components/ui-e
 import { AnalysisReport } from "@/components/analysis-report";
 import { ActivityLogs } from "@/components/activity-logs";
 import { WebhookManager } from "@/components/webhook-manager";
+import { useSearchParams } from "next/navigation";
 import { MonitoringDashboard } from "@/components/monitoring-dashboard";
+import { CodeAuditConsole } from "@/components/code-audit-console";
 import { PricingModal } from "@/components/pricing-modal";
 import { ThemeToggle } from "@/components/theme-toggle";
 import type { AnalyzeResponse } from "@/lib/types";
@@ -18,20 +20,21 @@ import {
   Activity, Key, Plus, Terminal, ShieldCheck, Copy,
   CheckCircle2, Loader2, RefreshCw, LogOut, Search, FileText,
   Webhook, ShieldAlert, Book, Home, User,
-  Menu, X, HelpCircle
+  Menu, X, HelpCircle, ChevronRight
 } from "lucide-react";
 
 interface ApiKey { id: string; name: string; createdAt: string; lastUsedAt: string | null; }
 interface UserProfile { id?: string; name?: string; email?: string; role?: string; plan?: string; emailVerified?: boolean; }
 
-type Tab = "monitoring" | "audits" | "keys" | "webhooks" | "logs";
+type Tab = "monitoring" | "seo" | "audits" | "keys" | "webhooks" | "logs";
 
 const TABS: { id: Tab; label: string; icon: React.ElementType }[] = [
-  { id: "monitoring", label: "Monitoring",  icon: Activity  },
-  { id: "audits",     label: "Audits",      icon: Search    },
-  { id: "keys",       label: "API Keys",    icon: Key       },
-  { id: "webhooks",   label: "Webhooks",    icon: Webhook   },
-  { id: "logs",       label: "Logs",        icon: FileText  },
+  { id: "monitoring", label: "Monitoring",   icon: Activity  },
+  { id: "seo",        label: "SEO Analyzer", icon: Search    },
+  { id: "audits",     label: "Code Audit",   icon: ShieldCheck },
+  { id: "keys",       label: "API Keys",     icon: Key       },
+  { id: "webhooks",   label: "Webhooks",     icon: Webhook   },
+  { id: "logs",       label: "Logs",         icon: FileText  },
 ];
 
 export default function DashboardPage() {
@@ -41,9 +44,17 @@ export default function DashboardPage() {
   const [loading, setLoading]     = React.useState(true);
   const [activeTab, setActiveTab] = React.useState<Tab>("monitoring");
   const [health, setHealth]       = React.useState<{ status?: string } | null>(null);
-  const [showPricing, setShowPricing] = React.useState(false);
+  const searchParams = useSearchParams();
   const [currentUserPlan, setCurrentUserPlan] = React.useState("FREE");
   const [authLoading, setAuthLoading] = React.useState(true);
+  const [showPricing, setShowPricing] = React.useState(false);
+
+  React.useEffect(() => {
+    const tabParam = searchParams.get("tab") as Tab;
+    if (tabParam && TABS.some(t => t.id === tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
 
   // Key creation
   const [creatingKey, setCreatingKey] = React.useState(false);
@@ -379,9 +390,9 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* AUDITS */}
-          {activeTab === "audits" && (
-            <div className="space-y-5 w-full">
+          {/* SEO ANALYZER */}
+          {activeTab === "seo" && (
+            <div className="space-y-5 w-full animate-in fade-in duration-500">
               <Card className="p-6">
                 <div className="flex items-center gap-3 mb-5">
                   <div className="h-9 w-9 rounded-ui flex items-center justify-center bg-np-gold/10">
@@ -405,6 +416,13 @@ export default function DashboardPage() {
                 </div>
               </Card>
               {analyzeResult && <AnalysisReport data={analyzeResult} />}
+            </div>
+          )}
+
+          {/* CODE AUDIT */}
+          {activeTab === "audits" && (
+            <div className="w-full">
+               <CodeAuditConsole />
             </div>
           )}
 

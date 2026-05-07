@@ -12,7 +12,7 @@ Prevents spoofing and ensures your transactional emails (verification, alerts) d
 Protects your brand identity and satisfies the "DMARC Mail Record" audit requirement.
 *   **Type**: `TXT`
 *   **Host**: `_dmarc`
-*   **Value**: `v=DMARC1; p=none; rua=mailto:tabir8431@gmail.com`
+*   **Value**: `v=DMARC1; p=none; rua=mailto:support@nexpulse.ai`
 
 ### 🔍 3. Site Verification
 If you haven't already, add this to link your domain to Google Search Console.
