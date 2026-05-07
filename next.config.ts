@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Required for ESM-only packages like p-queue
+  transpilePackages: ["p-queue", "p-limit", "eventemitter3", "p-timeout"],
+
   // Required for Docker standalone deployment
   output: "standalone",
   allowedDevOrigins: ["turbine-importer-anyway.ngrok-free.dev", "localhost:3000"],

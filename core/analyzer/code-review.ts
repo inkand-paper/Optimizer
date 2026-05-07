@@ -1,8 +1,11 @@
 /**
  * core/analyzer/code-review.ts
  * AI-powered recursive code review engine.
- * Optimized "Smart Walker" to maximize Groq TPM limits.
+ * Professional Queue Edition: P-Queue Throttling + 10x Parallelism.
  */
+
+import crypto from "crypto";
+import PQueue from 'p-queue';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -14,7 +17,6 @@ export interface CodeFile {
 
 export interface LineIssue {
   line: number;
-  column?: number;
   severity: "critical" | "warning" | "info";
   category: "security" | "performance" | "best-practice" | "refactor";
   message: string;
@@ -30,6 +32,7 @@ export interface FileReview {
   summary: string;
   issues: LineIssue[];
   positives: string[];
+  hash: string;
 }
 
 export interface CodeReviewResult {
@@ -50,28 +53,37 @@ export interface CodeReviewResult {
   recommendations: string[];
 }
 
+// ─── Global Rate Limiter (25 RPM Cap) ─────────────────────────────────────────
+
+const globalRequestQueue = new PQueue({
+  interval: 60_000,    // 1 minute window
+  intervalCap: 25,     // Max 25 requests per minute (safe under Groq's 30 RPM cap)
+  // No timeout — Groq's 70B model can take 60s+ under load.
+  // callGroq() handles its own retry logic internally.
+});
+
+const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+const SKIP_PATTERN = /node_modules|\.next|dist|build|\.git|\.lock|package-lock|__tests__|\.test\.|\.spec\.|svg|png|jpg|jpeg|ico|pdf|zip|gz|env/i;
+const CODE_EXT = /\.(ts|tsx|js|jsx|py|rb|go|rs|java|cs|cpp|c|php|swift|kt|vue|svelte|sql|sh|css|scss)$/i;
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 export function detectLanguage(path: string): string {
   const ext = path.split(".").pop()?.toLowerCase();
   const map: Record<string, string> = {
-    ts: "TypeScript", tsx: "TypeScript (React)",
-    js: "JavaScript", jsx: "JavaScript (React)",
-    py: "Python", rb: "Ruby", go: "Go", rs: "Rust",
-    java: "Java", cs: "C#", cpp: "C++", c: "C",
-    php: "PHP", swift: "Swift", kt: "Kotlin",
-    vue: "Vue", svelte: "Svelte", sql: "SQL", sh: "Shell",
-    yml: "YAML", yaml: "YAML", json: "JSON",
-    md: "Markdown", css: "CSS", scss: "SCSS",
+    ts: "TypeScript", tsx: "TypeScript (React)", js: "JavaScript", jsx: "JavaScript (React)",
+    py: "Python", rb: "Ruby", go: "Go", rs: "Rust", java: "Java", cs: "C#",
+    vue: "Vue", svelte: "Svelte", sql: "SQL", sh: "Shell", json: "JSON",
   };
   return map[ext ?? ""] ?? "Unknown";
 }
 
-function countLines(content: string): number {
-  return content.split("\n").length;
+export function getFileHash(content: string): string {
+  return crypto.createHash("md5").update(content).digest("hex");
 }
 
-function gradeFromScore(score: number): "A" | "B" | "C" | "D" | "F" {
+function getGrade(score: number): "A" | "B" | "C" | "D" | "F" {
   if (score >= 90) return "A";
   if (score >= 75) return "B";
   if (score >= 60) return "C";
@@ -79,268 +91,190 @@ function gradeFromScore(score: number): "A" | "B" | "C" | "D" | "F" {
   return "F";
 }
 
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+// ─── Groq API Client ──────────────────────────────────────────────────────────
 
-// ─── Groq API call with Retry Logic ──────────────────────────────────────────
-
-async function callGroq(systemPrompt: string, userPrompt: string, onProgress?:(msg:string)=>void, retries = 5, signal?: AbortSignal): Promise<string> {
+async function callGroq(sys: string, user: string, retries = 5): Promise<string> {
   for (let i = 0; i < retries; i++) {
-    if (signal?.aborted) throw new Error("Client disconnected");
-    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        max_tokens: 2000, // Reduced for faster processing and lower TPM hit
-        temperature: 0.1,
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
-      }),
-      signal,
-    });
+    try {
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          max_tokens: 3000,
+          temperature: 0.1,
+          response_format: { type: "json_object" },
+          messages: [{ role: "system", content: sys }, { role: "user", content: user }],
+        }),
+      });
 
-    if (res.status === 429) {
-      const wait = Math.min(3000 * Math.pow(2, i), 90000); // More aggressive backoff
-      if (onProgress) onProgress(`[THROTTLED] API Busy. Pausing for ${wait/1000}s...`);
-      await sleep(wait);
-      continue;
+      if (res.status === 429) {
+        await sleep(5000 * Math.pow(1.5, i));
+        continue;
+      }
+
+      if (!res.ok) {
+        const err = await res.text();
+        if (err.includes("context_length_exceeded")) throw new Error("TOO_LARGE");
+        await sleep(2000);
+        continue;
+      }
+
+      const data = await res.json();
+      return data.choices?.[0]?.message?.content ?? "";
+    } catch (e: any) {
+      if (e.message === "TOO_LARGE") throw e;
+      await sleep(2000);
     }
-
-    if (!res.ok) {
-      const err = await res.text();
-      throw new Error(`Groq API error ${res.status}: ${err}`);
-    }
-
-    const data = await res.json();
-    return data.choices?.[0]?.message?.content ?? "";
   }
-  throw new Error("Maximum retries reached for AI analysis.");
+  throw new Error("API Failure");
 }
 
-// ─── Individual File Auditor ──────────────────────────────────────────────────
+// ─── The Chef (Auditor) ───────────────────────────────────────────────────────
 
-async function auditSingleFile(file: CodeFile, signal?: AbortSignal, onProgress?: (msg: string) => void): Promise<FileReview> {
-  // SMART FILTER: Is this file worth AI tokens?
-  const lines = countLines(file.content);
-  const isBoilerplate = /loading\.tsx|layout\.tsx|error\.tsx|globals\.css/.test(file.path) && lines < 15;
+async function auditFile(file: CodeFile): Promise<FileReview> {
+  const hash = getFileHash(file.content);
   
-  if (isBoilerplate) {
+  if (SKIP_PATTERN.test(file.path) || file.content.length > 40000) {
+    return { path: file.path, language: detectLanguage(file.path), score: 100, summary: "Ignored or too large.", issues: [], positives: [], hash };
+  }
+
+  const sys = `Audit this file. JSON SCHEMA: { "score": 0-100, "summary": "", "issues": [{ "line": 0, "severity": "critical", "category": "security", "message": "", "suggestion": "", "codeSnippet": "", "fixedSnippet": "" }], "positives": [] }`;
+  const user = `FILE: ${file.path}\nSOURCE:\n${file.content}`;
+
+  try {
+    const raw = await callGroq(sys, user);
+    const parsed = JSON.parse(raw.replace(/```json\n?|```\n?/g, ""));
     return {
       path: file.path,
       language: detectLanguage(file.path),
-      score: 100,
-      summary: "System boilerplate (Automated Pass).",
-      issues: [],
-      positives: ["Minimal logic confirmed."]
+      score: parsed.score ?? 85,
+      summary: parsed.summary ?? "",
+      issues: (parsed.issues ?? []).map((iss: any) => ({ ...iss, codeSnippet: iss.codeSnippet?.trim() })),
+      positives: parsed.positives ?? [],
+      hash 
     };
+  } catch (err: any) {
+    return { path: file.path, language: detectLanguage(file.path), score: 100, summary: "Skipped.", issues: [], positives: [], hash };
   }
-
-  const systemPrompt = `You are NexPulse AI Auditor. Audit a SINGLE file. Cite line numbers.
-  SCHEMA: { "score": 0-100, "summary": "", "issues": [{ "line": 0, "severity": "critical", "category": "security", "message": "", "suggestion": "", "codeSnippet": "", "fixedSnippet": "" }], "positives": [] }`;
-
-  const userPrompt = `TARGET: ${file.path}\nSOURCE:\n${file.content}`;
-  
-  const raw = await callGroq(systemPrompt, userPrompt, onProgress, 4, signal);
-  const parsed = JSON.parse(raw.replace(/```json\n?|```\n?/g, ""));
-  
-  return {
-    path: file.path,
-    language: detectLanguage(file.path),
-    score: parsed.score ?? 85,
-    summary: parsed.summary ?? "",
-    issues: (parsed.issues ?? []).map((iss: any) => ({
-      ...iss,
-      codeSnippet: iss.codeSnippet?.trim()
-    })),
-    positives: parsed.positives ?? []
-  };
 }
 
-// ─── Main Review Engine ───────────────────────────────────────────────────────
+// ─── Professional Parallel Review Engine ──────────────────────────────────────
 
-export async function reviewCode(files: CodeFile[], onProgress?: (msg: string) => void, signal?: AbortSignal): Promise<CodeReviewResult> {
-  if (files.length === 0) throw new Error("No files provided");
+export async function reviewCode(
+  files: CodeFile[], 
+  onProgress?: (msg: string) => void, 
+  signal?: AbortSignal,
+  cachedReviews: Record<string, FileReview> = {}
+): Promise<CodeReviewResult> {
+  if (files.length === 0) throw new Error("Empty project");
 
-  const totalLines = files.reduce((sum, f) => sum + countLines(f.content), 0);
-  const fileReviews: FileReview[] = [];
-  const stashedFiles: CodeFile[] = [];
+  const results: FileReview[] = [];
+  const uncached: CodeFile[] = [];
 
-  if (onProgress) onProgress(`[INIT] Smart PowerShell Walker engaged for ${files.length} nodes...`);
-
-  // 1. PRIMARY SWEEP
-  for (let i = 0; i < files.length; i++) {
-    if (signal?.aborted) throw new Error("Audit aborted");
-    const file = files[i];
-    
-    // Quick skip for tiny files
-    if (file.content.length < 50 && !file.path.endsWith('.ts')) {
-        fileReviews.push({ path: file.path, language: detectLanguage(file.path), score: 100, summary: "Metadata file.", issues: [], positives: [] });
-        continue;
+  // 1. Instant Cache Check
+  files.forEach(f => {
+    const hash = getFileHash(f.content);
+    if (cachedReviews[hash]) {
+      results.push({ ...cachedReviews[hash], path: f.path });
+    } else {
+      uncached.push(f);
     }
+  });
 
-    if (onProgress) onProgress(`[WALKING] ${i + 1}/${files.length}: ${file.path}`);
+  if (onProgress) onProgress(`[INTELLIGENCE] Cached: ${results.length} | To Process: ${uncached.length}`);
+  if (uncached.length === 0) return finalizeReport(results, files, onProgress);
 
-    try {
-      const review = await auditSingleFile(file, signal, onProgress);
-      fileReviews.push(review);
-      // MANDATORY COOL-DOWN: 1.5s between files to respect 12k TPM
-      await sleep(1500); 
-    } catch (e: any) {
-      if (onProgress) onProgress(`[STASHED] ${file.path} queued for recovery.`);
-      stashedFiles.push(file);
+  // 2. High-Throughput Queue Management
+  const CONCURRENCY = 10; // 10 simultaneous workers
+  const queue = [...uncached];
+  let completed = 0;
+
+  const chefWorker = async () => {
+    while (queue.length > 0) {
+      if (signal?.aborted) break;
+      const file = queue.shift();
+      if (!file) break;
+
+      const current = ++completed;
+      if (onProgress) onProgress(`[AUDIT] ${current}/${uncached.length}: ${file.path}`);
+
+      // QUEUED EXECUTION: p-queue handles the 25 RPM cap globally
+      const review = await globalRequestQueue.add(() => auditFile(file));
+      if (review) results.push(review);
     }
-  }
+  };
 
-  // 2. RECOVERY PHASE
-  if (stashedFiles.length > 0) {
-    if (onProgress) onProgress(`[RECOVERY] Attempting to rebuild ${stashedFiles.length} modules...`);
-    await sleep(5000); 
+  // Launch parallel workers to saturate the queue
+  await Promise.all(Array.from({ length: CONCURRENCY }).map(() => chefWorker()));
 
-    for (let i = 0; i < stashedFiles.length; i++) {
-      if (signal?.aborted) throw new Error("Audit aborted");
-      const file = stashedFiles[i];
-      if (onProgress) onProgress(`[RETRY] ${i + 1}/${stashedFiles.length}: ${file.path}`);
+  return finalizeReport(results, files, onProgress);
+}
 
-      try {
-        const review = await auditSingleFile(file, signal, onProgress);
-        fileReviews.push(review);
-        await sleep(2000); 
-      } catch (e: any) {
-        if (onProgress) onProgress(`[SKIP] ${file.path} skipped after 2nd failure.`);
-      }
-    }
-  }
+// ─── Synthesis ────────────────────────────────────────────────────────────────
 
-  if (onProgress) onProgress("[SYNTHESIS] Collating architectural findings...");
+async function finalizeReport(fileReviews: FileReview[], originalFiles: CodeFile[], onProgress?: (msg: string) => void): Promise<CodeReviewResult> {
+  const totalLines = originalFiles.reduce((s, f) => s + f.content.split("\n").length, 0);
+  const avg = Math.round(fileReviews.reduce((s, r) => s + r.score, 0) / (fileReviews.length || 1));
 
-  // 3. ARCHITECTURAL SYNTHESIS (With Fail-Safe Fallback)
-  let global: any = null;
+  if (onProgress) onProgress("[FINAL] Collate findings...");
+
+  let global: any = { overallScore: avg, summary: "Audit complete.", recommendations: [], categories: { security: { score: avg, count: 0, critical: 0 }, performance: { score: avg, count: 0, critical: 0 }, bestPractices: { score: avg, count: 0, critical: 0 }, refactoring: { score: avg, count: 0, critical: 0 } } };
+  
   try {
-    const aggregatorPrompt = `Synthesize these file audits. Return valid JSON.
-    SCHEMA: { "overallScore": 0-100, "summary": "", "recommendations": [], "categories": { "security": { "score": 0, "count": 0, "critical": 0 }, "performance": { "score": 0, "count": 0, "critical": 0 }, "bestPractices": { "score": 0, "count": 0, "critical": 0 }, "refactoring": { "score": 0, "count": 0, "critical": 0 } } }`;
-
-    const summaries = fileReviews.map(r => `FILE: ${r.path}\nSCORE: ${r.score}`).join("\n");
-    const globalRaw = await callGroq(aggregatorPrompt, `FILE SUMMARIES:\n${summaries}`, onProgress, 10, signal);
-    global = JSON.parse(globalRaw.replace(/```json\n?|```\n?/g, ""));
-  } catch (err: any) {
-    if (onProgress) onProgress("[FALLBACK] Neural Synthesis limited. Calculating local metrics...");
-    const avgScore = Math.round(fileReviews.reduce((s, r) => s + r.score, 0) / (fileReviews.length || 1));
-    const allIssues = fileReviews.flatMap(r => r.issues);
-    global = {
-      overallScore: avgScore,
-      summary: `Analyzed ${fileReviews.length} files. Platform detected ${allIssues.length} potential optimizations. Local verification complete.`,
-      recommendations: ["Review top critical issues in the Registry Archives."],
-      categories: {
-        security: { score: avgScore, count: allIssues.filter(i => i.category === 'security').length, critical: allIssues.filter(i => i.category === 'security' && i.severity === 'critical').length },
-        performance: { score: avgScore, count: allIssues.filter(i => i.category === 'performance').length, critical: allIssues.filter(i => i.category === 'performance' && i.severity === 'critical').length },
-        bestPractices: { score: avgScore, count: allIssues.filter(i => i.category === 'best-practice').length, critical: allIssues.filter(i => i.category === 'best-practice' && i.severity === 'critical').length },
-        refactoring: { score: avgScore, count: allIssues.filter(i => i.category === 'refactor').length, critical: allIssues.filter(i => i.category === 'refactor' && i.severity === 'critical').length }
-      }
-    };
-  }
+    const sys = `Synthesize results. SCHEMA: { "overallScore": 0, "summary": "", "recommendations": [], "categories": { "security": { "score": 0, "count": 0, "critical": 0 }, "performance": { "score": 0, "count": 0, "critical": 0 }, "bestPractices": { "score": 0, "count": 0, "critical": 0 }, "refactoring": { "score": 0, "count": 0, "critical": 0 } } }`;
+    const summaries = fileReviews.slice(0, 20).map(r => `FILE: ${r.path} SCORE: ${r.score}`).join("\n");
+    const raw = await globalRequestQueue.add(() => callGroq(sys, `SUMMARIES:\n${summaries}`), { priority: 1 });
+    if (raw) global = JSON.parse(raw.replace(/```json\n?|```\n?/g, ""));
+  } catch { }
 
   const allIssues = fileReviews.flatMap(r => r.issues);
-  const topIssues = allIssues.sort((a, b) => (a.severity === 'critical' ? -1 : 1)).slice(0, 10);
-
   return {
-    overallScore: global.overallScore ?? 85,
-    grade: gradeFromScore(global.overallScore ?? 85),
-    summary: global.summary ?? "Audit successful.",
+    overallScore: global.overallScore ?? avg,
+    grade: getGrade(global.overallScore ?? avg),
+    summary: global.summary ?? "Done.",
     linesOfCode: totalLines,
     filesReviewed: fileReviews.length,
-    language: detectLanguage(files[0]?.path ?? ""),
+    language: detectLanguage(originalFiles[0]?.path ?? ""),
     categories: global.categories,
     files: fileReviews,
-    topIssues,
+    topIssues: allIssues.sort((a, b) => (a.severity === 'critical' ? -1 : 1)).slice(0, 15),
     recommendations: global.recommendations ?? [],
   };
 }
 
-// ─── GitHub File Fetcher ──────────────────────────────────────────────────────
+// ─── Fetchers ─────────────────────────────────────────────────────────────────
 
-export async function fetchGitHubFiles(
-  repoFullName: string,
-  accessToken: string,
-  branch = "main",
-  maxFiles = 100 
-): Promise<CodeFile[]> {
-  const headers = {
-    Authorization: `Bearer ${accessToken}`,
-    Accept: "application/vnd.github.v3+json",
-  };
-
-  let treeRes = await fetch(
-    `https://api.github.com/repos/${repoFullName}/git/trees/${branch}?recursive=1`,
-    { headers }
-  );
-
-  if (treeRes.status === 404 && branch === "main") {
-    treeRes = await fetch(
-      `https://api.github.com/repos/${repoFullName}/git/trees/master?recursive=1`,
-      { headers }
-    );
-  }
-
-  if (!treeRes.ok) throw new Error(`GitHub Repository not found.`);
-
+export async function fetchGitHubFiles(repo: string, token: string, branch = "main"): Promise<CodeFile[]> {
+  const headers = { Authorization: `Bearer ${token}`, Accept: "application/vnd.github.v3+json" };
+  let treeRes = await fetch(`https://api.github.com/repos/${repo}/git/trees/${branch}?recursive=1`, { headers });
+  if (!treeRes.ok) treeRes = await fetch(`https://api.github.com/repos/${repo}/git/trees/master?recursive=1`, { headers });
+  if (!treeRes.ok) throw new Error("Repo not found");
   const tree = await treeRes.json();
-  const SKIP_PATTERNS = /node_modules|\.next|dist|build|\.git|\.lock|package-lock|\.min\.|\.map|__tests__|\.test\.|\.spec\.|svg|png|jpg|jpeg|ico|pdf|zip|gz/;
-  const CODE_EXTENSIONS = /\.(ts|tsx|js|jsx|py|rb|go|rs|java|cs|cpp|c|php|swift|kt|vue|svelte|sql|sh|css|scss)$/i;
-
-  const codeFiles = (tree.tree as { path: string; type: string; size?: number }[])
-    .filter(
-      (item) =>
-        item.type === "blob" &&
-        CODE_EXTENSIONS.test(item.path) &&
-        !SKIP_PATTERNS.test(item.path) &&
-        (item.size || 0) < 60000 
-    )
-    .slice(0, maxFiles);
-
-  const files = await Promise.all(
-    codeFiles.map(async (item) => {
-      const contentRes = await fetch(
-        `https://api.github.com/repos/${repoFullName}/contents/${item.path}?ref=${branch}`,
-        { headers }
-      );
-      if (!contentRes.ok) return null;
-      const data = await contentRes.json();
-      const content = Buffer.from(data.content, "base64").toString("utf-8");
-      return { path: item.path, content, language: detectLanguage(item.path) } as CodeFile;
-    })
-  );
-
-  return files.filter(Boolean) as CodeFile[];
+  const validFiles = (tree.tree as any[]).filter((i: any) => i.type === "blob" && CODE_EXT.test(i.path) && !SKIP_PATTERN.test(i.path) && (i.size || 0) < 50000).slice(0, 150);
+  const results = await Promise.all(validFiles.map(async (i: any) => {
+    try {
+      const r = await fetch(`https://api.github.com/repos/${repo}/contents/${i.path}?ref=${branch}`, { headers });
+      if (!r.ok) return null;
+      const d = await r.json();
+      if (!d.content) return null;
+      return { path: i.path, content: Buffer.from(d.content, "base64").toString("utf-8") } as CodeFile;
+    } catch { return null; }
+  }));
+  return results.filter(Boolean) as CodeFile[];
 }
 
-// ─── ZIP Extractor ────────────────────────────────────────────────────────────
-
-export async function extractZipFiles(zipBuffer: Buffer): Promise<CodeFile[]> {
+export async function extractZipFiles(buffer: Buffer): Promise<CodeFile[]> {
   const JSZip = (await import("jszip")).default;
-  const zip = await JSZip.loadAsync(zipBuffer);
-
-  const SKIP_PATTERNS = /node_modules|\.next|dist|build|\.git|\.lock|package-lock|\.min\.|\.map/;
-  const CODE_EXTENSIONS = /\.(ts|tsx|js|jsx|py|rb|go|rs|java|cs|cpp|c|php|swift|kt|vue|svelte|sql|sh|css|scss)$/i;
-
+  const zip = await JSZip.loadAsync(buffer);
   const files: CodeFile[] = [];
-
-  for (const [path, file] of Object.entries(zip.files)) {
-    if (
-      file.dir ||
-      SKIP_PATTERNS.test(path) ||
-      !CODE_EXTENSIONS.test(path) ||
-      files.length >= 100
-    ) continue;
-
-    const content = await file.async("string");
-    files.push({ path, content, language: detectLanguage(path) });
+  for (const [p, f] of Object.entries(zip.files)) {
+    if (!f.dir && CODE_EXT.test(p) && !SKIP_PATTERN.test(p)) {
+      files.push({ path: p, content: await f.async("string") });
+    }
   }
-
-  return files;
+  return files.slice(0, 150);
 }

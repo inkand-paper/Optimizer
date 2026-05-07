@@ -20,6 +20,7 @@ export async function GET(req: NextRequest) {
         plan: true,
         image: true,
         emailVerified: true,
+        githubUserName: true,
         createdAt: true
       }
     });

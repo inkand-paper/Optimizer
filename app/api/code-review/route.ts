@@ -1,14 +1,16 @@
 /**
  * app/api/code-review/route.ts
  * Hybrid SSE Streamer for Neural Code Audits.
- * Optimized for Database Health and Resilient Streaming.
+ * Turbo Edition: Parallel Workers + Intelligence Cache.
  */
 
 import {
   extractZipFiles,
   fetchGitHubFiles,
   reviewCode,
+  getFileHash,
   type CodeFile,
+  type FileReview,
 } from "@/core/analyzer/code-review";
 import { getTokenFromRequest } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -92,15 +94,13 @@ export async function POST(req: NextRequest) {
   const writer = responseStream.writable.getWriter();
   const encoder = new TextEncoder();
 
-  // DEFENSIVE LOGGING
   let isClosed = false;
-  const sendLog = async (message: string, type: "info" | "success" | "error" = "info") => {
+  const sendLog = (message: string, type: "info" | "success" | "error" = "info") => {
     if (isClosed) return;
-    try { 
-      await writer.write(encoder.encode(`data: ${JSON.stringify({ log: message, type })}\n\n`)); 
-    } catch { 
+    const data = `data: ${JSON.stringify({ log: message, type })}\n\n`;
+    writer.write(encoder.encode(data)).catch(() => {
       isClosed = true;
-    }
+    });
   };
 
   const abortController = new AbortController();
@@ -141,13 +141,45 @@ export async function POST(req: NextRequest) {
 
       if (files.length === 0) throw new Error("No source files detected.");
 
+      // ─── CACHE LOOKUP ───────────────────────────────────────────────────────
+      const fileHashes = files.map(f => getFileHash(f.content));
+      const cachedEntries = await prisma.auditCache.findMany({
+        where: { hash: { in: fileHashes } }
+      });
+      
+      const cachedMap: Record<string, FileReview> = {};
+      cachedEntries.forEach(entry => {
+        cachedMap[entry.hash] = entry.review as any as FileReview;
+      });
+
+      if (cachedEntries.length > 0) {
+        sendLog(`[INTELLIGENCE] Found ${cachedEntries.length} modules in intelligence bank.`, "success");
+      }
+
       const reviewRecord = await prisma.codeReview.create({
         data: { userId: dbUser.id, source, repoName, repoBranch, fileName, status: "PROCESSING" },
       });
 
+      const auditStart = Date.now();
       const result = await reviewCode(files, (msg) => {
         if (!isClosed) sendLog(msg);
-      }, abortController.signal);
+      }, abortController.signal, cachedMap);
+      const elapsedSec = ((Date.now() - auditStart) / 1000).toFixed(1);
+
+      // ─── CACHE UPDATE ───────────────────────────────────────────────────────
+      // Store any NEWLY audited files into the global cache
+      const newFiles = result.files.filter(f => !cachedMap[f.hash!]);
+      if (newFiles.length > 0) {
+        await prisma.auditCache.createMany({
+          data: newFiles.map(f => ({
+            hash: f.hash!,
+            path: f.path,
+            language: f.language,
+            review: f as any
+          })),
+          skipDuplicates: true
+        });
+      }
 
       const slimResult = {
         ...result,
@@ -155,7 +187,8 @@ export async function POST(req: NextRequest) {
           ...f,
           issues: f.issues.map(i => ({ ...i, codeSnippet: undefined, fixedSnippet: undefined }))
         })),
-        topIssues: result.topIssues.slice(0, 15)
+        // topIssues already contains the snippets, we just slice to keep the most important 15
+        topIssues: result.topIssues.slice(0, 15) 
       };
 
       const updated = await prisma.codeReview.update({
@@ -171,7 +204,7 @@ export async function POST(req: NextRequest) {
       });
 
       if (!isClosed) {
-        await sendLog("Audit synchronized.", "success");
+        sendLog(`[DONE] ${result.filesReviewed} files analyzed in ${elapsedSec}s · Score: ${result.overallScore}/100`, "success");
         await writer.write(encoder.encode(`data: ${JSON.stringify({ review: updated, result, done: true })}\n\n`));
       }
     } catch (err: any) {

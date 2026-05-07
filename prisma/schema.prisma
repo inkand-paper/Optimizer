@@ -189,3 +189,14 @@ model CodeReview {
   @@index([userId])
   @@index([userId, createdAt])
 }
+
+model AuditCache {
+  id        String   @id @default(uuid())
+  hash      String   @unique // MD5 of content
+  path      String // Original path reference
+  language  String
+  review    Json // The FileReview object { score, summary, issues, positives }
+  createdAt DateTime @default(now())
+
+  @@index([hash])
+}

@@ -69,12 +69,23 @@ export function CodeAuditConsole() {
   async function loadReviews() {
     setLoading(true);
     try {
-      const res = await fetch("/api/code-review", { credentials: "include" });
-      const data = await res.json();
-      setReviews(data.reviews ?? []);
-      setUsage(data.usage ?? 0);
-      setLimit(data.limit ?? 3);
-      if (data.reviews?.some((r: ReviewSummary) => r.source === "GITHUB")) setGithubConnected(true);
+      const [reviewRes, userRes] = await Promise.all([
+        fetch("/api/code-review", { credentials: "include" }),
+        fetch("/api/auth/me", { credentials: "include" })
+      ]);
+
+      const reviewData = await reviewRes.json();
+      const userData = await userRes.json();
+
+      setReviews(reviewData.reviews ?? []);
+      setUsage(reviewData.usage ?? 0);
+      setLimit(reviewData.limit ?? 3);
+
+      if (userData.success && userData.user.githubUserName) {
+        setGithubConnected(true);
+      } else if (reviewData.reviews?.some((r: ReviewSummary) => r.source === "GITHUB")) {
+        setGithubConnected(true);
+      }
     } catch {
       setError("Sync failed");
     } finally {
@@ -102,6 +113,7 @@ export function CodeAuditConsole() {
 
   async function submitReview() {
     setError(""); setSuccess(""); setSubmitting(true); setLogs([]);
+    const startTime = Date.now();
     try {
       let res: Response;
       const body = tab === "github" 
@@ -129,12 +141,16 @@ export function CodeAuditConsole() {
       const decoder = new TextDecoder();
       if (!reader) throw new Error("Connection failed");
 
+      // ─── Buffered SSE Parser (Handles split chunks) ───────────────────────
+      let buffer = "";
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
         
-        const chunk = decoder.decode(value);
-        const lines = chunk.split("\n");
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        // Keep the last incomplete line in the buffer
+        buffer = lines.pop() ?? "";
         
         for (const line of lines) {
           if (line.startsWith("data: ")) {
@@ -144,11 +160,12 @@ export function CodeAuditConsole() {
                 setLogs(prev => [...prev, { msg: data.log, type: data.type || "info" }]);
               }
               if (data.done && data.review) {
-                setSuccess("Neural Audit Complete");
+                const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+                setSuccess(`Neural Audit Complete · ${elapsed}s`);
                 setTimeout(() => router.push(`/dashboard/code-review/${data.review.id}`), 1500);
               }
-            } catch (e) {
-              console.error("Parse error", e);
+            } catch {
+              // Ignore malformed partial chunks
             }
           }
         }
