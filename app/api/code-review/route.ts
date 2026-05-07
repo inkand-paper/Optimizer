@@ -115,9 +115,9 @@ export async function POST(req: NextRequest) {
       const contentType = req.headers.get("content-type") ?? "";
       let source: "GITHUB" | "ZIP" | "PASTE";
       let files: CodeFile[] = [];
-      let repoName: string | undefined;
-      let repoBranch: string | undefined;
-      let fileName: string | undefined;
+      let repoName = "";
+      let repoBranch = "";
+      let fileName = "";
 
       if (contentType.includes("multipart/form-data")) {
         const formData = await req.formData();
@@ -136,7 +136,8 @@ export async function POST(req: NextRequest) {
           repoBranch = (body.branch || "main").trim();
           files = await fetchGitHubFiles(name, dbUser.githubAccessToken!, repoBranch);
         } else {
-          source = "PASTE"; fileName = body.fileName ?? "untitled.txt";
+          source = "PASTE"; 
+          fileName = (body.fileName ?? "untitled.txt").trim();
           files = [{ path: fileName, content: body.code }];
         }
       }
