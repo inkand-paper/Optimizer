@@ -134,7 +134,7 @@ export async function POST(req: NextRequest) {
           if (!name) throw new Error("Repository name is required for GitHub audits.");
           repoName = name;
           repoBranch = (body.branch || "main").trim();
-          files = await fetchGitHubFiles(repoName, dbUser.githubAccessToken!, repoBranch);
+          files = await fetchGitHubFiles(name, dbUser.githubAccessToken!, repoBranch);
         } else {
           source = "PASTE"; fileName = body.fileName ?? "untitled.txt";
           files = [{ path: fileName, content: body.code }];
