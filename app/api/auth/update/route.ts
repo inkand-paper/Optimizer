@@ -9,11 +9,17 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // [SECURITY] Prevent DoS by checking content length before parsing JSON
+    const contentLength = parseInt(req.headers.get("content-length") || "0");
+    if (contentLength > 3 * 1024 * 1024) { // 3MB limit (includes buffer for JSON overhead)
+      return NextResponse.json({ error: "Payload too large" }, { status: 413 });
+    }
+
     const { name, image } = await req.json();
     
-    // [SECURITY] Ensure Base64 image is not too large (> 2MB)
-    if (image && image.length > 2 * 1024 * 1024) {
-      return NextResponse.json({ error: "Image too large" }, { status: 400 });
+    // Ensure Base64 image is not too large (> 2MB)
+    if (image && image.length > 2.5 * 1024 * 1024) { // Roughly 2MB in binary
+      return NextResponse.json({ error: "Image too large" }, { status: 413 });
     }
 
     const updatedUser = await prisma.user.update({

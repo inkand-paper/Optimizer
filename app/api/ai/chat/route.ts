@@ -2,8 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY || "" });
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+const getGroq = () => {
+  const key = process.env.GROQ_API_KEY;
+  if (!key) return null;
+  return new Groq({ apiKey: key });
+};
+
+const getGemini = () => {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) return null;
+  return new GoogleGenerativeAI(key);
+};
 
 const SYSTEM_PROMPT = `You are Pulse-AI, the official technical assistant for NexPulse Infrastructure.
 NexPulse is an integrated Optimization & Monitoring suite for developers.
@@ -53,6 +62,9 @@ async function runGroq(
   message: string,
   history: { role: string; content: string }[]
 ): Promise<string> {
+  const groq = getGroq();
+  if (!groq) throw new Error("Groq API client not initialized.");
+
   const messages: Groq.Chat.ChatCompletionMessageParam[] = [
     { role: "system", content: SYSTEM_PROMPT },
     ...history.map((m) => ({
@@ -81,6 +93,9 @@ async function runGemini(
   message: string,
   history: { role: string; content: string }[]
 ): Promise<string> {
+  const genAI = getGemini();
+  if (!genAI) throw new Error("Gemini API client not initialized.");
+
   // Build a strictly alternating user/model history starting with 'user'
   const cleanHistory: { role: "user" | "model"; parts: { text: string }[] }[] = [];
   let expectedRole: "user" | "model" = "user";

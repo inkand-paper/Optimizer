@@ -286,136 +286,93 @@ export default function ReviewResultPage({ params }: { params: any }) {
   const grade = result?.grade || "N/A";
 
   return (
-    <div className="min-h-screen flex bg-background">
-      {/* ── Sidebar (Native Dashboard Clone) ───────── */}
-      <aside className="hidden md:flex flex-col w-56 shrink-0 sticky top-0 h-screen overflow-y-auto" style={{ borderRight: "0.5px solid var(--border)" }}>
-        <Link href="/" className="flex items-center gap-2 px-5 h-14 shrink-0" style={{ borderBottom: "0.5px solid var(--border)" }}>
-          <Activity className="h-4 w-4 text-np-gold" />
-          <span className="text-[14px] font-semibold">NexPulse</span>
-        </Link>
-        <nav className="flex-1 py-4 px-2 space-y-0.5">
-          <p className="label-category px-3 py-2">Workspace</p>
-          {TABS.map((t) => (
-            <Link key={t.label} href={t.href} className={cn("w-full flex items-center gap-3 px-3 py-2.5 rounded-[6px] text-[13px] font-medium transition-all", t.active ? "np-sidebar-active" : "text-muted-foreground hover:text-foreground hover:bg-muted")}>
-              <t.icon className="h-4 w-4 shrink-0" /> {t.label}
-            </Link>
-          ))}
-          <p className="label-category px-3 py-4">Resources</p>
-          <Link href="/docs" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[6px] text-[13px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted">
-            <Book className="h-4 w-4 shrink-0" /> Documentation
+    <div className="min-h-screen bg-background">
+      {/* ── Slim Top Bar ─────────────────────────────────────────────── */}
+      <header className="sticky top-0 z-30 h-14 flex items-center justify-between px-6 bg-background/80 backdrop-blur-md border-b border-border">
+        <div className="flex items-center gap-4">
+          <Link href="/dashboard?tab=audits" className="p-2 hover:bg-muted rounded-ui transition-all flex items-center gap-2 text-muted-foreground hover:text-foreground">
+            <ChevronLeft className="h-4 w-4" />
+            <span className="text-[12px] font-medium hidden sm:block">Back to Audits</span>
           </Link>
-          <Link href="/dashboard/profile" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[6px] text-[13px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted">
-            <User className="h-4 w-4 shrink-0" /> Profile Settings
-          </Link>
-        </nav>
-        <div className="p-3" style={{ borderTop: "0.5px solid var(--border)" }}>
-          <div className="np-card p-3 flex items-center gap-3">
-            <StatusDot status="healthy" />
-            <div className="min-w-0">
-               <p className="text-[12px] font-medium truncate">{user?.name}</p>
-               <p className="label-category text-[10px] truncate">{user?.plan || "FREE"}</p>
-            </div>
-          </div>
-          <div className="mt-2 flex items-center justify-between px-1">
-             <ThemeToggle />
-             <button onClick={handleLogout} className="p-1.5 rounded-ui text-np-slate hover:text-np-crimson transition-colors"><LogOut className="h-3.5 w-3.5" /></button>
+          <div className="h-4 w-px bg-border hidden sm:block" />
+          <div>
+            <h1 className="text-[14px] font-semibold leading-tight">{reviewMeta?.repoName || reviewMeta?.fileName || "Neural Audit Result"}</h1>
+            <p className="label-category text-[9px] uppercase tracking-widest opacity-60">{reviewMeta?.source} Source Pipeline</p>
           </div>
         </div>
-      </aside>
-
-      {/* ── Main Content ─────────────────────────────── */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="h-14 flex items-center justify-between px-6 bg-background/50 backdrop-blur-md z-10" style={{ borderBottom: "0.5px solid var(--border)" }}>
-          <div className="flex items-center gap-4">
-             <Link href="/dashboard/code-review" className="p-2 hover:bg-muted rounded-ui transition-all">
-                <ChevronLeft className="h-4 w-4" />
-             </Link>
-             <div>
-                <h1 className="text-[14px] font-semibold">{reviewMeta?.repoName || reviewMeta?.fileName || "Neural Audit Result"}</h1>
-                <p className="label-category text-[9px] uppercase tracking-widest">{reviewMeta?.source} Source Pipeline</p>
-             </div>
+        <div className="flex items-center gap-3">
+          <div className="px-3 py-1 rounded-full bg-muted/30 border border-border flex items-center gap-2">
+            <Clock className="h-3 w-3 text-muted-foreground" />
+            <span className="text-[10px] font-mono text-muted-foreground">
+              {reviewMeta?.createdAt ? new Date(reviewMeta.createdAt).toLocaleDateString() : "—"}
+            </span>
           </div>
-          <div className="flex items-center gap-3">
-             <div className="px-3 py-1 rounded-full bg-muted/30 border border-border flex items-center gap-2">
-                <Clock className="h-3 w-3 text-muted-foreground" />
-                <span className="text-[10px] font-mono text-muted-foreground">{new Date(reviewMeta?.createdAt).toLocaleDateString()}</span>
-             </div>
-             <ThemeToggle />
-          </div>
-        </header>
+          <ThemeToggle />
+        </div>
+      </header>
 
-        <main className="flex-1 overflow-y-auto np-scroll p-8 space-y-10 pb-24 md:pb-8">
-           {/* Top Summary Card */}
-           <div className="flex flex-col lg:flex-row gap-8 items-stretch">
-              <div className="flex-1 space-y-6">
-                  <div className="flex items-center gap-3">
-                     <div className="h-10 w-10 rounded-xl bg-np-gold/10 border border-np-gold/20 flex items-center justify-center"><Sparkles className="h-5 w-5 text-np-gold" /></div>
-                     <h2 className="text-[20px] font-bold tracking-tight leading-none">Architectural Intelligence</h2>
-                  </div>
-                  <p className="text-[16px] text-foreground/50 leading-relaxed font-medium max-w-2xl">{result?.summary}</p>
-                  <div className="flex flex-wrap gap-8 pt-2">
-                     <div className="space-y-1"><p className="label-category text-[10px]">Registry Logs</p><p className="text-xl font-bold tabular-nums">{result?.linesOfCode?.toLocaleString()}</p></div>
-                     <div className="space-y-1"><p className="label-category text-[10px]">Stack</p><p className="text-xl font-bold uppercase">{result?.language}</p></div>
-                     {criticalCount > 0 && <div className="space-y-1"><p className="label-category text-[10px] text-np-crimson/60">Hazards</p><p className="text-xl font-bold text-np-crimson flex items-center gap-2"><Shield className="h-5 w-5" /> {criticalCount}</p></div>}
-                  </div>
-              </div>
-              <Card className="p-8 bg-card/20 border-border flex items-center gap-8 min-w-[320px]">
-                  <ScoreRing score={overallScore} />
-                  <div className="text-left">
-                     <div className={cn("text-6xl font-bold tracking-tighter leading-none", scoreColor(overallScore))}>{grade}</div>
-                     <p className="label-category text-[10px] mt-4 uppercase tracking-[0.2em]">Logical Maturity</p>
-                  </div>
-              </Card>
-           </div>
+      {/* ── Main Content ─────────────────────────────────────────────── */}
+      <main className="max-w-7xl mx-auto p-6 md:p-10 space-y-10 pb-24">
+         {/* Top Summary Card */}
+         <div className="flex flex-col lg:flex-row gap-8 items-stretch">
+            <div className="flex-1 space-y-6">
+                <div className="flex items-center gap-3">
+                   <div className="h-10 w-10 rounded-xl bg-np-gold/10 border border-np-gold/20 flex items-center justify-center"><Sparkles className="h-5 w-5 text-np-gold" /></div>
+                   <h2 className="text-[20px] font-bold tracking-tight leading-none">Architectural Intelligence</h2>
+                </div>
+                <p className="text-[16px] text-foreground/50 leading-relaxed font-medium max-w-2xl">{result?.summary}</p>
+                <div className="flex flex-wrap gap-8 pt-2">
+                   <div className="space-y-1"><p className="label-category text-[10px]">Registry Logs</p><p className="text-xl font-bold tabular-nums">{result?.linesOfCode?.toLocaleString()}</p></div>
+                   <div className="space-y-1"><p className="label-category text-[10px]">Stack</p><p className="text-xl font-bold uppercase">{result?.language}</p></div>
+                   {criticalCount > 0 && <div className="space-y-1"><p className="label-category text-[10px] text-np-crimson/60">Hazards</p><p className="text-xl font-bold text-np-crimson flex items-center gap-2"><Shield className="h-5 w-5" /> {criticalCount}</p></div>}
+                </div>
+            </div>
+            <Card className="p-8 bg-card/20 border-border flex items-center gap-8 min-w-[280px]">
+                <ScoreRing score={overallScore} />
+                <div className="text-left">
+                   <div className={cn("text-6xl font-bold tracking-tighter leading-none", scoreColor(overallScore))}>{grade}</div>
+                   <p className="label-category text-[10px] mt-4 uppercase tracking-[0.2em]">Logical Maturity</p>
+                </div>
+            </Card>
+         </div>
 
-           {/* Metrics Grid */}
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <CategoryCard label="Security" cat="security" data={result?.categories?.security} />
-              <CategoryCard label="Performance" cat="performance" data={result?.categories?.performance} />
-              <CategoryCard label="Standards" cat="best-practice" data={result?.categories?.bestPractices} />
-              <CategoryCard label="Refactor" cat="refactor" data={result?.categories?.refactoring} />
-           </div>
+         {/* Metrics Grid */}
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <CategoryCard label="Security"    cat="security"      data={result?.categories?.security} />
+            <CategoryCard label="Performance" cat="performance"   data={result?.categories?.performance} />
+            <CategoryCard label="Standards"   cat="best-practice" data={result?.categories?.bestPractices} />
+            <CategoryCard label="Refactor"    cat="refactor"      data={result?.categories?.refactoring} />
+         </div>
 
-           {/* Content Tabs */}
-           <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 pt-4">
-              <div className="xl:col-span-4 space-y-6">
-                 <p className="label-category text-[10px] uppercase tracking-widest px-1">Recommendations</p>
-                 <div className="space-y-4">
-                   {recommendations.map((rec, i) => (
-                     <Card key={i} className="p-5 bg-card/10 border-border group hover:bg-card/20 transition-all flex gap-4">
-                        <span className="text-xl font-bold text-muted-foreground/10 tabular-nums">{(i+1).toString().padStart(2, '0')}</span>
-                        <p className="text-[14px] font-medium text-foreground/50 leading-relaxed">{rec}</p>
-                     </Card>
-                   ))}
-                 </div>
-              </div>
-              <div className="xl:col-span-8 space-y-6">
-                 <div className="flex border-b border-border bg-muted/10 rounded-xl overflow-hidden p-0.5">
-                    {(["overview", "files", "issues"] as const).map((t) => (
-                      <button key={t} onClick={() => setActiveTab(t)} className={cn("flex-1 py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg", activeTab === t ? "text-np-gold bg-background shadow-sm" : "text-muted-foreground/40 hover:bg-muted/20")}>
-                        {t === "overview" ? `Top (${topIssues.length})` : t === "files" ? `Nodes (${filesReviewed})` : `Registry (${allIssues.length})`}
-                      </button>
-                    ))}
-                 </div>
-                 <div className="space-y-6">
-                    {activeTab === "overview" && topIssues.map((issue, i) => <IssueCard key={i} issue={issue} />)}
-                    {activeTab === "files" && (result?.files || []).map((file, i) => <FileAccordion key={i} file={file} />)}
-                    {activeTab === "issues" && allIssues.map((issue, i) => <IssueCard key={i} issue={issue as any} />)}
-                 </div>
-              </div>
-           </div>
-        </main>
-      </div>
-
-      {/* Mobile bottom nav */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center h-16 px-2 bg-background/95 backdrop-blur-md" style={{ borderTop: "0.5px solid var(--border)" }}>
-        {TABS.map((t) => (
-          <Link key={t.id} href={t.href} className={cn("flex flex-col items-center gap-1 p-2 rounded-ui transition-all", t.active ? "text-np-gold" : "text-np-slate")}>
-            <t.icon className="h-5 w-5" />
-            <span className="text-[10px] font-medium">{t.label}</span>
-          </Link>
-        ))}
-      </div>
+         {/* Content Tabs */}
+         <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 pt-4">
+            <div className="xl:col-span-4 space-y-6">
+               <p className="label-category text-[10px] uppercase tracking-widest px-1">Recommendations</p>
+               <div className="space-y-4">
+                 {recommendations.map((rec, i) => (
+                   <Card key={i} className="p-5 bg-card/10 border-border group hover:bg-card/20 transition-all flex gap-4">
+                      <span className="text-xl font-bold text-muted-foreground/10 tabular-nums">{(i+1).toString().padStart(2, '0')}</span>
+                      <p className="text-[14px] font-medium text-foreground/50 leading-relaxed">{rec}</p>
+                   </Card>
+                 ))}
+               </div>
+            </div>
+            <div className="xl:col-span-8 space-y-6">
+               <div className="flex border-b border-border bg-muted/10 rounded-xl overflow-hidden p-0.5">
+                  {(["overview", "files", "issues"] as const).map((t) => (
+                    <button key={t} onClick={() => setActiveTab(t)} className={cn("flex-1 py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg", activeTab === t ? "text-np-gold bg-background shadow-sm" : "text-muted-foreground/40 hover:bg-muted/20")}>
+                      {t === "overview" ? `Top (${topIssues.length})` : t === "files" ? `Nodes (${filesReviewed})` : `Registry (${allIssues.length})`}
+                    </button>
+                  ))}
+               </div>
+               <div className="space-y-6">
+                  {activeTab === "overview" && topIssues.map((issue, i) => <IssueCard key={i} issue={issue} />)}
+                  {activeTab === "files" && (result?.files || []).map((file, i) => <FileAccordion key={i} file={file} />)}
+                  {activeTab === "issues" && allIssues.map((issue, i) => <IssueCard key={i} issue={issue as any} />)}
+               </div>
+            </div>
+         </div>
+      </main>
     </div>
   );
 }

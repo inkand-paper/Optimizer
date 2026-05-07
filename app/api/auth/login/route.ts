@@ -9,7 +9,9 @@ import { checkRateLimit } from '@/lib/rate-limit';
 export async function POST(req: NextRequest) {
   try {
     // 1. Rate Limiting Protection (Max 5 attempts per minute per IP)
-    const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
+    // Use last IP from x-forwarded-for to resist spoofing via prepended IPs
+    const forwarded = req.headers.get('x-forwarded-for') ?? '';
+    const ip = forwarded.split(',').pop()?.trim() || '127.0.0.1';
     const rateLimit = await checkRateLimit(`login_${ip}`, { maxRequests: 5, windowMs: 60000 });
     
     if (!rateLimit.success) {
@@ -29,7 +31,7 @@ export async function POST(req: NextRequest) {
     
     if (!user) {
       return NextResponse.json(
-        { error: 'Unauthorized', message: 'Invalid email or password' },
+        { error: 'Unauthorized', message: 'Invalid credentials' },
         { status: 401 }
       );
     }
@@ -46,7 +48,7 @@ export async function POST(req: NextRequest) {
     
     if (!isPasswordValid) {
       return NextResponse.json(
-        { error: 'Unauthorized', message: 'Invalid email or password' },
+        { error: 'Unauthorized', message: 'Invalid credentials' },
         { status: 401 }
       );
     }
@@ -70,7 +72,7 @@ export async function POST(req: NextRequest) {
     cookieStore.set('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
 
       maxAge: 30 * 24 * 60 * 60, // 30 days
       path: '/'

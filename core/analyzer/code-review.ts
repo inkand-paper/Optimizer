@@ -94,13 +94,18 @@ function getGrade(score: number): "A" | "B" | "C" | "D" | "F" {
 // ─── Groq API Client ──────────────────────────────────────────────────────────
 
 async function callGroq(sys: string, user: string, retries = 5): Promise<string> {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey || apiKey.length < 10) {
+    throw new Error("GROQ_API_KEY is missing or invalid. Please check your environment variables.");
+  }
+
   for (let i = 0; i < retries; i++) {
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+          Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
           model: "llama-3.3-70b-versatile",
@@ -272,20 +277,43 @@ async function finalizeReport(fileReviews: FileReview[], originalFiles: CodeFile
 
 export async function fetchGitHubFiles(repo: string, token: string, branch = "main"): Promise<CodeFile[]> {
   const headers = { Authorization: `Bearer ${token}`, Accept: "application/vnd.github.v3+json" };
-  let treeRes = await fetch(`https://api.github.com/repos/${repo}/git/trees/${branch}?recursive=1`, { headers });
-  if (!treeRes.ok) treeRes = await fetch(`https://api.github.com/repos/${repo}/git/trees/master?recursive=1`, { headers });
-  if (!treeRes.ok) throw new Error("Repo not found");
+  
+  let activeBranch = branch;
+  let treeRes = await fetch(`https://api.github.com/repos/${repo}/git/trees/${activeBranch}?recursive=1`, { headers });
+  
+  if (!treeRes.ok) {
+    activeBranch = "master";
+    treeRes = await fetch(`https://api.github.com/repos/${repo}/git/trees/${activeBranch}?recursive=1`, { headers });
+  }
+  
+  if (!treeRes.ok) throw new Error(`Repo '${repo}' not found or inaccessible (checked branches: ${branch}, master)`);
+  
   const tree = await treeRes.json();
-  const validFiles = (tree.tree as any[]).filter((i: any) => i.type === "blob" && CODE_EXT.test(i.path) && !SKIP_PATTERN.test(i.path) && (i.size || 0) < 50000).slice(0, 150);
+  if (!tree.tree) throw new Error("Could not read repository tree structure.");
+
+  const validFiles = (tree.tree as any[])
+    .filter((i: any) => 
+      i.type === "blob" && 
+      CODE_EXT.test(i.path) && 
+      !SKIP_PATTERN.test(i.path) && 
+      (i.size || 0) < 100000 // Increased to 100KB
+    )
+    .slice(0, 150);
+
+  if (validFiles.length === 0) {
+    throw new Error("No compatible source files found in the repository (checked first 150 nodes).");
+  }
+
   const results = await Promise.all(validFiles.map(async (i: any) => {
     try {
-      const r = await fetch(`https://api.github.com/repos/${repo}/contents/${i.path}?ref=${branch}`, { headers });
+      const r = await fetch(`https://api.github.com/repos/${repo}/contents/${i.path}?ref=${activeBranch}`, { headers });
       if (!r.ok) return null;
       const d = await r.json();
       if (!d.content) return null;
       return { path: i.path, content: Buffer.from(d.content, "base64").toString("utf-8") } as CodeFile;
     } catch { return null; }
   }));
+  
   return results.filter(Boolean) as CodeFile[];
 }
 
