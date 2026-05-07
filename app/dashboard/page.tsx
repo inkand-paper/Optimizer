@@ -370,6 +370,13 @@ export default function DashboardPage() {
                 <ThemeToggle />
               </div>
               <button 
+                onClick={() => { setActiveTab("logs"); setMobileMenuOpen(false); }}
+                className="w-full flex items-center gap-3 p-3 rounded-ui bg-muted/30 text-[14px] font-medium"
+              >
+                <FileText className="h-4 w-4 text-np-gold" />
+                Activity Logs
+              </button>
+              <button 
                 onClick={handleLogout}
                 className="w-full flex items-center gap-3 p-3 rounded-ui bg-np-crimson/5 text-np-crimson text-[14px] font-medium"
               >
@@ -541,7 +548,7 @@ export default function DashboardPage() {
         className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center h-16 px-2 bg-background/95 backdrop-blur-md"
         style={{ borderTop: "0.5px solid var(--border)" }}
       >
-        {TABS.map((t) => {
+        {TABS.filter(t => t.id !== "logs").map((t) => {
           const active = activeTab === t.id;
           return (
             <button
