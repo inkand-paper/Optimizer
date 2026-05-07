@@ -265,8 +265,9 @@ export default function ReviewResultPage({ params }: { params: any }) {
       .then((r) => r.json())
       .then((data) => {
         if (data.error) throw new Error(data.error);
-        setReviewMeta(data.review);
-        setResult(data.review.result as CodeReviewResult);
+        // GET /api/code-review/[id] returns the record directly, not wrapped
+        setReviewMeta(data);
+        setResult(data.result as CodeReviewResult);
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));

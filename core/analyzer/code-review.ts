@@ -219,32 +219,54 @@ export async function reviewCode(
 async function finalizeReport(fileReviews: FileReview[], originalFiles: CodeFile[], onProgress?: (msg: string) => void): Promise<CodeReviewResult> {
   const totalLines = originalFiles.reduce((s, f) => s + f.content.split("\n").length, 0);
   const avg = Math.round(fileReviews.reduce((s, r) => s + r.score, 0) / (fileReviews.length || 1));
+  const allIssues = fileReviews.flatMap(r => r.issues);
+
+  // ─── Compute REAL category stats from actual issues (not AI estimates) ───────
+  const catStats = (cat: string) => {
+    const matching = allIssues.filter(i => i.category === cat || i.category === cat.replace('-', '_'));
+    const critical = matching.filter(i => i.severity === "critical").length;
+    const filesWithCat = fileReviews.filter(r => r.issues.some(i => i.category === cat));
+    const catScore = filesWithCat.length
+      ? Math.round(filesWithCat.reduce((s, r) => s + r.score, 0) / filesWithCat.length)
+      : avg;
+    return { score: catScore, issueCount: matching.length, critical };
+  };
 
   if (onProgress) onProgress("[FINAL] Collate findings...");
 
-  let global: any = { overallScore: avg, summary: "Audit complete.", recommendations: [], categories: { security: { score: avg, count: 0, critical: 0 }, performance: { score: avg, count: 0, critical: 0 }, bestPractices: { score: avg, count: 0, critical: 0 }, refactoring: { score: avg, count: 0, critical: 0 } } };
-  
+  let global: any = { overallScore: avg, summary: "Audit complete.", recommendations: [] };
   try {
-    const sys = `Synthesize results. SCHEMA: { "overallScore": 0, "summary": "", "recommendations": [], "categories": { "security": { "score": 0, "count": 0, "critical": 0 }, "performance": { "score": 0, "count": 0, "critical": 0 }, "bestPractices": { "score": 0, "count": 0, "critical": 0 }, "refactoring": { "score": 0, "count": 0, "critical": 0 } } }`;
-    const summaries = fileReviews.slice(0, 20).map(r => `FILE: ${r.path} SCORE: ${r.score}`).join("\n");
-    const raw = await globalRequestQueue.add(() => callGroq(sys, `SUMMARIES:\n${summaries}`), { priority: 1 });
+    const sys = `Synthesize these code audit results. Return JSON: { "overallScore": 0-100, "summary": "2-3 sentence executive summary", "recommendations": ["actionable tip 1", "tip 2", "tip 3"] }`;
+    const summaries = fileReviews.filter(r => r.issues.length > 0).slice(0, 15)
+      .map(r => `${r.path} (score:${r.score}, issues:${r.issues.length})`).join("\n");
+    const raw = await globalRequestQueue.add(() => callGroq(sys, `FILES:\n${summaries}`), { priority: 1 });
     if (raw) global = JSON.parse(raw.replace(/```json\n?|```\n?/g, ""));
   } catch { }
 
-  const allIssues = fileReviews.flatMap(r => r.issues);
   return {
     overallScore: global.overallScore ?? avg,
     grade: getGrade(global.overallScore ?? avg),
-    summary: global.summary ?? "Done.",
+    summary: global.summary ?? "Audit complete.",
     linesOfCode: totalLines,
     filesReviewed: fileReviews.length,
     language: detectLanguage(originalFiles[0]?.path ?? ""),
-    categories: global.categories,
+    categories: {
+      security:      catStats("security"),
+      performance:   catStats("performance"),
+      bestPractices: catStats("best-practice"),
+      refactoring:   catStats("refactor"),
+    },
     files: fileReviews,
-    topIssues: allIssues.sort((a, b) => (a.severity === 'critical' ? -1 : 1)).slice(0, 15),
+    topIssues: allIssues
+      .sort((a, b) => {
+        const rank = { critical: 0, warning: 1, info: 2 };
+        return (rank[a.severity] ?? 3) - (rank[b.severity] ?? 3);
+      })
+      .slice(0, 15),
     recommendations: global.recommendations ?? [],
   };
 }
+
 
 // ─── Fetchers ─────────────────────────────────────────────────────────────────
 
