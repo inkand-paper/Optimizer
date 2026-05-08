@@ -134,14 +134,14 @@ export async function POST(req: NextRequest) {
       try {
         const text = await runGroq(message, safeHistory, "llama-3.3-70b-versatile");
         return NextResponse.json({ content: text, engine: "groq-70b" });
-      } catch (groqError: any) {
+      } catch {
         console.warn("⚡ Groq 70B failed, trying Groq 8B...");
         
         // TIER 2: Groq 8B (High Availability)
         try {
           const text = await runGroq(message, safeHistory, "llama-3.1-8b-instant");
           return NextResponse.json({ content: text, engine: "groq-8b" });
-        } catch (groq8bError: any) {
+        } catch {
           console.warn("⚡ Groq 8B also failed, falling back to Gemini.");
         }
       }
@@ -152,8 +152,9 @@ export async function POST(req: NextRequest) {
       try {
         const text = await runGemini(message, safeHistory);
         return NextResponse.json({ content: text, engine: "gemini" });
-      } catch (geminiError: any) {
-        console.error("❌ Gemini also failed:", geminiError.message);
+      } catch (geminiError: unknown) {
+        const msg = geminiError instanceof Error ? geminiError.message : String(geminiError);
+        console.error("❌ Gemini also failed:", msg);
         throw geminiError;
       }
     }
