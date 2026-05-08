@@ -60,7 +60,8 @@ Constraint: Be professional, accurate, and concise. Use Markdown formatting.`;
  */
 async function runGroq(
   message: string,
-  history: { role: string; content: string }[]
+  history: { role: string; content: string }[],
+  modelName: string = "llama-3.3-70b-versatile"
 ): Promise<string> {
   const groq = getGroq();
   if (!groq) throw new Error("Groq API client not initialized.");
@@ -75,7 +76,7 @@ async function runGroq(
   ];
 
   const completion = await groq.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
+    model: modelName,
     messages,
     temperature: 0.7,
     max_tokens: 1024,
@@ -85,9 +86,7 @@ async function runGroq(
 }
 
 /**
- * Fallback: Gemini 1.5 Flash
- * Fixes the "First content should be with role 'user'" bug by building
- * a clean, strictly-alternating history starting from the first user message.
+ * Fallback: Gemini (Tiered Flash -> Pro)
  */
 async function runGemini(
   message: string,
@@ -96,7 +95,7 @@ async function runGemini(
   const genAI = getGemini();
   if (!genAI) throw new Error("Gemini API client not initialized.");
 
-  // Build a strictly alternating user/model history starting with 'user'
+  // Build a strictly alternating user/model history
   const cleanHistory: { role: "user" | "model"; parts: { text: string }[] }[] = [];
   let expectedRole: "user" | "model" = "user";
 
@@ -106,41 +105,37 @@ async function runGemini(
       cleanHistory.push({ role, parts: [{ text: m.content }] });
       expectedRole = expectedRole === "user" ? "model" : "user";
     }
-    // Skip messages that break the alternating pattern
   }
 
-  // If history ends on 'user' (incomplete exchange), trim it so we can append new user message cleanly
   if (cleanHistory.length > 0 && cleanHistory[cleanHistory.length - 1].role === "user") {
     cleanHistory.pop();
   }
 
-  let model;
-  try {
-    model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-      systemInstruction: SYSTEM_PROMPT,
-    });
-  } catch {
-    model = genAI.getGenerativeModel({
-      model: "gemini-pro",
-    });
-  }
-
-  try {
-    const chat = model.startChat({ history: cleanHistory });
-    const result = await chat.sendMessage(message);
-    return result.response.text();
-  } catch (err) {
-    console.error("Gemini primary failed, trying gemini-pro:", err);
+  const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
+  
+  for (const modelName of models) {
     try {
-      const backupModel = genAI.getGenerativeModel({ model: "gemini-pro" });
-      const result = await backupModel.generateContent(message);
-      return result.response.text();
-    } catch (finalErr) {
-      console.error("All Gemini models failed:", finalErr);
-      throw new Error("AI synthesis failed on all channels.");
+      const model = genAI.getGenerativeModel({
+        model: modelName,
+        systemInstruction: SYSTEM_PROMPT,
+      });
+      // Try chat first
+      try {
+        const chat = model.startChat({ history: cleanHistory });
+        const result = await chat.sendMessage(message);
+        return result.response.text();
+      } catch {
+        // Fallback to simple generateContent
+        const result = await model.generateContent(message);
+        return result.response.text();
+      }
+    } catch (err) {
+      console.warn(`Gemini ${modelName} failed:`, err);
+      continue;
     }
   }
+  
+  throw new Error("AI synthesis failed on all channels.");
 }
 
 export async function POST(req: NextRequest) {
@@ -148,23 +143,31 @@ export async function POST(req: NextRequest) {
     const { message, history } = await req.json();
     const safeHistory: { role: string; content: string }[] = history || [];
 
-    // 1. Try Groq first (primary engine)
+    // TIER 1: Groq 70B (Primary)
     if (process.env.GROQ_API_KEY) {
       try {
-        const text = await runGroq(message, safeHistory);
-        return NextResponse.json({ content: text, engine: "groq" });
-      } catch (groqError: unknown) {
-        console.warn("⚡ Groq failed, falling back to Gemini:", groqError instanceof Error ? groqError.message : String(groqError));
+        const text = await runGroq(message, safeHistory, "llama-3.3-70b-versatile");
+        return NextResponse.json({ content: text, engine: "groq-70b" });
+      } catch (groqError: any) {
+        console.warn("⚡ Groq 70B failed, trying Groq 8B...");
+        
+        // TIER 2: Groq 8B (High Availability)
+        try {
+          const text = await runGroq(message, safeHistory, "llama-3.1-8b-instant");
+          return NextResponse.json({ content: text, engine: "groq-8b" });
+        } catch (groq8bError: any) {
+          console.warn("⚡ Groq 8B also failed, falling back to Gemini.");
+        }
       }
     }
 
-    // 2. Fallback: Gemini
+    // TIER 3: Gemini (Last Resort)
     if (process.env.GEMINI_API_KEY) {
       try {
         const text = await runGemini(message, safeHistory);
         return NextResponse.json({ content: text, engine: "gemini" });
-      } catch (geminiError: unknown) {
-        console.error("❌ Gemini also failed:", geminiError instanceof Error ? geminiError.message : String(geminiError));
+      } catch (geminiError: any) {
+        console.error("❌ Gemini also failed:", geminiError.message);
         throw geminiError;
       }
     }
