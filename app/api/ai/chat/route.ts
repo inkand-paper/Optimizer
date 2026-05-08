@@ -11,6 +11,7 @@ const getGroq = () => {
 const getGemini = () => {
   const key = process.env.GEMINI_API_KEY;
   if (!key) return null;
+  // Force v1 to avoid v1beta 404 issues seen in some environments
   return new GoogleGenerativeAI(key);
 };
 
@@ -113,18 +114,32 @@ async function runGemini(
     cleanHistory.pop();
   }
 
-  const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash-latest",
-    systemInstruction: SYSTEM_PROMPT,
-  });
+  let model;
+  try {
+    model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      systemInstruction: SYSTEM_PROMPT,
+    });
+  } catch {
+    model = genAI.getGenerativeModel({
+      model: "gemini-pro",
+    });
+  }
 
   try {
     const chat = model.startChat({ history: cleanHistory });
     const result = await chat.sendMessage(message);
     return result.response.text();
   } catch (err) {
-    console.error("Gemini execution failed:", err);
-    throw new Error("AI synthesis failed on all channels.");
+    console.error("Gemini primary failed, trying gemini-pro:", err);
+    try {
+      const backupModel = genAI.getGenerativeModel({ model: "gemini-pro" });
+      const result = await backupModel.generateContent(message);
+      return result.response.text();
+    } catch (finalErr) {
+      console.error("All Gemini models failed:", finalErr);
+      throw new Error("AI synthesis failed on all channels.");
+    }
   }
 }
 
