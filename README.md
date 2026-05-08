@@ -6,11 +6,13 @@ Professional-grade uptime monitoring, website analysis, and server health tracki
 NexPulse is a unified platform designed to monitor and optimize web properties regardless of their underlying technology stack. It provides a centralized Command Center for scanning public URLs, monitoring uptime 24/7, and triggering global cache optimizations via a secure machine-to-machine API.
 
 ### Key Capabilities
+- **Neural Code Audit Engine**: AI-powered recursive analysis of GitHub repositories, Zip archives, and raw code snippets.
+- **Intelligence Bank**: High-speed incremental audits using content hashing to skip unchanged files and focus on new vulnerabilities.
 - **Universal Monitoring**: High-precision tracking of uptime and latency for any public URL.
 - **Advanced Website Analysis**: In-depth audits of SEO metadata, security configurations (SSL/Headers), and performance metrics.
 - **Integrated Webhooks**: Native support for Discord, Slack, and Zapier with professional embed formatting.
 - **Pulse-AI Technical Assistant**: An autonomous AI agent integrated into the dashboard to assist with technical implementation and diagnostic analysis.
-- **Responsive Management Interface**: A premium dashboard featuring a hybrid navigation model (Desktop Sidebar & Mobile Bottom Navigation).
+- **Premium Mobile-First UI**: Fully responsive management interface with optimized touch-targets and adaptive layouts for all screen sizes.
 - **Secure Machine Integration**: High-entropy API keys (SHA-256 hashed) for seamless integration with mobile applications (Android/iOS) and backend services.
 - **Advanced Authentication**: Secure login, email verification, and a robust password recovery system.
 - **Technical Sandbox**: Interactive environment for testing API handshakes and optimization logic.
@@ -21,12 +23,6 @@ Our documentation is structured to support users from conceptual understanding t
 2.  **[API Reference](./api)**: Technical specifications for machine-to-machine integration.
 3.  **[Android Integration Guide](./android)**: Implementation patterns for mobile developers.
 4.  **[System Manual](./master)**: Comprehensive overview of platform features.
-
-## Technical Setup
-
-### Prerequisites
-- **Node.js**: Environment version 20.0.0 or higher.
-- **Database**: PostgreSQL (Supabase, Neon, or local instances).
 
 ### Local Development
 ```bash

@@ -229,10 +229,18 @@ fun sendPulse(tag: String, apiKey: String) {
 }
 ```
 
-## Technical Specification
-- **Engine**: Next.js 15+
+### Neural Code Review & Audit Intelligence
+NexPulse features a high-concurrency code review engine that performs deep security and architectural audits.
+- **Multi-Source Ingestion**: Audit code via direct GitHub connection, Zip archive uploads, or raw code pasting.
+- **Intelligence Bank (Incremental Audits)**: The system hashes every analyzed module. If a file hasn't changed since its last audit, the engine reuses previous intelligence instantly, focusing AI processing power only on modified or new code.
+- **Parallel Processing**: Utilizes a tiered worker model to analyze multiple files simultaneously, delivering comprehensive reports in seconds.
+
+### Technical Specification
+- **Engine**: Next.js 15+ (App Router)
 - **Database**: Prisma with PostgreSQL
+- **AI Backend**: Llama 3.3 (70B) via high-throughput Groq workers
 - **Security**: SHA-256 Key Hashing & JWT Sessions
+- **Responsiveness**: Tailwind CSS adaptive grid system (Mobile-First)
 - **Deployment**: Optimized for Vercel and Docker
 
 ## Webhooks

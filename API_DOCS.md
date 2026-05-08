@@ -34,17 +34,31 @@ Triggers an instant cache purge for a specific tag or path across your connected
 }
 ```
 
-### 3. On-Demand Audit (Integrated Systems)
-**POST** `/api/analyze`
+### 3. Neural Code Review (Streaming)
+**POST** `/api/code-review`
 
-Triggers a deep-scan of an integrated public URL for SEO, Security, and Performance. **Requires API Key.**
+Triggers a high-concurrency neural audit. Returns a Server-Sent Events (SSE) stream of real-time logs.
 
-**Request Payload**:
+**Request Payload (GitHub)**:
 ```json
 {
-  "url": "https://google.com"
+  "source": "GITHUB",
+  "repoName": "username/repo",
+  "branch": "main"
 }
 ```
+
+**Request Payload (Paste)**:
+```json
+{
+  "source": "PASTE",
+  "code": "function hello() { console.log('world'); }",
+  "fileName": "main.js"
+}
+```
+
+**Request Payload (Zip)**:
+Requires `multipart/form-data` with a `file` field containing the `.zip` archive.
 
 ## Response Codes
 
