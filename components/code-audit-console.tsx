@@ -112,7 +112,7 @@ export function CodeAuditConsole() {
   async function submitReview() {
     setError(""); setSubmitting(true); setLogs([]);
     try {
-      let res: Response;
+      let response: Response;
       const body = tab === "github" 
         ? { source: "GITHUB", repoName: repoName.trim(), branch: branch.trim() } 
         : { source: "PASTE", code: pasteCode, fileName: pasteFileName.trim() };
@@ -120,19 +120,20 @@ export function CodeAuditConsole() {
       if (tab === "zip" && zipFile) {
         const formData = new FormData();
         formData.append("file", zipFile);
-        res = await fetch("/api/code-review", { method: "POST", body: formData, credentials: "include" });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error ?? "Audit failed");
-        router.push(`/dashboard/code-review/${data.review.id}`);
-        return;
+        response = await fetch("/api/code-review", { method: "POST", body: formData, credentials: "include" });
+      } else {
+        response = await fetch("/api/code-review", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+          credentials: "include"
+        });
       }
 
-      const response = await fetch("/api/code-review", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-        credentials: "include"
-      });
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({ error: "Neural link failed" }));
+        throw new Error(errData.error || "Neural link failed");
+      }
 
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
