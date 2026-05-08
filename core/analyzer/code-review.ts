@@ -65,7 +65,7 @@ const globalRequestQueue = new PQueue({
 const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 const SKIP_PATTERN = /node_modules|\.next|dist|build|\.git|\.lock|package-lock|__tests__|\.test\.|\.spec\.|svg|png|jpg|jpeg|ico|pdf|zip|gz|env/i;
-const CODE_EXT = /\.(ts|tsx|js|jsx|py|rb|go|rs|java|cs|cpp|c|php|swift|kt|vue|svelte|sql|sh|css|scss)$/i;
+const CODE_EXT = /\.(ts|tsx|js|jsx|py|rb|go|rs|java|cs|cpp|c|php|swift|kt|vue|svelte|sql|sh|css|json|yaml|yml|md|txt)$/i;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -74,9 +74,9 @@ export function detectLanguage(path: string): string {
   const map: Record<string, string> = {
     ts: "TypeScript", tsx: "TypeScript (React)", js: "JavaScript", jsx: "JavaScript (React)",
     py: "Python", rb: "Ruby", go: "Go", rs: "Rust", java: "Java", cs: "C#",
-    vue: "Vue", svelte: "Svelte", sql: "SQL", sh: "Shell", json: "JSON",
+    vue: "Vue", svelte: "Svelte", sql: "SQL", sh: "Shell", json: "JSON", yaml: "YAML", yml: "YAML", md: "Markdown",
   };
-  return map[ext ?? ""] ?? "Unknown";
+  return map[ext ?? ""] ?? "Text";
 }
 
 export function getFileHash(content: string): string {
@@ -142,28 +142,47 @@ async function callGroq(sys: string, user: string, retries = 5): Promise<string>
 
 async function auditFile(file: CodeFile): Promise<FileReview> {
   const hash = getFileHash(file.content);
+  const lang = detectLanguage(file.path);
   
-  if (SKIP_PATTERN.test(file.path) || file.content.length > 40000) {
-    return { path: file.path, language: detectLanguage(file.path), score: 100, summary: "Ignored or too large.", issues: [], positives: [], hash };
+  if (SKIP_PATTERN.test(file.path) || file.content.length > 50000) {
+    return { path: file.path, language: lang, score: 100, summary: "Skipped (ignored pattern or too large).", issues: [], positives: [], hash };
   }
 
   const sys = `Audit this file. JSON SCHEMA: { "score": 0-100, "summary": "", "issues": [{ "line": 0, "severity": "critical", "category": "security", "message": "", "suggestion": "", "codeSnippet": "", "fixedSnippet": "" }], "positives": [] }`;
-  const user = `FILE: ${file.path}\nSOURCE:\n${file.content}`;
+  const user = `FILE: ${file.path}\nLANGUAGE: ${lang}\nSOURCE:\n${file.content}`;
 
   try {
     const raw = await callGroq(sys, user);
-    const parsed = JSON.parse(raw.replace(/```json\n?|```\n?/g, ""));
+    if (!raw) throw new Error("Empty response from AI");
+    
+    const cleanRaw = raw.replace(/```json\n?|```\n?/g, "").trim();
+    const parsed = JSON.parse(cleanRaw);
+    
     return {
       path: file.path,
-      language: detectLanguage(file.path),
-      score: parsed.score ?? 85,
-      summary: parsed.summary ?? "",
-      issues: (parsed.issues ?? []).map((iss: LineIssue) => ({ ...iss, codeSnippet: iss.codeSnippet?.trim() })),
+      language: lang,
+      score: typeof parsed.score === 'number' ? parsed.score : 100,
+      summary: parsed.summary ?? "Analyzed.",
+      issues: (parsed.issues ?? []).map((iss: LineIssue) => ({ 
+        ...iss, 
+        category: iss.category || "best-practice",
+        severity: iss.severity || "info",
+        codeSnippet: iss.codeSnippet?.trim() 
+      })),
       positives: parsed.positives ?? [],
       hash 
     };
-  } catch {
-    return { path: file.path, language: detectLanguage(file.path), score: 100, summary: "Skipped.", issues: [], positives: [], hash };
+  } catch (err) {
+    console.error(`[AUDIT_FAIL] ${file.path}:`, err);
+    return { 
+      path: file.path, 
+      language: lang, 
+      score: 100, 
+      summary: `Neural scan partial: ${(err as Error).message}`, 
+      issues: [], 
+      positives: [], 
+      hash 
+    };
   }
 }
 
@@ -248,9 +267,10 @@ async function finalizeReport(fileReviews: FileReview[], originalFiles: CodeFile
   let globalResult: SynthesisResult = { overallScore: avg, summary: "Audit complete.", recommendations: [] };
   try {
     const sys = `Synthesize these code audit results. Return JSON: { "overallScore": 0-100, "summary": "2-3 sentence executive summary", "recommendations": ["actionable tip 1", "tip 2", "tip 3"] }`;
-    const summaries = fileReviews.filter(r => r.issues.length > 0).slice(0, 15)
-      .map(r => `${r.path} (score:${r.score}, issues:${r.issues.length})`).join("\n");
-    const raw = await globalRequestQueue.add(() => callGroq(sys, `FILES:\n${summaries}`), { priority: 1 });
+    // Include files even if 0 issues, but prioritize those with issues for the limited context window
+    const sample = [...fileReviews].sort((a, b) => b.issues.length - a.issues.length).slice(0, 20);
+    const summaries = sample.map(r => `${r.path} (score:${r.score}, issues:${r.issues.length})`).join("\n");
+    const raw = await globalRequestQueue.add(() => callGroq(sys, `FILES ANALYZED:\n${summaries}`), { priority: 1 });
     if (raw) globalResult = JSON.parse(raw.replace(/```json\n?|```\n?/g, ""));
   } catch { }
 
