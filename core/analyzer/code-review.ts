@@ -281,9 +281,10 @@ async function finalizeReport(fileReviews: FileReview[], originalFiles: CodeFile
 
 // ─── Fetchers ─────────────────────────────────────────────────────────────────
 
-export async function fetchGitHubFiles(repo: string, token: string, branch = "main"): Promise<CodeFile[]> {
+export async function fetchGitHubFiles(repo: string, token: string, branch = "main", onProgress?: (msg: string) => void): Promise<CodeFile[]> {
   const headers = { Authorization: `Bearer ${token}`, Accept: "application/vnd.github.v3+json" };
   
+  if (onProgress) onProgress(`[REMOTE] Exploring tree architecture: ${branch}...`);
   let activeBranch = branch;
   let treeRes = await fetch(`https://api.github.com/repos/${repo}/git/trees/${activeBranch}?recursive=1`, { headers });
   
@@ -307,6 +308,8 @@ export async function fetchGitHubFiles(repo: string, token: string, branch = "ma
     )
     .slice(0, 150);
 
+  if (onProgress) onProgress(`[REMOTE] Identified ${validFiles.length} candidate modules. Streaming...`);
+
   if (validFiles.length === 0) {
     throw new Error("No compatible source files found in the repository (checked first 150 nodes).");
   }
@@ -324,14 +327,20 @@ export async function fetchGitHubFiles(repo: string, token: string, branch = "ma
   return results.filter(Boolean) as CodeFile[];
 }
 
-export async function extractZipFiles(buffer: Buffer): Promise<CodeFile[]> {
+export async function extractZipFiles(buffer: Buffer, onProgress?: (msg: string) => void): Promise<CodeFile[]> {
   const JSZip = (await import("jszip")).default;
+  if (onProgress) onProgress("[UNPACK] Loading archive into memory...");
   const zip = await JSZip.loadAsync(buffer);
-  const files: CodeFile[] = [];
-  for (const [p, f] of Object.entries(zip.files)) {
-    if (!f.dir && CODE_EXT.test(p) && !SKIP_PATTERN.test(p)) {
-      files.push({ path: p, content: await f.async("string") });
-    }
-  }
-  return files.slice(0, 150);
+  
+  const entries = Object.entries(zip.files).filter(([p, f]) => !f.dir && CODE_EXT.test(p) && !SKIP_PATTERN.test(p));
+  if (onProgress) onProgress(`[UNPACK] Detected ${entries.length} compatible source modules.`);
+
+  const files = await Promise.all(
+    entries.slice(0, 150).map(async ([p, f]) => {
+      const content = await f.async("string");
+      return { path: p, content };
+    })
+  );
+
+  return files;
 }

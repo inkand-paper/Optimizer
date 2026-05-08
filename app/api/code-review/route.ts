@@ -112,6 +112,8 @@ export async function POST(req: NextRequest) {
   (async () => {
     try {
       if (abortController.signal.aborted) return;
+      sendLog("Establishing Neural Link...", "info");
+      
       const contentType = req.headers.get("content-type") ?? "";
       let source: "GITHUB" | "ZIP" | "PASTE";
       let files: CodeFile[] = [];
@@ -125,7 +127,7 @@ export async function POST(req: NextRequest) {
         if (!file) throw new Error("No file provided");
         source = "ZIP"; fileName = file.name;
         const buffer = Buffer.from(await file.arrayBuffer());
-        files = file.name.endsWith(".zip") ? await extractZipFiles(buffer) : [{ path: file.name, content: buffer.toString("utf-8") }];
+        files = file.name.endsWith(".zip") ? await extractZipFiles(buffer, sendLog) : [{ path: file.name, content: buffer.toString("utf-8") }];
       } else {
         const body = await req.json();
         source = body.source;
@@ -134,7 +136,7 @@ export async function POST(req: NextRequest) {
           if (!name) throw new Error("Repository name is required for GitHub audits.");
           repoName = name;
           repoBranch = (body.branch || "main").trim();
-          files = await fetchGitHubFiles(name, dbUser.githubAccessToken!, repoBranch);
+          files = await fetchGitHubFiles(name, dbUser.githubAccessToken!, repoBranch, sendLog);
         } else {
           source = "PASTE"; 
           fileName = (body.fileName ?? "untitled.txt").trim();
