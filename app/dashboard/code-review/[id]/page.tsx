@@ -168,39 +168,39 @@ function FileAccordion({ file }: { file: FileReview }) {
 
   return (
     <Card className="overflow-hidden border border-border bg-card/10 hover:bg-card/20 transition-all">
-      <button onClick={() => setOpen((v) => !v)} className="w-full text-left p-5 flex items-center gap-6 hover:bg-muted/10 transition-all">
-        <div className={cn("h-11 w-11 rounded-xl border border-border flex items-center justify-center shrink-0 bg-muted/30", scoreColor(file.score))}>
-          <FileCode className="h-6 w-6" />
+      <button onClick={() => setOpen((v) => !v)} className="w-full text-left p-4 sm:p-5 flex items-center gap-4 sm:gap-6 hover:bg-muted/10 transition-all">
+        <div className={cn("h-9 w-9 sm:h-11 sm:w-11 rounded-xl border border-border flex items-center justify-center shrink-0 bg-muted/30", scoreColor(file.score))}>
+          <FileCode className="h-5 w-5 sm:h-6 sm:w-6" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[16px] font-semibold font-mono text-foreground/80 truncate tracking-tight">{file.path}</p>
-          <div className="flex items-center gap-4 mt-1">
-             <span className="label-category text-[10px]">{file.language}</span>
-             <span className="text-[10px] font-bold text-np-gold/60 uppercase tracking-widest flex items-center gap-1.5"><ShieldCheck className="h-3 w-3" /> {file.issues.length} Issues</span>
+          <p className="text-[14px] sm:text-[16px] font-semibold font-mono text-foreground/80 truncate tracking-tight">{file.path}</p>
+          <div className="flex items-center gap-3 sm:gap-4 mt-0.5 sm:mt-1">
+             <span className="label-category text-[9px] sm:text-[10px]">{file.language}</span>
+             <span className="text-[9px] sm:text-[10px] font-bold text-np-gold/60 uppercase tracking-widest flex items-center gap-1.5"><ShieldCheck className="h-3 w-3" /> {file.issues.length} Issues</span>
           </div>
         </div>
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-4 sm:gap-8">
           <div className="text-right">
-            <span className={cn("text-2xl font-bold tabular-nums tracking-tighter opacity-80", scoreColor(file.score))}>{file.score}</span>
-            <p className="label-category text-[9px] mt-0.5">Purity</p>
+            <span className={cn("text-lg sm:text-2xl font-bold tabular-nums tracking-tighter opacity-80", scoreColor(file.score))}>{file.score}</span>
+            <p className="label-category text-[8px] sm:text-[9px] mt-0.5">Purity</p>
           </div>
-          <div className="opacity-20">{open ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}</div>
+          <div className="opacity-20">{open ? <ChevronUp className="h-4 w-4 sm:h-5 sm:w-5" /> : <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5" />}</div>
         </div>
       </button>
 
       {open && (
-        <div className="border-t border-border p-8 space-y-8 bg-muted/5 animate-in slide-in-from-top-2 duration-300">
+        <div className="border-t border-border p-4 sm:p-8 space-y-6 sm:space-y-8 bg-muted/5 animate-in slide-in-from-top-2 duration-300">
           <div className="max-w-4xl">
              <p className="label-category text-[10px] mb-3 uppercase tracking-widest">Logic Summary</p>
-             <p className="text-[15px] text-foreground/50 leading-relaxed font-medium">{file.summary}</p>
+             <p className="text-[14px] sm:text-[15px] text-foreground/50 leading-relaxed font-medium">{file.summary}</p>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
              <div className="lg:col-span-4 space-y-4">
-                <div className="bg-np-teal/5 border border-border rounded-ui p-6">
+                <div className="bg-np-teal/5 border border-border rounded-ui p-4 sm:p-6">
                    <p className="label-category text-[10px] mb-4 text-np-teal/60 uppercase tracking-widest flex items-center gap-2"><CheckCircle2 className="h-3 w-3" /> Strengths</p>
-                   <ul className="space-y-3">
+                   <ul className="space-y-2 sm:space-y-3">
                      {file.positives.map((p, i) => (
-                       <li key={i} className="text-[13px] text-foreground/50 flex gap-3 leading-relaxed">
+                       <li key={i} className="text-[12px] sm:text-[13px] text-foreground/50 flex gap-3 leading-relaxed">
                          <ArrowRight className="h-3.5 w-3.5 text-np-teal/30 shrink-0 mt-0.5" /> {p}
                        </li>
                      ))}
@@ -255,23 +255,23 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
   return (
     <div className="min-h-screen bg-background">
       {/* ── Slim Top Bar ─────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-30 h-14 flex items-center justify-between px-6 bg-background/80 backdrop-blur-md border-b border-border">
-        <div className="flex items-center gap-4">
-          <Link href="/dashboard?tab=audits" className="p-2 hover:bg-muted rounded-ui transition-all flex items-center gap-2 text-muted-foreground hover:text-foreground">
+      <header className="sticky top-0 z-30 h-14 flex items-center justify-between px-4 sm:px-6 bg-background/80 backdrop-blur-md border-b border-border">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <Link href="/dashboard?tab=audits" className="p-1.5 sm:p-2 hover:bg-muted rounded-ui transition-all flex items-center gap-2 text-muted-foreground hover:text-foreground">
             <ChevronLeft className="h-4 w-4" />
-            <span className="text-[12px] font-medium hidden sm:block">Back to Audits</span>
+            <span className="text-[11px] sm:text-[12px] font-medium hidden sm:block">Back to Audits</span>
           </Link>
           <div className="h-4 w-px bg-border hidden sm:block" />
-          <div>
-            <h1 className="text-[14px] font-semibold leading-tight">{reviewMeta?.repoName || reviewMeta?.fileName || "Neural Audit Result"}</h1>
-            <p className="label-category text-[9px] uppercase tracking-widest opacity-60">{reviewMeta?.source} Source Pipeline</p>
+          <div className="min-w-0">
+            <h1 className="text-[13px] sm:text-[14px] font-semibold leading-tight truncate max-w-[150px] sm:max-w-none">{reviewMeta?.repoName || reviewMeta?.fileName || "Neural Audit Result"}</h1>
+            <p className="label-category text-[8px] sm:text-[9px] uppercase tracking-widest opacity-60 truncate">{reviewMeta?.source} Pipeline</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="px-3 py-1 rounded-full bg-muted/30 border border-border flex items-center gap-2">
-            <Clock className="h-3 w-3 text-muted-foreground" />
-            <span className="text-[10px] font-mono text-muted-foreground">
-              {reviewMeta?.createdAt ? new Date(reviewMeta.createdAt).toLocaleDateString() : "—"}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="px-2 sm:px-3 py-1 rounded-full bg-muted/30 border border-border flex items-center gap-1.5 sm:gap-2">
+            <Clock className="h-2.5 w-2.5 sm:h-3 w-3 text-muted-foreground" />
+            <span className="text-[9px] sm:text-[10px] font-mono text-muted-foreground">
+              {reviewMeta?.createdAt ? new Date(reviewMeta.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' }) : "—"}
             </span>
           </div>
           <ThemeToggle />
@@ -279,26 +279,26 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
       </header>
 
       {/* ── Main Content ─────────────────────────────────────────────── */}
-      <main className="max-w-7xl mx-auto p-6 md:p-10 space-y-10 pb-24">
+      <main className="max-w-7xl mx-auto p-4 sm:p-6 md:p-10 space-y-8 sm:space-y-10 pb-24">
          {/* Top Summary Card */}
-         <div className="flex flex-col lg:flex-row gap-8 items-stretch">
-            <div className="flex-1 space-y-6">
+         <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 items-stretch">
+            <div className="flex-1 space-y-4 sm:space-y-6">
                 <div className="flex items-center gap-3">
-                   <div className="h-10 w-10 rounded-xl bg-np-gold/10 border border-np-gold/20 flex items-center justify-center"><Sparkles className="h-5 w-5 text-np-gold" /></div>
-                   <h2 className="text-[20px] font-bold tracking-tight leading-none">Architectural Intelligence</h2>
+                   <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-np-gold/10 border border-np-gold/20 flex items-center justify-center"><Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-np-gold" /></div>
+                   <h2 className="text-[18px] sm:text-[20px] font-bold tracking-tight leading-none">Architectural Intelligence</h2>
                 </div>
-                <p className="text-[16px] text-foreground/50 leading-relaxed font-medium max-w-2xl">{result?.summary}</p>
-                <div className="flex flex-wrap gap-8 pt-2">
-                   <div className="space-y-1"><p className="label-category text-[10px]">Registry Logs</p><p className="text-xl font-bold tabular-nums">{result?.linesOfCode?.toLocaleString()}</p></div>
-                   <div className="space-y-1"><p className="label-category text-[10px]">Stack</p><p className="text-xl font-bold uppercase">{result?.language}</p></div>
-                   {criticalCount > 0 && <div className="space-y-1"><p className="label-category text-[10px] text-np-crimson/60">Hazards</p><p className="text-xl font-bold text-np-crimson flex items-center gap-2"><Shield className="h-5 w-5" /> {criticalCount}</p></div>}
+                <p className="text-[14px] sm:text-[16px] text-foreground/50 leading-relaxed font-medium max-w-2xl">{result?.summary}</p>
+                <div className="flex flex-wrap gap-4 sm:gap-8 pt-2">
+                   <div className="space-y-1"><p className="label-category text-[10px]">Registry Logs</p><p className="text-lg sm:text-xl font-bold tabular-nums">{result?.linesOfCode?.toLocaleString()}</p></div>
+                   <div className="space-y-1"><p className="label-category text-[10px]">Stack</p><p className="text-lg sm:text-xl font-bold uppercase">{result?.language}</p></div>
+                   {criticalCount > 0 && <div className="space-y-1"><p className="label-category text-[10px] text-np-crimson/60">Hazards</p><p className="text-lg sm:text-xl font-bold text-np-crimson flex items-center gap-2"><Shield className="h-4 w-4 sm:h-5 sm:w-5" /> {criticalCount}</p></div>}
                 </div>
             </div>
-            <Card className="p-8 bg-card/20 border-border flex items-center gap-8 min-w-[280px]">
+            <Card className="p-6 sm:p-8 bg-card/20 border-border flex items-center justify-center sm:justify-start gap-8 min-w-0 sm:min-w-[280px]">
                 <ScoreRing score={overallScore} />
                 <div className="text-left">
-                   <div className={cn("text-6xl font-bold tracking-tighter leading-none", scoreColor(overallScore))}>{grade}</div>
-                   <p className="label-category text-[10px] mt-4 uppercase tracking-[0.2em]">Logical Maturity</p>
+                   <div className={cn("text-4xl sm:text-6xl font-bold tracking-tighter leading-none", scoreColor(overallScore))}>{grade}</div>
+                   <p className="label-category text-[10px] mt-3 sm:mt-4 uppercase tracking-[0.2em]">Logical Maturity</p>
                 </div>
             </Card>
          </div>
@@ -325,9 +325,9 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
                </div>
             </div>
             <div className="xl:col-span-8 space-y-6">
-               <div className="flex border-b border-border bg-muted/10 rounded-xl overflow-hidden p-0.5">
+               <div className="flex border-b border-border bg-muted/10 rounded-xl overflow-x-auto np-scroll p-0.5">
                   {(["overview", "files", "issues"] as const).map((t) => (
-                    <button key={t} onClick={() => setActiveTab(t)} className={cn("flex-1 py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg", activeTab === t ? "text-np-gold bg-background shadow-sm" : "text-muted-foreground/40 hover:bg-muted/20")}>
+                    <button key={t} onClick={() => setActiveTab(t)} className={cn("flex-1 min-w-[120px] py-3 sm:py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg", activeTab === t ? "text-np-gold bg-background shadow-sm" : "text-muted-foreground/40 hover:bg-muted/20")}>
                       {t === "overview" ? `Top (${topIssues.length})` : t === "files" ? `Nodes (${filesReviewed})` : `Registry (${allIssues.length})`}
                     </button>
                   ))}

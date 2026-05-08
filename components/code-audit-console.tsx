@@ -176,12 +176,12 @@ export function CodeAuditConsole() {
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
          <div>
-            <h2 className="text-[20px] font-bold tracking-tight">Neural Command</h2>
-            <p className="label-category text-[10px] uppercase tracking-widest">Universal Source Analysis Engine</p>
+            <h2 className="text-[18px] sm:text-[20px] font-bold tracking-tight">Neural Command</h2>
+            <p className="label-category text-[9px] sm:text-[10px] uppercase tracking-widest">Universal Source Analysis Engine</p>
          </div>
-         <div className="flex items-center gap-4 bg-muted/20 px-4 py-2 rounded-ui border border-border">
+         <div className="flex items-center justify-between sm:justify-start gap-4 bg-muted/20 px-4 py-2 rounded-ui border border-border w-full sm:w-auto">
             <span className="label-category text-[10px]">Cycles Used</span>
             <span className="text-[14px] font-bold tabular-nums">{isUnlimited ? `${usage} / ∞` : `${usage} / ${limit}`}</span>
          </div>
@@ -190,9 +190,9 @@ export function CodeAuditConsole() {
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
          <div className="xl:col-span-4 space-y-4">
             <Card className="overflow-hidden shadow-sm">
-               <div className="flex bg-muted/30" style={{ borderBottom: "0.5px solid var(--border)" }}>
+               <div className="flex bg-muted/30 overflow-x-auto np-scroll" style={{ borderBottom: "0.5px solid var(--border)" }}>
                   {(["github", "zip", "paste"] as TabType[]).map((t) => (
-                    <button key={t} onClick={() => setTab(t)} className={cn("flex-1 py-3 text-[10px] font-black uppercase tracking-widest transition-all", tab === t ? "text-np-gold bg-background" : "text-muted-foreground/40 hover:bg-muted")}>
+                    <button key={t} onClick={() => setTab(t)} className={cn("flex-1 min-w-[80px] py-3 text-[10px] font-black uppercase tracking-widest transition-all", tab === t ? "text-np-gold bg-background" : "text-muted-foreground/40 hover:bg-muted")}>
                       {t}
                     </button>
                   ))}
@@ -276,23 +276,23 @@ export function CodeAuditConsole() {
                    </button>
 
                    <Link href={`/dashboard/code-review/${r.id}`}>
-                     <Card className="p-5 hover:bg-muted/30 transition-all border-border h-full flex flex-col justify-between overflow-hidden relative">
-                        <div className="flex justify-between items-start mb-6 pr-10">
+                     <Card className="p-4 sm:p-5 hover:bg-muted/30 transition-all border-border h-full flex flex-col justify-between overflow-hidden relative">
+                        <div className="flex justify-between items-start mb-6 pr-8 sm:pr-10">
                            <div className="h-10 w-10 rounded-ui bg-muted flex items-center justify-center text-muted-foreground/60 group-hover:text-np-gold transition-colors">
                               {r.source === "GITHUB" ? <GitBranch className="h-5 w-5" /> : r.source === "ZIP" ? <FolderArchive className="h-5 w-5" /> : <Terminal className="h-5 w-5" />}
                            </div>
-                           <Badge variant={r.status === "COMPLETED" ? "success" : "warning"} className="text-[9px] px-2 py-0.5 tracking-widest">{r.status}</Badge>
+                           <Badge variant={r.status === "COMPLETED" ? "success" : "warning"} className="text-[8px] sm:text-[9px] px-2 py-0.5 tracking-widest">{r.status}</Badge>
                         </div>
                         <div>
-                          <h4 className="text-[15px] font-semibold truncate text-foreground/80 group-hover:text-foreground mb-1 pr-12">{r.repoName ?? r.fileName ?? "Source Node"}</h4>
-                          <p className="label-category text-[9px] uppercase tracking-widest opacity-60">{r.source} Interface</p>
+                          <h4 className="text-[14px] sm:text-[15px] font-semibold truncate text-foreground/80 group-hover:text-foreground mb-1 pr-10 sm:pr-12">{r.repoName ?? r.fileName ?? "Source Node"}</h4>
+                          <p className="label-category text-[8px] sm:text-[9px] uppercase tracking-widest opacity-60">{r.source} Interface</p>
                         </div>
-                        <div className="pt-5 mt-5 border-t border-border flex items-center justify-between">
+                        <div className="pt-4 sm:pt-5 mt-4 sm:mt-5 border-t border-border flex items-center justify-between">
                            <div className="flex items-center gap-2 opacity-40">
                               <Clock className="h-3 w-3" />
-                              <span className="text-[10px] font-mono">{new Date(r.createdAt).toLocaleDateString()}</span>
+                              <span className="text-[9px] sm:text-[10px] font-mono">{new Date(r.createdAt).toLocaleDateString()}</span>
                            </div>
-                           {r.score && <span className={cn("text-2xl font-black tracking-tighter", scoreColor(r.score))}>{r.score}</span>}
+                           {r.score && <span className={cn("text-xl sm:text-2xl font-black tracking-tighter", scoreColor(r.score))}>{r.score}</span>}
                         </div>
                      </Card>
                    </Link>

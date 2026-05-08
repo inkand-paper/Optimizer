@@ -335,61 +335,72 @@ export default function DashboardPage() {
 
           {/* Mobile Drawer Overlay */}
           {mobileMenuOpen && (
-            <div 
-              className="md:hidden absolute top-14 left-0 right-0 bg-background/98 backdrop-blur-xl p-4 shadow-2xl space-y-4 animate-in slide-in-from-top-2 duration-200"
-              style={{ borderBottom: "0.5px solid var(--border)" }}
-            >
-              <Link 
-                href="/dashboard/profile" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-3 p-3 rounded-ui bg-muted/30 text-[14px] font-medium"
+            <>
+              <div className="md:hidden fixed inset-0 z-[100] bg-background/40 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />
+              <div 
+                className="md:hidden fixed top-0 right-0 bottom-0 w-[280px] z-[110] bg-background border-l border-border shadow-2xl p-6 flex flex-col animate-in slide-in-from-right duration-300"
               >
-                <User className="h-4 w-4 text-np-gold" />
-                Profile Settings
-              </Link>
-              <Link 
-                href="/docs" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-3 p-3 rounded-ui bg-muted/30 text-[14px] font-medium"
-              >
-                <Book className="h-4 w-4 text-np-gold" />
-                Documentation
-              </Link>
-              <Link 
-                href="/faq" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-3 p-3 rounded-ui bg-muted/30 text-[14px] font-medium"
-              >
-                <HelpCircle className="h-4 w-4 text-np-gold" />
-                FAQ
-              </Link>
-              <div className="flex items-center justify-between p-3 rounded-ui bg-muted/30">
-                <div className="flex items-center gap-3 text-[14px] font-medium text-muted-foreground">
-                  <ShieldCheck className="h-4 w-4 text-np-gold" />
-                  Appearance
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-2">
+                    <Activity className="h-4 w-4 text-np-gold" />
+                    <span className="text-[14px] font-semibold">Workspace</span>
+                  </div>
+                  <button onClick={() => setMobileMenuOpen(false)} className="p-2 -mr-2 rounded-ui hover:bg-muted transition-colors">
+                    <X className="h-5 w-5" />
+                  </button>
                 </div>
-                <ThemeToggle />
+
+                <div className="flex-1 space-y-6 overflow-y-auto np-scroll -mx-2 px-2">
+                  <div className="space-y-1">
+                    <p className="label-category px-3 mb-2">Primary Nodes</p>
+                    {TABS.map((t) => (
+                      <button 
+                        key={t.id}
+                        onClick={() => { setActiveTab(t.id); setMobileMenuOpen(false); }}
+                        className={cn("w-full flex items-center gap-3 p-3 rounded-ui text-[14px] font-medium transition-all", activeTab === t.id ? "bg-np-gold/10 text-np-gold" : "text-muted-foreground hover:bg-muted/50")}
+                      >
+                        <t.icon className="h-4 w-4" />
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="space-y-1">
+                    <p className="label-category px-3 mb-2">Personal</p>
+                    <Link href="/dashboard/profile" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 p-3 rounded-ui text-[14px] font-medium text-muted-foreground hover:bg-muted/50">
+                      <User className="h-4 w-4" />
+                      Profile Settings
+                    </Link>
+                    <Link href="/docs" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 p-3 rounded-ui text-[14px] font-medium text-muted-foreground hover:bg-muted/50">
+                      <Book className="h-4 w-4" />
+                      Documentation
+                    </Link>
+                  </div>
+
+                  <div className="pt-4 border-t border-border">
+                    <div className="flex items-center justify-between p-3">
+                      <span className="text-[14px] font-medium text-muted-foreground">Appearance</span>
+                      <ThemeToggle />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-6 mt-auto border-t border-border">
+                  <button 
+                    onClick={handleLogout}
+                    className="w-full flex items-center justify-center gap-2 p-3 rounded-ui bg-np-crimson/5 text-np-crimson text-[14px] font-bold transition-all hover:bg-np-crimson/10"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout Archive
+                  </button>
+                </div>
               </div>
-              <button 
-                onClick={() => { setActiveTab("logs"); setMobileMenuOpen(false); }}
-                className="w-full flex items-center gap-3 p-3 rounded-ui bg-muted/30 text-[14px] font-medium"
-              >
-                <FileText className="h-4 w-4 text-np-gold" />
-                Activity Logs
-              </button>
-              <button 
-                onClick={handleLogout}
-                className="w-full flex items-center gap-3 p-3 rounded-ui bg-np-crimson/5 text-np-crimson text-[14px] font-medium"
-              >
-                <LogOut className="h-4 w-4" />
-                Logout System
-              </button>
-            </div>
+            </>
           )}
         </header>
 
         {/* Tab content */}
-        <main className="flex-1 p-6 pb-24 md:pb-6 overflow-auto np-scroll">
+        <main className="flex-1 p-4 sm:p-6 pb-24 md:pb-6 overflow-auto np-scroll">
 
           {/* MONITORING */}
           {activeTab === "monitoring" && (
