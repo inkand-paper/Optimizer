@@ -239,7 +239,7 @@ export function CodeAuditConsole() {
                   </Button>
 
                   {(submitting || logs.length > 0) && (
-                    <div className="bg-black/90 rounded-ui border border-border p-4 font-mono text-[10px] space-y-1.5 h-[180px] overflow-y-auto np-scroll shadow-inner">
+                    <div className="bg-muted/50 dark:bg-black/80 backdrop-blur-sm rounded-ui border border-border p-4 font-mono text-[10px] space-y-1.5 h-[180px] overflow-y-auto np-scroll shadow-inner">
                        {logs.length === 0 && <p className="text-muted-foreground animate-pulse">Establishing neural link...</p>}
                        {logs.map((log, i) => (
                          <div key={i} className={cn("flex gap-3", log.type === "error" ? "text-np-crimson" : log.type === "success" ? "text-emerald-400" : "text-muted-foreground")}>
@@ -269,7 +269,7 @@ export function CodeAuditConsole() {
                    {/* Delete Button - Outside the Link to avoid swallowing events */}
                    <button 
                      onClick={(e) => deleteReview(r.id, e)}
-                     className="absolute top-3 right-3 p-2 rounded-md bg-np-obsidian/80 border border-border/50 text-np-crimson hover:bg-np-crimson hover:text-white transition-all z-30 shadow-lg"
+                     className="absolute top-3 right-3 p-2 rounded-md bg-background/80 backdrop-blur-md border border-border/50 text-np-crimson hover:bg-np-crimson hover:text-white transition-all z-30 shadow-lg"
                      title="Remove Archive"
                    >
                      <Trash2 className="h-3.5 w-3.5" />

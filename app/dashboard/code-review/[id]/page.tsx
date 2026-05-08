@@ -74,7 +74,7 @@ function ScoreRing({ score }: { score: number }) {
   return (
     <div className="relative w-24 h-24 flex-shrink-0">
       <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-        <circle className="text-muted/10" strokeWidth="8" stroke="currentColor" fill="transparent" r={radius} cx="50" cy="50" />
+        <circle className="text-border/30" strokeWidth="8" stroke="currentColor" fill="transparent" r={radius} cx="50" cy="50" />
         <circle className={cn("transition-all duration-1000 ease-out", scoreColor(score).replace('text-', 'stroke-'))} strokeWidth="8" strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round" stroke="currentColor" fill="transparent" r={radius} cx="50" cy="50" />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
@@ -294,7 +294,7 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
                    {criticalCount > 0 && <div className="space-y-1"><p className="label-category text-[10px] text-np-crimson/60">Hazards</p><p className="text-lg sm:text-xl font-bold text-np-crimson flex items-center gap-2"><Shield className="h-4 w-4 sm:h-5 sm:w-5" /> {criticalCount}</p></div>}
                 </div>
             </div>
-            <Card className="p-6 sm:p-8 bg-card/20 border-border flex items-center justify-center sm:justify-start gap-8 min-w-0 sm:min-w-[280px]">
+            <Card className="p-6 sm:p-8 bg-card/40 dark:bg-card/20 border-border flex items-center justify-center sm:justify-start gap-8 min-w-0 sm:min-w-[280px]">
                 <ScoreRing score={overallScore} />
                 <div className="text-left">
                    <div className={cn("text-4xl sm:text-6xl font-bold tracking-tighter leading-none", scoreColor(overallScore))}>{grade}</div>

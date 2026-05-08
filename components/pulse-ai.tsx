@@ -122,7 +122,7 @@ export function PulseAI() {
                   {m.role === "user" ? <User className="h-3.5 w-3.5" /> : <Activity className="h-3.5 w-3.5" />}
                 </div>
                 <div className={cn(
-                  "max-w-[80%] p-3 rounded-ui text-[12.5px] leading-relaxed prose prose-invert prose-p:my-0 prose-sm",
+                  "max-w-[80%] p-3 rounded-ui text-[12.5px] leading-relaxed prose dark:prose-invert prose-p:my-0 prose-sm",
                   m.role === "user" ? "bg-np-gold text-white" : "bg-muted/50 border border-border"
                 )}>
                   <ReactMarkdown>{m.content}</ReactMarkdown>
