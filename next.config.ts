@@ -19,6 +19,11 @@ const nextConfig: NextConfig = {
     }
   },
 
+  // Image Optimization - Set to unoptimized to avoid Vercel limits
+  images: {
+    unoptimized: true,
+  },
+  
   // Strict Security Headers
   async headers() {
     return [
