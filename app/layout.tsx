@@ -2,15 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import dynamic from "next/dynamic";
 
-// Dynamically import heavy client-only components to prevent layout chunk timeout
-const InfrastructureProvider = dynamic(
-  () => import("@/components/infrastructure-provider").then((m) => m.InfrastructureProvider)
-);
-const PulseAI = dynamic(
-  () => import("@/components/pulse-ai").then((m) => m.PulseAI)
-);
+import { InfrastructureProvider } from "@/components/infrastructure-provider";
+import { PulseAI } from "@/components/pulse-ai";
 
 const inter = Inter({
   subsets: ["latin"],

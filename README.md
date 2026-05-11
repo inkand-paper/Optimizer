@@ -104,5 +104,5 @@ Required environment variables:
 
 - **Support**: nexpulse.team@gmail.com
 - **Created by**: Mustak Tahsin Abir
-- **Discord**: [discord.gg/CVU3aNdb](https://discord.gg/CVU3aNdb)
+- **Discord**: [discord.gg/gSw2sHxZtn](https://discord.gg/gSw2sHxZtn)
 - **GitHub**: [inkand-paper/Optimizer](https://github.com/inkand-paper/Optimizer)

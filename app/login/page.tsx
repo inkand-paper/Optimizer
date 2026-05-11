@@ -23,6 +23,11 @@ export default function LoginPage() {
   const [error, setError]     = React.useState("");
   const [isVerified, setIsVerified] = React.useState(false);
 
+  const isMounted = React.useRef(true);
+  React.useEffect(() => {
+    return () => { isMounted.current = false; };
+  }, []);
+
   // Read URL params client-side; strip them from history immediately so they
   // never reappear if the user navigates back with the browser back button.
   React.useEffect(() => {
@@ -31,20 +36,26 @@ export default function LoginPage() {
     const oauthError = p.get("error") ?? "";
 
     if (verified) {
-      setTimeout(() => setIsVerified(true), 0);
+      setTimeout(() => {
+        if (isMounted.current) setIsVerified(true);
+      }, 0);
       // Aggressive URL cleaning without history entries
       const url = new URL(window.location.href);
       url.searchParams.delete("verified");
       window.history.replaceState({}, "", url.pathname);
       
       // Auto-hide after 8 seconds
-      const timer = setTimeout(() => setIsVerified(false), 8000);
+      const timer = setTimeout(() => {
+        if (isMounted.current) setIsVerified(false);
+      }, 8000);
       return () => clearTimeout(timer);
     }
 
     if (oauthError) {
       const msg = OAUTH_ERRORS[oauthError] ?? OAUTH_ERRORS.Default;
-      setTimeout(() => setError(msg), 0);
+      setTimeout(() => {
+        if (isMounted.current) setError(msg);
+      }, 0);
       // Aggressive URL cleaning without history entries
       const url = new URL(window.location.href);
       url.searchParams.delete("error");
