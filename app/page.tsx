@@ -10,6 +10,8 @@ import {
   BarChart3,
   Check,
   Mail,
+  Code2,
+  Bot,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -33,9 +35,21 @@ const features = [
     accent: "np-teal",
   },
   {
+    icon: Code2,
+    title: "Neural Code Audit",
+    body: "Connect a GitHub repo, upload a zip, or paste code — get AI-powered security, performance, and architecture recommendations instantly.",
+    accent: "np-gold",
+  },
+  {
+    icon: Bot,
+    title: "Pulse-AI Assistant",
+    body: "An AI technical assistant embedded in your dashboard. Ask anything about your infrastructure, audit results, or NexPulse itself.",
+    accent: "np-teal",
+  },
+  {
     icon: Shield,
     title: "Webhook & Key Management",
-    body: "Scoped API keys, rotating secrets, and a full audit trail. Everything your security team wants.",
+    body: "Scoped API keys, rotating secrets, Discord/Slack alerts, and a full audit trail. Everything your security team wants.",
     accent: "np-gold",
   },
 ];
@@ -44,7 +58,7 @@ const valueProps = [
   { label: "Frameworks supported", value: "Any" },
   { label: "Avg. cache clear time", value: "< 200ms" },
   { label: "Uptime SLA", value: "99.9 %" },
-  { label: "API response P95", value: "< 80ms" },
+  { label: "Code audit languages", value: "15+" },
 ];
 
 export default function Home() {

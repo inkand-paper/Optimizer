@@ -1,256 +1,207 @@
-# NexPulse Master Documentation
+# NexPulse Master Guide
 
-This document provides a comprehensive technical and conceptual overview of the NexPulse SaaS platform. It is designed to guide both administrators and developers through the system architecture, features, and integration patterns.
+Comprehensive technical and architectural reference for operators and contributors.
 
-In high-performance web environments, caching and uptime are critical. NexPulse provides a centralized **Optimization Hub** where developers can trigger global cache refreshes (**Optimization Pulses**) and monitor website health with real-time **Uptime Alerts** via email and webhooks.
+---
 
-## Architecture and Data Flow
+## 1. Platform Overview
 
-NexPulse operates as a decoupled three-layer system:
+NexPulse is a unified infrastructure intelligence platform for modern development teams. It provides:
 
-1.  **Command Center (Dashboard)**: A premium interface for user registration, API key management, and real-time website auditing.
-2.  **Persistence Layer (Database)**: An encrypted vault powered by Prisma and PostgreSQL. We store only the cryptographic hashes of API keys to ensure zero-knowledge security.
-3.  **Pulse Engine (API)**: A high-concurrency API layer that validates incoming machine requests and dispatches optimization signals.
+- **Real-Time Monitoring** — Uptime, latency, and status tracking for any URL
+- **Cache Pulse Engine** — Remote cache revalidation for Next.js, Nuxt, and Remix
+- **SEO & Performance Audit** — Deep crawl of live URLs for Web Vitals, meta, and security headers
+- **Neural Code Audit** — AI-powered analysis of source code from GitHub, ZIP, or paste
+- **Intelligence Bank** — Hash-based incremental auditing to skip unchanged files
+- **Pulse-AI Assistant** — Embedded AI technical assistant in the dashboard
+- **Webhooks** — Discord/Slack alerts for monitoring events
+- **Activity Logs** — Full audit trail of all platform events
 
-### Data Flow Diagram
+---
 
-```mermaid
-flowchart TD
-    subgraph EXTERNAL["External Sources"]
-        A2["NexPulse Dashboard"]
-        A1["External Machine or App"]
-    end
+## 2. Architecture
 
-    subgraph DASH["Dashboard Services"]
-        F3["Deep Audit"]
-        F2["Uptime Monitor"]
-        F1["Key Management"]
-    end
+NexPulse is a Next.js 16 App Router application using a decoupled three-layer system:
 
-    subgraph AUTH["Authentication Layer"]
-        B["NexPulse Engine"]
-        C[("Hashed Key Store")]
-    end
-
-    subgraph INTEGRATION["Integration Layer"]
-        D["Integrated Target System"]
-        E["End User"]
-    end
-
-    %% Dashboard Connections
-    A2 --> F3
-    A2 --> F2
-    A2 --> F1
-
-    %% External Flow
-    A1 -->|API Key + Pulse| B
-
-    %% Service Operations
-    F3 -.->|Scan| D
-    F2 -.->|Monitor| G[("Public URL")]
-    F1 -.->|Manage| C
-
-    %% Core Auth Flow
-    B -->|Validate| C
-    C -->|Hash Match| B
-    B -->|Authorize| D
-
-    %% Integration Flow
-    D -->|Clear Cache| D
-    D -.->|Fresh Data| E
+```
+┌─────────────────────────────────────────────┐
+│              Command Center (UI)             │
+│  Dashboard · Login · Docs · Landing Page    │
+└───────────────────┬─────────────────────────┘
+                    │ HTTP / SSE
+┌───────────────────▼─────────────────────────┐
+│              Pulse Engine (API)              │
+│  /api/revalidate · /api/code-review         │
+│  /api/monitors · /api/analyze               │
+│  /api/ai/chat · /api/auth/*                 │
+└──────────┬──────────────────┬───────────────┘
+           │                  │
+┌──────────▼───────┐  ┌───────▼───────────────┐
+│  PostgreSQL DB   │  │  External Services     │
+│  (Prisma ORM)    │  │  Groq · Gemini · Redis │
+│  Supabase hosted │  │  GitHub OAuth · Resend │
+└──────────────────┘  └───────────────────────┘
 ```
 
-## Core Features
+### Authentication System (Dual-Layer)
 
-### Optimization Pulse (Remote Cache Revalidation)
-NexPulse enables "Tag-based Revalidation." By tagging data fetches in your application (e.g., `inventory`, `pricing`), you can use the NexPulse API to clear those specific tags globally in milliseconds. Each optimization triggers a professional **Optimization Signal** email alert to the account holder.
+NexPulse runs two parallel auth systems:
 
-### Uptime Monitoring & Alerts
-The Pulse Engine continuously monitors your web properties for downtime. 
-- **Real-time Detection**: Automatic health checks every 60 seconds.
-- **Smart Alerts**: Instant email notifications for `UP` and `DOWN` status changes.
-- **Latency Tracking**: High-fidelity reporting of response times across global endpoints.
+| System | Used By | Token Type |
+|---|---|---|
+| **Custom JWT** | Email/password login | HttpOnly `token` cookie |
+| **NextAuth v4** | Google / GitHub social login | `next-auth.session-token` cookie (DB session) |
 
+`getTokenFromRequest()` in `lib/auth.ts` checks both automatically, in order:
+1. Custom JWT cookie
+2. NextAuth database session (`getServerSession`)
+3. Bearer token header (API clients)
 
-### Website Pulse Audit
-The built-in audit engine performs multi-dimensional scans on web properties. 
-- **Security & Access**: While simple scans can be initiated via the Dashboard, all programmatic audits via the Pulse API **require a verified Machine API Key**.
-- **Integrated Intelligence**: Audits are most effective when NexPulse is integrated into the target system, allowing for deep diagnostic reporting on SEO, Security (SSL/HSTS), and Performance (TTFB/Script density).
+---
 
-### Pulse-AI (Technical Assistant)
-NexPulse includes **Pulse-AI**, an autonomous technical agent located at the bottom-right of the dashboard. Pulse-AI is trained on the NexPulse protocol and can assist with API implementation, webhook setup, and interpreting diagnostic reports.
+## 3. Neural Code Audit Engine
 
-### Advanced Monitoring Details
-Selecting any monitor opens the **Advanced Details** view, providing:
-- **High-Fidelity Charts**: Real-time latency and status history.
-- **Trigger Intelligence**: Visibility into active webhooks and email alerts linked to the specific target.
-- **System Metrics**: Monitoring node information and SSL certificate status.
+### How It Works
 
-### Activity & Audit Logs
-The **Activity Logs** section provides a complete transparency layer for your account. It records all significant events, including:
-- **API handshakes** and revalidation pulses.
-- **Administrative changes** (Key generation, monitor deletions).
-- **Security events** (Login attempts, password resets).
+1. User provides source code via **GitHub**, **ZIP upload**, or **paste**
+2. Files are filtered by extension (`.ts`, `.tsx`, `.js`, `.jsx`, `.py`, `.go`, `.json`, `.yaml`, `.yml`, `.md`, `.txt`, etc.)
+3. Each file is sent to Groq (llama-3.3-70b) for per-file analysis
+4. Issues are aggregated by category: Security, Performance, Standards, Refactor
+5. A final synthesis pass generates the overall report with a Code Health Score
 
-### Profile & Identity
-The **Profile** section allows for granular management of user data, including secure password updates, plan visibility, and profile image customization.
+### Intelligence Bank (Incremental Auditing)
 
-### Security and Hashing
-Machine-level security is handled via high-entropy API keys.
-- **Generation**: A unique key is generated once.
-- **Hashing**: We store only the **SHA-256 Hash** of the key.
-- **Verification**: When a request arrives, we hash the input and compare it to the stored value. This ensures your raw keys are never stored in plain text.
+Every audited file is fingerprinted with a SHA-256 hash and stored in the database. On subsequent audits:
 
-## Integration Guide
-To integrate NexPulse into your own environment, follow these standard implementation patterns.
+- Files with unchanged hashes → **skipped** (instantly reused from cache)
+- Modified files → **re-analysed**
+- New files → **analysed and cached**
 
-### Authentication Header
-Every machine request must include your API key in the Authorization header:
-`Authorization: Bearer <your_api_key>`
+This makes second+ audits dramatically faster for active repositories.
 
-## Web Implementation (JavaScript / Node.js)
-```javascript
-const triggerOptimization = async (tag) => {
-  const response = await fetch("https://nextjs-optimizer-suite.vercel.app/api/revalidate", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer opt_live_..." 
-    },
-    body: JSON.stringify({ tag: tag }) 
-  });
-  
-  if (response.ok) console.log("Pulse Sent Successfully");
-};
-```
+### Code Health Score
 
-## iOS Implementation (Swift)
-```swift
-import Foundation
+The final report includes grades per category and an overall health score:
 
-func sendNexPulse(tag: String, apiKey: String) {
-    let url = URL(string: "https://nextjs-optimizer-suite.vercel.app/api/revalidate")!
-    var request = URLRequest(url: url)
-    request.httpMethod = "POST"
-    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-    
-    let body: [String: Any] = ["tag": tag]
-    request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-    
-    URLSession.shared.dataTask(with: request) { data, response, error in
-        if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
-            print("NexPulse: Global Refresh Triggered")
-        }
-    }.resume()
+| Grade | Score |
+|---|---|
+| A | 90–100 |
+| B | 75–89 |
+| C | 60–74 |
+| D | Below 60 |
+
+---
+
+## 4. Pulse-AI Assistant
+
+Pulse-AI is an AI assistant embedded in the dashboard (bottom-right widget). It uses a 3-tier AI engine:
+
+| Tier | Model | Trigger |
+|---|---|---|
+| 1 (Primary) | Groq `llama-3.3-70b-versatile` | All requests |
+| 2 (Buffer) | Groq `llama-3.1-8b-instant` | When 70B hits daily quota (100k tokens) |
+| 3 (Fallback) | Google Gemini (Flash → Pro iteration) | When all Groq engines are unavailable |
+
+Pulse-AI knows about:
+- All NexPulse features and dashboard tab names
+- How to set up cache revalidation and monitoring
+- How to interpret Code Audit results
+- Contact/support info
+
+---
+
+## 5. Database Schema (Key Tables)
+
+| Table | Purpose |
+|---|---|
+| `User` | User accounts (email + password OR OAuth) |
+| `Account` | NextAuth OAuth account links |
+| `Session` | NextAuth database sessions |
+| `ApiKey` | Machine API keys (hashed, never stored plain) |
+| `Monitor` | Monitored URLs with check interval config |
+| `MonitorEvent` | Historical uptime/latency data points |
+| `CodeReview` | Saved code audit reports |
+| `ActivityLog` | Audit trail of all platform events |
+| `Webhook` | User-configured Discord/Slack alert endpoints |
+
+### API Key Security
+Plain-text keys are generated once and shown to the user exactly once. Only SHA-256 hashes are stored in the database.
+
+---
+
+## 6. Plan Limits
+
+| Limit | FREE | PRO | BUSINESS |
+|---|---|---|---|
+| `assets` (monitors) | 1 | 10 | Unlimited |
+| `checks` / month | 500 | 25,000 | Unlimited |
+| `webhooks` | 1 | 5 | 50 |
+| `interval` (seconds) | 60 | 30 | 10 |
+| `retentionDays` | 7 | 30 | 365 |
+| `allowApiKeys` | ❌ | ✅ | ✅ |
+| `allowRevalidate` | ❌ | ✅ | ✅ |
+| `allowAi` (full) | basic | ✅ | ✅ priority |
+
+---
+
+## 7. Key Environment Variables
+
+See `DEPLOYMENT_CHECKLIST.md` for the complete production variable table.
+
+Local development uses `.env.local` (overrides `.env`). The two-file split enables running local and production OAuth apps side by side:
+
+- `.env` — shared non-secret defaults
+- `.env.local` — local-only secrets (never committed)
+
+---
+
+## 8. Integration Pattern
+
+To enable Revalidation Pulses and Live Website Audits, the target app must install the NexPulse integration endpoint:
+
+```ts
+// app/api/revalidate/route.ts (in YOUR app)
+import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag, revalidatePath } from 'next/cache';
+
+export async function POST(req: NextRequest) {
+  const auth = req.headers.get('authorization');
+  if (auth !== `Bearer ${process.env.REVALIDATE_SECRET}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  const { tag, path } = await req.json();
+  if (tag)  revalidateTag(tag);
+  if (path) revalidatePath(path);
+  return NextResponse.json({ revalidated: true });
 }
 ```
 
-## Python Implementation
-```python
-import requests
+Then register the site's URL + your NexPulse Machine API Key in the dashboard.
 
-def trigger_pulse(tag, api_key):
-    url = "https://nextjs-optimizer-suite.vercel.app/api/revalidate"
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
-    data = {"tag": tag}
-    
-    response = requests.post(url, json=data, headers=headers)
-    if response.status_code == 200:
-        print("NexPulse: Optimization Success")
+---
+
+## 9. Known Constraints (Vercel Hobby Plan)
+
+| Constraint | Impact | Mitigation |
+|---|---|---|
+| Image Transformations | Low limit | `unoptimized: true` in `next.config.ts` |
+| Function timeout | 10s (Hobby) / 60s (Pro) | Code audits chunked into small batches |
+| Groq daily tokens | 100k/day (free tier) | 3-tier AI fallback (Groq 70B → 8B → Gemini) |
+
+---
+
+## 10. Contributing
+
+```bash
+git clone https://github.com/inkand-paper/Optimizer
+cd nextjs-optimizer-suite
+cp .env .env.local
+# Fill in local keys
+npm install
+npx prisma migrate dev
+npm run dev
 ```
 
-## Go Implementation
-```go
-package main
-
-import (
-    "bytes"
-    "net/http"
-)
-
-func triggerPulse(tag string, apiKey string) {
-    url := "https://nextjs-optimizer-suite.vercel.app/api/revalidate"
-    jsonBody := []byte(`{"tag": "` + tag + `"}`)
-    
-    req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonBody))
-    req.Header.Set("Content-Type", "application/json")
-    req.Header.Set("Authorization", "Bearer "+apiKey)
-    
-    client := &http.Client{}
-    resp, err := client.Do(req)
-    if err == nil && resp.StatusCode == 200 {
-        // Success
-    }
-}
-```
-
-## Ruby Implementation
-```ruby
-require 'net/http'
-require 'json'
-
-def trigger_pulse(tag, api_key)
-  uri = URI('https://nextjs-optimizer-suite.vercel.app/api/revalidate')
-  http = Net::HTTP.new(uri.host, uri.port)
-  http.use_ssl = true
-  
-  request = Net::HTTP::Post.new(uri.path, {
-    'Content-Type' => 'application/json',
-    'Authorization' => "Bearer #{api_key}"
-  })
-  
-  request.body = { tag: tag }.to_json
-  response = http.request(request)
-  puts "Success" if response.code == "200"
-end
-```
-
-## Android Implementation (Kotlin)
-```kotlin
-fun sendPulse(tag: String, apiKey: String) {
-    val client = OkHttpClient()
-    val body = "{\"tag\": \"$tag\"}".toRequestBody("application/json".toMediaType())
-    
-    val request = Request.Builder()
-        .url("https://nextjs-optimizer-suite.vercel.app/api/revalidate")
-        .addHeader("Authorization", "Bearer $apiKey")
-        .post(body)
-        .build()
-
-    client.newCall(request).enqueue(object : Callback {
-        override fun onResponse(call: Call, response: Response) {
-            if (response.isSuccessful) { /* Success */ }
-        }
-    })
-}
-```
-
-### Neural Code Review & Audit Intelligence
-NexPulse features a high-concurrency code review engine that performs deep security and architectural audits.
-- **Multi-Source Ingestion**: Audit code via direct GitHub connection, Zip archive uploads, or raw code pasting.
-- **Intelligence Bank (Incremental Audits)**: The system hashes every analyzed module. If a file hasn't changed since its last audit, the engine reuses previous intelligence instantly, focusing AI processing power only on modified or new code.
-- **Parallel Processing**: Utilizes a tiered worker model to analyze multiple files simultaneously, delivering comprehensive reports in seconds.
-
-### Technical Specification
-- **Engine**: Next.js 15+ (App Router)
-- **Database**: Prisma with PostgreSQL
-- **AI Backend**: Llama 3.3 (70B) via high-throughput Groq workers
-- **Security**: SHA-256 Key Hashing & JWT Sessions
-- **Responsiveness**: Tailwind CSS adaptive grid system (Mobile-First)
-- **Deployment**: Optimized for Vercel and Docker
-
-## Webhooks
-NexPulse supports automated event notifications via HTTP webhooks. This is primarily used for real-time alerting on Discord, Slack, or custom endpoints when a Pulse is triggered or a scan is completed.
-
-### Discord Integration
-To connect NexPulse to Discord:
-1. Create a Webhook URL in your Discord Channel Settings.
-2. Add the URL to the **Webhooks** tab in the NexPulse Dashboard.
-3. NexPulse will now send professional embed notifications whenever your web properties are optimized.
-
-> [!NOTE]
-> For detailed API endpoint specifications, refer to the **[API Reference](./api)**. For conceptual analogies, see **[Core Concepts](./concepts)**.
+- Branch from `dev`, PR to `main`
+- All PRs must pass `npm run lint` and `npm run build`
+- See `AGENTS.md` for AI coding assistant directives

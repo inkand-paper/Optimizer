@@ -1,45 +1,108 @@
-# NexPulse: Universal Web Intelligence & Optimization Suite
+# NexPulse
 
-Professional-grade uptime monitoring, website analysis, and server health tracking for modern web properties.
+**Infrastructure intelligence engine for modern development teams.**
 
-## Overview
-NexPulse is a unified platform designed to monitor and optimize web properties regardless of their underlying technology stack. It provides a centralized Command Center for scanning public URLs, monitoring uptime 24/7, and triggering global cache optimizations via a secure machine-to-machine API.
+NexPulse gives engineering teams a unified command center for health monitoring, cache revalidation, AI-powered code auditing, and SEO analysis — across any framework, any region.
 
-### Key Capabilities
-- **Neural Code Audit Engine**: AI-powered recursive analysis of GitHub repositories, Zip archives, and raw code snippets.
-- **Intelligence Bank**: High-speed incremental audits using content hashing to skip unchanged files and focus on new vulnerabilities.
-- **Universal Monitoring**: High-precision tracking of uptime and latency for any public URL.
-- **Advanced Website Analysis**: In-depth audits of SEO metadata, security configurations (SSL/Headers), and performance metrics.
-- **Integrated Webhooks**: Native support for Discord, Slack, and Zapier with professional embed formatting.
-- **Pulse-AI Technical Assistant**: An autonomous AI agent integrated into the dashboard to assist with technical implementation and diagnostic analysis.
-- **Premium Mobile-First UI**: Fully responsive management interface with optimized touch-targets and adaptive layouts for all screen sizes.
-- **Secure Machine Integration**: High-entropy API keys (SHA-256 hashed) for seamless integration with mobile applications (Android/iOS) and backend services.
-- **Advanced Authentication**: Secure login, email verification, and a robust password recovery system.
-- **Technical Sandbox**: Interactive environment for testing API handshakes and optimization logic.
+---
 
-## Documentation
-Our documentation is structured to support users from conceptual understanding to technical implementation:
-1.  **[Core Concepts](./concepts)**: Philosophical and architectural overview.
-2.  **[API Reference](./api)**: Technical specifications for machine-to-machine integration.
-3.  **[Android Integration Guide](./android)**: Implementation patterns for mobile developers.
-4.  **[System Manual](./master)**: Comprehensive overview of platform features.
+## What NexPulse Does
 
-### Local Development
+| Feature | Description |
+|---|---|
+| **Real-Time Monitoring** | Uptime, latency, and status code tracking for any public URL. No integration required. |
+| **Cache Pulse Engine** | Remotely revalidate Next.js, Nuxt, and Remix caches by tag or path. Requires integration snippet. |
+| **SEO & Performance Audit** | Crawl any URL for Core Web Vitals, meta coverage, security headers, and structured data. |
+| **Neural Code Audit** | AI-powered source code analysis from GitHub repos, ZIP archives, or pasted snippets. |
+| **Intelligence Bank** | Hash-based incremental auditing — only re-analyses files that changed since the last audit. |
+| **Pulse-AI Assistant** | AI technical assistant embedded in the dashboard. Ask anything about your infrastructure or audit results. |
+| **Webhooks** | Real-time Discord and Slack alerts when monitored endpoints go down. |
+| **Activity Logs** | Full audit trail of all API calls, revalidation pulses, and key events. |
+
+---
+
+## Quick Start
+
 ```bash
-npm install          # Install required dependencies
-npx prisma generate  # Synchronize database schema
-npm run dev          # Initialize the development server
+# Sign up at https://nextjs-optimizer-suite.vercel.app
+# Generate a Machine API Key from the API Keys tab
+# Install the integration snippet in your target app
 ```
 
-### Production Deployment
-1. Transfer the source code to a remote repository (e.g., GitHub).
-2. Connect the repository to a cloud hosting provider (e.g., Vercel).
-3. Configure environment variables including `DATABASE_URL` and `JWT_SECRET`.
+### Integration Snippet (Next.js)
+
+```ts
+// app/api/revalidate/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function POST(req: NextRequest) {
+  const secret = req.headers.get('x-nexpulse-secret');
+  if (secret !== process.env.REVALIDATE_SECRET) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  const { tag, path } = await req.json();
+  if (tag)  revalidateTag(tag);
+  if (path) revalidatePath(path);
+  return NextResponse.json({ revalidated: true });
+}
+```
 
 ---
 
-## Architecture and Security
-NexPulse leverages Next.js 15+ for high-concurrency performance and Prisma ORM for type-safe database interactions. Security is maintained through Stripe-grade patterns; raw API keys are never stored, with the platform utilizing only cryptographic SHA-256 hashes for verification.
+## Code Audit (No Integration Required)
+
+Navigate to the **Code Audit** tab in your dashboard to:
+- Connect a **GitHub repository** (requires GitHub OAuth link from Profile settings)
+- Upload a **ZIP archive** of your project
+- **Paste code** directly
+
+The Neural Audit Engine will scan for:
+- 🔐 Security vulnerabilities (XSS, injection, exposed secrets)
+- ⚡ Performance bottlenecks
+- 🏗️ Architectural issues
+- 📋 Standards violations and best practices
+
+The **Intelligence Bank** automatically caches file hashes. When you re-audit the same repo, only changed files are re-analysed — dramatically faster subsequent audits.
 
 ---
-© 2026 NexPulse. Maintained by [inkand-paper](https://github.com/inkand-paper/Optimizer).
+
+## Plans
+
+| | Starter (Free) | Professional ($29/mo) | Agency ($129/mo) |
+|---|---|---|---|
+| Monitored Sites | 1 | 10 | Unlimited |
+| Health Checks | 500/mo | 25,000/mo | Unlimited |
+| Code Audit | ✅ | ✅ | ✅ |
+| Intelligence Bank | ❌ | ✅ | ✅ |
+| Pulse-AI | ✅ | ✅ | ✅ (Priority) |
+| API Keys & Pulses | ❌ | ✅ | ✅ |
+| Webhooks | 1 | 5 | 50 |
+| Log Retention | 7 days | 30 days | 365 days |
+
+---
+
+## Self-Hosting
+
+```bash
+git clone https://github.com/inkand-paper/Optimizer
+cd nextjs-optimizer-suite
+cp .env .env.local  # fill in all required keys
+npx prisma migrate deploy
+npm run dev
+```
+
+Required environment variables:
+- `DATABASE_URL` — PostgreSQL connection string
+- `JWT_SECRET` — Secret for custom JWT signing
+- `NEXTAUTH_SECRET` — Secret for NextAuth sessions
+- `GROQ_API_KEY` — For the Code Audit engine and Pulse-AI
+- `GEMINI_API_KEY` — Fallback AI engine
+
+---
+
+## Contact
+
+- **Support**: nexpulse.team@gmail.com
+- **Created by**: Mustak Tahsin Abir
+- **Discord**: [discord.gg/CVU3aNdb](https://discord.gg/CVU3aNdb)
+- **GitHub**: [inkand-paper/Optimizer](https://github.com/inkand-paper/Optimizer)

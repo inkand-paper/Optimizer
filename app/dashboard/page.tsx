@@ -1,5 +1,7 @@
 "use client";
 
+import { signOut } from "next-auth/react";
+
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -176,8 +178,12 @@ export default function DashboardPage() {
     finally { setAnalyzeLoading(false); }
   }
 
-  function handleLogout() {
+  async function handleLogout() {
     localStorage.removeItem("user");
+    // Clear custom JWT cookie
+    try { await fetch("/api/auth/logout", { method: "POST", credentials: "include" }); } catch {}
+    // Clear NextAuth OAuth session (Google / GitHub)
+    await signOut({ redirect: false });
     router.push("/login");
   }
 

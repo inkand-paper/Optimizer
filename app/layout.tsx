@@ -2,7 +2,17 @@ import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { InfrastructureProvider } from "@/components/infrastructure-provider";
+import dynamic from "next/dynamic";
+
+// Dynamically import heavy client-only components to prevent layout chunk timeout
+const InfrastructureProvider = dynamic(
+  () => import("@/components/infrastructure-provider").then((m) => m.InfrastructureProvider),
+  { ssr: false }
+);
+const PulseAI = dynamic(
+  () => import("@/components/pulse-ai").then((m) => m.PulseAI),
+  { ssr: false }
+);
 
 const inter = Inter({
   subsets: ["latin"],
@@ -31,19 +41,17 @@ export const metadata: Metadata = {
   ),
   title: "NexPulse — Infrastructure Intelligence, Humanly Interpreted",
   description:
-    "The universal command center for modern web assets. Monitor health, analyse performance, and revalidate cache across any framework.",
+    "The universal command center for modern web assets. Monitor health, analyse performance, revalidate cache, and audit source code across any framework.",
   alternates: { canonical: "/" },
   openGraph: {
     title: "NexPulse — Any Framework, One Dashboard",
-    description: "Universal performance monitoring and cache revalidation.",
+    description: "Universal performance monitoring, cache revalidation, and AI-powered code auditing.",
     url: "/",
     siteName: "NexPulse",
     locale: "en_US",
     type: "website",
   },
 };
-
-import { PulseAI } from "@/components/pulse-ai";
 
 export default function RootLayout({
   children,

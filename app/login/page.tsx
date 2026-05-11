@@ -4,20 +4,48 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Card, Button, Input, PasswordInput } from "@/components/ui-elements";
-import { Activity, Loader2, AlertCircle } from "lucide-react";
+import { Activity, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 import { signIn } from "next-auth/react";
+
+// Human-readable messages for NextAuth error codes
+const OAUTH_ERRORS: Record<string, string> = {
+  OAuthSignin: "Could not start the OAuth sign-in. Please try again.",
+  OAuthCallback: "OAuth callback failed. Ensure the redirect URL is registered in the provider settings.",
+  OAuthCreateAccount: "Could not create your account. The email may already be registered with a different method.",
+  OAuthAccountNotLinked: "This email is already linked to another sign-in method. Use your original login.",
+  Callback: "An error occurred during the sign-in callback. Please try again.",
+  Default: "Sign-in failed. Please try again or use email/password.",
+};
 
 export default function LoginPage() {
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);
   const [error, setError]     = React.useState("");
-
-  // Read ?verified param client-side to avoid Suspense boundary issues
   const [isVerified, setIsVerified] = React.useState(false);
+
+  // Read URL params client-side; strip them from history immediately so they
+  // never reappear if the user navigates back with the browser back button.
   React.useEffect(() => {
     const p = new URLSearchParams(window.location.search);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsVerified(p.get("verified") === "true");
+    const verified = p.get("verified") === "true";
+    const oauthError = p.get("error") ?? "";
+
+    if (verified) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsVerified(true);
+    }
+
+    if (oauthError) {
+      const msg = OAUTH_ERRORS[oauthError] ?? OAUTH_ERRORS.Default;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setError(msg);
+    }
+
+    // Strip query params from URL without adding a new history entry
+    if (verified || oauthError) {
+      router.replace("/login");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -84,7 +112,7 @@ export default function LoginPage() {
         </div>
 
         <Card className="p-6">
-          {/* Verified banner */}
+          {/* Account activated banner */}
           {isVerified && (
             <div
               className="flex items-center gap-2.5 p-3 rounded-ui mb-5 text-[13px]"
@@ -94,7 +122,8 @@ export default function LoginPage() {
                 color: "var(--np-teal)",
               }}
             >
-              ✓ Account activated — you can now sign in.
+              <CheckCircle2 className="h-4 w-4 shrink-0" />
+              Account activated — you can now sign in.
             </div>
           )}
 
