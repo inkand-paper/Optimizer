@@ -47,7 +47,7 @@ export const authOptions: AuthOptions = {
      * in case a user was created without it (e.g., via a partial migration).
      */
     async signIn({ user, account }) {
-      if (account?.provider !== "credentials" && user.id && !(user as any).emailVerified) {
+      if (account?.provider !== "credentials" && user.id && !(user as Record<string, unknown>).emailVerified) {
         await prisma.user.update({
           where: { id: user.id },
           data: { emailVerified: new Date() },

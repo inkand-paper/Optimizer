@@ -37,7 +37,6 @@ export default function LoginPage() {
 
     if (oauthError) {
       const msg = OAUTH_ERRORS[oauthError] ?? OAUTH_ERRORS.Default;
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setError(msg);
     }
 
