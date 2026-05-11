@@ -17,8 +17,9 @@ export async function POST(req: NextRequest) {
     const hasUpper = /[A-Z]/.test(password);
     const hasLower = /[a-z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
-    if (!hasUpper || !hasLower || !hasNumber) {
-      return NextResponse.json({ message: "Password must contain uppercase, lowercase, and numbers" }, { status: 400 });
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    if (!hasUpper || !hasLower || !hasNumber || !hasSpecial) {
+      return NextResponse.json({ message: "Password must contain uppercase, lowercase, numbers, and special characters" }, { status: 400 });
     }
 
     const user = await prisma.user.findFirst({

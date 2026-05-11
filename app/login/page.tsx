@@ -31,7 +31,7 @@ export default function LoginPage() {
     const oauthError = p.get("error") ?? "";
 
     if (verified) {
-      setIsVerified(true);
+      setTimeout(() => setIsVerified(true), 0);
       // Aggressive URL cleaning without history entries
       const url = new URL(window.location.href);
       url.searchParams.delete("verified");
@@ -44,13 +44,12 @@ export default function LoginPage() {
 
     if (oauthError) {
       const msg = OAUTH_ERRORS[oauthError] ?? OAUTH_ERRORS.Default;
-      setError(msg);
+      setTimeout(() => setError(msg), 0);
       // Aggressive URL cleaning without history entries
       const url = new URL(window.location.href);
       url.searchParams.delete("error");
       window.history.replaceState({}, "", url.pathname);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
