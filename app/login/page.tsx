@@ -31,18 +31,24 @@ export default function LoginPage() {
     const oauthError = p.get("error") ?? "";
 
     if (verified) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsVerified(true);
+      // Aggressive URL cleaning without history entries
+      const url = new URL(window.location.href);
+      url.searchParams.delete("verified");
+      window.history.replaceState({}, "", url.pathname);
+      
+      // Auto-hide after 8 seconds
+      const timer = setTimeout(() => setIsVerified(false), 8000);
+      return () => clearTimeout(timer);
     }
 
     if (oauthError) {
       const msg = OAUTH_ERRORS[oauthError] ?? OAUTH_ERRORS.Default;
       setError(msg);
-    }
-
-    // Strip query params from URL without adding a new history entry
-    if (verified || oauthError) {
-      router.replace("/login");
+      // Aggressive URL cleaning without history entries
+      const url = new URL(window.location.href);
+      url.searchParams.delete("error");
+      window.history.replaceState({}, "", url.pathname);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
