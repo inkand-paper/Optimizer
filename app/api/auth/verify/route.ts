@@ -30,7 +30,9 @@ export async function GET(req: NextRequest) {
 
     // Redirect to login or success page
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    return NextResponse.redirect(`${appUrl}/login?verified=true`);
+    const redirectUrl = new URL('/login', appUrl);
+    redirectUrl.searchParams.set('verified', 'true');
+    return NextResponse.redirect(redirectUrl.toString());
 
   } catch (error) {
     console.error('Verification error:', error);

@@ -7,8 +7,11 @@ import { cookies } from 'next/headers';
  * This is the ONLY secure way to log out with cookie-based auth.
  */
 export async function POST() {
-  const cookieStore = await cookies();
-  cookieStore.delete('token');
-  
-  return NextResponse.json({ success: true });
+  return new NextResponse(JSON.stringify({ success: true }), {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json',
+      'Set-Cookie': 'token=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0'
+    }
+  });
 }

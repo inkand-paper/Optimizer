@@ -181,7 +181,22 @@ Then register the site's URL + your NexPulse Machine API Key in the dashboard.
 
 ---
 
-## 9. Known Constraints (Vercel Hobby Plan)
+## 9. Security Architecture
+
+NexPulse is designed with a defense-in-depth approach to protect user infrastructure and audit data.
+
+### Core Security Layers
+- **Data in Transit**: All communication is encrypted via TLS 1.3. API endpoints are protected by strict CORS policies.
+- **Data at Rest**: Sensitive data (tokens, hashes) is stored in a Supabase-hosted PostgreSQL instance with restricted row-level access.
+- **Credential Safety**:
+    - **Passwords**: Hashed using `bcrypt` (or standard NextAuth hashing) with a high salt cost.
+    - **Machine API Keys**: Only the SHA-256 hash is stored. Plain-text keys are shown exactly once to the user and cannot be recovered if lost.
+    - **Session Tokens**: Stored in `HttpOnly`, `Secure`, `SameSite=Strict` cookies to prevent XSS and CSRF attacks.
+- **Infrastructure Isolation**: AI Audits run in isolated Vercel functions with zero persistence between runs.
+
+---
+
+## 10. Known Constraints (Vercel Hobby Plan)
 
 | Constraint | Impact | Mitigation |
 |---|---|---|

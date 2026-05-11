@@ -61,6 +61,7 @@ export function PulseAI() {
       {/* Floating Bubble */}
       <button
         onClick={() => setIsOpen(!isOpen)}
+        aria-label={isOpen ? "Close Pulse-AI" : "Open Pulse-AI"}
         className={cn(
           "fixed bottom-24 md:bottom-6 right-6 h-14 w-14 rounded-full z-50 flex items-center justify-center transition-all duration-300 shadow-2xl group",
           isOpen ? "rotate-90 scale-90" : "hover:scale-110 active:scale-95"
@@ -103,7 +104,11 @@ export function PulseAI() {
                 </p>
               </div>
             </div>
-            <button onClick={() => setIsOpen(false)} className="text-muted-foreground hover:text-foreground">
+            <button 
+              onClick={() => setIsOpen(false)} 
+              className="text-muted-foreground hover:text-foreground"
+              aria-label="Close"
+            >
               <X className="h-4 w-4" />
             </button>
           </div>
@@ -155,6 +160,7 @@ export function PulseAI() {
                 onClick={handleSend}
                 disabled={loading || !input.trim()}
                 className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-np-slate hover:text-np-gold disabled:opacity-30 transition-colors"
+                aria-label="Send message"
               >
                 <Send className="h-4 w-4" />
               </button>

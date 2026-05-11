@@ -10,6 +10,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Token and password are required" }, { status: 400 });
     }
 
+    // Password Strength Validation
+    if (password.length < 8) {
+      return NextResponse.json({ message: "Password must be at least 8 characters long" }, { status: 400 });
+    }
+    const hasUpper = /[A-Z]/.test(password);
+    const hasLower = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    if (!hasUpper || !hasLower || !hasNumber) {
+      return NextResponse.json({ message: "Password must contain uppercase, lowercase, and numbers" }, { status: 400 });
+    }
+
     const user = await prisma.user.findFirst({
       where: {
         resetToken: token,

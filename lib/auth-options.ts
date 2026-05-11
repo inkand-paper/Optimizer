@@ -6,7 +6,7 @@ import GoogleProvider from "next-auth/providers/google";
 
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || (() => { throw new Error("NEXTAUTH_SECRET is missing"); })(),
   session: {
     strategy: "database",
     maxAge: 30 * 24 * 60 * 60, // 30 days
@@ -15,17 +15,18 @@ export const authOptions: AuthOptions = {
     GithubProvider({
       clientId: process.env.GITHUB_ID!,
       clientSecret: process.env.GITHUB_SECRET!,
-      allowDangerousEmailAccountLinking: true,
+      allowDangerousEmailAccountLinking: false,
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_ID!,
       clientSecret: process.env.GOOGLE_SECRET!,
-      allowDangerousEmailAccountLinking: true,
+      allowDangerousEmailAccountLinking: false,
       authorization: {
         params: {
           prompt: "select_account",
           access_type: "offline",
           response_type: "code",
+          scope: "openid email profile",
         },
       },
     }),

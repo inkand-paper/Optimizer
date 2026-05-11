@@ -134,8 +134,15 @@ export async function POST(req: NextRequest) {
         if (source === "GITHUB") {
           const name = (body.repoName || "").trim();
           if (!name) throw new Error("Repository name is required for GitHub audits.");
+          // Validation: username/repo
+          if (!/^[a-zA-Z0-9-._]+\/[a-zA-Z0-9-._]+$/.test(name)) {
+            throw new Error("Invalid repository format. Use 'username/repo'.");
+          }
           repoName = name;
           repoBranch = (body.branch || "main").trim();
+          if (!/^[a-zA-Z0-9-._/]+$/.test(repoBranch)) {
+            throw new Error("Invalid branch name format.");
+          }
           files = await fetchGitHubFiles(name, dbUser.githubAccessToken!, repoBranch, sendLog);
         } else {
           source = "PASTE"; 
