@@ -9,7 +9,7 @@ import { hasPermission, ROLES } from '@/lib/rbac';
 import { PLAN_LIMITS, PlanType } from '@/lib/plans';
 
 // Helper to hash API keys quickly (sha256)
-export function hashApiKey(key: string): string {
+function hashApiKey(key: string): string {
   return crypto.createHash('sha256').update(key).digest('hex');
 }
 
