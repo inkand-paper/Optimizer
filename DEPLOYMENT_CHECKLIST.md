@@ -143,3 +143,8 @@ After deploying to Vercel:
 8. Navigate to **Code Audit** — paste code → audit completes
 9. Navigate to **SEO Analyser** — scan a URL → report appears
 10. Navigate to **Monitoring** — add a URL → live status shows
+
+---
+
+> 💡 **Pro-Tip: Local Network Access**
+> If you are accessing your dev server via a local network IP (e.g., `http://192.168.1.106:3000`), you MUST update `NEXTAUTH_URL` and `NEXT_PUBLIC_APP_URL` in `.env.local` to match that IP exactly. Otherwise, OAuth callbacks from Google/GitHub will fail with a `redirect_uri_mismatch` error because the origin won't match the one registered in the provider's dashboard.

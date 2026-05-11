@@ -6,6 +6,7 @@ export const PLAN_LIMITS = {
     assets: 1,
     checks: 500,
     webhooks: 1,
+    audits: 3,
     interval: 60,
     retentionDays: 7,
     allowRevalidate: false,
@@ -14,12 +15,12 @@ export const PLAN_LIMITS = {
     features: [
       { text: '1 Monitored Site', active: true },
       { text: '500 Health Checks / mo', active: true },
-      { text: 'Code Audit (GitHub / Zip / Paste)', active: true },
+      { text: '3 Code Audits / mo (GitHub / Zip)', active: true },
       { text: 'SEO & Performance Analyser', active: true },
       { text: 'Pulse-AI Assistant', active: true },
       { text: 'Intelligence Bank (Incremental Audits)', active: false },
       { text: 'API Keys & Revalidation Pulses', active: false },
-      { text: 'Webhook Alerts (Discord / Slack)', active: false },
+      { text: 'Discord / Slack Webhooks', active: false },
     ]
   },
   PRO: {
@@ -29,6 +30,7 @@ export const PLAN_LIMITS = {
     assets: 10,
     checks: 25000,
     webhooks: 5,
+    audits: 50,
     interval: 30,
     retentionDays: 30,
     allowRevalidate: true,
@@ -37,11 +39,11 @@ export const PLAN_LIMITS = {
     features: [
       { text: '10 Monitored Sites', active: true },
       { text: '25,000 Health Checks / mo', active: true },
-      { text: 'Code Audit (GitHub / Zip / Paste)', active: true },
-      { text: 'Intelligence Bank (Incremental Audits)', active: true },
+      { text: '50 Code Audits / mo + Intelligence Bank', active: true },
       { text: 'Pulse-AI Assistant', active: true },
       { text: 'API Keys & Revalidation Pulses', active: true },
-      { text: '5 Webhook Alerts (Discord / Slack)', active: true },
+      { text: '5 Discord / Slack Webhooks', active: true },
+      { text: 'Custom Threshold Alerts', active: true },
       { text: 'White-label Portals', active: false },
     ]
   },
@@ -52,6 +54,7 @@ export const PLAN_LIMITS = {
     assets: 999999,
     checks: 999999999,
     webhooks: 50,
+    audits: 999999999,
     interval: 10,
     retentionDays: 365,
     allowRevalidate: true,
@@ -60,10 +63,10 @@ export const PLAN_LIMITS = {
     features: [
       { text: 'Unlimited Sites', active: true },
       { text: 'Unlimited Health Checks', active: true },
-      { text: 'Code Audit + Intelligence Bank', active: true },
+      { text: 'Unlimited Code Audits + Bank', active: true },
       { text: 'Pulse-AI Assistant (Priority)', active: true },
       { text: 'Unlimited API Keys & Pulses', active: true },
-      { text: '50 Webhook Alerts (Discord / Slack)', active: true },
+      { text: '50 Discord / Slack Webhooks', active: true },
       { text: '1-Click Reporting', active: true },
       { text: 'White-label Portals', active: true },
     ]

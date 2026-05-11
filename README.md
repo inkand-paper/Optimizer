@@ -72,11 +72,11 @@ The **Intelligence Bank** automatically caches file hashes. When you re-audit th
 |---|---|---|---|
 | Monitored Sites | 1 | 10 | Unlimited |
 | Health Checks | 500/mo | 25,000/mo | Unlimited |
-| Code Audit | ✅ | ✅ | ✅ |
+| Code Audits | 3/mo | 50/mo | Unlimited |
 | Intelligence Bank | ❌ | ✅ | ✅ |
 | Pulse-AI | ✅ | ✅ | ✅ (Priority) |
 | API Keys & Pulses | ❌ | ✅ | ✅ |
-| Webhooks | 1 | 5 | 50 |
+| Webhooks (Discord) | 1 | 5 | 50 |
 | Log Retention | 7 days | 30 days | 365 days |
 
 ---

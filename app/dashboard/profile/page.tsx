@@ -109,9 +109,9 @@ export default function ProfilePage() {
               <div className="relative group mx-auto w-24">
                 <div className="h-24 w-24 rounded-full overflow-hidden border-2 border-np-gold/20 flex items-center justify-center bg-np-gold/10 text-np-gold text-3xl font-bold">
                   {image ? (
-                    <Image src={image} alt="Avatar" className="w-full h-full object-cover" />
+                    <Image src={image} alt="Avatar" width={96} height={96} className="w-full h-full object-cover" />
                   ) : user?.email ? (
-                    <Image src={getGravatarUrl(user.email!)} alt="Avatar" className="w-full h-full object-cover" />
+                    <Image src={getGravatarUrl(user.email!)} alt="Avatar" width={96} height={96} className="w-full h-full object-cover" />
                   ) : (
                     name?.[0] || "?"
                   )}

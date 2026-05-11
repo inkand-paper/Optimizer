@@ -135,7 +135,8 @@ Plain-text keys are generated once and shown to the user exactly once. Only SHA-
 |---|---|---|---|
 | `assets` (monitors) | 1 | 10 | Unlimited |
 | `checks` / month | 500 | 25,000 | Unlimited |
-| `webhooks` | 1 | 5 | 50 |
+| `audits` / month | 3 | 50 | Unlimited |
+| `webhooks` (Discord) | 1 | 5 | 50 |
 | `interval` (seconds) | 60 | 30 | 10 |
 | `retentionDays` | 7 | 30 | 365 |
 | `allowApiKeys` | ❌ | ✅ | ✅ |
