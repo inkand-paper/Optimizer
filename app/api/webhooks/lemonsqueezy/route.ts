@@ -12,10 +12,12 @@ export async function POST(req: NextRequest) {
   console.log(`[WEBHOOK] Incoming request at ${new Date().toISOString()}`);
   try {
     const rawBody = await req.text();
-    const signature = req.headers.get('x-signature');
-    
-    console.log(`[WEBHOOK] Signature: ${signature ? 'Present' : 'MISSING'}`);
-    console.log(`[WEBHOOK] Body Length: ${rawBody.length}`);
+    const headersList = headers();
+    const signature = headersList.get('x-signature');
+
+    if (!signature) {
+      return new Response('Webhook signature missing', { status: 401 });
+    }
 
     const hmac = crypto.createHmac('sha256', process.env.LEMONSQUEEZY_WEBHOOK_SECRET || '');
     const digest = Buffer.from(hmac.update(rawBody).digest('hex'), 'utf8');

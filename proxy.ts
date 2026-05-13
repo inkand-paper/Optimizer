@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { corsHeaders } from '@/lib/cors';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 /**
  * [SECURITY] - Global NexPulse Middleware (Unified Shield)
@@ -9,8 +10,8 @@ import { corsHeaders } from '@/lib/cors';
  * high-performance Edge execution layer.
  */
 
-// Simple in-memory cache for rate limiting at the Edge (Vercel)
-const RATE_LIMIT_CACHE = new Map<string, { count: number; expires: number }>();
+// Simple in-memory cache for rate limiting at the Edge (Vercel) - DEPRECATED for Redis
+// const RATE_LIMIT_CACHE = new Map<string, { count: number; expires: number }>();
 
 export async function proxy(req: NextRequest) {
   const startTime = Date.now();
@@ -46,24 +47,32 @@ export async function proxy(req: NextRequest) {
     }
   }
 
-  // ─── 2. RATE LIMITING (API PROTECTION) ──────────────────────────────────────
+  // ─── 2. RATE LIMITING (DISTRIBUTED REDIS PROTECTION) ───────────────────────
   if (pathname.startsWith('/api/')) {
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0] || 'anonymous';
-    const now = Date.now();
-    const limit = 60; 
-    const windowMs = 60 * 1000; 
+    
+    // [SECURITY] Use Distributed Redis for global protection across all Vercel Edge instances
+    const { success, remaining, resetAt } = await checkRateLimit(ip, {
+      maxRequests: 60,
+      windowMs: 60 * 1000
+    });
 
-    const record = RATE_LIMIT_CACHE.get(ip);
-    if (record && record.expires > now) {
-      if (record.count >= limit) {
-        return new NextResponse(
-          JSON.stringify({ error: 'Too Many Requests', message: 'Rate limit exceeded.' }),
-          { status: 429, headers: { 'Content-Type': 'application/json' } }
-        );
-      }
-      record.count++;
-    } else {
-      RATE_LIMIT_CACHE.set(ip, { count: 1, expires: now + windowMs });
+    if (!success) {
+      return new NextResponse(
+        JSON.stringify({ 
+          error: 'Too Many Requests', 
+          message: 'Rate limit exceeded.',
+          retryAfter: Math.ceil((resetAt - Date.now()) / 1000)
+        }),
+        { 
+          status: 429, 
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-RateLimit-Remaining': remaining.toString(),
+            'X-RateLimit-Reset': resetAt.toString()
+          } 
+        }
+      );
     }
   }
 

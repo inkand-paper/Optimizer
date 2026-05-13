@@ -24,8 +24,10 @@ export interface SecurityIncident {
 export async function dispatchSecurityAlert(incident: SecurityIncident) {
   const webhookUrl = process.env.DISCORD_SECURITY_WEBHOOK;
   
-  if (!webhookUrl) {
-    console.warn('[SECURITY_MONITOR] No Discord webhook configured. Alert suppressed:', incident.type);
+  // [SECURITY] Strict URL validation to prevent exfiltration/SSRF
+  const DISCORD_REGEX = /^https:\/\/discord\.com\/api\/webhooks\/[0-9]+\/[A-Za-z0-9_-]+$/;
+  if (!webhookUrl || !DISCORD_REGEX.test(webhookUrl)) {
+    console.warn('[SECURITY_MONITOR] Invalid or missing Discord webhook. Alert suppressed:', incident.type);
     return;
   }
 
