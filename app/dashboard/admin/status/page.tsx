@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/ui-elements";
 import { Shield, AlertTriangle, Key, Zap, Activity } from "lucide-react";
 
 export const metadata: Metadata = {

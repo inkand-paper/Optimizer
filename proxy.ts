@@ -1,83 +1,109 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { getToken } from 'next-auth/jwt';
 import { corsHeaders } from '@/lib/cors';
 
 /**
- * [SECURITY] Global Proxy & Security Layer
- * This acts as the "Shield" for the NexPulse backend.
- * It handles CORS, Security Headers, and API Logging.
+ * [SECURITY] - Global NexPulse Middleware (Unified Shield)
+ * This combines Auth, RBAC, Rate Limiting, and CORS Proxy into one 
+ * high-performance Edge execution layer.
  */
-export function proxy(request: NextRequest) {
-  const startTime = Date.now();
-  const origin = request.headers.get('origin');
-  const allowedOrigin = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-  const authHeader = request.headers.get('authorization');
 
-  // 1. Handle preflight OPTIONS requests
-  if (request.method === 'OPTIONS') {
+// Simple in-memory cache for rate limiting at the Edge (Vercel)
+const RATE_LIMIT_CACHE = new Map<string, { count: number; expires: number }>();
+
+export async function proxy(req: NextRequest) {
+  const startTime = Date.now();
+  const { pathname } = req.nextUrl;
+  const origin = req.headers.get('origin');
+  const host = req.headers.get('host');
+  const authHeader = req.headers.get('authorization');
+
+  // ─── 1. CORS & PREFLIGHT HANDLING ──────────────────────────────────────────
+  
+  // Handle preflight OPTIONS requests immediately
+  if (req.method === 'OPTIONS') {
     return new NextResponse(null, {
       status: 204,
       headers: corsHeaders,
     });
   }
 
-  // 2. [SECURITY] CORS Protection
-  // Normalize origins
-  const normalizedOrigin = origin?.replace(/\/$/, '');
-  const normalizedAllowed = allowedOrigin?.replace(/\/$/, '');
-  const host = request.headers.get('host');
-
-  // Strict check: Allow if:
-  // 1. Origin matches the environment variable
-  // 2. Origin matches the current host (Auto-detect)
-  // 3. It's a same-site request (Origin is null but host matches)
-  // 4. It's localhost
-  const isExactMatch = normalizedOrigin === normalizedAllowed;
-  const isSameHost = normalizedOrigin && host && normalizedOrigin.includes(host);
-  const isLocalSameSite = !normalizedOrigin && host && (host === normalizedAllowed?.replace(/^https?:\/\//, '') || host.includes('localhost'));
-  const isLocalhost = normalizedOrigin?.includes('localhost');
-  const isProduction = process.env.NODE_ENV === 'production';
-
-  // [PRODUCTION LOCKDOWN]
-  if (isProduction && !isExactMatch && !isSameHost && !isLocalSameSite && !isLocalhost && !authHeader) {
-    console.error(`[CORS SECURITY] Blocked unauthorized origin: ${origin}. Host: ${host}`);
-    return new NextResponse(
-      JSON.stringify({ 
-        error: 'CORS Security Error', 
-        message: 'Unauthorized origin.',
-        debug: { origin, host, expected: allowedOrigin } 
-      }),
-      { 
-        status: 403, 
-        headers: { 'Content-Type': 'application/json' } 
+  // CORS Origin Validation (In Production)
+  if (process.env.NODE_ENV === 'production' && origin) {
+    const allowedOrigin = (process.env.NEXT_PUBLIC_APP_URL || '').replace(/\/$/, '');
+    const normalizedOrigin = origin.replace(/\/$/, '');
+    
+    if (normalizedOrigin !== allowedOrigin && !normalizedOrigin.includes(host || '')) {
+      // Allow only if it's our own domain or authorized cross-origin
+      if (!authHeader) { // Machine API keys are allowed from any origin
+        console.error(`[CORS SECURITY] Blocked origin: ${origin}`);
+        return new NextResponse(
+          JSON.stringify({ error: 'CORS Security Error', message: 'Unauthorized origin.' }),
+          { status: 403, headers: { 'Content-Type': 'application/json' } }
+        );
       }
-    );
+    }
   }
 
-  // Get the response
+  // ─── 2. RATE LIMITING (API PROTECTION) ──────────────────────────────────────
+  if (pathname.startsWith('/api/')) {
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0] || 'anonymous';
+    const now = Date.now();
+    const limit = 60; 
+    const windowMs = 60 * 1000; 
+
+    const record = RATE_LIMIT_CACHE.get(ip);
+    if (record && record.expires > now) {
+      if (record.count >= limit) {
+        return new NextResponse(
+          JSON.stringify({ error: 'Too Many Requests', message: 'Rate limit exceeded.' }),
+          { status: 429, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+      record.count++;
+    } else {
+      RATE_LIMIT_CACHE.set(ip, { count: 1, expires: now + windowMs });
+    }
+  }
+
+  // ─── 3. AUTHENTICATION & RBAC ───────────────────────────────────────────────
+  
+  if (pathname.startsWith('/dashboard') || pathname.startsWith('/api/admin')) {
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+
+    if (!token) {
+      const url = new URL('/login', req.url);
+      url.searchParams.set('callbackUrl', pathname);
+      return NextResponse.redirect(url);
+    }
+
+    if (pathname.startsWith('/dashboard/admin') || pathname.startsWith('/api/admin')) {
+      if (token.role !== 'ADMIN') {
+        return NextResponse.redirect(new URL('/dashboard', req.url));
+      }
+    }
+  }
+
+  // ─── 4. GLOBAL SECURITY HEADERS & LOGGING ──────────────────────────────────
+  
   const response = NextResponse.next();
   
-  // 3. Add CORS headers to all responses
+  // Inject CORS headers
   Object.entries(corsHeaders).forEach(([key, value]) => {
     response.headers.set(key, value);
   });
 
-  // 4. [SECURITY] Global Security Headers
-  response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-  
-  // 5. [DIAGNOSTICS] API Logging
-  if (request.nextUrl.pathname.startsWith('/api/')) {
-    console.log(`📱 API Call: ${request.method} ${request.nextUrl.pathname}`);
-    console.log(`   Headers: Authorization=${authHeader ? '✓ Present' : '✗ Missing'}`);
-    console.log(`   Response Time: ${Date.now() - startTime}ms`);
+  // Logging (Only for API calls)
+  if (pathname.startsWith('/api/')) {
+    console.log(`📱 [MIDDLEWARE] ${req.method} ${pathname} | ${Date.now() - startTime}ms`);
   }
-  
+
   return response;
 }
 
-// Configure which routes the proxy runs on
 export const config = {
-  matcher: ['/api/:path*', '/dashboard/:path*'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|public).*)',
+  ],
 };

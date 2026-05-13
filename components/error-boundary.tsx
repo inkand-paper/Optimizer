@@ -2,7 +2,7 @@
 
 import * as Sentry from '@sentry/nextjs';
 import { useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui-elements';
 import { AlertCircle, RefreshCcw } from 'lucide-react';
 
 /**
