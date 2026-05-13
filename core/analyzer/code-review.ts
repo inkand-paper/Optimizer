@@ -6,6 +6,7 @@
 
 import crypto from "crypto";
 import PQueue from 'p-queue';
+import { trackAiPerformance } from "@/lib/security-monitor";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -129,9 +130,15 @@ async function callGroq(sys: string, user: string, retries = 5): Promise<string>
       }
 
       const data = await res.json();
-      return data.choices?.[0]?.message?.content ?? "";
+      const content = data.choices?.[0]?.message?.content ?? "";
+      
+      // Monitor performance: if it took too long or required retries
+      if (i > 0) await trackAiPerformance("groq_70b", true);
+      
+      return content;
     } catch (e: unknown) {
       if (e instanceof Error && e.message === "TOO_LARGE") throw e;
+      await trackAiPerformance("groq_70b", true);
       await sleep(2000);
     }
   }

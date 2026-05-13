@@ -5,6 +5,8 @@ import { loginSchema } from '@/lib/validations';
 import { z } from 'zod';
 import { cookies } from 'next/headers';
 import { checkRateLimit } from '@/lib/rate-limit';
+import { dispatchSecurityAlert, SECURITY_THRESHOLDS } from '@/lib/security-monitor';
+import { logActivity } from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
   try {
@@ -47,6 +49,35 @@ export async function POST(req: NextRequest) {
     const isPasswordValid = await comparePasswords(parsedData.password, user.passwordHash);
     
     if (!isPasswordValid) {
+      // [SECURITY] Track failed attempts and detect brute force
+      await logActivity({
+        userId: user.id,
+        type: 'AUTH',
+        action: 'FAILED_LOGIN',
+        status: 'FAILURE',
+        details: { ip, reason: 'invalid_password' }
+      });
+
+      const failureCount = await prisma.activityLog.count({
+        where: {
+          action: 'FAILED_LOGIN',
+          details: {
+            path: ['ip'],
+            equals: ip
+          },
+          createdAt: { gte: new Date(Date.now() - 60 * 60 * 1000) }
+        }
+      });
+
+      if (failureCount >= SECURITY_THRESHOLDS.FAILED_LOGINS_PER_HOUR) {
+        await dispatchSecurityAlert({
+          type: 'BRUTE_FORCE_DETECTED',
+          severity: 'high',
+          message: `Multiple failed logins detected from IP: ${ip}`,
+          metadata: { ip, attempts: failureCount, target: parsedData.email }
+        });
+      }
+
       return NextResponse.json(
         { error: 'Unauthorized', message: 'Invalid credentials' },
         { status: 401 }
