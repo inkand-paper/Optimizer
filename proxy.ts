@@ -20,6 +20,12 @@ export async function proxy(req: NextRequest) {
   const host = req.headers.get('host');
   const authHeader = req.headers.get('authorization');
 
+  // ─── 0. AUTH BYPASS ────────────────────────────────────────────────────────
+  // We must NEVER interfere with OAuth handshakes or callbacks.
+  if (pathname.startsWith('/api/auth')) {
+    return NextResponse.next();
+  }
+
   // ─── 1. CORS & PREFLIGHT HANDLING ──────────────────────────────────────────
   
   // Handle preflight OPTIONS requests immediately
