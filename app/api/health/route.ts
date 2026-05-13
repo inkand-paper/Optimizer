@@ -1,35 +1,65 @@
 import { NextResponse } from 'next/server';
-import type { HealthResponse } from '@/lib/types';
-import { corsHeaders } from '@/lib/cors';
+import { prisma } from '@/lib/prisma';
+import * as Sentry from '@sentry/nextjs';
 
+/**
+ * [SaaS INFRA] - Health Check & Observability Endpoint
+ * Checks Database connectivity and AI provider availability.
+ * Automatically reports failures to Sentry with 'critical' severity.
+ */
 export async function GET() {
-  const startTime = process.uptime();
-  const memoryUsage = process.memoryUsage();
-  
-  const response: HealthResponse = {
+  const health = {
     status: 'healthy',
     timestamp: new Date().toISOString(),
-    uptime: {
-      seconds: Math.floor(startTime),
-      minutes: Math.floor(startTime / 60),
-      hours: (startTime / 3600).toFixed(2)
-    },
-    memory: {
-      rss: memoryUsage.rss,
-      heapTotal: memoryUsage.heapTotal,
-      heapUsed: memoryUsage.heapUsed,
-      external: memoryUsage.external
-    },
-    environment: process.env.NODE_ENV || 'development',
-    version: '1.0.0',
-    endpoints: {
-      health: '/api/health',
-      revalidate: '/api/revalidate'
+    checks: {
+      database: 'unknown',
+      groq_api: 'unknown',
+      gemini_api: 'unknown',
     }
   };
   
-  // Create response with CORS headers
-  return NextResponse.json(response, {
-    headers: corsHeaders
+  // 1. Check Database
+  try {
+    // Simple query to verify connection
+    await prisma.$queryRaw`SELECT 1`;
+    health.checks.database = 'connected';
+  } catch (e) {
+    health.checks.database = 'disconnected';
+    health.status = 'degraded';
+    Sentry.captureException(e, { tags: { component: 'database', type: 'health_check_failure' } });
+  }
+  
+  // 2. Check Groq API (Connectivity only)
+  try {
+    const groqRes = await fetch('https://api.groq.com/openai/v1/models', {
+      headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}` }
+    });
+    health.checks.groq_api = groqRes.ok ? 'connected' : 'error';
+    if (!groqRes.ok) health.status = 'degraded';
+  } catch (e) {
+    health.checks.groq_api = 'disconnected';
+    health.status = 'degraded';
+  }
+  
+  // 3. Check Gemini API (Connectivity only)
+  try {
+    const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${process.env.GEMINI_API_KEY}`);
+    health.checks.gemini_api = geminiRes.ok ? 'connected' : 'error';
+    if (!geminiRes.ok) health.status = 'degraded';
+  } catch (e) {
+    health.checks.gemini_api = 'disconnected';
+    health.status = 'degraded';
+  }
+  
+  // Report to Sentry if system is degraded
+  if (health.status !== 'healthy') {
+    Sentry.captureMessage('NexPulse System Degraded', {
+      level: 'error',
+      extra: health
+    });
+  }
+  
+  return NextResponse.json(health, {
+    status: health.status === 'healthy' ? 200 : 503
   });
 }

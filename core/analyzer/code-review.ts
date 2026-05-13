@@ -7,6 +7,7 @@
 import crypto from "crypto";
 import PQueue from 'p-queue';
 import { trackAiPerformance } from "@/lib/security-monitor";
+import * as Sentry from "@sentry/nextjs";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -138,6 +139,13 @@ async function callGroq(sys: string, user: string, retries = 5): Promise<string>
       return content;
     } catch (e: unknown) {
       if (e instanceof Error && e.message === "TOO_LARGE") throw e;
+      
+      // [SECURITY] Capture AI provider failure in Sentry
+      Sentry.captureException(e, {
+        tags: { component: 'ai-analyzer', provider: 'groq_70b' },
+        extra: { attempt: i + 1, retries }
+      });
+
       await trackAiPerformance("groq_70b", true);
       await sleep(2000);
     }
