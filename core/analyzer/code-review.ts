@@ -150,7 +150,60 @@ async function callGroq(sys: string, user: string, retries = 5): Promise<string>
       await sleep(2000);
     }
   }
-  throw new Error("API Failure");
+  throw new Error("GROQ_PRIMARY_FAILED");
+}
+
+/**
+ * [TIER 2] - Gemini 1.5 Pro Fallback
+ * Used when Groq 70B is rate-limited or down.
+ */
+async function callGemini(sys: string, user: string): Promise<string> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) throw new Error("GEMINI_API_KEY_MISSING");
+
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: sys }] },
+        contents: [{ parts: [{ text: user }] }],
+        generationConfig: { response_mime_type: "application/json", temperature: 0.1 }
+      })
+    });
+
+    if (!res.ok) throw new Error(`Gemini API Error: ${res.status}`);
+    
+    const data = await res.json();
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  } catch (e) {
+    Sentry.captureException(e, { tags: { component: 'ai-analyzer', provider: 'gemini_pro' } });
+    throw e;
+  }
+}
+
+/**
+ * [TIER 3] - Groq 8B Emergency Fallback
+ * Lightweight model, nearly impossible to rate-limit.
+ */
+async function callGroq8B(sys: string, user: string): Promise<string> {
+  const apiKey = process.env.GROQ_API_KEY;
+  try {
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: "llama3-8b-8192",
+        temperature: 0.1,
+        response_format: { type: "json_object" },
+        messages: [{ role: "system", content: sys }, { role: "user", content: user }],
+      }),
+    });
+    const data = await res.json();
+    return data.choices?.[0]?.message?.content ?? "";
+  } catch {
+    throw new Error("AI_TOTAL_FAILURE");
+  }
 }
 
 // ─── The Chef (Auditor) ───────────────────────────────────────────────────────
@@ -175,8 +228,26 @@ ${file.content}
 --- END SOURCE CODE ---`;
 
   try {
-    const raw = await callGroq(sys, user);
-    if (!raw) throw new Error("Empty response from AI");
+    let raw = "";
+    
+    // TIER 1: Groq 70B (Primary)
+    try {
+      raw = await callGroq(sys, user);
+    } catch (groqErr) {
+      console.warn(`[RELIABILITY] Groq 70B failed, falling back to Gemini...`, groqErr);
+      await trackAiPerformance("groq_70b", true);
+      
+      // TIER 2: Gemini 1.5 Pro (Fallback)
+      try {
+        raw = await callGemini(sys, user);
+      } catch (geminiErr) {
+        console.warn(`[RELIABILITY] Gemini failed, falling back to Groq 8B...`, geminiErr);
+        // TIER 3: Groq 8B (Emergency)
+        raw = await callGroq8B(sys, user);
+      }
+    }
+
+    if (!raw) throw new Error("Empty response from AI swarm");
     
     const cleanRaw = raw.replace(/```json\n?|```\n?/g, "").trim();
     const parsed = JSON.parse(cleanRaw);
