@@ -87,12 +87,33 @@ export async function proxy(req: NextRequest) {
       const customToken = req.cookies.get('token')?.value;
       if (customToken) {
         try {
-          // If we have a custom token, we treat it as valid for the redirect check
-          // The actual API routes will perform deeper verification
-          token = { sub: 'custom-session' } as unknown as import('next-auth/jwt').JWT; 
-        } catch {
+          // [SECURITY] Decode the custom JWT to extract the role
+          // We use a safe base64 decode for the payload at the edge
+          const payloadBase64 = customToken.split('.')[1];
+          if (payloadBase64) {
+            const payload = JSON.parse(Buffer.from(payloadBase64, 'base64').toString());
+            token = { 
+              sub: payload.userId, 
+              role: payload.role,
+              email: payload.email 
+            } as any;
+          }
+        } catch (e) {
+          console.error('[AUTH_ERROR] Failed to decode custom token at Edge:', e);
           token = null;
         }
+      }
+    }
+
+    // ─── 4. ROLE-BASED ACCESS CONTROL (RBAC) ─────────────────────────────────
+    
+    // If accessing an admin route, ensure the user has the ADMIN role
+    if (pathname.startsWith('/dashboard/admin') || pathname.startsWith('/api/admin')) {
+      const userRole = (token as any)?.role || 'DEVELOPER';
+      
+      if (userRole !== 'ADMIN') {
+        console.warn(`[UNAUTHORIZED_ACCESS] User ${token?.email} attempted to access Admin Panel.`);
+        return NextResponse.redirect(new URL('/dashboard', req.url));
       }
     }
 
