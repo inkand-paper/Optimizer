@@ -96,7 +96,7 @@ export async function proxy(req: NextRequest) {
               sub: payload.userId, 
               role: payload.role,
               email: payload.email 
-            } as any;
+            } as import('next-auth/jwt').JWT & { role?: string };
           }
         } catch (e) {
           console.error('[AUTH_ERROR] Failed to decode custom token at Edge:', e);
@@ -109,7 +109,7 @@ export async function proxy(req: NextRequest) {
     
     // If accessing an admin route, ensure the user has the ADMIN role
     if (pathname.startsWith('/dashboard/admin') || pathname.startsWith('/api/admin')) {
-      const userRole = (token as any)?.role || 'DEVELOPER';
+      const userRole = (token as { role?: string } | null)?.role || 'DEVELOPER';
       
       if (userRole !== 'ADMIN') {
         console.warn(`[UNAUTHORIZED_ACCESS] User ${token?.email} attempted to access Admin Panel.`);
