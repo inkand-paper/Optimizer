@@ -80,7 +80,7 @@ export async function proxy(req: NextRequest) {
         try {
           // If we have a custom token, we treat it as valid for the redirect check
           // The actual API routes will perform deeper verification
-          token = { sub: 'custom-session' } as any; 
+          token = { sub: 'custom-session' } as unknown as import('next-auth/jwt').JWT; 
         } catch {
           token = null;
         }
