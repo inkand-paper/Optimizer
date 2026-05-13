@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   title: "Security Status — NexPulse Admin",
 };
 
+export const dynamic = 'force-dynamic';
+
 /**
  * [ADMIN] Security & Health Dashboard
  * Visualises real-time metrics for system hardening and anomaly detection.
