@@ -15,7 +15,7 @@ export interface SecurityIncident {
   type: 'BRUTE_FORCE_DETECTED' | 'AI_FALLBACK' | 'API_KEY_ABUSE' | 'SYSTEM_ERROR' | 'UNAUTHORIZED_ACCESS';
   severity: 'low' | 'medium' | 'high' | 'critical';
   message: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 /**

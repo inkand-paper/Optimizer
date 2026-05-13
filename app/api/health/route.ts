@@ -20,13 +20,12 @@ export async function GET() {
   
   // 1. Check Database
   try {
-    // Simple query to verify connection
     await prisma.$queryRaw`SELECT 1`;
     health.checks.database = 'connected';
-  } catch (e) {
+  } catch (error) {
     health.checks.database = 'disconnected';
     health.status = 'degraded';
-    Sentry.captureException(e, { tags: { component: 'database', type: 'health_check_failure' } });
+    Sentry.captureException(error, { tags: { component: 'database', type: 'health_check_failure' } });
   }
   
   // 2. Check Groq API (Connectivity only)
@@ -36,7 +35,7 @@ export async function GET() {
     });
     health.checks.groq_api = groqRes.ok ? 'connected' : 'error';
     if (!groqRes.ok) health.status = 'degraded';
-  } catch (e) {
+  } catch {
     health.checks.groq_api = 'disconnected';
     health.status = 'degraded';
   }
@@ -46,7 +45,7 @@ export async function GET() {
     const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${process.env.GEMINI_API_KEY}`);
     health.checks.gemini_api = geminiRes.ok ? 'connected' : 'error';
     if (!geminiRes.ok) health.status = 'degraded';
-  } catch (e) {
+  } catch {
     health.checks.gemini_api = 'disconnected';
     health.status = 'degraded';
   }

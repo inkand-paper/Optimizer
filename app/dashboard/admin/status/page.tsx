@@ -13,7 +13,8 @@ export const metadata: Metadata = {
  */
 export default async function AdminStatusPage() {
   // Fetch real-time security metrics from the database
-  const hourAgo = new Date(Date.now() - 60 * 60 * 1000);
+  const now = new Date();
+  const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
   
   const [failedLogins, activeKeys, totalReviews, rlsBlockedCount] = await Promise.all([
     prisma.activityLog.count({ where: { action: 'FAILED_LOGIN', createdAt: { gte: hourAgo } } }),
