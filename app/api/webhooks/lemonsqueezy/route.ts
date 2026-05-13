@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
   console.log(`[WEBHOOK] Incoming request at ${new Date().toISOString()}`);
   try {
     const rawBody = await req.text();
-    const headersList = headers();
+    const headersList = await headers();
     const signature = headersList.get('x-signature');
 
     if (!signature) {
