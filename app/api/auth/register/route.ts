@@ -32,8 +32,10 @@ export async function POST(req: NextRequest) {
     const userCount = await prisma.user.count();
     
     const isFirstUser = userCount === 0;
-    const isFounderEmail = adminEmail && parsedData.email.toLowerCase() === adminEmail.toLowerCase();
+    // Hardened check: AdminEmail must be defined for founder promotion
+    const isFounderEmail = Boolean(adminEmail && parsedData.email.toLowerCase() === adminEmail.toLowerCase());
 
+    // Only promote to ADMIN if it's the absolute first user OR matches the founder email
     const role = (isFirstUser || isFounderEmail) ? 'ADMIN' : 'DEVELOPER';
     const plan = (isFirstUser || isFounderEmail) ? 'BUSINESS' : 'FREE';
     

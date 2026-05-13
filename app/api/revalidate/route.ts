@@ -113,20 +113,24 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { secret, path, tag, email } = body;
-    const masterSecret = process.env.REVALIDATE_SECRET;
-
     // 1. Check for Master Secret (Internal Dashboard)
-    if (secret && masterSecret && secret === masterSecret) {
-      console.log(`[PULSE] Dashboard trigger for ${tag || path} to ${email}`);
+    const masterSecret = process.env.REVALIDATE_SECRET;
+    if (secret && masterSecret) {
+      const secretBuffer = Buffer.from(secret, 'utf8');
+      const masterBuffer = Buffer.from(masterSecret, 'utf8');
       
-      const adminUser = email 
-        ? await prisma.user.findUnique({ where: { email } })
-        : await prisma.user.findFirst({ orderBy: { createdAt: 'asc' } });
+      if (secretBuffer.length === masterBuffer.length && crypto.timingSafeEqual(secretBuffer, masterBuffer)) {
+        console.log(`[PULSE] Dashboard trigger for ${tag || path} to ${email}`);
         
-      currentUserId = adminUser?.id;
-      const dbKey = adminUser ? { user: adminUser } : null;
-      
-      return await processRevalidation(tag, path, currentUserId, dbKey, startTime);
+        const adminUser = email 
+          ? await prisma.user.findUnique({ where: { email } })
+          : await prisma.user.findFirst({ orderBy: { createdAt: 'asc' } });
+          
+        currentUserId = adminUser?.id;
+        const dbKey = adminUser ? { user: adminUser } : null;
+        
+        return await processRevalidation(tag, path, currentUserId, dbKey, startTime);
+      }
     }
 
     // 2. Validate API key (External SDK)

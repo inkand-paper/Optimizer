@@ -18,9 +18,10 @@ export async function POST(req: NextRequest) {
     console.log(`[WEBHOOK] Body Length: ${rawBody.length}`);
 
     const hmac = crypto.createHmac('sha256', process.env.LEMONSQUEEZY_WEBHOOK_SECRET || '');
-    const digest = hmac.update(rawBody).digest('hex');
+    const digest = Buffer.from(hmac.update(rawBody).digest('hex'), 'utf8');
+    const signatureBuffer = Buffer.from(signature || '', 'utf8');
 
-    if (digest !== signature) {
+    if (digest.length !== signatureBuffer.length || !crypto.timingSafeEqual(digest, signatureBuffer)) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 
