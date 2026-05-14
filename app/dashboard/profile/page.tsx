@@ -19,6 +19,8 @@ export default function ProfilePage() {
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [image, setImage] = React.useState<string | null>(null);
+  const [showCurrent, setShowCurrent] = React.useState(false);
+  const [showNew, setShowNew] = React.useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
@@ -260,17 +262,53 @@ export default function ProfilePage() {
                 }
               }} className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="space-y-2">
+                  <div className="space-y-2 relative">
                     <label className="label-category text-[10px]">Current Password</label>
-                    <Input name="currentPassword" type="password" placeholder="••••••••" className="bg-muted/30" />
+                    <div className="relative">
+                      <Input 
+                        name="currentPassword" 
+                        type={showCurrent ? "text" : "password"} 
+                        placeholder="••••••••" 
+                        autoComplete="current-password"
+                        className="bg-muted/30 pr-10" 
+                      />
+                      <button 
+                        type="button"
+                        onClick={() => setShowCurrent(!showCurrent)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-np-gold transition-colors"
+                      >
+                        {showCurrent ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                      </button>
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <label className="label-category text-[10px]">New Password</label>
-                    <Input name="newPassword" type="password" placeholder="••••••••" className="bg-muted/30" />
+                    <div className="relative">
+                      <Input 
+                        name="newPassword" 
+                        type={showNew ? "text" : "password"} 
+                        placeholder="••••••••" 
+                        autoComplete="new-password"
+                        className="bg-muted/30 pr-10" 
+                      />
+                      <button 
+                        type="button"
+                        onClick={() => setShowNew(!showNew)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-np-gold transition-colors"
+                      >
+                        {showNew ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                      </button>
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <label className="label-category text-[10px]">Confirm New Password</label>
-                    <Input name="confirmPassword" type="password" placeholder="••••••••" className="bg-muted/30" />
+                    <Input 
+                      name="confirmPassword" 
+                      type="password" 
+                      placeholder="••••••••" 
+                      autoComplete="new-password"
+                      className="bg-muted/30" 
+                    />
                   </div>
                 </div>
                 <Button type="submit" disabled={saving} variant="outline" className="w-full sm:w-auto px-10 h-11 uppercase tracking-widest text-[11px]">
