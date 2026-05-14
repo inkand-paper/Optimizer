@@ -474,7 +474,7 @@ export default function ProfilePage() {
               <p className="text-muted-foreground mt-2 text-sm max-w-lg mx-auto">Select the authorization level that matches your production throughput requirements.</p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-5 items-start">
+            <div className="grid md:grid-cols-3 gap-5 items-stretch">
               {Object.entries(PLAN_LIMITS).map(([key, plan]) => {
                 const isPro = key === "PRO";
                 const isCurrent = user?.plan === key;
