@@ -47,7 +47,10 @@ export default function ProfilePage() {
           setEmail(d.user.email || "");
           setImage(d.user.image || null);
         } else {
-          router.push("/login");
+          // Tactical Buffer: Give router 150ms to settle
+          setTimeout(() => {
+            router.push("/login");
+          }, 150);
         }
       })
       .catch(() => {
@@ -557,7 +560,9 @@ export default function ProfilePage() {
                           clearTimeout(timeoutId);
 
                           if (data.url) {
-                            window.location.href = data.url;
+                            setTimeout(() => {
+                              window.location.assign(data.url);
+                            }, 150);
                           } else {
                             setMessage({ type: "error", text: "Infrastructure store activation pending. Access restricted." });
                             setSaving(false);
