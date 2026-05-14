@@ -50,6 +50,8 @@ model User {
   resetTokenExpiry  DateTime?
   githubAccessToken String? //For code review Github connect (separate from login)
   githubUserName String?
+  lemonSqueezyId String? // Added for billing
+  subscriptionId String? // Added for plan tracking
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   

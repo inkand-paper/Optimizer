@@ -161,7 +161,23 @@ export default function ProfilePage() {
               <p className="text-[13px] text-muted-foreground leading-relaxed mb-4">
                 You are currently on the <span className="text-np-gold font-bold">{user?.plan}</span> plan. Upgrade for higher infrastructure limits.
               </p>
-              <Button onClick={() => window.dispatchEvent(new CustomEvent('open-pricing'))} variant="outline" className="w-full text-[11px] uppercase tracking-widest h-9">
+              <Button 
+                onClick={async () => {
+                  setSaving(true);
+                  try {
+                    const res = await fetch("/api/billing/portal");
+                    const data = await res.json();
+                    if (data.url) window.location.href = data.url;
+                    else setMessage({ type: "error", text: "Billing portal unreachable." });
+                  } catch {
+                    setMessage({ type: "error", text: "Billing synchronization failed." });
+                  } finally {
+                    setSaving(false);
+                  }
+                }} 
+                variant="outline" 
+                className="w-full text-[11px] uppercase tracking-widest h-9"
+              >
                 Manage Subscription
               </Button>
             </Card>
@@ -213,7 +229,60 @@ export default function ProfilePage() {
             <Card className="p-8">
               <h3 className="text-[14px] font-bold uppercase mb-6 flex items-center gap-2">
                 <Key className="h-4 w-4 text-np-gold" />
-                Authentication Settings
+                Security Credentials
+              </h3>
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                const currentPassword = formData.get("currentPassword");
+                const newPassword = formData.get("newPassword");
+                const confirmPassword = formData.get("confirmPassword");
+
+                if (newPassword !== confirmPassword) {
+                  setMessage({ type: "error", text: "Passwords do not match." });
+                  return;
+                }
+
+                setSaving(true);
+                try {
+                  const res = await fetch("/api/auth/change-password", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ currentPassword, newPassword }),
+                  });
+                  const data = await res.json();
+                  if (res.ok) setMessage({ type: "success", text: "Password updated successfully." });
+                  else setMessage({ type: "error", text: data.error || "Update failed." });
+                } catch {
+                  setMessage({ type: "error", text: "Security synchronization failed." });
+                } finally {
+                  setSaving(false);
+                }
+              }} className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="label-category text-[10px]">Current Password</label>
+                    <Input name="currentPassword" type="password" placeholder="••••••••" className="bg-muted/30" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="label-category text-[10px]">New Password</label>
+                    <Input name="newPassword" type="password" placeholder="••••••••" className="bg-muted/30" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="label-category text-[10px]">Confirm New Password</label>
+                    <Input name="confirmPassword" type="password" placeholder="••••••••" className="bg-muted/30" />
+                  </div>
+                </div>
+                <Button type="submit" disabled={saving} variant="outline" className="w-full sm:w-auto px-10 h-11 uppercase tracking-widest text-[11px]">
+                  Update Password
+                </Button>
+              </form>
+            </Card>
+
+            <Card className="p-8">
+              <h3 className="text-[14px] font-bold uppercase mb-6 flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-np-gold" />
+                Advanced Protection
               </h3>
               <div className="space-y-4">
                 {!user?.emailVerified && (
@@ -225,18 +294,36 @@ export default function ProfilePage() {
                         <p className="text-[11px] text-muted-foreground">Verify your email to secure your account and enable all features.</p>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="h-8 text-[10px] uppercase border-np-crimson/30 hover:bg-np-crimson/10 text-np-crimson">Resend Link</Button>
+                    <Button 
+                      onClick={async () => {
+                        setSaving(true);
+                        try {
+                          const res = await fetch("/api/auth/verify/resend", { method: "POST" });
+                          if (res.ok) setMessage({ type: "success", text: "Verification link dispatched." });
+                          else setMessage({ type: "error", text: "Dispatch failed." });
+                        } catch {
+                          setMessage({ type: "error", text: "Network anomaly." });
+                        } finally {
+                          setSaving(false);
+                        }
+                      }}
+                      variant="outline" 
+                      size="sm" 
+                      className="h-8 text-[10px] uppercase border-np-crimson/30 hover:bg-np-crimson/10 text-np-crimson"
+                    >
+                      Resend Link
+                    </Button>
                   </div>
                 )}
                 <div className="p-4 bg-muted/40 rounded-ui border border-dashed border-border flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Shield className="h-5 w-5 text-np-slate" />
                     <div>
-                      <p className="text-[12px] font-bold uppercase">Multi-Factor Auth</p>
-                      <p className="text-[10px] text-muted-foreground">Disabled for this account</p>
+                      <p className="text-[12px] font-bold uppercase">Multi-Factor Auth (MFA)</p>
+                      <p className="text-[10px] text-muted-foreground">High-security layer for your account access.</p>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="opacity-50" disabled>Enable</Button>
+                  <Badge variant="outline" className="text-[8px] uppercase">Coming Soon</Badge>
                 </div>
               </div>
             </Card>
