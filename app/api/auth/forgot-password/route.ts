@@ -36,21 +36,11 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const resetUrl = new URL("/reset-password", appUrl);
-    resetUrl.searchParams.set("token", token);
-
-    await sendEmail({
-      to: email,
-      subject: "NexPulse — Reset Your Password",
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: auto;">
-          <h2 style="color: #B48C3C;">Password Reset Request</h2>
-          <p>You requested to reset your NexPulse password. Click the button below to proceed. This link expires in 1 hour.</p>
-          <a href="${resetUrl.toString()}" style="display: inline-block; padding: 12px 24px; background: #B48C3C; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0;">Reset Password</a>
-          <p style="color: #666; font-size: 12px;">If you didn't request this, you can safely ignore this email.</p>
-        </div>
-      `,
+    const { sendPasswordResetEmail } = await import("@/lib/mail");
+    await sendPasswordResetEmail({
+      email,
+      userName: user.name || "Operator",
+      token: token,
     });
 
     return NextResponse.json({ message: "If an account exists, a reset link has been sent." });

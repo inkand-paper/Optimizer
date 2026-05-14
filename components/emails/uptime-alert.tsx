@@ -32,50 +32,66 @@ export const UptimeAlertEmail = ({
 }: UptimeAlertEmailProps) => (
   <Html>
     <Head />
-    <Preview>🚩 NexPulse Alert: {name} is {status}</Preview>
+    <Preview>{status === 'UP' ? '✅ RECOVERED' : '🚨 ALERT'}: {name} is {status}</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
-          <Heading style={{ ...heading, color: status === 'UP' ? '#22c55e' : '#ef4444' }}>
-            {status === 'UP' ? '✅ System Recovered' : '🚨 System Down'}
-          </Heading>
+          <Heading style={h1}>Nex<span style={{ color: "#b48c3c" }}>Pulse</span></Heading>
         </Section>
-        <Section style={content}>
-          <Text style={paragraph}>Hello {userName},</Text>
-          <Text style={paragraph}>
-            Our monitoring engine has detected a status change for your web property: 
-            <strong> {name}</strong>.
+        
+        <Section style={section}>
+          <Heading style={{ 
+            ...statusHeader, 
+            color: status === 'UP' ? "#1d9e75" : "#a32d2d" 
+          }}>
+            System Status: {status}
+          </Heading>
+          
+          <Text style={text}>
+            Operator {userName}, the monitoring engine has detected a status shift for property: <strong>{name}</strong>.
           </Text>
+
           <Section style={card}>
-            <Text style={label}>Status</Text>
-            <Text style={{ ...valueStyle, color: status === 'UP' ? '#22c55e' : '#ef4444' }}>
-              {status}
-            </Text>
-            <Hr style={hr} />
-            <Text style={label}>Target URL</Text>
-            <Text style={valueStyle}>{url}</Text>
-            <Hr style={hr} />
-            {message && (
-              <>
-                <Text style={label}>Error Details</Text>
-                <Text style={valueStyle}>{message}</Text>
-                <Hr style={hr} />
-              </>
-            )}
-            <Text style={label}>Latency</Text>
-            <Text style={valueStyle}>{latency ? `${latency}ms` : 'N/A'}</Text>
-            <Hr style={hr} />
-            <Text style={label}>Time Detected</Text>
-            <Text style={valueStyle}>{timestamp}</Text>
+            <div style={gridRow}>
+              <div style={col}>
+                <Text style={label}>Identifier</Text>
+                <Text style={value}>{name}</Text>
+              </div>
+              <div style={col}>
+                <Text style={label}>Status</Text>
+                <Text style={{ ...value, color: status === 'UP' ? "#1d9e75" : "#a32d2d" }}>{status}</Text>
+              </div>
+            </div>
+            
+            <Hr style={innerHr} />
+            
+            <Text style={label}>Incident Report</Text>
+            <Text style={value}>{message || "System responding normally."}</Text>
+            
+            <Hr style={innerHr} />
+
+            <div style={gridRow}>
+              <div style={col}>
+                <Text style={label}>Latency</Text>
+                <Text style={value}>{latency ? `${latency}ms` : "—"}</Text>
+              </div>
+              <div style={col}>
+                <Text style={label}>Time Detected</Text>
+                <Text style={value}>{timestamp}</Text>
+              </div>
+            </div>
           </Section>
-          <Text style={paragraph}>
+
+          <Text style={text}>
             {status === 'DOWN' 
-              ? "We will continue monitoring and notify you immediately once the system is back online."
-              : "Everything is back to normal. No further action is required."}
+              ? "Emergency protocols are active. We will continue monitoring and notify you the moment recovery is detected."
+              : "Recovery successful. The infrastructure has returned to nominal operational parameters."}
           </Text>
+          
           <Hr style={hr} />
+          
           <Text style={footer}>
-            NexPulse Uptime Monitoring: Real-time web intelligence.
+            NexPulse Infrastructure Command • Real-time Monitoring
           </Text>
         </Section>
       </Container>
@@ -83,76 +99,102 @@ export const UptimeAlertEmail = ({
   </Html>
 );
 
-export default UptimeAlertEmail;
-
 const main = {
-  backgroundColor: "#000",
-  color: "#fff",
-  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
+  backgroundColor: "#0a0a0a",
+  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif',
 };
 
 const container = {
   margin: "0 auto",
-  padding: "20px 0 48px",
-  width: "580px",
+  padding: "40px 20px",
+  maxWidth: "580px",
 };
 
 const header = {
-  padding: "32px",
+  padding: "20px 0",
   textAlign: "center" as const,
 };
 
-const heading = {
-  fontSize: "28px",
-  fontWeight: "bold",
+const h1 = {
+  color: "#ffffff",
+  fontSize: "24px",
+  fontWeight: "800",
+  letterSpacing: "4px",
+  textTransform: "uppercase" as const,
   margin: "0",
-  letterSpacing: "-1px",
 };
 
-const content = {
-  padding: "32px",
-  backgroundColor: "#0a0a0a",
-  borderRadius: "16px",
-  border: "1px solid #222",
+const section = {
+  backgroundColor: "#111111",
+  padding: "40px",
+  borderRadius: "8px",
+  border: "1px solid #222222",
 };
 
-const paragraph = {
-  fontSize: "16px",
-  lineHeight: "26px",
-  color: "#d4d4d8",
+const statusHeader = {
+  fontSize: "18px",
+  fontWeight: "800",
+  textAlign: "center" as const,
+  textTransform: "uppercase" as const,
+  letterSpacing: "2px",
+  margin: "0 0 30px",
+};
+
+const text = {
+  color: "#aaaaaa",
+  fontSize: "14px",
+  lineHeight: "22px",
 };
 
 const card = {
-  padding: "24px",
-  backgroundColor: "#111",
-  borderRadius: "12px",
-  border: "1px solid #333",
-  margin: "24px 0",
+  backgroundColor: "#000000",
+  padding: "25px",
+  borderRadius: "6px",
+  border: "1px solid #222222",
+  margin: "25px 0",
+};
+
+const gridRow = {
+  display: "table",
+  width: "100%",
+};
+
+const col = {
+  display: "table-cell",
+  width: "50%",
+  padding: "0 10px",
 };
 
 const label = {
-  fontSize: "12px",
-  color: "#71717a",
+  color: "#555555",
+  fontSize: "10px",
+  fontWeight: "bold",
   textTransform: "uppercase" as const,
   letterSpacing: "1px",
-  margin: "0 0 4px 0",
+  margin: "0 0 5px",
 };
 
-const valueStyle = {
-  fontSize: "16px",
+const value = {
+  color: "#ffffff",
+  fontSize: "13px",
   fontWeight: "bold",
-  color: "#fff",
-  margin: "0 0 16px 0",
+  margin: "0",
+};
+
+const innerHr = {
+  borderColor: "#111111",
+  margin: "15px 0",
 };
 
 const hr = {
-  borderColor: "#222",
-  margin: "20px 0",
+  borderColor: "#222222",
+  margin: "30px 0",
 };
 
 const footer = {
-  color: "#52525b",
-  fontSize: "12px",
-  lineHeight: "20px",
-  marginTop: "12px",
+  color: "#444444",
+  fontSize: "11px",
+  textAlign: "center" as const,
 };
+
+export default UptimeAlertEmail;

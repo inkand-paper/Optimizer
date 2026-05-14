@@ -26,34 +26,61 @@ export const PulseAlertEmail = ({
 }: PulseAlertEmailProps) => (
   <Html>
     <Head />
-    <Preview>⚡ NexPulse: Optimization Alert for {value}</Preview>
+    <Preview>⚡ Optimization Processed: {value}</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
-          <Heading style={heading}>NexPulse</Heading>
+          <Heading style={h1}>Nex<span style={{ color: "#b48c3c" }}>Pulse</span></Heading>
         </Section>
-        <Section style={content}>
-          <Text style={paragraph}>Hello {userName},</Text>
-          <Text style={paragraph}>
-            A remote optimization signal was successfully processed by the 
-            <strong> NexPulse Engine</strong>.
+        
+        <Section style={section}>
+          <Heading style={statusHeader}>
+            Pulse Signal Processed
+          </Heading>
+          
+          <Text style={text}>
+            Operator {userName}, a remote cache invalidation signal has been successfully executed by the NexPulse Optimization Engine.
           </Text>
+
           <Section style={card}>
-            <Text style={label}>Event Type</Text>
-            <Text style={valueStyle}>{type.toUpperCase()} Optimization</Text>
-            <Hr style={hr} />
-            <Text style={label}>Target {type === 'tag' ? 'Tag' : 'Path'}</Text>
+            <div style={gridRow}>
+              <div style={col}>
+                <Text style={label}>Signal Type</Text>
+                <Text style={valueStyle}>{type.toUpperCase()} PURGE</Text>
+              </div>
+              <div style={col}>
+                <Text style={label}>Execution Status</Text>
+                <Text style={{ ...valueStyle, color: "#1d9e75" }}>SUCCESS</Text>
+              </div>
+            </div>
+            
+            <Hr style={innerHr} />
+            
+            <Text style={label}>Target Identifier</Text>
             <Text style={valueStyle}>{value}</Text>
-            <Hr style={hr} />
-            <Text style={label}>Processed At</Text>
-            <Text style={valueStyle}>{timestamp}</Text>
+            
+            <Hr style={innerHr} />
+
+            <div style={gridRow}>
+              <div style={col}>
+                <Text style={label}>Latency</Text>
+                <Text style={valueStyle}>&lt; 50ms</Text>
+              </div>
+              <div style={col}>
+                <Text style={label}>Timestamp</Text>
+                <Text style={valueStyle}>{timestamp}</Text>
+              </div>
+            </div>
           </Section>
-          <Text style={paragraph}>
-            The target application cache has been updated and fresh content is now being served to your end users.
+
+          <Text style={text}>
+            The target application cache has been updated. Fresh, optimized content is now being delivered globally to your end users.
           </Text>
+          
           <Hr style={hr} />
+          
           <Text style={footer}>
-            This is an automated security and performance alert from your NexPulse Optimizer Suite.
+            NexPulse Infrastructure Command • Signal Intelligence
           </Text>
         </Section>
       </Container>
@@ -61,77 +88,103 @@ export const PulseAlertEmail = ({
   </Html>
 );
 
-export default PulseAlertEmail;
-
 const main = {
-  backgroundColor: "#000",
-  color: "#fff",
-  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
+  backgroundColor: "#0a0a0a",
+  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif',
 };
 
 const container = {
   margin: "0 auto",
-  padding: "20px 0 48px",
-  width: "580px",
+  padding: "40px 20px",
+  maxWidth: "580px",
 };
 
 const header = {
-  padding: "32px",
+  padding: "20px 0",
   textAlign: "center" as const,
 };
 
-const heading = {
-  color: "#3b82f6",
-  fontSize: "32px",
-  fontWeight: "bold",
+const h1 = {
+  color: "#ffffff",
+  fontSize: "24px",
+  fontWeight: "800",
+  letterSpacing: "4px",
+  textTransform: "uppercase" as const,
   margin: "0",
-  letterSpacing: "-1px",
 };
 
-const content = {
-  padding: "32px",
-  backgroundColor: "#0a0a0a",
-  borderRadius: "16px",
-  border: "1px solid #222",
+const section = {
+  backgroundColor: "#111111",
+  padding: "40px",
+  borderRadius: "8px",
+  border: "1px solid #222222",
 };
 
-const paragraph = {
-  fontSize: "16px",
-  lineHeight: "26px",
-  color: "#d4d4d8",
+const statusHeader = {
+  color: "#1d9e75",
+  fontSize: "18px",
+  fontWeight: "800",
+  textAlign: "center" as const,
+  textTransform: "uppercase" as const,
+  letterSpacing: "2px",
+  margin: "0 0 30px",
+};
+
+const text = {
+  color: "#aaaaaa",
+  fontSize: "14px",
+  lineHeight: "22px",
 };
 
 const card = {
-  padding: "24px",
-  backgroundColor: "#111",
-  borderRadius: "12px",
-  border: "1px solid #333",
-  margin: "24px 0",
+  backgroundColor: "#000000",
+  padding: "25px",
+  borderRadius: "6px",
+  border: "1px solid #222222",
+  margin: "25px 0",
+};
+
+const gridRow = {
+  display: "table",
+  width: "100%",
+};
+
+const col = {
+  display: "table-cell",
+  width: "50%",
+  padding: "0 10px",
 };
 
 const label = {
-  fontSize: "12px",
-  color: "#71717a",
+  color: "#555555",
+  fontSize: "10px",
+  fontWeight: "bold",
   textTransform: "uppercase" as const,
   letterSpacing: "1px",
-  margin: "0 0 4px 0",
+  margin: "0 0 5px",
 };
 
 const valueStyle = {
-  fontSize: "16px",
+  color: "#ffffff",
+  fontSize: "13px",
   fontWeight: "bold",
-  color: "#fff",
-  margin: "0 0 16px 0",
+  margin: "0",
+};
+
+const innerHr = {
+  borderColor: "#111111",
+  margin: "15px 0",
 };
 
 const hr = {
-  borderColor: "#222",
-  margin: "20px 0",
+  borderColor: "#222222",
+  margin: "30px 0",
 };
 
 const footer = {
-  color: "#52525b",
-  fontSize: "12px",
-  lineHeight: "20px",
-  marginTop: "12px",
+  color: "#444444",
+  fontSize: "11px",
+  textAlign: "center" as const,
 };
+
+export default PulseAlertEmail;

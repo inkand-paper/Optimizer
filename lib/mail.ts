@@ -2,6 +2,7 @@ import { PulseAlertEmail } from "@/components/emails/pulse-alert";
 import { UptimeAlertEmail } from "@/components/emails/uptime-alert";
 import { VerificationEmail } from "@/components/emails/verification";
 import { SecurityAlertEmail } from "@/components/emails/security-alert";
+import { PasswordResetEmail } from "@/components/emails/password-reset";
 import { render } from "@react-email/components";
 import React from "react";
 import { sendEmail } from "./nodemailer";
@@ -139,6 +140,35 @@ export async function sendSecurityAlert({
     });
   } catch (error) {
     console.error("❌ Failed to send security alert email:", error);
+    return { success: false, error };
+  }
+}
+
+export async function sendPasswordResetEmail({
+  email,
+  userName,
+  token
+}: {
+  email: string;
+  userName: string;
+  token: string;
+}) {
+  try {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const resetUrl = `${appUrl}/reset-password?token=${token}`;
+
+    const html = await render(React.createElement(PasswordResetEmail, {
+      userName,
+      resetUrl
+    }));
+
+    return await sendEmail({
+      to: email,
+      subject: "NexPulse — Identity Recovery",
+      html: html,
+    });
+  } catch (error) {
+    console.error("❌ Failed to send password reset email:", error);
     return { success: false, error };
   }
 }

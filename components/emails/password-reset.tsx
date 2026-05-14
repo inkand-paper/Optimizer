@@ -12,44 +12,44 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 
-interface VerificationEmailProps {
+interface PasswordResetEmailProps {
   userName: string;
-  verificationUrl: string;
+  resetUrl: string;
 }
 
-export const VerificationEmail = ({
+export const PasswordResetEmail = ({
   userName,
-  verificationUrl,
-}: VerificationEmailProps) => (
+  resetUrl,
+}: PasswordResetEmailProps) => (
   <Html>
     <Head />
-    <Preview>Activate your NexPulse Account</Preview>
+    <Preview>Identity Recovery: NexPulse Credentials</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
           <Heading style={h1}>Nex<span style={{ color: "#b48c3c" }}>Pulse</span></Heading>
         </Section>
         <Section style={section}>
-          <Heading style={h2}>Activation Required</Heading>
+          <Heading style={h2}>Identity Recovery</Heading>
           <Text style={text}>Hello {userName},</Text>
           <Text style={text}>
-            Welcome to the NexPulse Infrastructure Suite. To complete your deployment and authorize your access to the command center, please verify your email identity.
+            We received a request to reset the administrative credentials for your NexPulse account. To proceed with the security update, please authorize the reset using the link below.
           </Text>
           
           <Section style={btnContainer}>
-            <Link style={button} href={verificationUrl}>
-              Verify Identity
+            <Link style={button} href={resetUrl}>
+              Reset Credentials
             </Link>
           </Section>
 
           <Text style={text}>
-            If you did not initiate this request, you can safely ignore this email. This link will expire in 24 hours.
+            If you did not initiate this recovery process, your account remains secure. Please disregard this notification. The authorization link will expire in 1 hour.
           </Text>
           
           <Hr style={hr} />
           
           <Text style={footer}>
-            NexPulse • Secure Infrastructure & Optimization Suite
+            NexPulse • Infrastructure Command Center
           </Text>
         </Section>
       </Container>
@@ -59,7 +59,7 @@ export const VerificationEmail = ({
 
 const main = {
   backgroundColor: "#0a0a0a",
-  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
+  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif',
 };
 
 const container = {
@@ -135,4 +135,4 @@ const footer = {
   textAlign: "center" as const,
 };
 
-export default VerificationEmail;
+export default PasswordResetEmail;

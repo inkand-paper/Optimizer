@@ -32,29 +32,30 @@ export const SecurityAlertEmail = ({
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
-          <Heading style={h1}>Security Alert</Heading>
+          <Heading style={h1}>Nex<span style={{ color: "#b48c3c" }}>Pulse</span></Heading>
         </Section>
         <Section style={section}>
+          <Heading style={h2}>Security Notification</Heading>
           <Text style={text}>Hello {userName},</Text>
           <Text style={text}>
-            This is an automated notification to inform you that your <strong>{action}</strong> was recently updated.
+            Our security engine has detected a critical account update: <strong>{action}</strong>.
           </Text>
           
           <Section style={detailsContainer}>
-            <Text style={detailsTitle}>Event Details:</Text>
+            <Text style={detailsTitle}>Event Metadata</Text>
             <Text style={detailsText}>
-              <strong>Time:</strong> {timestamp}<br />
-              <strong>Device:</strong> {device}<br />
-              <strong>Browser:</strong> {browser}
+              <strong>Timestamp:</strong> {timestamp}<br />
+              <strong>Identity:</strong> {device}<br />
+              <strong>Interface:</strong> {browser}
             </Text>
           </Section>
 
           <Text style={text}>
-            If this was you, you can safely ignore this email. If you did not make this change, please contact support immediately to secure your account.
+            If you did not initiate this change, your account may be compromised. Please take immediate action to secure your credentials or contact the NexPulse Security Operations Center.
           </Text>
           <Hr style={hr} />
           <Text style={footer}>
-            NexPulse Infrastructure Suite • Secure Operations Center
+            NexPulse SOC • Infrastructure Security & Monitoring
           </Text>
         </Section>
       </Container>
@@ -64,7 +65,7 @@ export const SecurityAlertEmail = ({
 
 const main = {
   backgroundColor: "#0a0a0a",
-  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
+  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif',
 };
 
 const container = {
@@ -75,20 +76,31 @@ const container = {
 
 const header = {
   padding: "20px 0",
+  textAlign: "center" as const,
 };
 
 const h1 = {
-  color: "#b48c3c",
+  color: "#ffffff",
   fontSize: "24px",
-  fontWeight: "700",
+  fontWeight: "800",
+  letterSpacing: "4px",
+  textTransform: "uppercase" as const,
+  margin: "0",
+};
+
+const h2 = {
+  color: "#a32d2d",
+  fontSize: "18px",
+  fontWeight: "800",
   textAlign: "center" as const,
   textTransform: "uppercase" as const,
   letterSpacing: "2px",
+  margin: "0 0 30px",
 };
 
 const section = {
   backgroundColor: "#111111",
-  padding: "30px",
+  padding: "40px",
   borderRadius: "8px",
   border: "1px solid #222222",
 };
@@ -100,18 +112,19 @@ const text = {
 };
 
 const detailsContainer = {
-  backgroundColor: "#161616",
-  padding: "20px",
-  borderRadius: "4px",
-  margin: "20px 0",
+  backgroundColor: "#000000",
+  padding: "25px",
+  borderRadius: "6px",
+  margin: "25px 0",
   borderLeft: "4px solid #b48c3c",
 };
 
 const detailsTitle = {
   color: "#b48c3c",
-  fontSize: "12px",
-  fontWeight: "700",
+  fontSize: "10px",
+  fontWeight: "800",
   textTransform: "uppercase" as const,
+  letterSpacing: "1px",
   marginBottom: "10px",
 };
 
@@ -123,12 +136,12 @@ const detailsText = {
 
 const hr = {
   borderColor: "#222222",
-  margin: "20px 0",
+  margin: "30px 0",
 };
 
 const footer = {
-  color: "#555555",
-  fontSize: "12px",
+  color: "#444444",
+  fontSize: "11px",
   textAlign: "center" as const,
 };
 
