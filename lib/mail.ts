@@ -47,7 +47,6 @@ export async function sendUptimeAlert({
   email,
   userName,
   name,
-  url,
   status,
   message,
   latency
@@ -55,7 +54,6 @@ export async function sendUptimeAlert({
   email: string;
   userName: string;
   name: string;
-  url: string;
   status: 'UP' | 'DOWN';
   message?: string;
   latency?: number;
@@ -64,7 +62,6 @@ export async function sendUptimeAlert({
     const html = await render(React.createElement(UptimeAlertEmail, {
       userName,
       name,
-      url,
       status,
       message,
       latency,
