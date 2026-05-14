@@ -540,7 +540,7 @@ export default function ProfilePage() {
                       className={cn(
                         "mt-auto uppercase tracking-widest text-[10px] h-11",
                         isPro ? "np-btn-primary w-full" : "np-btn-outline w-full",
-                        isCurrent && "border-np-gold/20 text-np-gold"
+                        isCurrent && "bg-np-gold/20 border-np-gold/40 text-np-gold hover:bg-np-gold/20 cursor-default"
                       )}
                     >
                       {isCurrent ? "Current Protocol" : `Select ${plan.name}`}
