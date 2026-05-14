@@ -160,7 +160,7 @@ export default async function DocDetail({ params }: { params: Promise<{ slug: st
   let renderedSections: string;
 
   try {
-    const filePath = path.join(process.cwd(), fileName);
+    const filePath = path.join(process.cwd(), "docs-content", fileName);
     content = fs.readFileSync(filePath, "utf-8");
     const rendered = renderMarkdownAsCards(content);
     renderedIntro = rendered.renderedIntro;
