@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Card, Button, Input, Badge } from "@/components/ui-elements";
-import { User, Shield, Mail, Calendar, Key, ShieldCheck, Loader2, Camera, AlertTriangle } from "lucide-react";
+import { User, Shield, Mail, Calendar, Key, ShieldCheck, Loader2, Camera, AlertTriangle, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { getGravatarUrl } from "@/lib/gravatar";
