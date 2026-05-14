@@ -127,6 +127,7 @@ export default function ProfilePage() {
     role: "DEVELOPER", 
     plan: "FREE",
     emailVerified: false,
+    twoFactorEnabled: false,
     createdAt: new Date().toISOString()
   };
 
