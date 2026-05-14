@@ -15,12 +15,12 @@ export const authOptions: AuthOptions = {
     GithubProvider({
       clientId: process.env.GITHUB_ID!,
       clientSecret: process.env.GITHUB_SECRET!,
-      allowDangerousEmailAccountLinking: false,
+      allowDangerousEmailAccountLinking: true,
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_ID!,
       clientSecret: process.env.GOOGLE_SECRET!,
-      allowDangerousEmailAccountLinking: false,
+      allowDangerousEmailAccountLinking: true,
       authorization: {
         params: {
           prompt: "select_account",
@@ -60,4 +60,5 @@ export const authOptions: AuthOptions = {
     signIn: "/login",
     error: "/login", // Redirect OAuth errors to /login?error=... so they're displayed
   },
+  debug: process.env.NODE_ENV === 'development',
 };
