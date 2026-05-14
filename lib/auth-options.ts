@@ -8,7 +8,7 @@ export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
   secret: process.env.NEXTAUTH_SECRET || (() => { throw new Error("NEXTAUTH_SECRET is missing"); })(),
   session: {
-    strategy: "database",
+    strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   providers: [
@@ -32,11 +32,19 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
-    async session({ session, user }) {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = (user as any).role ?? "DEVELOPER";
+        token.plan = (user as any).plan ?? "FREE";
+      }
+      return token;
+    },
+    async session({ session, token }) {
       if (session.user) {
-        (session.user as unknown as Record<string, unknown>).id = user.id;
-        (session.user as unknown as Record<string, unknown>).role = (user as unknown as Record<string, unknown>).role ?? "DEVELOPER";
-        (session.user as unknown as Record<string, unknown>).plan = (user as unknown as Record<string, unknown>).plan ?? "FREE";
+        (session.user as any).id = token.id;
+        (session.user as any).role = token.role ?? "DEVELOPER";
+        (session.user as any).plan = token.plan ?? "FREE";
       }
       return session;
     },
