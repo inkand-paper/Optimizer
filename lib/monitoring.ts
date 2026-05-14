@@ -74,7 +74,6 @@ export async function performCheck(monitorId: string, url: string) {
           email: monitor.user.email,
           userName: monitor.user.name || 'Developer',
           name: monitor.name,
-          url,
           status,
           message,
           latency
