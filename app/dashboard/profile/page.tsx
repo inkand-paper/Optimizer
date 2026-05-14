@@ -12,7 +12,7 @@ import { PLAN_LIMITS } from "@/lib/plans";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [user, setUser] = React.useState<{ id: string; name?: string; email?: string; role?: string; plan?: string; emailVerified?: boolean; twoFactorEnabled?: boolean; createdAt?: string; image?: string | null } | null>(null);
+  const [user, setUser] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
   const [message, setMessage] = React.useState({ type: "", text: "" });
@@ -26,43 +26,38 @@ export default function ProfilePage() {
   const [isPricingOpen, setIsPricingOpen] = React.useState(false);
   const [mfaCode, setMfaCode] = React.useState("");
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
     
-    // Global Fail-Safe: Force unlock UI after 5 seconds no matter what
-    const forceUnlock = setTimeout(() => {
+    // Nuclear Fail-Safe: Force unlock after 3 seconds
+    const timer = setTimeout(() => {
       setLoading(false);
-      setSaving(false);
-    }, 5000);
+    }, 3000);
 
-    fetch("/api/auth/me", { credentials: "include" })
-      .then((r) => r.json())
-      .then((d) => {
+    const init = async () => {
+      try {
+        const r = await fetch("/api/auth/me", { credentials: "include" });
+        const d = await r.json();
         if (d.success) {
           setUser(d.user);
           setName(d.user.name || "");
           setEmail(d.user.email || "");
           setImage(d.user.image || null);
         } else {
-          // Tactical Buffer: Give router 150ms to settle
-          setTimeout(() => {
-            router.push("/login");
-          }, 150);
+          router.push("/login");
         }
-      })
-      .catch(() => {
-        console.warn("Identity sync delayed.");
-      })
-      .finally(() => {
-        clearTimeout(forceUnlock);
+      } catch (err) {
+        console.error("Identity fetch failed:", err);
+      } finally {
+        clearTimeout(timer);
         setLoading(false);
-        setSaving(false); 
-      });
+      }
+    };
 
-    return () => clearTimeout(forceUnlock);
+    init();
+    return () => clearTimeout(timer);
   }, [router]);
 
   const handleUpdate = async (e: React.FormEvent) => {
@@ -80,8 +75,7 @@ export default function ProfilePage() {
       const data = await res.json();
       if (res.ok) {
         setMessage({ type: "success", text: "Identity updated successfully." });
-        const updatedUser = { ...user, name, image };
-        setUser(updatedUser as any);
+        setUser({ ...user, name, image });
       } else {
         setMessage({ type: "error", text: data.message || "Failed to update." });
       }
@@ -109,15 +103,20 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-6 w-6 animate-spin text-np-gold" />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-4">
+        <Loader2 className="h-8 w-8 animate-spin text-np-gold" />
+        <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground animate-pulse">Synchronizing Infrastructure...</p>
       </div>
     );
   }
 
+  // If loading is false but user is null, we might be in the middle of a redirect or a fail-safe trigger.
+  // We still render the skeleton to avoid a white screen.
+  const profileUser = user || { name: "Operator", email: "", role: "DEVELOPER", plan: "FREE" };
+
   return (
     <div className="min-h-[calc(100vh-3.5rem)] bg-background p-6">
-      <div className="max-w-4xl mx-auto space-y-8">
+      <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-semibold tracking-tight uppercase">Operator <span className="text-np-gold">Profile</span></h1>
@@ -130,20 +129,21 @@ export default function ProfilePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="md:col-span-1 space-y-6">
-            <Card className="p-6 text-center space-y-4">
+            <Card className="p-6 text-center space-y-4 relative overflow-hidden group">
+              <div className="absolute inset-0 bg-np-gold/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
               <div className="relative group mx-auto w-24">
                 <div className="h-24 w-24 rounded-full overflow-hidden border-2 border-np-gold/20 flex items-center justify-center bg-np-gold/10 text-np-gold text-3xl font-bold">
                   {image ? (
                     <Image src={image} alt="Avatar" width={96} height={96} className="w-full h-full object-cover" />
-                  ) : user?.email ? (
-                    <Image src={getGravatarUrl(user.email!)} alt="Avatar" width={96} height={96} className="w-full h-full object-cover" />
+                  ) : profileUser.email ? (
+                    <Image src={getGravatarUrl(profileUser.email)} alt="Avatar" width={96} height={96} className="w-full h-full object-cover" />
                   ) : (
-                    name?.[0] || "?"
+                    profileUser.name?.[0] || "?"
                   )}
                 </div>
                 <button 
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute bottom-0 right-0 p-1.5 bg-np-ink border border-border rounded-full text-muted-foreground hover:text-np-gold transition-colors shadow-xl"
+                  className="absolute bottom-0 right-0 p-1.5 bg-np-ink border border-border rounded-full text-muted-foreground hover:text-np-gold transition-colors shadow-xl z-20"
                 >
                   <Camera className="h-3.5 w-3.5" />
                 </button>
@@ -155,25 +155,25 @@ export default function ProfilePage() {
                   onChange={handleImageChange}
                 />
               </div>
-              <div>
-                <h2 className="text-lg font-bold uppercase truncate">{name || "Unnamed Unit"}</h2>
+              <div className="relative z-10">
+                <h2 className="text-lg font-bold uppercase truncate">{profileUser.name || "Unnamed Unit"}</h2>
                 <div className="flex items-center justify-center gap-2 mt-1">
-                  <p className="label-category text-[10px] text-np-gold">{user?.role} · {user?.plan} TIER</p>
-                  {user?.emailVerified ? (
+                  <p className="label-category text-[10px] text-np-gold">{profileUser.role} · {profileUser.plan} TIER</p>
+                  {profileUser.emailVerified ? (
                     <Badge variant="success" className="h-4 px-1.5 text-[8px] uppercase tracking-tighter">Verified</Badge>
                   ) : (
                     <Badge variant="danger" className="h-4 px-1.5 text-[8px] uppercase tracking-tighter">Unverified</Badge>
                   )}
                 </div>
               </div>
-              <div className="pt-4 border-t border-border space-y-3 text-left">
+              <div className="pt-4 border-t border-border space-y-3 text-left relative z-10">
                 <div className="flex items-center gap-3 text-[12px] text-muted-foreground">
                   <Mail className="h-3.5 w-3.5" />
-                  <span className="truncate">{email}</span>
+                  <span className="truncate">{profileUser.email || "Syncing..."}</span>
                 </div>
                 <div className="flex items-center gap-3 text-[12px] text-muted-foreground">
                   <Calendar className="h-3.5 w-3.5" />
-                  <span>Joined {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—"}</span>
+                  <span>Joined {profileUser.createdAt ? new Date(profileUser.createdAt).toLocaleDateString() : "—"}</span>
                 </div>
               </div>
             </Card>
@@ -187,7 +187,7 @@ export default function ProfilePage() {
                 <h3 className="text-[13px] font-bold uppercase">System Tier</h3>
               </div>
               
-              {user?.plan === 'BUSINESS' ? (
+              {profileUser.plan === 'BUSINESS' ? (
                 <div className="space-y-4 relative z-10">
                   <p className="text-[13px] text-muted-foreground leading-relaxed">
                     You have achieved the <span className="text-np-gold font-bold">OPERATIONAL PEAK</span>. Your account is authorized for maximum infrastructure throughput and unlimited optimization signals.
@@ -200,7 +200,7 @@ export default function ProfilePage() {
               ) : (
                 <div className="space-y-4 relative z-10">
                   <p className="text-[13px] text-muted-foreground leading-relaxed">
-                    You are currently operating on the <span className="text-np-gold font-bold">{user?.plan}</span> protocol. Upgrade to expand your monitoring perimeter.
+                    You are currently operating on the <span className="text-np-gold font-bold">{profileUser.plan}</span> protocol. Upgrade to expand your monitoring perimeter.
                   </p>
                   <Button 
                     onClick={() => setIsPricingOpen(true)} 
@@ -351,7 +351,7 @@ export default function ProfilePage() {
                 Advanced Protection
               </h3>
               <div className="space-y-4">
-                {!user?.emailVerified && (
+                {!profileUser.emailVerified && (
                   <div className="p-4 bg-np-crimson/5 border border-np-crimson/20 rounded-ui flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                       <AlertTriangle className="h-5 w-5 text-np-crimson" />
@@ -390,7 +390,7 @@ export default function ProfilePage() {
                         <p className="text-[10px] text-muted-foreground">High-security layer for your account access.</p>
                       </div>
                     </div>
-                    {user?.twoFactorEnabled ? (
+                    {profileUser.twoFactorEnabled ? (
                       <Badge variant="success" className="text-[8px] uppercase">Enabled</Badge>
                     ) : (
                       <Button 
@@ -499,7 +499,7 @@ export default function ProfilePage() {
             <div className="grid md:grid-cols-3 gap-5 items-stretch">
               {Object.entries(PLAN_LIMITS).map(([key, plan]) => {
                 const isPro = key === "PRO";
-                const isCurrent = user?.plan === key;
+                const isCurrent = profileUser.plan === key;
                 return (
                   <Card
                     key={key}
@@ -550,7 +550,6 @@ export default function ProfilePage() {
                         setSaving(true);
                         setMessage({ type: "", text: "" });
                         
-                        // Add a safety timeout
                         const controller = new AbortController();
                         const timeoutId = setTimeout(() => controller.abort(), 10000);
 
