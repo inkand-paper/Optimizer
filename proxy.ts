@@ -128,12 +128,6 @@ export async function proxy(req: NextRequest) {
       url.searchParams.set('callbackUrl', pathname);
       return NextResponse.redirect(url);
     }
-
-    if (pathname.startsWith('/dashboard/admin') || pathname.startsWith('/api/admin')) {
-      if (token.role !== 'ADMIN') {
-        return NextResponse.redirect(new URL('/dashboard', req.url));
-      }
-    }
   }
 
   // ─── 4. GLOBAL SECURITY HEADERS & LOGGING ──────────────────────────────────
