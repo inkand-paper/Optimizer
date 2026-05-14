@@ -21,6 +21,7 @@ export async function GET(req: NextRequest) {
         image: true,
         emailVerified: true,
         githubUserName: true,
+        twoFactorEnabled: true,
         createdAt: true
       }
     });

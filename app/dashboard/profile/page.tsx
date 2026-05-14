@@ -34,6 +34,7 @@ export default function ProfilePage() {
           setName(d.user.name || "");
           setEmail(d.user.email || "");
           setImage(d.user.image || null);
+          // Set initial MFA status if available
         } else {
           router.push("/login");
         }
