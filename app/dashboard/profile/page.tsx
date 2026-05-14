@@ -403,7 +403,7 @@ export default function ProfilePage() {
                         <label className="label-category text-[9px] text-center block">Enter 6-digit code</label>
                         <div className="flex gap-2">
                           <Input 
-                            value={mfaCode} 
+                            value={mfaCode || ""} 
                             onChange={(e) => setMfaCode(e.target.value)}
                             placeholder="000000" 
                             className="text-center tracking-[0.5em] font-mono"

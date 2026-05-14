@@ -218,7 +218,7 @@ export default function LoginPage() {
               <div className="space-y-2">
                 <label className="label-category text-center block">Authentication Code</label>
                 <Input 
-                  value={mfaCode}
+                  value={mfaCode || ""}
                   onChange={(e) => setMfaCode(e.target.value)}
                   placeholder="000000"
                   maxLength={6}
