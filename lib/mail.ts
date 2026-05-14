@@ -1,6 +1,7 @@
 import { PulseAlertEmail } from "@/components/emails/pulse-alert";
 import { UptimeAlertEmail } from "@/components/emails/uptime-alert";
 import { VerificationEmail } from "@/components/emails/verification";
+import { SecurityAlertEmail } from "@/components/emails/security-alert";
 import { render } from "@react-email/components";
 import React from "react";
 import { sendEmail } from "./nodemailer";
@@ -105,6 +106,39 @@ export async function sendVerificationEmail({
     });
   } catch (error) {
     console.error("❌ Failed to send verification email:", error);
+    return { success: false, error };
+  }
+}
+
+export async function sendSecurityAlert({
+  email,
+  userName,
+  action,
+  device,
+  browser,
+}: {
+  email: string;
+  userName: string;
+  action: string;
+  device: string;
+  browser: string;
+}) {
+  try {
+    const html = await render(React.createElement(SecurityAlertEmail, {
+      userName,
+      action,
+      device,
+      browser,
+      timestamp: new Date().toLocaleString()
+    }));
+
+    return await sendEmail({
+      to: email,
+      subject: `🛡️ NexPulse Security Alert: ${action}`,
+      html: html,
+    });
+  } catch (error) {
+    console.error("❌ Failed to send security alert email:", error);
     return { success: false, error };
   }
 }
