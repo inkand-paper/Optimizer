@@ -52,6 +52,8 @@ model User {
   githubUserName String?
   lemonSqueezyId String? // Added for billing
   subscriptionId String? // Added for plan tracking
+  twoFactorSecret String? // Added for MFA
+  twoFactorEnabled Boolean @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   

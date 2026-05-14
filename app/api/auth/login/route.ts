@@ -95,7 +95,19 @@ export async function POST(req: NextRequest) {
       );
     }
     
-    // Generate JWT
+    // [MFA] Check if Multi-Factor Authentication is enabled
+    if (user.twoFactorEnabled) {
+      // Generate a temporary short-lived challenge token (valid for 5 mins)
+      const mfaToken = signJwt({ userId: user.id, mfaChallenge: true }, '5m');
+      
+      return NextResponse.json({
+        mfaRequired: true,
+        mfaToken,
+        message: 'Multi-factor authentication required.'
+      });
+    }
+    
+    // Generate permanent JWT
     const token = signJwt({ userId: user.id, email: user.email, role: user.role });
     
     // 2. Secure HttpOnly Cookie (Enterprise standard)

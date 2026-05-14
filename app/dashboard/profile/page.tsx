@@ -11,7 +11,7 @@ import Image from "next/image";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [user, setUser] = React.useState<{ name?: string; email?: string; role?: string; plan?: string; emailVerified?: boolean; createdAt?: string; image?: string | null } | null>(null);
+  const [user, setUser] = React.useState<{ name?: string; email?: string; role?: string; plan?: string; emailVerified?: boolean; twoFactorEnabled?: boolean; createdAt?: string; image?: string | null } | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
   const [message, setMessage] = React.useState({ type: "", text: "" });
@@ -21,6 +21,8 @@ export default function ProfilePage() {
   const [image, setImage] = React.useState<string | null>(null);
   const [showCurrent, setShowCurrent] = React.useState(false);
   const [showNew, setShowNew] = React.useState(false);
+  const [mfaSetup, setMfaSetup] = React.useState({ isOpen: false, qrCode: "", secret: "" });
+  const [mfaCode, setMfaCode] = React.useState("");
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
@@ -353,15 +355,97 @@ export default function ProfilePage() {
                     </Button>
                   </div>
                 )}
-                <div className="p-4 bg-muted/40 rounded-ui border border-dashed border-border flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Shield className="h-5 w-5 text-np-slate" />
-                    <div>
-                      <p className="text-[12px] font-bold uppercase">Multi-Factor Auth (MFA)</p>
-                      <p className="text-[10px] text-muted-foreground">High-security layer for your account access.</p>
+                <div className="p-4 bg-muted/40 rounded-ui border border-dashed border-border flex flex-col gap-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Shield className="h-5 w-5 text-np-slate" />
+                      <div>
+                        <p className="text-[12px] font-bold uppercase">Multi-Factor Auth (MFA)</p>
+                        <p className="text-[10px] text-muted-foreground">High-security layer for your account access.</p>
+                      </div>
                     </div>
+                    {user?.twoFactorEnabled ? (
+                      <Badge variant="success" className="text-[8px] uppercase">Enabled</Badge>
+                    ) : (
+                      <Button 
+                        onClick={async () => {
+                          setSaving(true);
+                          try {
+                            const res = await fetch("/api/auth/2fa/setup", { method: "POST" });
+                            const data = await res.json();
+                            if (data.qrCodeUrl) {
+                              setMfaSetup({ isOpen: true, qrCode: data.qrCodeUrl, secret: data.secret });
+                            } else {
+                              setMessage({ type: "error", text: data.error || "MFA Setup failed." });
+                            }
+                          } catch {
+                            setMessage({ type: "error", text: "Security anomaly detected." });
+                          } finally {
+                            setSaving(false);
+                          }
+                        }}
+                        variant="outline" 
+                        size="sm" 
+                        className="h-8 text-[10px] uppercase"
+                      >
+                        Setup MFA
+                      </Button>
+                    )}
                   </div>
-                  <Badge variant="outline" className="text-[8px] uppercase">Coming Soon</Badge>
+
+                  {mfaSetup.isOpen && (
+                    <div className="p-4 bg-background border border-border rounded-ui space-y-4 animate-in fade-in slide-in-from-top-2">
+                      <p className="text-[11px] text-muted-foreground text-center">Scan this QR code with your Authenticator app.</p>
+                      <div className="bg-white p-2 w-32 h-32 mx-auto rounded-md">
+                        <img src={mfaSetup.qrCode} alt="MFA QR Code" className="w-full h-full" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="label-category text-[9px] text-center block">Enter 6-digit code</label>
+                        <div className="flex gap-2">
+                          <Input 
+                            value={mfaCode} 
+                            onChange={(e) => setMfaCode(e.target.value)}
+                            placeholder="000000" 
+                            className="text-center tracking-[0.5em] font-mono"
+                            maxLength={6}
+                          />
+                          <Button 
+                            onClick={async () => {
+                              setSaving(true);
+                              try {
+                                const res = await fetch("/api/auth/2fa/enable", {
+                                  method: "POST",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({ code: mfaCode }),
+                                });
+                                if (res.ok) {
+                                  setMessage({ type: "success", text: "MFA active. Security level: Maximum." });
+                                  setMfaSetup({ isOpen: false, qrCode: "", secret: "" });
+                                  setUser({ ...user!, twoFactorEnabled: true });
+                                } else {
+                                  const d = await res.json();
+                                  setMessage({ type: "error", text: d.error || "Invalid code." });
+                                }
+                              } catch {
+                                setMessage({ type: "error", text: "Verification failed." });
+                              } finally {
+                                setSaving(false);
+                              }
+                            }}
+                            className="px-6 h-10 text-[10px] uppercase"
+                          >
+                            Verify
+                          </Button>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => setMfaSetup({ isOpen: false, qrCode: "", secret: "" })}
+                        className="text-[10px] text-muted-foreground hover:text-foreground w-full text-center"
+                      >
+                        Cancel Setup
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </Card>
