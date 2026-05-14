@@ -27,6 +27,8 @@ export default function ProfilePage() {
   const [mfaCode, setMfaCode] = React.useState("");
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
+  const [mounted, setMounted] = React.useState(false);
+
   React.useEffect(() => {
     setMounted(true);
     
