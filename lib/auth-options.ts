@@ -35,16 +35,17 @@ export const authOptions: AuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = (user as any).role ?? "DEVELOPER";
-        token.plan = (user as any).plan ?? "FREE";
+        token.role = (user as { role?: string }).role ?? "DEVELOPER";
+        token.plan = (user as { plan?: string }).plan ?? "FREE";
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as any).id = token.id;
-        (session.user as any).role = token.role ?? "DEVELOPER";
-        (session.user as any).plan = token.plan ?? "FREE";
+        const sUser = session.user as { id?: string; role?: string; plan?: string; name?: string | null; email?: string | null; image?: string | null };
+        sUser.id = token.id as string;
+        sUser.role = (token.role as string) ?? "DEVELOPER";
+        sUser.plan = (token.plan as string) ?? "FREE";
       }
       return session;
     },
