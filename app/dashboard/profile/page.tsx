@@ -27,10 +27,15 @@ export default function ProfilePage() {
   const [mfaCode, setMfaCode] = React.useState("");
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  const [mounted, setMounted] = React.useState(false);
-
   React.useEffect(() => {
     setMounted(true);
+    
+    // Global Fail-Safe: Force unlock UI after 5 seconds no matter what
+    const forceUnlock = setTimeout(() => {
+      setLoading(false);
+      setSaving(false);
+    }, 5000);
+
     fetch("/api/auth/me", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => {
@@ -40,14 +45,20 @@ export default function ProfilePage() {
           setEmail(d.user.email || "");
           setImage(d.user.image || null);
         } else {
-          if (mounted) router.push("/login");
+          router.push("/login");
         }
       })
+      .catch(() => {
+        console.warn("Identity sync delayed.");
+      })
       .finally(() => {
+        clearTimeout(forceUnlock);
         setLoading(false);
         setSaving(false); 
       });
-  }, [router, mounted]);
+
+    return () => clearTimeout(forceUnlock);
+  }, [router]);
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
