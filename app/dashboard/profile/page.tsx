@@ -121,7 +121,14 @@ export default function ProfilePage() {
 
   // If loading is false but user is null, we might be in the middle of a redirect or a fail-safe trigger.
   // We still render the skeleton to avoid a white screen.
-  const profileUser = user || { name: "Operator", email: "", role: "DEVELOPER", plan: "FREE" };
+  const profileUser = user || { 
+    name: "Operator", 
+    email: "", 
+    role: "DEVELOPER", 
+    plan: "FREE",
+    emailVerified: false,
+    createdAt: new Date().toISOString()
+  };
 
   return (
     <div className="min-h-[calc(100vh-3.5rem)] bg-background p-6">
