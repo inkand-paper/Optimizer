@@ -40,7 +40,10 @@ export default function ProfilePage() {
           router.push("/login");
         }
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        setSaving(false); // Force clear any stuck saving states from back-nav
+      });
   }, [router]);
 
   const handleUpdate = async (e: React.FormEvent) => {
@@ -526,14 +529,26 @@ export default function ProfilePage() {
                       disabled={isCurrent || saving}
                       onClick={async () => {
                         setSaving(true);
+                        setMessage({ type: "", text: "" });
+                        
+                        // Add a safety timeout
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), 10000);
+
                         try {
-                          const res = await fetch("/api/billing/portal");
+                          const res = await fetch("/api/billing/portal", { signal: controller.signal });
                           const data = await res.json();
-                          if (data.url) window.location.href = data.url;
-                          else setMessage({ type: "error", text: "Store activation pending." });
-                        } catch {
-                          setMessage({ type: "error", text: "Sync failed." });
-                        } finally {
+                          clearTimeout(timeoutId);
+
+                          if (data.url) {
+                            window.location.href = data.url;
+                          } else {
+                            setMessage({ type: "error", text: "Infrastructure store activation pending. Access restricted." });
+                            setSaving(false);
+                          }
+                        } catch (err) {
+                          clearTimeout(timeoutId);
+                          setMessage({ type: "error", text: "System synchronization timeout. Please try again." });
                           setSaving(false);
                         }
                       }}
