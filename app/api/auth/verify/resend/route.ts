@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
     await prisma.user.update({
-      where: { email: session.user.email },
+      where: { id: decoded.userId },
       data: { verificationToken: token },
     });
 
