@@ -9,11 +9,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
-      select: { email: true, lemonSqueezyId: true }
-    });
-
     // If we have a LemonSqueezy ID, we can ideally generate a portal link.
     // For LemonSqueezy, the easiest way for the user to manage is through their email receipt
     // OR we can redirect them to the general customer portal if you have the Store ID.

@@ -10,9 +10,21 @@ import { getGravatarUrl } from "@/lib/gravatar";
 import Image from "next/image";
 import { PLAN_LIMITS } from "@/lib/plans";
 
+interface UserIdentity {
+  id: string;
+  name?: string;
+  email?: string;
+  role?: string;
+  plan?: string;
+  emailVerified?: boolean;
+  twoFactorEnabled?: boolean;
+  createdAt?: string;
+  image?: string | null;
+}
+
 export default function ProfilePage() {
   const router = useRouter();
-  const [user, setUser] = React.useState<any>(null);
+  const [user, setUser] = React.useState<UserIdentity | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
   const [message, setMessage] = React.useState({ type: "", text: "" });
@@ -26,11 +38,8 @@ export default function ProfilePage() {
   const [isPricingOpen, setIsPricingOpen] = React.useState(false);
   const [mfaCode, setMfaCode] = React.useState("");
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
-    setMounted(true);
-    
     // Nuclear Fail-Safe: Force unlock after 3 seconds
     const timer = setTimeout(() => {
       setLoading(false);
@@ -75,7 +84,7 @@ export default function ProfilePage() {
       const data = await res.json();
       if (res.ok) {
         setMessage({ type: "success", text: "Identity updated successfully." });
-        setUser({ ...user, name, image });
+        if (user) setUser({ ...user, name, image });
       } else {
         setMessage({ type: "error", text: data.message || "Failed to update." });
       }
@@ -422,8 +431,14 @@ export default function ProfilePage() {
                   {mfaSetup.isOpen && (
                     <div className="p-4 bg-background border border-border rounded-ui space-y-4 animate-in fade-in slide-in-from-top-2">
                       <p className="text-[11px] text-muted-foreground text-center">Scan this QR code with your Authenticator app.</p>
-                      <div className="bg-white p-2 w-32 h-32 mx-auto rounded-md">
-                        <img src={mfaSetup.qrCode} alt="MFA QR Code" className="w-full h-full" />
+                      <div className="bg-white p-2 w-32 h-32 mx-auto rounded-md relative">
+                        <Image 
+                          src={mfaSetup.qrCode} 
+                          alt="MFA QR Code" 
+                          fill
+                          unoptimized
+                          className="object-contain" 
+                        />
                       </div>
                       <div className="space-y-2">
                         <label className="label-category text-[9px] text-center block">Enter 6-digit code</label>
@@ -447,7 +462,7 @@ export default function ProfilePage() {
                                 if (res.ok) {
                                   setMessage({ type: "success", text: "MFA active. Security level: Maximum." });
                                   setMfaSetup({ isOpen: false, qrCode: "", secret: "" });
-                                  setUser({ ...user!, twoFactorEnabled: true });
+                                  if (user) setUser({ ...user, twoFactorEnabled: true });
                                 } else {
                                   const d = await res.json();
                                   setMessage({ type: "error", text: d.error || "Invalid code." });
@@ -566,7 +581,7 @@ export default function ProfilePage() {
                             setMessage({ type: "error", text: "Infrastructure store activation pending. Access restricted." });
                             setSaving(false);
                           }
-                        } catch (err) {
+                        } catch {
                           clearTimeout(timeoutId);
                           setMessage({ type: "error", text: "System synchronization timeout. Please try again." });
                           setSaving(false);

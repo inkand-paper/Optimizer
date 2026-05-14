@@ -7,21 +7,10 @@ import { Card, Button, Input, PasswordInput } from "@/components/ui-elements";
 import { Activity, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 
-// Human-readable messages for NextAuth error codes
-const OAUTH_ERRORS: Record<string, string> = {
-  OAuthSignin: "Could not start the OAuth sign-in. Please try again.",
-  OAuthCallback: "OAuth callback failed. Ensure the redirect URL is registered in the provider settings.",
-  OAuthCreateAccount: "Could not create your account. The email may already be registered with a different method.",
-  OAuthAccountNotLinked: "This email is already linked to another sign-in method. Use your original login.",
-  Callback: "An error occurred during the sign-in callback. Please try again.",
-  Default: "Sign-in failed. Please try again or use email/password.",
-};
-
 export default function LoginPage() {
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);
   const [error, setError]     = React.useState("");
-  const [isVerified, setIsVerified] = React.useState(false);
   const [mfaRequired, setMfaRequired] = React.useState(false);
   const [mfaToken, setMfaToken] = React.useState("");
   const [mfaCode, setMfaCode] = React.useState("");
@@ -127,21 +116,6 @@ export default function LoginPage() {
         </div>
 
         <Card className="p-6">
-          {/* Account activated banner */}
-          {isVerified && !mfaRequired && (
-            <div
-              className="flex items-center gap-2.5 p-3 rounded-ui mb-5 text-[13px]"
-              style={{
-                background: "rgba(29,158,117,0.08)",
-                border: "0.5px solid var(--np-teal)",
-                color: "var(--np-teal)",
-              }}
-            >
-              <CheckCircle2 className="h-4 w-4 shrink-0" />
-              Account activated — you can now sign in.
-            </div>
-          )}
-
           {!mfaRequired ? (
             <form onSubmit={handleSubmit} noValidate className="space-y-4">
               <div className="space-y-1.5">

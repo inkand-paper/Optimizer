@@ -14,7 +14,6 @@ import * as React from "react";
 interface UptimeAlertEmailProps {
   userName: string;
   name: string;
-  url: string;
   status: 'UP' | 'DOWN';
   message?: string;
   latency?: number;
@@ -24,7 +23,6 @@ interface UptimeAlertEmailProps {
 export const UptimeAlertEmail = ({
   userName,
   name,
-  url,
   status,
   message,
   latency,
