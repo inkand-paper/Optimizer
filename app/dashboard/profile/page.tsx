@@ -158,33 +158,42 @@ export default function ProfilePage() {
               </div>
             </Card>
 
-            <Card className="p-6 bg-np-gold/5 border-np-gold/20">
-              <div className="flex items-center gap-3 mb-4 text-np-gold">
+            <Card className="p-6 bg-np-gold/5 border-np-gold/20 overflow-hidden relative">
+              <div className="absolute top-0 right-0 p-2 opacity-10 pointer-events-none">
+                <ShieldCheck className="h-20 w-20" />
+              </div>
+              <div className="flex items-center gap-3 mb-4 text-np-gold relative z-10">
                 <ShieldCheck className="h-5 w-5" />
                 <h3 className="text-[13px] font-bold uppercase">System Tier</h3>
               </div>
-              <p className="text-[13px] text-muted-foreground leading-relaxed mb-4">
-                You are currently on the <span className="text-np-gold font-bold">{user?.plan}</span> plan. Upgrade for higher infrastructure limits.
-              </p>
-              <Button 
-                onClick={async () => {
-                  setSaving(true);
-                  try {
-                    const res = await fetch("/api/billing/portal");
-                    const data = await res.json();
-                    if (data.url) window.location.href = data.url;
-                    else setMessage({ type: "error", text: "Billing portal unreachable." });
-                  } catch {
-                    setMessage({ type: "error", text: "Billing synchronization failed." });
-                  } finally {
-                    setSaving(false);
-                  }
-                }} 
-                variant="outline" 
-                className="w-full text-[11px] uppercase tracking-widest h-9"
-              >
-                Manage Subscription
-              </Button>
+              
+              {user?.plan === 'BUSINESS' ? (
+                <div className="space-y-4 relative z-10">
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">
+                    You have achieved the <span className="text-np-gold font-bold">OPERATIONAL PEAK</span>. Your account is authorized for maximum infrastructure throughput and unlimited optimization signals.
+                  </p>
+                  <div className="p-3 bg-np-gold/10 rounded-ui border border-np-gold/20 flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-np-gold animate-pulse" />
+                    <span className="text-[10px] uppercase font-bold text-np-gold">All Limits Unlocked</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4 relative z-10">
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">
+                    You are currently operating on the <span className="text-np-gold font-bold">{user?.plan}</span> protocol. Upgrade to expand your monitoring perimeter.
+                  </p>
+                  <Button 
+                    onClick={() => {
+                      const pricingSection = document.getElementById('pricing-deck');
+                      pricingSection?.scrollIntoView({ behavior: 'smooth' });
+                    }} 
+                    variant="outline" 
+                    className="w-full text-[11px] uppercase tracking-widest h-9"
+                  >
+                    View Upgrade Tiers
+                  </Button>
+                </div>
+              )}
             </Card>
           </div>
 
@@ -449,6 +458,125 @@ export default function ProfilePage() {
                   )}
                 </div>
               </div>
+            </Card>
+          </div>
+        </div>
+        </div>
+
+        {/* Pricing Deck Section */}
+        <div id="pricing-deck" className="pt-12 space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
+          <div className="text-center space-y-2">
+            <h2 className="text-2xl font-bold uppercase tracking-tight">Infrastructure <span className="text-np-gold">Tiers</span></h2>
+            <p className="text-muted-foreground text-[12px] uppercase tracking-widest">Select your operational authorization level</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* FREE TIER */}
+            <Card className={cn(
+              "p-8 flex flex-col justify-between border-t-4 transition-all hover:scale-[1.02]",
+              user?.plan === 'FREE' ? "border-t-np-gold bg-np-gold/5" : "border-t-border hover:border-t-np-gold/40"
+            )}>
+              <div className="space-y-6">
+                <div className="space-y-1">
+                  <h3 className="text-lg font-bold uppercase">Basic Protocol</h3>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-extrabold">$0</span>
+                    <span className="text-muted-foreground text-[12px]">/month</span>
+                  </div>
+                </div>
+                <ul className="space-y-3">
+                  {['3 Active Monitors', '15m Check Frequency', 'Basic Email Alerts', 'Global SOC Access'].map((f) => (
+                    <li key={f} className="flex items-center gap-2 text-[12px] text-muted-foreground">
+                      <div className="h-1 w-1 rounded-full bg-np-gold" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <Button 
+                disabled={user?.plan === 'FREE'} 
+                variant={user?.plan === 'FREE' ? "outline" : "default"}
+                className="mt-8 w-full uppercase tracking-widest text-[10px] h-10"
+              >
+                {user?.plan === 'FREE' ? "Current Protocol" : "Downgrade"}
+              </Button>
+            </Card>
+
+            {/* PRO TIER */}
+            <Card className={cn(
+              "p-8 flex flex-col justify-between border-t-4 transition-all hover:scale-[1.02] relative",
+              user?.plan === 'PRO' ? "border-t-np-gold bg-np-gold/5" : "border-t-np-gold bg-np-gold/5"
+            )}>
+              <div className="absolute top-4 right-4">
+                <Badge variant="outline" className="text-[8px] bg-np-gold/10 text-np-gold border-np-gold/20">Recommended</Badge>
+              </div>
+              <div className="space-y-6">
+                <div className="space-y-1">
+                  <h3 className="text-lg font-bold uppercase">Advanced Ops</h3>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-extrabold">$29</span>
+                    <span className="text-muted-foreground text-[12px]">/month</span>
+                  </div>
+                </div>
+                <ul className="space-y-3">
+                  {['25 Active Monitors', '1m Check Frequency', 'Priority Push Alerts', 'Advanced MFA Security', 'Team Collaboration'].map((f) => (
+                    <li key={f} className="flex items-center gap-2 text-[12px] text-white/80">
+                      <div className="h-1 w-1 rounded-full bg-np-gold" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <Button 
+                disabled={user?.plan === 'PRO'}
+                onClick={async () => {
+                  setSaving(true);
+                  try {
+                    const res = await fetch("/api/billing/portal");
+                    const data = await res.json();
+                    if (data.url) window.location.href = data.url;
+                    else setMessage({ type: "error", text: "Store activation pending." });
+                  } catch {
+                    setMessage({ type: "error", text: "Sync failed." });
+                  } finally {
+                    setSaving(false);
+                  }
+                }}
+                className="mt-8 w-full uppercase tracking-widest text-[10px] h-11 bg-np-gold text-black hover:bg-np-gold/90"
+              >
+                {user?.plan === 'PRO' ? "Current Protocol" : "Upgrade to Pro"}
+              </Button>
+            </Card>
+
+            {/* BUSINESS TIER */}
+            <Card className={cn(
+              "p-8 flex flex-col justify-between border-t-4 transition-all hover:scale-[1.02]",
+              user?.plan === 'BUSINESS' ? "border-t-np-gold bg-np-gold/5 border-np-gold/40" : "border-t-border"
+            )}>
+              <div className="space-y-6">
+                <div className="space-y-1">
+                  <h3 className="text-lg font-bold uppercase">Business Peak</h3>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-extrabold">$99</span>
+                    <span className="text-muted-foreground text-[12px]">/month</span>
+                  </div>
+                </div>
+                <ul className="space-y-3">
+                  {['Unlimited Monitors', '30s Check Frequency', 'White-label Reports', 'Direct SMS Routing', 'Dedicated Infrastructure'].map((f) => (
+                    <li key={f} className="flex items-center gap-2 text-[12px] text-muted-foreground">
+                      <div className="h-1 w-1 rounded-full bg-np-gold" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <Button 
+                disabled={user?.plan === 'BUSINESS'}
+                variant={user?.plan === 'BUSINESS' ? "outline" : "default"}
+                className="mt-8 w-full uppercase tracking-widest text-[10px] h-10"
+              >
+                {user?.plan === 'BUSINESS' ? "Current Protocol" : "Deploy Enterprise"}
+              </Button>
             </Card>
           </div>
         </div>
