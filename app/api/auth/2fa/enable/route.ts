@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getTokenFromRequest } from "@/lib/auth";
-import * as otplib from "otplib";
-const { authenticator } = otplib;
+const { authenticator } = require("otplib/authenticator");
 
 export async function POST(req: NextRequest) {
   try {

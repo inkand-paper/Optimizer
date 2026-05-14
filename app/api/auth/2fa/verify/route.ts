@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { signJwt, verifyJwt } from "@/lib/auth";
-import * as otplib from "otplib";
-const { authenticator } = otplib;
+const { authenticator } = require("otplib/authenticator");
 import { cookies } from "next/headers";
 
 export async function POST(req: NextRequest) {
