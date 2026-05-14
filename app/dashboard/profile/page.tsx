@@ -34,7 +34,6 @@ export default function ProfilePage() {
           setName(d.user.name || "");
           setEmail(d.user.email || "");
           setImage(d.user.image || null);
-          // Set initial MFA status if available
         } else {
           router.push("/login");
         }
@@ -57,10 +56,8 @@ export default function ProfilePage() {
       const data = await res.json();
       if (res.ok) {
         setMessage({ type: "success", text: "Identity updated successfully." });
-        // Update local user state
         const updatedUser = { ...user, name, image };
-        setUser(updatedUser);
-        localStorage.setItem("user", JSON.stringify(updatedUser));
+        setUser(updatedUser as any);
       } else {
         setMessage({ type: "error", text: data.message || "Failed to update." });
       }
@@ -108,7 +105,6 @@ export default function ProfilePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Left Col: Identity Card */}
           <div className="md:col-span-1 space-y-6">
             <Card className="p-6 text-center space-y-4">
               <div className="relative group mx-auto w-24">
@@ -197,7 +193,6 @@ export default function ProfilePage() {
             </Card>
           </div>
 
-          {/* Right Col: Settings */}
           <div className="md:col-span-2 space-y-6">
             <Card className="p-8">
               <h3 className="text-[14px] font-bold uppercase mb-6 flex items-center gap-2">
@@ -341,7 +336,7 @@ export default function ProfilePage() {
                       <AlertTriangle className="h-5 w-5 text-np-crimson" />
                       <div>
                         <p className="text-[12px] font-bold uppercase text-np-crimson">Email Unverified</p>
-                        <p className="text-[11px] text-muted-foreground">Verify your email to secure your account and enable all features.</p>
+                        <p className="text-[11px] text-muted-foreground">Verify your email to secure your account.</p>
                       </div>
                     </div>
                     <Button 
@@ -361,7 +356,7 @@ export default function ProfilePage() {
                       size="sm" 
                       className="h-8 text-[10px] uppercase border-np-crimson/30 hover:bg-np-crimson/10 text-np-crimson"
                     >
-                      Resend Link
+                      Resend
                     </Button>
                   </div>
                 )}
@@ -486,7 +481,7 @@ export default function ProfilePage() {
                 <ul className="space-y-3">
                   {['3 Active Monitors', '15m Check Frequency', 'Basic Email Alerts', 'Global SOC Access'].map((f) => (
                     <li key={f} className="flex items-center gap-2 text-[12px] text-muted-foreground">
-                      <div className="h-1 w-1 rounded-full bg-np-gold" />
+                      <div className="h-1.5 w-1.5 rounded-full bg-np-gold" />
                       {f}
                     </li>
                   ))}
@@ -520,7 +515,7 @@ export default function ProfilePage() {
                 <ul className="space-y-3">
                   {['25 Active Monitors', '1m Check Frequency', 'Priority Push Alerts', 'Advanced MFA Security', 'Team Collaboration'].map((f) => (
                     <li key={f} className="flex items-center gap-2 text-[12px] text-white/80">
-                      <div className="h-1 w-1 rounded-full bg-np-gold" />
+                      <div className="h-1.5 w-1.5 rounded-full bg-np-gold" />
                       {f}
                     </li>
                   ))}
@@ -563,7 +558,7 @@ export default function ProfilePage() {
                 <ul className="space-y-3">
                   {['Unlimited Monitors', '30s Check Frequency', 'White-label Reports', 'Direct SMS Routing', 'Dedicated Infrastructure'].map((f) => (
                     <li key={f} className="flex items-center gap-2 text-[12px] text-muted-foreground">
-                      <div className="h-1 w-1 rounded-full bg-np-gold" />
+                      <div className="h-1.5 w-1.5 rounded-full bg-np-gold" />
                       {f}
                     </li>
                   ))}
