@@ -1,6 +1,7 @@
-import crypto from "crypto";
+import CryptoJS from "crypto-js";
 
 export function getGravatarUrl(email: string, size: number = 200) {
-  const hash = crypto.createHash("md5").update(email.toLowerCase().trim()).digest("hex");
+  if (!email) return `https://www.gravatar.com/avatar/0?s=${size}&d=identicon`;
+  const hash = CryptoJS.MD5(email.toLowerCase().trim()).toString();
   return `https://www.gravatar.com/avatar/${hash}?s=${size}&d=identicon`;
 }
