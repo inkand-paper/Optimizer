@@ -461,7 +461,6 @@ export default function ProfilePage() {
             </Card>
           </div>
         </div>
-        </div>
 
         {/* Pricing Deck Section */}
         <div id="pricing-deck" className="pt-12 space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
