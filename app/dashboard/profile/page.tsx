@@ -27,7 +27,10 @@ export default function ProfilePage() {
   const [mfaCode, setMfaCode] = React.useState("");
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
+  const [mounted, setMounted] = React.useState(false);
+
   React.useEffect(() => {
+    setMounted(true);
     fetch("/api/auth/me", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => {
@@ -37,14 +40,14 @@ export default function ProfilePage() {
           setEmail(d.user.email || "");
           setImage(d.user.image || null);
         } else {
-          router.push("/login");
+          if (mounted) router.push("/login");
         }
       })
       .finally(() => {
         setLoading(false);
-        setSaving(false); // Force clear any stuck saving states from back-nav
+        setSaving(false); 
       });
-  }, [router]);
+  }, [router, mounted]);
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
