@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { signJwt, verifyJwt } from "@/lib/auth";
-const { authenticator } = require("otplib/authenticator");
+import speakeasy from "speakeasy";
 import { cookies } from "next/headers";
 
 export async function POST(req: NextRequest) {
@@ -28,10 +28,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "MFA setup error" }, { status: 400 });
     }
 
-    // Verify the 6-digit code
-    const isValid = authenticator.verify({
-      token: code,
+    // Verify the 6-digit code using speakeasy
+    const isValid = speakeasy.totp.verify({
       secret: user.twoFactorSecret,
+      encoding: "base32",
+      token: code,
+      window: 1
     });
 
     if (!isValid) {

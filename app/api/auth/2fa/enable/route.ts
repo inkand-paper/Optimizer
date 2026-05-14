@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getTokenFromRequest } from "@/lib/auth";
-const { authenticator } = require("otplib/authenticator");
+import speakeasy from "speakeasy";
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,10 +21,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "2FA setup not initiated" }, { status: 400 });
     }
 
-    // Verify the code
-    const isValid = authenticator.verify({
-      token: code,
+    // Verify the code using speakeasy
+    const isValid = speakeasy.totp.verify({
       secret: user.twoFactorSecret,
+      encoding: "base32",
+      token: code,
+      window: 1 // Allowance for time drift (1 * 30 seconds)
     });
 
     if (!isValid) {

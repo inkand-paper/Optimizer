@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getTokenFromRequest } from "@/lib/auth";
+import speakeasy from "speakeasy";
 import qrcode from "qrcode";
-const { authenticator } = require("otplib/authenticator");
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,26 +24,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "2FA is already enabled" }, { status: 400 });
     }
 
-    // Generate secret and TOTP URL
-    const secret = authenticator.generateSecret();
-    const otpauth = authenticator.keyuri(
-      user.email,
-      "NexPulse",
-      secret
-    );
+    // Generate secret and TOTP URL using speakeasy
+    const secret = speakeasy.generateSecret({
+      name: `NexPulse (${user.email})`,
+      issuer: "NexPulse"
+    });
 
     // Generate QR code as data URL
-    const qrCodeUrl = await qrcode.toDataURL(otpauth);
+    const qrCodeUrl = await qrcode.toDataURL(secret.otpauth_url || "");
 
-    // Temporarily store secret in user (unverified state)
+    // Temporarily store base32 secret in user
     await prisma.user.update({
       where: { id: decoded.userId },
-      data: { twoFactorSecret: secret }
+      data: { twoFactorSecret: secret.base32 }
     });
 
     return NextResponse.json({
       qrCodeUrl,
-      secret, // Providing secret in case they want to enter manually
+      secret: secret.base32,
     });
   } catch (error) {
     console.error("[2FA_SETUP_ERROR]", error);
