@@ -1,4 +1,4 @@
-import CryptoJS from "crypto-js";
+import * as CryptoJS from "crypto-js";
 
 export function getGravatarUrl(email: string, size: number = 200) {
   if (!email) return `https://www.gravatar.com/avatar/0?s=${size}&d=identicon`;
