@@ -13,8 +13,9 @@ if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
 
 export interface JwtPayload {
   userId: string;
-  email: string;
-  role: string;
+  email?: string;
+  role?: string;
+  mfaChallenge?: boolean;
 }
 
 

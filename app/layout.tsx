@@ -54,7 +54,10 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
+      <body 
+        className="min-h-screen flex flex-col bg-background text-foreground antialiased"
+        suppressHydrationWarning
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
