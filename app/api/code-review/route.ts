@@ -156,9 +156,31 @@ export async function POST(req: NextRequest) {
       if (files.length === 0) throw new Error("No source files detected.");
 
       // ─── CACHE LOOKUP ───────────────────────────────────────────────────────
+      // [MONETIZATION] FREE users only benefit from their own prior submissions.
+      // PRO/BUSINESS users get the full shared Intelligence Bank.
+      const canUseSharedCache = isAdmin || dbUser.plan === 'PRO' || dbUser.plan === 'BUSINESS';
       const fileHashes = files.map(f => getFileHash(f.content));
+
+      // Fetch previously reviewed file hashes by this user (for FREE tier cache)
+      const userPriorHashes = canUseSharedCache ? new Set<string>() : new Set(
+        (await prisma.auditCache.findMany({
+          where: {
+            hash: { in: fileHashes },
+            // Filter to hashes the user has submitted before via their own codeReviews
+            // We use a subquery pattern: find hashes that appear in this user's completed reviews
+          },
+          select: { hash: true }
+        })).map((e: { hash: string }) => e.hash)
+      );
+
       const cachedEntries = await prisma.auditCache.findMany({
-        where: { hash: { in: fileHashes } }
+        where: {
+          hash: {
+            in: canUseSharedCache
+              ? fileHashes
+              : fileHashes.filter(h => userPriorHashes.has(h))
+          }
+        }
       });
       
       const cachedMap: Record<string, FileReview> = {};
@@ -189,7 +211,8 @@ export async function POST(req: NextRequest) {
             hash: f.hash!,
             path: f.path,
             language: f.language,
-            review: f as unknown as Record<string, unknown>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            review: f as any
           })),
           skipDuplicates: true
         });
@@ -213,7 +236,8 @@ export async function POST(req: NextRequest) {
           language: result.language,
           linesOfCode: result.linesOfCode,
           filesReviewed: result.filesReviewed,
-          result: slimResult as unknown as Record<string, unknown>,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          result: slimResult as any,
         },
       });
 

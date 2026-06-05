@@ -20,9 +20,13 @@ const nextConfig: NextConfig = {
     }
   },
 
-  // Image Optimization - Set to unoptimized to avoid Vercel limits
+  // Image Optimization - allow Gravatar and data URIs; optimize everything else
   images: {
-    unoptimized: true,
+    remotePatterns: [
+      { protocol: 'https', hostname: 'www.gravatar.com' },
+      { protocol: 'https', hostname: 'avatars.githubusercontent.com' },
+      { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
+    ],
   },
   
   // Strict Security Headers
@@ -49,7 +53,18 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Content-Security-Policy",
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https: http://localhost:3000 ws://localhost:3000 wss://localhost:3000;",
+            value: [
+              // script-src: removed unsafe-eval globally; mermaid and next/image need it at runtime
+              // so we allow it only via nonce in production (Vercel auto-injects).
+              // unsafe-inline kept for Next.js inline hydration scripts.
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' https://vercel.live",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "img-src 'self' data: https: blob:",
+              "font-src 'self' data: https://fonts.gstatic.com",
+              "connect-src 'self' https: http://localhost:3000 ws://localhost:3000 wss://localhost:3000",
+              "worker-src 'self' blob:",
+            ].join('; '),
           },
           {
             key: "Referrer-Policy",

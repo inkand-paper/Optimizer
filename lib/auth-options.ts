@@ -15,12 +15,11 @@ export const authOptions: AuthOptions = {
     GithubProvider({
       clientId: process.env.GITHUB_ID!,
       clientSecret: process.env.GITHUB_SECRET!,
-      allowDangerousEmailAccountLinking: true,
+      // allowDangerousEmailAccountLinking removed: use the signIn callback below for safe linking
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_ID!,
       clientSecret: process.env.GOOGLE_SECRET!,
-      allowDangerousEmailAccountLinking: true,
       authorization: {
         params: {
           prompt: "select_account",
