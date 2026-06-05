@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { getTokenFromRequest } from '@/lib/auth';
 
@@ -55,16 +56,28 @@ export async function GET(req: NextRequest) {
   }
 }
 
+const updateUserSchema = z.object({
+  userId: z.string().min(1, 'User ID is required'),
+  plan: z.enum(['FREE', 'PRO', 'BUSINESS']).optional(),
+  role: z.enum(['ADMIN', 'DEVELOPER', 'VIEWER']).optional(),
+});
+
 export async function PATCH(req: NextRequest) {
   const adminId = await ensureAdmin(req);
   if (!adminId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const { userId, plan, role } = await req.json();
+    const body = await req.json();
+    const parsed = updateUserSchema.safeParse(body);
 
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: 'Validation Error', message: parsed.error.issues[0].message },
+        { status: 400 }
+      );
     }
+
+    const { userId, plan, role } = parsed.data;
 
     const updatedUser = await prisma.user.update({
       where: { id: userId },

@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
     // Proactive Health Checks based on user plan interval
     try {
       const thresholdTime = new Date(Date.now() - checkIntervalSeconds * 1000);
-      monitors.forEach(monitor => {
+      monitors.forEach((monitor: { id: string; name: string; url: string; lastChecked: Date | null }) => {
         const needsCheck = !monitor.lastChecked || new Date(monitor.lastChecked) < thresholdTime;
         
         if (needsCheck) {

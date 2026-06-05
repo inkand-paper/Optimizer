@@ -14,12 +14,14 @@ import {
 } from "@/core/analyzer/code-review";
 import { getTokenFromRequest } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { PLAN_LIMITS } from "@/lib/plans";
 import { NextRequest, NextResponse } from "next/server";
 
+// Derive monthly audit limits from the canonical PLAN_LIMITS source of truth
 const MONTHLY_LIMITS: Record<string, number> = {
-  FREE: 3,
-  PRO: 50,
-  BUSINESS: 9999,
+  FREE: PLAN_LIMITS.FREE.audits,
+  PRO: PLAN_LIMITS.PRO.audits,
+  BUSINESS: PLAN_LIMITS.BUSINESS.audits,
 };
 
 async function getMonthlyUsage(userId: string): Promise<number> {
@@ -160,7 +162,7 @@ export async function POST(req: NextRequest) {
       });
       
       const cachedMap: Record<string, FileReview> = {};
-      cachedEntries.forEach(entry => {
+      cachedEntries.forEach((entry: { hash: string; review: unknown }) => {
         cachedMap[entry.hash] = entry.review as unknown as FileReview;
       });
 
@@ -187,7 +189,7 @@ export async function POST(req: NextRequest) {
             hash: f.hash!,
             path: f.path,
             language: f.language,
-            review: f as unknown as import("@prisma/client").Prisma.InputJsonValue
+            review: f as unknown as Record<string, unknown>
           })),
           skipDuplicates: true
         });
@@ -211,7 +213,7 @@ export async function POST(req: NextRequest) {
           language: result.language,
           linesOfCode: result.linesOfCode,
           filesReviewed: result.filesReviewed,
-          result: slimResult as unknown as import("@prisma/client").Prisma.InputJsonValue,
+          result: slimResult as unknown as Record<string, unknown>,
         },
       });
 

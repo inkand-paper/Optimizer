@@ -4,9 +4,24 @@ import { hashPassword, signJwt } from '@/lib/auth';
 import { registerSchema } from '@/lib/validations';
 import { z } from 'zod';
 import { cookies } from 'next/headers';
+import crypto from 'crypto';
+import { checkRateLimit } from '@/lib/rate-limit';
+
 
 export async function POST(req: NextRequest) {
   try {
+    // [SECURITY] Rate limit registrations: max 5 per 10 minutes per IP
+    const forwarded = req.headers.get('x-forwarded-for') ?? '';
+    const ip = forwarded.split(',').pop()?.trim() || '127.0.0.1';
+    const rateLimit = await checkRateLimit(`register_${ip}`, { maxRequests: 5, windowMs: 10 * 60 * 1000 });
+
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Too Many Requests', message: 'Too many registration attempts. Please try again later.' },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     
     // Validate request data
@@ -39,8 +54,8 @@ export async function POST(req: NextRequest) {
     const role = (isFirstUser || isFounderEmail) ? 'ADMIN' : 'DEVELOPER';
     const plan = (isFirstUser || isFounderEmail) ? 'BUSINESS' : 'FREE';
     
-    // Generate verification token
-    const verificationToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    // [SECURITY] Use cryptographically secure random token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
     const isVerified = Boolean(isFirstUser || isFounderEmail);
     const emailVerifiedDate = isVerified ? new Date() : null;
 
@@ -49,8 +64,8 @@ export async function POST(req: NextRequest) {
         email: parsedData.email,
         passwordHash: hashed,
         name: parsedData.name,
-        role: role as import("@prisma/client").Role,
-        plan: plan as import("@prisma/client").Plan,
+        role: role as never,
+        plan: plan as never,
         emailVerified: emailVerifiedDate,
         verificationToken: isVerified ? null : verificationToken
       }
@@ -64,9 +79,24 @@ export async function POST(req: NextRequest) {
           userName: newUser.name || 'New User',
           token: verificationToken
        }).catch(console.error);
+
+      // [SECURITY] Do NOT issue a session cookie for unverified users.
+      // They must click the email link first. The login route already blocks
+      // unverified users, but we close the gap here at registration too.
+      return NextResponse.json({
+        success: true,
+        emailVerified: false,
+        message: 'Account created. Please check your email to verify your account before logging in.',
+        user: {
+          id: newUser.id,
+          email: newUser.email,
+          name: newUser.name,
+          role: newUser.role
+        }
+      }, { status: 201 });
     }
     
-    // Generate JWT & set secure HttpOnly cookie
+    // Auto-verified users (first user / founder email) get a session immediately
     const token = signJwt({ userId: newUser.id, email: newUser.email, role: newUser.role });
     
     const cookieStore = await cookies();
@@ -80,7 +110,7 @@ export async function POST(req: NextRequest) {
     
     return NextResponse.json({
       success: true,
-      emailVerified: isVerified,
+      emailVerified: true,
       user: {
         id: newUser.id,
         email: newUser.email,

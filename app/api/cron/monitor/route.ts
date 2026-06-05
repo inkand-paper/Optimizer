@@ -29,7 +29,7 @@ export async function GET(request: Request) {
 
     for (let i = 0; i < monitors.length; i += BATCH_SIZE) {
       const batch = monitors.slice(i, i + BATCH_SIZE);
-      const checkPromises = batch.map(monitor => performCheck(monitor.id, monitor.url));
+      const checkPromises = batch.map((monitor: { id: string; url: string }) => performCheck(monitor.id, monitor.url));
       
       const results = await Promise.allSettled(checkPromises);
       successful += results.filter(r => r.status === 'fulfilled').length;

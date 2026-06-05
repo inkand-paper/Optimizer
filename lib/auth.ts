@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import jwt, { type SignOptions } from 'jsonwebtoken';
 import { NextRequest } from 'next/server';
 
 const SALT_ROUNDS = 10;
@@ -27,8 +27,8 @@ export async function comparePasswords(plain: string, hashed: string): Promise<b
   return bcrypt.compare(plain, hashed);
 }
 
-export function signJwt(payload: JwtPayload, expiresIn = '7d'): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: expiresIn as unknown as number });
+export function signJwt(payload: JwtPayload, expiresIn: SignOptions['expiresIn'] = '7d'): string {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn });
 }
 
 export function verifyJwt(token: string): JwtPayload | null {

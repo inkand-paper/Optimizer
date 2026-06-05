@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import crypto from 'crypto';
 import type { AnalyzeRequest, AnalyzeResponse } from '@/lib/types';
 import { runFullAudit } from '@/core/analyzer';
+import { validateSafeUrl } from '@/lib/ssrf';
 import { logActivity } from '@/lib/logger';
 
 /**
@@ -48,6 +49,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Bad Request', message: 'Valid URL (with http/https) is required' }, { status: 400 });
     }
 
+    // [SECURITY] SSRF Prevention: validate URL does not resolve to internal/private IPs
+    try {
+      await validateSafeUrl(url);
+    } catch (ssrfError) {
+      return NextResponse.json(
+        { error: 'Bad Request', message: ssrfError instanceof Error ? ssrfError.message : 'Invalid or unsafe URL' },
+        { status: 400 }
+      );
+    }
+
     // 3. Perform Advanced Analysis
     const auditResult = await runFullAudit(url);
 
@@ -56,7 +67,7 @@ export async function POST(request: NextRequest) {
     const { getAiDiagnosis } = await import('@/lib/ai');
     
     let aiInsight = null;
-    if (PLAN_LIMITS[userPlan].allowAi || dbKey.user.role === 'ADMIN') {
+    if (PLAN_LIMITS[userPlan as keyof typeof PLAN_LIMITS]?.allowAi || dbKey.user.role === 'ADMIN') {
       aiInsight = await getAiDiagnosis(auditResult as unknown as AnalyzeResponse["results"]);
     }
 

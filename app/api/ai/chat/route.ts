@@ -126,6 +126,23 @@ async function runGemini(
 
 export async function POST(req: NextRequest) {
   try {
+    // [SECURITY] Require authentication — prevent API quota drain by anonymous users
+    const { getTokenFromRequest } = await import('@/lib/auth');
+    const token = await getTokenFromRequest(req);
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // [SECURITY] Rate limit per user: 30 messages per minute
+    const { checkRateLimit } = await import('@/lib/rate-limit');
+    const rateLimit = await checkRateLimit(`ai_chat_${token.userId}`, { maxRequests: 30, windowMs: 60 * 1000 });
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { content: 'Rate limit reached. Please wait a moment before sending another message.' },
+        { status: 429 }
+      );
+    }
+
     const { message, history } = await req.json();
     const safeHistory: { role: string; content: string }[] = history || [];
 
