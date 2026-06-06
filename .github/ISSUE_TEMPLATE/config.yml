@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security Vulnerability
+    url: https://github.com/inkand-paper/Optimizer/blob/main/SECURITY.md
+    about: Do not open public issues for security vulnerabilities. Read the security policy first.
+  - name: Discord Support
+    url: https://discord.gg/gSw2sHxZtn
+    about: Questions, general help, and community discussion
+  - name: Email Support
+    url: mailto:nexpulse.team@gmail.com
+    about: Billing or account issues

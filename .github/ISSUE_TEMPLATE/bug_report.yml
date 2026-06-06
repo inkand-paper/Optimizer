@@ -1,0 +1,92 @@
+name: Bug Report
+description: Report something that is broken or not working as expected
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please fill this out as completely as possible — it helps us fix things faster.
+        
+        **Security vulnerabilities** should NOT be reported here. See [SECURITY.md](../SECURITY.md) instead.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the bug.
+      placeholder: "When I do X, Y happens instead of Z..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: How can we reliably reproduce this?
+      placeholder: |
+        1. Go to Dashboard → Monitors
+        2. Add a new monitor with URL '...'
+        3. Click 'Check Now'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of NexPulse is affected?
+      options:
+        - Authentication (login/register/OAuth)
+        - Uptime Monitoring
+        - Cache Pulse / Revalidation
+        - Code Audit / Neural Audit
+        - SEO & Performance Audit
+        - Pulse-AI Chat
+        - Webhooks
+        - API Keys
+        - Dashboard UI
+        - Self-Hosting / Setup
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: plan
+    attributes:
+      label: Plan
+      options:
+        - Starter (Free)
+        - Professional
+        - Agency
+        - Self-hosted
+        - Not applicable
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser / Environment
+      placeholder: "Chrome 125, macOS 14 / Node 20.12, Ubuntu 22"
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error messages or logs
+      description: Paste any relevant console errors, API responses, or server logs.
+      render: text
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Screenshots, screen recordings, workarounds you found, etc.
