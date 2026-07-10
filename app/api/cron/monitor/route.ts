@@ -32,8 +32,8 @@ export async function GET(request: Request) {
       const checkPromises = batch.map((monitor: { id: string; url: string }) => performCheck(monitor.id, monitor.url));
       
       const results = await Promise.allSettled(checkPromises);
-      successful += results.filter(r => r.status === 'fulfilled').length;
-      failed += results.filter(r => r.status === 'rejected').length;
+      successful += results.filter((r: PromiseSettledResult<unknown>) => r.status === 'fulfilled').length;
+      failed += results.filter((r: PromiseSettledResult<unknown>) => r.status === 'rejected').length;
     }
 
     return NextResponse.json({

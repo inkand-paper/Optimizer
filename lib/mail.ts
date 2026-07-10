@@ -169,3 +169,51 @@ export async function sendPasswordResetEmail({
     return { success: false, error };
   }
 }
+
+export async function sendPaymentConfirmationEmail({
+  email,
+  userName,
+  plan,
+}: {
+  email: string;
+  userName: string;
+  plan: string;
+}) {
+  try {
+    const { PaymentConfirmationEmail } = await import('@/components/emails/payment-confirmation');
+    const html = await render(React.createElement(PaymentConfirmationEmail, { userName, plan, email }));
+    return await sendEmail({
+      to: email,
+      subject: `⚡ NexPulse: ${plan} plan activated`,
+      html,
+    });
+  } catch (error) {
+    console.error('❌ Failed to send payment confirmation email:', error);
+    return { success: false, error };
+  }
+}
+
+export async function sendSubscriptionCancelledEmail({
+  email,
+  userName,
+  plan,
+  endsAt,
+}: {
+  email: string;
+  userName: string;
+  plan: string;
+  endsAt?: string;
+}) {
+  try {
+    const { SubscriptionCancelledEmail } = await import('@/components/emails/subscription-cancelled');
+    const html = await render(React.createElement(SubscriptionCancelledEmail, { userName, plan, email, endsAt }));
+    return await sendEmail({
+      to: email,
+      subject: `NexPulse: Your ${plan} subscription has been cancelled`,
+      html,
+    });
+  } catch (error) {
+    console.error('❌ Failed to send subscription cancelled email:', error);
+    return { success: false, error };
+  }
+}
