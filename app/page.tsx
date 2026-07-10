@@ -19,7 +19,7 @@ const features = [
   {
     icon: Activity,
     title: "Real-Time Health Monitoring",
-    body: "Uptime, latency, and status codes — streamed live across every endpoint in your registry.",
+    body: "Uptime, latency, and status codes streamed live across every endpoint in your stack.",
     accent: "np-teal",
   },
   {
@@ -37,7 +37,7 @@ const features = [
   {
     icon: Code2,
     title: "Neural Code Audit",
-    body: "Connect a GitHub repo, upload a zip, or paste code — get AI-powered security, performance, and architecture recommendations instantly.",
+    body: "Connect a GitHub repo, upload a zip, or paste code and get AI-powered security, performance, and architecture recommendations instantly.",
     accent: "np-gold",
   },
   {
@@ -75,11 +75,6 @@ export default function Home() {
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-np-gold/5 rounded-full blur-[120px] pointer-events-none" />
 
           <div className="relative max-w-5xl mx-auto px-4 text-center">
-            {/* eyebrow */}
-            <p className="label-category mb-6 inline-flex items-center gap-2">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-np-teal" />
-              Infrastructure intelligence engine · v2.0
-            </p>
 
             <h1 className="text-5xl sm:text-7xl md:text-8xl font-semibold tracking-tight leading-[1.02] text-foreground mb-6">
               Performance you<br />
@@ -88,7 +83,7 @@ export default function Home() {
 
             <p className="text-[17px] text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10">
               NexPulse gives engineering teams a single authoritative view of health,
-              cache state, and audit results — across every framework, every region.
+              cache state, and audit results across every framework and every region.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">

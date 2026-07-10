@@ -470,7 +470,7 @@ export default function DashboardPage() {
                   <Card className="p-4" style={{ borderLeft: "3px solid var(--np-teal)" }}>
                     <div className="flex items-center gap-2 mb-2">
                       <CheckCircle2 className="h-4 w-4 text-np-teal" />
-                      <span className="text-[12px] font-semibold text-np-teal">Key generated — copy now</span>
+                      <span className="text-[12px] font-semibold text-np-teal">Key generated. Copy it now</span>
                     </div>
                     <div className="flex items-center gap-2 bg-np-obsidian rounded-ui p-3 font-mono text-[12px] text-np-gold break-all">
                       <span className="flex-1">{newKey}</span>

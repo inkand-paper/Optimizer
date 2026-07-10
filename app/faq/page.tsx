@@ -14,15 +14,15 @@ const faqCategories = [
     faqs: [
       {
         q: "What exactly is NexPulse?",
-        a: "NexPulse is an integrated Optimization & Monitoring suite. It gives engineering teams a central command center to monitor website uptime, trigger cache revalidation (Optimization Pulses), run deep SEO/Performance audits, and receive real-time alerts — all from one dashboard.",
+        a: "NexPulse is an integrated optimization and monitoring suite. It gives engineering teams a single dashboard to monitor uptime, trigger cache revalidation, run SEO and performance audits, and receive real-time alerts.",
       },
       {
         q: "What is an \"Optimization Pulse\"?",
-        a: "An Optimization Pulse is an on-demand cache revalidation signal. When you install the NexPulse snippet into your website and trigger a Pulse (by tag or path), NexPulse sends a secure signal that clears the specific cached data on your system — instantly serving fresh content to your users without a full redeploy.",
+        a: "An Optimization Pulse is an on-demand cache revalidation signal. When you install the NexPulse snippet into your website and trigger a Pulse (by tag or path), NexPulse sends a secure signal that clears the specific cached data on your system, instantly serving fresh content without a full redeploy.",
       },
       {
         q: "Do I need to install anything in my website to use NexPulse?",
-        a: "It depends on the feature:\n\n• Monitoring (UP/DOWN checks): No installation needed — NexPulse monitors any public URL.\n\n• Audits & Revalidation Pulses: Yes. You must install the NexPulse integration snippet (JavaScript, Swift, Kotlin, etc.) into your target system. Once installed, you use your Machine API Key to trigger audits or revalidation pulses against that specific system.",
+        a: "It depends on the feature:\n\n• Monitoring (UP/DOWN checks): No installation needed. NexPulse monitors any public URL.\n\n• Audits & Revalidation Pulses: Yes. You must install the NexPulse integration snippet (JavaScript, Swift, Kotlin, etc.) into your target system. Once installed, you use your Machine API Key to trigger audits or revalidation pulses against that specific system.",
       },
       {
         q: "Which frameworks does NexPulse support?",
@@ -49,7 +49,7 @@ const faqCategories = [
       },
       {
         q: "Can I have multiple API keys?",
-        a: "Yes. You can generate multiple keys — for example, one per application or environment (staging, production). This way you can revoke access to one system without affecting others.",
+        a: "Yes. You can generate multiple keys, one per application or environment (staging, production), so you can revoke access to one system without affecting others.",
       },
     ],
   },
@@ -68,7 +68,7 @@ const faqCategories = [
       },
       {
         q: "Can I monitor sites I don't own?",
-        a: "Yes — for basic UP/DOWN monitoring, you can track any public URL (competitors, third-party APIs, CDNs, etc.). However, Optimization Pulses and deep Audits are exclusively for systems where you have installed the NexPulse integration.",
+        a: "Yes. For basic UP/DOWN monitoring you can track any public URL including competitors, third-party APIs, and CDNs. Optimization Pulses and deep Audits are only available for systems where you have installed the NexPulse integration.",
       },
     ],
   },
@@ -154,7 +154,7 @@ export default function FaqPage() {
             <span style={{ color: "var(--np-gold)" }}>We have answers.</span>
           </h1>
           <p className="text-[16px] text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            Everything you need to know about NexPulse — from integration to security.
+            Everything you need to know about NexPulse, from setup to security.
             Can&apos;t find what you&apos;re looking for? Ask{" "}
             <span className="font-semibold text-foreground">Pulse-AI</span> in the dashboard.
           </p>

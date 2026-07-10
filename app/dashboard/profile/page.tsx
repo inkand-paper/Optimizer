@@ -563,7 +563,7 @@ export default function ProfilePage() {
                           placeholder="you@university.edu"
                           className="w-full h-10 px-3 rounded-ui bg-muted/30 border border-border text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-np-gold/50"
                         />
-                        <p className="text-[10px] text-muted-foreground">Accepted: .edu · .ac.uk · .edu.bd · .ac.in and other academic domains</p>
+                        <p className="text-[10px] text-muted-foreground">Accepted: .edu, .ac.uk, .edu.bd, .ac.in and other academic domains</p>
                       </div>
                       {message.text && message.type === 'error' && (
                         <p className="text-[11px] text-np-crimson">{message.text}</p>
@@ -709,7 +709,7 @@ export default function ProfilePage() {
 
             <div className="mt-8 sm:mt-12 text-center">
               <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                All transactions secured by NexPulse Guard · 256-bit encryption active.
+                All transactions secured by NexPulse Guard.
               </p>
             </div>
           </div>

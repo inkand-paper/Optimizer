@@ -31,12 +31,12 @@ export const metadata: Metadata = {
       ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
       : "http://localhost:3000")
   ),
-  title: "NexPulse — Infrastructure Intelligence, Humanly Interpreted",
+  title: "NexPulse",
   description:
     "The universal command center for modern web assets. Monitor health, analyse performance, revalidate cache, and audit source code across any framework.",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "NexPulse — Any Framework, One Dashboard",
+    title: "NexPulse | Any Framework, One Dashboard",
     description: "Universal performance monitoring, cache revalidation, and AI-powered code auditing.",
     url: "/",
     siteName: "NexPulse",

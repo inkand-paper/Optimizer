@@ -47,13 +47,13 @@ export default function DocsPage() {
         <div className="mb-14">
           <p className="label-category mb-3 flex items-center gap-2">
             <Book className="h-3.5 w-3.5 text-np-gold" />
-            Knowledge base · v2.0
+            Documentation
           </p>
           <h1 className="text-4xl md:text-6xl font-semibold tracking-tight leading-tight mb-4">
             Documentation
           </h1>
           <p className="text-[16px] text-muted-foreground max-w-xl leading-relaxed">
-            From high-level concepts to machine-level API protocols — everything required
+            From high-level concepts to API protocols, everything you need
             to maintain absolute control over your infrastructure.
           </p>
         </div>
