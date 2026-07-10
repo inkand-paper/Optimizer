@@ -217,3 +217,28 @@ export async function sendSubscriptionCancelledEmail({
     return { success: false, error };
   }
 }
+
+export async function sendStudentTrialEmail({
+  email,
+  userName,
+  eduEmail,
+  expiresAt,
+}: {
+  email: string;
+  userName: string;
+  eduEmail: string;
+  expiresAt: string;
+}) {
+  try {
+    const { StudentTrialEmail } = await import('@/components/emails/student-trial');
+    const html = await render(React.createElement(StudentTrialEmail, { userName, eduEmail, expiresAt }));
+    return await sendEmail({
+      to: email,
+      subject: '⚡ NexPulse: Your student PRO trial is active',
+      html,
+    });
+  } catch (error) {
+    console.error('❌ Failed to send student trial email:', error);
+    return { success: false, error };
+  }
+}

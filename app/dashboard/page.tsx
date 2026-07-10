@@ -14,6 +14,7 @@ import { useSearchParams } from "next/navigation";
 import { MonitoringDashboard } from "@/components/monitoring-dashboard";
 import { CodeAuditConsole } from "@/components/code-audit-console";
 import { PricingModal } from "@/components/pricing-modal";
+import { PromoBanner } from "@/components/promo-banner";
 import { ThemeToggle } from "@/components/theme-toggle";
 import type { AnalyzeResponse } from "@/lib/types";
 
@@ -208,7 +209,9 @@ export default function DashboardPage() {
   );
   /* ──────────── MAIN LAYOUT ──────────── */
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-screen flex flex-col bg-background">
+      <PromoBanner userPlan={currentUserPlan} />
+      <div className="flex flex-1 min-h-0">
       {/* ── Sidebar ────────────────────────────── */}
       <aside
         className="hidden md:flex flex-col w-56 shrink-0 sticky top-0 h-screen overflow-y-auto"
@@ -585,6 +588,7 @@ export default function DashboardPage() {
       </div>
 
       <PricingModal isOpen={showPricing} onClose={() => setShowPricing(false)} currentPlan={currentUserPlan} />
+      </div>
     </div>
   );
 }

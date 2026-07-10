@@ -64,6 +64,7 @@ model User {
   monitors     Monitor[]
   webhooks     Webhook[]
   codeReviews CodeReview[]
+  studentTrial StudentTrial?
 }
 
 model Account {
@@ -203,4 +204,32 @@ model AuditCache {
   createdAt DateTime @default(now())
 
   @@index([hash])
+}
+model Promotion {
+  id              String   @id @default(uuid())
+  title           String   // e.g. "Black Friday — 40% off PRO"
+  description     String?  // optional subtitle
+  discountCode    String   // LemonSqueezy discount code
+  discountPercent Int      // e.g. 40
+  targetPlan      String   @default("ALL") // "PRO" | "BUSINESS" | "ALL"
+  isActive        Boolean  @default(false)
+  startsAt        DateTime
+  endsAt          DateTime
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([isActive, endsAt])
+}
+
+model StudentTrial {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  eduEmail    String   @unique
+  verifiedAt  DateTime @default(now())
+  expiresAt   DateTime
+  used        Boolean  @default(false)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([eduEmail])
 }
