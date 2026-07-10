@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Card, Button, Input, PasswordInput } from "@/components/ui-elements";
-import { Activity, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Activity, Loader2, AlertCircle } from "lucide-react";
 import { signIn } from "next-auth/react";
 
 export default function LoginPage() {

@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { getTokenFromRequest } from '@/lib/auth';
 import { PLAN_LIMITS, PlanType } from '@/lib/plans';
 import crypto from 'crypto';
+import { validateSafeUrl } from '@/lib/ssrf';
 
 export async function GET(req: NextRequest) {
   try {
@@ -34,6 +35,16 @@ export async function POST(req: NextRequest) {
     
     if (!url || !events || !Array.isArray(events)) {
       return NextResponse.json({ error: 'Bad Request', message: 'URL and events array are required' }, { status: 400 });
+    }
+
+    // [SECURITY] SSRF Prevention: block webhook URLs that resolve to internal IPs
+    try {
+      await validateSafeUrl(url);
+    } catch (ssrfError) {
+      return NextResponse.json(
+        { error: 'Bad Request', message: ssrfError instanceof Error ? ssrfError.message : 'Invalid or unsafe webhook URL' },
+        { status: 400 }
+      );
     }
 
     // [MONETIZATION] Enforce Plan Limits
