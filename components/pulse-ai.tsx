@@ -14,7 +14,7 @@ export function PulseAI() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [input, setInput] = React.useState("");
   const [messages, setMessages] = React.useState<Message[]>([
-    { role: "assistant", content: "System ready. I am Pulse-AI. How can I assist your infrastructure today?" }
+    { role: "assistant", content: "Hey! I'm Pulse-AI. Ask me about your plan, features, setup, or anything NexPulse-related." }
   ]);
   const [loading, setLoading] = React.useState(false);
   const scrollRef = React.useRef<HTMLDivElement>(null);
