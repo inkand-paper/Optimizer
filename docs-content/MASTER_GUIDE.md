@@ -1,45 +1,50 @@
 # NexPulse Master Guide
 
 Comprehensive technical and architectural reference for operators and contributors.
+Last updated: July 2025 (v2.0)
 
 ---
 
 ## 1. Platform Overview
 
-NexPulse is a unified infrastructure intelligence platform for modern development teams. It provides:
+NexPulse is a unified infrastructure monitoring and auditing platform for engineering teams. It provides:
 
-- **Real-Time Monitoring** — Uptime, latency, and status tracking for any URL
+- **Uptime Monitoring** — Health checks for any public URL with Discord/Slack alerts
 - **Cache Pulse Engine** — Remote cache revalidation for Next.js, Nuxt, and Remix
-- **SEO & Performance Audit** — Deep crawl of live URLs for Web Vitals, meta, and security headers
-- **Neural Code Audit** — AI-powered analysis of source code from GitHub, ZIP, or paste
-- **Intelligence Bank** — Hash-based incremental auditing to skip unchanged files
-- **Pulse-AI Assistant** — Embedded AI technical assistant in the dashboard
-- **Webhooks** — Discord/Slack alerts for monitoring events
+- **SEO and Performance Audit** — Deep crawl of live URLs for Web Vitals, meta tags, security headers, and structured data
+- **Neural Code Audit** — AI-powered analysis of source code from GitHub repos, ZIP archives, or pasted code
+- **Intelligence Bank** — Hash-based incremental auditing that skips unchanged files on repeat audits
+- **Pulse-AI Assistant** — AI technical assistant embedded in the dashboard
+- **Webhooks** — Discord and Slack alerts for monitoring events
 - **Activity Logs** — Full audit trail of all platform events
+- **Promotions System** — Admin-managed sales and discount codes surfaced as dashboard banners with live countdown timers
+- **Student Trial** — 30-day PRO trial for users who verify a valid academic email (.edu, .ac.uk, .edu.bd, etc.)
 
 ---
 
 ## 2. Architecture
 
-NexPulse is a Next.js 16 App Router application using a decoupled three-layer system:
+NexPulse is a Next.js 16 App Router application with a three-layer structure:
 
 ```
 ┌─────────────────────────────────────────────┐
 │              Command Center (UI)             │
-│  Dashboard · Login · Docs · Landing Page    │
+│   Dashboard  Login  Docs  Landing Page      │
 └───────────────────┬─────────────────────────┘
                     │ HTTP / SSE
 ┌───────────────────▼─────────────────────────┐
 │              Pulse Engine (API)              │
-│  /api/revalidate · /api/code-review         │
-│  /api/monitors · /api/analyze               │
-│  /api/ai/chat · /api/auth/*                 │
+│  /api/revalidate   /api/code-review          │
+│  /api/monitors     /api/analyze              │
+│  /api/ai/chat      /api/auth/*               │
+│  /api/promotions   /api/student/verify       │
+│  /api/webhooks/lemonsqueezy                  │
 └──────────┬──────────────────┬───────────────┘
            │                  │
 ┌──────────▼───────┐  ┌───────▼───────────────┐
 │  PostgreSQL DB   │  │  External Services     │
-│  (Prisma ORM)    │  │  Groq · Gemini · Redis │
-│  Supabase hosted │  │  GitHub OAuth · Resend │
+│  (Prisma ORM)    │  │  Groq  Gemini  Redis   │
+│  Supabase hosted │  │  GitHub  Resend  LS    │
 └──────────────────┘  └───────────────────────┘
 ```
 
@@ -49,119 +54,183 @@ NexPulse runs two parallel auth systems:
 
 | System | Used By | Token Type |
 |---|---|---|
-| **Custom JWT** | Email/password login | HttpOnly `token` cookie |
-| **NextAuth v4** | Google / GitHub social login | `next-auth.session-token` cookie (DB session) |
+| Custom JWT | Email/password login | HttpOnly `token` cookie |
+| NextAuth v4 | Google / GitHub social login | `next-auth.session-token` cookie (DB session) |
 
-`getTokenFromRequest()` in `lib/auth.ts` checks both automatically, in order:
+`getTokenFromRequest()` in `lib/auth.ts` checks both automatically, in priority order:
 1. Custom JWT cookie
-2. NextAuth database session (`getServerSession`)
-3. Bearer token header (API clients)
+2. NextAuth database session via `getServerSession`
+3. Bearer token header for API clients
+
+**Rule**: Every API route handler must call `getTokenFromRequest(req)`. Never read cookies manually.
 
 ---
 
-## 3. Neural Code Audit Engine
-
-### How It Works
-
-1. User provides source code via **GitHub**, **ZIP upload**, or **paste**
-2. Files are filtered by extension (`.ts`, `.tsx`, `.js`, `.jsx`, `.py`, `.go`, `.json`, `.yaml`, `.yml`, `.md`, `.txt`, etc.)
-3. Each file is sent to Groq (llama-3.3-70b) for per-file analysis
-4. Issues are aggregated by category: Security, Performance, Standards, Refactor
-5. A final synthesis pass generates the overall report with a Code Health Score
-
-### Intelligence Bank (Incremental Auditing)
-
-Every audited file is fingerprinted with a SHA-256 hash and stored in the database. On subsequent audits:
-
-- Files with unchanged hashes → **skipped** (instantly reused from cache)
-- Modified files → **re-analysed**
-- New files → **analysed and cached**
-
-This makes second+ audits dramatically faster for active repositories.
-
-### Code Health Score
-
-The final report includes grades per category and an overall health score:
-
-| Grade | Score |
-|---|---|
-| A | 90–100 |
-| B | 75–89 |
-| C | 60–74 |
-| D | Below 60 |
-
----
-
-## 4. Pulse-AI Assistant
-
-Pulse-AI is an AI assistant embedded in the dashboard (bottom-right widget). It uses a 3-tier AI engine:
-
-| Tier | Model | Trigger |
-|---|---|---|
-| 1 (Primary) | Groq `llama-3.3-70b-versatile` | All requests |
-| 2 (Buffer) | Groq `llama-3.1-8b-instant` | When 70B hits daily quota (100k tokens) |
-| 3 (Fallback) | Google Gemini (Flash → Pro iteration) | When all Groq engines are unavailable |
-
-Pulse-AI knows about:
-- All NexPulse features and dashboard tab names
-- How to set up cache revalidation and monitoring
-- How to interpret Code Audit results
-- Contact/support info
-
----
-
-## 5. Database Schema (Key Tables)
+## 3. Database Schema (All Tables)
 
 | Table | Purpose |
 |---|---|
-| `User` | User accounts (email + password OR OAuth) |
+| `User` | User accounts with email/password or OAuth |
 | `Account` | NextAuth OAuth account links |
 | `Session` | NextAuth database sessions |
-| `ApiKey` | Machine API keys (hashed, never stored plain) |
-| `Monitor` | Monitored URLs with check interval config |
-| `MonitorEvent` | Historical uptime/latency data points |
+| `ApiKey` | Machine API keys (SHA-256 hash only, never plain text) |
+| `Monitor` | Monitored URLs with check interval configuration |
+| `MonitorEvent` | Historical uptime and latency data points |
 | `CodeReview` | Saved code audit reports |
-| `ActivityLog` | Audit trail of all platform events |
+| `AuditCache` | Intelligence Bank — per-file hash-to-review cache |
+| `ActivityLog` | Full audit trail of all platform events |
 | `Webhook` | User-configured Discord/Slack alert endpoints |
+| `Promotion` | Admin-managed time-limited discount promotions |
+| `StudentTrial` | .edu email verifications for 30-day PRO trials |
 
-### API Key Security
-Plain-text keys are generated once and shown to the user exactly once. Only SHA-256 hashes are stored in the database.
+### Key Field Notes
+
+- `User.subscriptionId` — LemonSqueezy subscription ID, saved on `subscription_created` webhook
+- `User.lemonSqueezyId` — LemonSqueezy customer ID
+- `User.plan` — enum: `FREE`, `PRO`, `BUSINESS`
+- `User.role` — enum: `ADMIN`, `DEVELOPER`, `VIEWER`
+- `User.twoFactorEnabled` — TOTP-based MFA flag
+- `StudentTrial.expiresAt` — 30 days from verification; daily cron downgrades expired trials
+- `Promotion.isActive` — daily cron auto-sets to false when `endsAt` passes
 
 ---
 
-## 6. Plan Limits
+## 4. Plan Limits
+
+All plan limits are defined in `lib/plans.ts` as the single source of truth. Never hardcode limits elsewhere.
 
 | Limit | FREE | PRO | BUSINESS |
 |---|---|---|---|
-| `assets` (monitors) | 1 | 10 | Unlimited |
-| `checks` / month | 500 | 25,000 | Unlimited |
-| `audits` / month | 3 | 50 | Unlimited |
-| `webhooks` (Discord) | 1 | 5 | 50 |
-| `interval` (seconds) | 60 | 30 | 10 |
-| `retentionDays` | 7 | 30 | 365 |
-| `allowApiKeys` | ❌ | ✅ | ✅ |
-| `allowRevalidate` | ❌ | ✅ | ✅ |
-| `allowAi` (full) | basic | ✅ | ✅ priority |
+| Monitors | 1 | 10 | Unlimited |
+| Health checks/month | 500 | 25,000 | Unlimited |
+| Code audits/month | 3 | 50 | Unlimited |
+| Webhooks | 1 | 5 | 50 |
+| Check interval (seconds) | 60 | 30 | 10 |
+| Log retention (days) | 7 | 30 | 365 |
+| API keys | No | Yes | Yes |
+| Cache revalidation | No | Yes | Yes |
+| AI features | Basic | Full | Full (priority) |
+| Intelligence Bank | No | Yes | Yes |
+
+Admins (`role === 'ADMIN'`) bypass all plan limits on every route.
 
 ---
 
-## 7. Key Environment Variables
+## 5. Neural Code Audit Engine
 
-See `DEPLOYMENT_CHECKLIST.md` for the complete production variable table.
+### How It Works
 
-Local development uses `.env.local` (overrides `.env`). The two-file split enables running local and production OAuth apps side by side:
+1. User provides source via GitHub repo, ZIP upload, or code paste
+2. Files are filtered by extension: `.ts`, `.tsx`, `.js`, `.jsx`, `.py`, `.go`, `.java`, `.cs`, `.json`, `.yaml`, `.yml`, `.md`, `.txt`
+3. Each file is hashed with SHA-256 and checked against the AuditCache (Intelligence Bank)
+4. Cache hits are returned instantly. Cache misses are sent to Groq `llama-3.3-70b` for analysis
+5. Issues are aggregated by category: Security, Performance, Standards, Refactor
+6. A synthesis pass generates the overall Code Health Score and report
 
-- `.env` — shared non-secret defaults
-- `.env.local` — local-only secrets (never committed)
+**Cache scoping by plan**: FREE users only benefit from their own prior submissions. PRO and BUSINESS users benefit from the shared global cache (Intelligence Bank).
+
+### Code Health Score
+
+| Grade | Score |
+|---|---|
+| A | 90-100 |
+| B | 75-89 |
+| C | 60-74 |
+| D | Below 60 |
+
+### Streaming
+
+`/api/code-review` uses Server-Sent Events (SSE). Logs are streamed in real time:
+
+```
+data: {"log": "Scanning 42 files..."}
+data: {"log": "Analysing security: auth.ts"}
+data: {"done": true, "report": { ... }}
+```
 
 ---
 
-## 8. Integration Pattern
+## 6. Pulse-AI Assistant
 
-To enable Revalidation Pulses and Live Website Audits, the target app must install the NexPulse integration endpoint:
+Embedded AI chat widget in the dashboard. Uses a 3-tier fallback chain:
+
+| Tier | Model | When |
+|---|---|---|
+| 1 Primary | Groq `llama-3.3-70b-versatile` | All requests |
+| 2 Buffer | Groq `llama-3.1-8b-instant` | When 70B hits daily quota |
+| 3 Fallback | Google Gemini Flash then Pro | When all Groq engines are unavailable |
+
+Requires user authentication. Rate limited to 30 messages per minute per user.
+
+---
+
+## 7. Billing (LemonSqueezy)
+
+### Webhook Events Handled
+
+All events are received at `/api/webhooks/lemonsqueezy` and verified via HMAC-SHA256 signature.
+
+| Event | Action |
+|---|---|
+| `order_created` / `order_paid` | Upgrade user plan, send payment confirmation email |
+| `subscription_created` | Upgrade plan, save `subscriptionId` and `lemonSqueezyId`, send email |
+| `subscription_updated` | Handle mid-cycle plan change or status update |
+| `subscription_cancelled` | Send cancellation email with access end date. Plan stays active until expiry |
+| `subscription_expired` | Downgrade user to FREE, clear `subscriptionId` |
+| `subscription_payment_failed` | Log only. LemonSqueezy handles retries and fires `expired` if all fail |
+| `subscription_payment_success` | Self-heal plan if DB got out of sync |
+
+### Student Trial
+
+FREE users can verify an academic email to receive 30 days of PRO access at no cost:
+
+- Supported domains: `.edu`, `.ac.uk`, `.edu.bd`, `.ac.in`, `.edu.au`, `.edu.sg`, `.edu.pk`, `.ac.nz`
+- One trial per user and one trial per email address (cannot be reused)
+- Daily cron at 2am UTC (`/api/cron/expire-trials`) downgrades expired trials to FREE
+- Users who subscribe during their trial retain PRO (cron checks `subscriptionId` before downgrading)
+
+### Promotions System
+
+Admins can create time-limited discount promotions via `POST /api/promotions`. When active, a banner with a live countdown timer and click-to-copy discount code appears across the dashboard. Promotions auto-deactivate when `endsAt` passes via the daily cron.
+
+---
+
+## 8. Security Architecture
+
+| Layer | Implementation |
+|---|---|
+| Auth cookies | HttpOnly, Secure, SameSite=Strict |
+| Password storage | bcrypt with high salt rounds |
+| API key storage | SHA-256 hash only, plain text shown once |
+| SSRF prevention | `validateSafeUrl()` in `lib/ssrf.ts` called before every outbound fetch |
+| Rate limiting | `checkRateLimit()` in `lib/rate-limit.ts` on all auth and AI endpoints |
+| Input validation | Zod schemas on all API route inputs |
+| MFA | TOTP via speakeasy, optional per user |
+| Brute force detection | Failed login tracking with automatic Discord security alerts |
+| CSP | Strict Content Security Policy without `unsafe-eval` |
+| Timing attacks | `crypto.timingSafeEqual()` for secret comparisons |
+
+---
+
+## 9. Cron Jobs
+
+Registered in `vercel.json`:
+
+| Route | Schedule | Purpose |
+|---|---|---|
+| `/api/cron/monitor` | Every 5 minutes | Run uptime health checks in batches |
+| `/api/cron/expire-trials` | Daily at 2am UTC | Expire student trials, deactivate ended promotions |
+
+Both endpoints require `Authorization: Bearer <CRON_SECRET>`.
+
+---
+
+## 10. Integration Pattern
+
+To enable Cache Revalidation Pulses from NexPulse into your app, add this endpoint to your target Next.js project:
 
 ```ts
-// app/api/revalidate/route.ts (in YOUR app)
+// app/api/revalidate/route.ts (in YOUR app, not in NexPulse)
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidateTag, revalidatePath } from 'next/cache';
 
@@ -177,47 +246,31 @@ export async function POST(req: NextRequest) {
 }
 ```
 
-Then register the site's URL + your NexPulse Machine API Key in the dashboard.
+Then register your site URL and Machine API Key in the NexPulse dashboard under API Keys.
 
 ---
 
-## 9. Security Architecture
+## 11. Environment Variables
 
-NexPulse is designed with a defense-in-depth approach to protect user infrastructure and audit data.
+See `.env.example` in the repo root for the full documented list. Key variables:
 
-### Core Security Layers
-- **Data in Transit**: All communication is encrypted via TLS 1.3. API endpoints are protected by strict CORS policies.
-- **Data at Rest**: Sensitive data (tokens, hashes) is stored in a Supabase-hosted PostgreSQL instance with restricted row-level access.
-- **Credential Safety**:
-    - **Passwords**: Hashed using `bcrypt` (or standard NextAuth hashing) with a high salt cost.
-    - **Machine API Keys**: Only the SHA-256 hash is stored. Plain-text keys are shown exactly once to the user and cannot be recovered if lost.
-    - **Session Tokens**: Stored in `HttpOnly`, `Secure`, `SameSite=Strict` cookies to prevent XSS and CSRF attacks.
-- **Infrastructure Isolation**: AI Audits run in isolated Vercel functions with zero persistence between runs.
-
----
-
-## 10. Known Constraints (Vercel Hobby Plan)
-
-| Constraint | Impact | Mitigation |
+| Variable | Required | Purpose |
 |---|---|---|
-| Image Transformations | Low limit | `unoptimized: true` in `next.config.ts` |
-| Function timeout | 10s (Hobby) / 60s (Pro) | Code audits chunked into small batches |
-| Groq daily tokens | 100k/day (free tier) | 3-tier AI fallback (Groq 70B → 8B → Gemini) |
+| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| `JWT_SECRET` | Yes | Custom JWT signing (min 32 chars) |
+| `NEXTAUTH_SECRET` | Yes | NextAuth session signing |
+| `ADMIN_EMAIL` | Yes | Auto-promoted to ADMIN on first registration |
+| `GROQ_API_KEY` | For AI | Groq API (free tier: 100k tokens/day) |
+| `GEMINI_API_KEY` | For AI fallback | Google Gemini |
+| `LEMONSQUEEZY_WEBHOOK_SECRET` | For billing | Webhook signature verification |
+| `CRON_SECRET` | For cron jobs | Protects cron endpoints from unauthorized triggers |
 
 ---
 
-## 10. Contributing
+## 12. Known Constraints
 
-```bash
-git clone https://github.com/inkand-paper/Optimizer
-cd nextjs-optimizer-suite
-cp .env .env.local
-# Fill in local keys
-npm install
-npx prisma migrate dev
-npm run dev
-```
-
-- Branch from `dev`, PR to `main`
-- All PRs must pass `npm run lint` and `npm run build`
-- See `AGENTS.md` for AI coding assistant directives
+| Constraint | Impact | Status |
+|---|---|---|
+| Groq 100k tokens/day (free tier) | AI may fall back to smaller models | 3-tier fallback handles this |
+| Vercel function timeout | Long audits may time out on Hobby plan | Code audits batch files; use Pro plan for large repos |
+| `@react-email` packages deprecated | Build warnings (not errors) | Will migrate to new package names in a future update |
