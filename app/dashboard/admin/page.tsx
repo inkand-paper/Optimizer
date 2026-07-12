@@ -178,60 +178,64 @@ export default function AdminPortal() {
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
       
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-12">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-          <div>
-            <Link href="/dashboard" className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground hover:text-np-gold mb-6 transition-all group w-fit">
-              <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" /> 
-              <span>Return to Mission Control</span>
-            </Link>
-            <h1 className="text-3xl md:text-5xl font-semibold tracking-tight uppercase">
-              Executive<br />
-              <span className="text-np-gold">Administration</span>
-            </h1>
-            <p className="label-category text-muted-foreground mt-3 max-w-md">Manage global user access, infrastructure tiers, and system scaling.</p>
-          </div>
-          
-          <Card className="p-5 flex items-center gap-4 min-w-[240px]">
-            <div className="flex items-center gap-3 mt-6">
-            <button
-              onClick={() => setActiveTab('users')}
-              className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-ui text-[12px] font-medium uppercase tracking-wider border transition-all",
-                activeTab === 'users'
-                  ? "bg-np-gold/15 border-np-gold/40 text-np-gold"
-                  : "border-border text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Users className="h-3.5 w-3.5" />
-              Users
-            </button>
-            <button
-              onClick={() => setActiveTab('trials')}
-              className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-ui text-[12px] font-medium uppercase tracking-wider border transition-all",
-                activeTab === 'trials'
-                  ? "bg-np-gold/15 border-np-gold/40 text-np-gold"
-                  : "border-border text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <GraduationCap className="h-3.5 w-3.5" />
-              Student Trials
-              {trials.filter(t => t.status === 'PENDING').length > 0 && activeTab !== 'trials' && (
-                <span className="h-4 w-4 rounded-full bg-np-crimson text-white text-[9px] flex items-center justify-center">
-                  {trials.filter(t => t.status === 'PENDING').length}
-                </span>
-              )}
-            </button>
-          </div>
-          <div className="h-12 w-12 rounded-ui bg-np-gold/10 flex items-center justify-center border border-np-gold/20">
-              <Users className="h-5 w-5 text-np-gold" />
-            </div>
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-6 sm:py-10">
+        {/* Header */}
+        <div className="mb-8">
+          <Link href="/dashboard" className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground hover:text-np-gold mb-6 transition-all group w-fit">
+            <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+            <span>Return to Mission Control</span>
+          </Link>
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
-              <p className="label-category text-muted-foreground mb-1">Total Authorized Units</p>
-              <p className="text-3xl font-semibold leading-none">{users.length}</p>
+              <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight uppercase">
+                Admin <span className="text-np-gold">Panel</span>
+              </h1>
+              <p className="label-category text-muted-foreground mt-2">Manage users, plans, and student trial applications.</p>
             </div>
-          </Card>
+            {/* Stats card */}
+            <Card className="p-4 flex items-center gap-3 sm:min-w-[180px]">
+              <div className="h-10 w-10 rounded-ui bg-np-gold/10 flex items-center justify-center border border-np-gold/20 shrink-0">
+                <Users className="h-4 w-4 text-np-gold" />
+              </div>
+              <div>
+                <p className="label-category text-muted-foreground text-[9px] mb-0.5">Total Users</p>
+                <p className="text-2xl font-semibold leading-none">{users.length}</p>
+              </div>
+            </Card>
+          </div>
+        </div>
+
+        {/* Tab switcher */}
+        <div className="flex items-center gap-2 mb-6 flex-wrap">
+          <button
+            onClick={() => setActiveTab('users')}
+            className={cn(
+              "flex items-center gap-2 px-4 py-2 rounded-ui text-[12px] font-medium uppercase tracking-wider border transition-all",
+              activeTab === 'users'
+                ? "bg-np-gold/15 border-np-gold/40 text-np-gold"
+                : "border-border text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <Users className="h-3.5 w-3.5" />
+            Users
+          </button>
+          <button
+            onClick={() => setActiveTab('trials')}
+            className={cn(
+              "flex items-center gap-2 px-4 py-2 rounded-ui text-[12px] font-medium uppercase tracking-wider border transition-all",
+              activeTab === 'trials'
+                ? "bg-np-gold/15 border-np-gold/40 text-np-gold"
+                : "border-border text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <GraduationCap className="h-3.5 w-3.5" />
+            Student Trials
+            {trials.filter(t => t.status === 'PENDING').length > 0 && activeTab !== 'trials' && (
+              <span className="h-4 w-4 rounded-full bg-np-crimson text-white text-[9px] flex items-center justify-center">
+                {trials.filter(t => t.status === 'PENDING').length}
+              </span>
+            )}
+          </button>
         </div>
 
         <Card className="overflow-hidden">
