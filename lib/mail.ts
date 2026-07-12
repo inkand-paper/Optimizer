@@ -242,3 +242,27 @@ export async function sendStudentTrialEmail({
     return { success: false, error };
   }
 }
+
+export async function sendStudentRejectionEmail({
+  email,
+  userName,
+  rejectionReason,
+  rejectionNote,
+}: {
+  email: string;
+  userName: string;
+  rejectionReason: string;
+  rejectionNote?: string;
+}) {
+  // Full implementation added in M5 with email template
+  try {
+    return await sendEmail({
+      to: email,
+      subject: 'NexPulse: Student trial application update',
+      html: `<p>Hi ${userName},</p><p>We reviewed your student trial application but were unable to approve it.</p><p><strong>Reason:</strong> ${rejectionReason}</p>${rejectionNote ? `<p>${rejectionNote}</p>` : ''}<p>You can reapply from Dashboard → Profile → Student Access with updated information.</p>`,
+    });
+  } catch (error) {
+    console.error('Failed to send rejection email:', error);
+    return { success: false, error };
+  }
+}

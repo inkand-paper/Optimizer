@@ -620,6 +620,7 @@ export default function ProfilePage() {
                         >
                           {studentFilePreview && studentFile?.type.startsWith('image/') ? (
                             <div className="flex flex-col items-center gap-2">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img src={studentFilePreview} alt="ID preview" className="max-h-32 rounded object-contain" />
                               <p className="text-[10px] text-np-gold">{studentFile.name}</p>
                             </div>
