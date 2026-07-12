@@ -449,13 +449,11 @@ export default function AdminPortal() {
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
-                      {/* View ID card — fetches signed URL (private blob) */}
+                      {/* View ID card — triggers 302 redirect from server to signed URL */}
                       {trial.studentIdUrl && (
                         <button
-                          onClick={async () => {
-                            const res = await fetch(`/api/admin/student-trials/signed-url?trialId=${trial.id}`, { credentials: 'include' });
-                            const data = await res.json();
-                            if (data.url) window.open(data.url, '_blank');
+                          onClick={() => {
+                            window.open(`/api/admin/student-trials/signed-url?trialId=${trial.id}`, '_blank');
                           }}
                           className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-border text-[11px] text-muted-foreground hover:text-foreground hover:border-np-gold/40 transition-all"
                         >
@@ -505,10 +503,8 @@ export default function AdminPortal() {
               <div className="space-y-2">
                 <p className="label-category text-[10px]">Student ID Card</p>
                 <button
-                  onClick={async () => {
-                    const res = await fetch(`/api/admin/student-trials/signed-url?trialId=${reviewingTrial.id}`, { credentials: 'include' });
-                    const data = await res.json();
-                    if (data.url) window.open(data.url, '_blank');
+                  onClick={() => {
+                    window.open(`/api/admin/student-trials/signed-url?trialId=${reviewingTrial.id}`, '_blank');
                   }}
                   className="w-full flex items-center justify-center gap-2 p-4 border border-border rounded-ui text-[12px] text-np-gold hover:bg-np-gold/5 transition-colors"
                 >
