@@ -254,15 +254,16 @@ export async function sendStudentRejectionEmail({
   rejectionReason: string;
   rejectionNote?: string;
 }) {
-  // Full implementation added in M5 with email template
   try {
+    const { StudentRejectionEmail } = await import('@/components/emails/student-rejection');
+    const html = await render(React.createElement(StudentRejectionEmail, { userName, rejectionReason, rejectionNote }));
     return await sendEmail({
       to: email,
-      subject: 'NexPulse: Student trial application update',
-      html: `<p>Hi ${userName},</p><p>We reviewed your student trial application but were unable to approve it.</p><p><strong>Reason:</strong> ${rejectionReason}</p>${rejectionNote ? `<p>${rejectionNote}</p>` : ''}<p>You can reapply from Dashboard → Profile → Student Access with updated information.</p>`,
+      subject: 'NexPulse: Update on your student trial application',
+      html,
     });
   } catch (error) {
-    console.error('Failed to send rejection email:', error);
+    console.error('❌ Failed to send student rejection email:', error);
     return { success: false, error };
   }
 }
