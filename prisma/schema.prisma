@@ -221,15 +221,27 @@ model Promotion {
   @@index([isActive, endsAt])
 }
 
+enum StudentTrialStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model StudentTrial {
-  id          String   @id @default(uuid())
-  userId      String   @unique
-  eduEmail    String   @unique
-  verifiedAt  DateTime @default(now())
-  expiresAt   DateTime
-  used        Boolean  @default(false)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              String             @id @default(uuid())
+  userId          String             @unique
+  eduEmail        String             @unique
+  studentIdUrl    String?            // uploaded ID card file URL
+  status          StudentTrialStatus @default(PENDING)
+  rejectionReason String?            // preset reason code
+  rejectionNote   String?            // optional custom note from admin
+  reviewedAt      DateTime?          // when admin approved/rejected
+  reviewedBy      String?            // admin user id who reviewed
+  submittedAt     DateTime           @default(now())
+  expiresAt       DateTime?          // set on approval: 30 days from reviewedAt
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([eduEmail])
+  @@index([status])
 }
