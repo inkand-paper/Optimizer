@@ -29,14 +29,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Your account is already on a paid plan.' }, { status: 400 });
     }
 
-    // Check if email already used
-    const existingByEmail = await prisma.studentTrial.findUnique({
-      where: { eduEmail: eduEmail.toLowerCase() }
-    });
-    if (existingByEmail) {
-      return NextResponse.json({ error: 'This email has already been used for a student trial.' }, { status: 409 });
-    }
-
     // Check if user already has a trial (any status)
     const existingByUser = await prisma.studentTrial.findUnique({ where: { userId: token.userId } });
     if (existingByUser) {
@@ -48,6 +40,14 @@ export async function POST(req: NextRequest) {
       }
       // REJECTED — allow reapplication by deleting old record
       await prisma.studentTrial.delete({ where: { userId: token.userId } });
+    }
+
+    // Check if email already used
+    const existingByEmail = await prisma.studentTrial.findUnique({
+      where: { eduEmail: eduEmail.toLowerCase() }
+    });
+    if (existingByEmail) {
+      return NextResponse.json({ error: 'This email has already been used for a student trial.' }, { status: 409 });
     }
 
     // Create PENDING record — no plan upgrade yet, admin must approve
