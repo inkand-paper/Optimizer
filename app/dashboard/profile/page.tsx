@@ -36,9 +36,13 @@ export default function ProfilePage() {
   const [showNew, setShowNew] = React.useState(false);
   const [mfaSetup, setMfaSetup] = React.useState({ isOpen: false, qrCode: "", secret: "" });
   const [isPricingOpen, setIsPricingOpen] = React.useState(false);
-  const [studentTrial, setStudentTrial] = React.useState<{ hasTrial: boolean; eduEmail?: string; expiresAt?: string; isExpired?: boolean } | null>(null);
+  const [studentTrial, setStudentTrial] = React.useState<{ hasTrial: boolean; status?: string; eduEmail?: string; expiresAt?: string; isExpired?: boolean; rejectionReason?: string; rejectionNote?: string } | null>(null);
   const [studentEduEmail, setStudentEduEmail] = React.useState("");
   const [studentLoading, setStudentLoading] = React.useState(false);
+  const [studentFile, setStudentFile] = React.useState<File | null>(null);
+  const [studentFilePreview, setStudentFilePreview] = React.useState<string | null>(null);
+  const [studentUploadProgress, setStudentUploadProgress] = React.useState<'idle' | 'uploading' | 'done'>('idle');
+  const studentFileRef = React.useRef<HTMLInputElement>(null);
   const [mfaCode, setMfaCode] = React.useState("");
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -536,7 +540,8 @@ export default function ProfilePage() {
                   Student Access
                 </h3>
 
-                {studentTrial?.hasTrial ? (
+                {/* ── APPROVED ── */}
+                {studentTrial?.status === 'APPROVED' && (
                   <div className="p-4 bg-np-teal/5 border border-np-teal/20 rounded-ui space-y-2">
                     <p className="text-[12px] font-bold uppercase text-np-teal">
                       {studentTrial.isExpired ? 'Trial Expired' : 'Trial Active'}
@@ -544,59 +549,175 @@ export default function ProfilePage() {
                     <p className="text-[11px] text-muted-foreground">
                       Verified with <span className="text-np-gold">{studentTrial.eduEmail}</span>
                       {studentTrial.expiresAt && (
-                        <> · {studentTrial.isExpired ? 'Expired' : 'Expires'} {new Date(studentTrial.expiresAt).toLocaleDateString()}</>
+                        <span> — {studentTrial.isExpired ? 'expired' : 'expires'} {new Date(studentTrial.expiresAt).toLocaleDateString()}</span>
                       )}
                     </p>
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    <p className="text-[13px] text-muted-foreground leading-relaxed">
-                      Are you a student? Verify your academic email to get <span className="text-np-gold font-bold">30 days of PRO access</span> completely free. No credit card required.
+                )}
+
+                {/* ── PENDING ── */}
+                {studentTrial?.status === 'PENDING' && (
+                  <div className="p-4 bg-np-gold/5 border border-np-gold/20 rounded-ui space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="h-3.5 w-3.5 text-np-gold animate-spin" />
+                      <p className="text-[12px] font-bold uppercase text-np-gold">Under Review</p>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground">
+                      Your application is being reviewed. We will email <span className="text-np-gold">{studentTrial.eduEmail}</span> within 1-2 business days.
                     </p>
-                    <div className="space-y-3">
+                  </div>
+                )}
+
+                {/* ── REJECTED ── */}
+                {studentTrial?.status === 'REJECTED' && (
+                  <div className="space-y-4">
+                    <div className="p-4 bg-np-crimson/5 border border-np-crimson/20 rounded-ui space-y-2">
+                      <p className="text-[12px] font-bold uppercase text-np-crimson">Application Not Approved</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {studentTrial.rejectionReason || 'We were unable to verify your student status.'}
+                      </p>
+                      {studentTrial.rejectionNote && (
+                        <p className="text-[11px] text-muted-foreground italic">{studentTrial.rejectionNote}</p>
+                      )}
+                      <p className="text-[10px] text-muted-foreground mt-1">You can reapply below with corrected information.</p>
+                    </div>
+                    {/* Fall through to the form below */}
+                  </div>
+                )}
+
+                {/* ── FORM (no trial yet, or rejected) ── */}
+                {(!studentTrial?.hasTrial || studentTrial?.status === 'REJECTED') && (
+                  <div className="space-y-4 mt-2">
+                    {!studentTrial?.hasTrial && (
+                      <p className="text-[13px] text-muted-foreground leading-relaxed">
+                        Are you a student? Submit your institutional email and student ID card to get <span className="text-np-gold font-bold">30 days of PRO access</span> free. We review all applications manually within 1-2 business days.
+                      </p>
+                    )}
+
+                    <div className="space-y-4">
+                      {/* Email */}
                       <div className="space-y-2">
-                        <label className="label-category text-[10px]">Academic Email</label>
+                        <label className="label-category text-[10px]">Institutional Email</label>
                         <input
                           type="email"
                           value={studentEduEmail}
                           onChange={e => setStudentEduEmail(e.target.value)}
-                          placeholder="you@university.edu"
+                          placeholder="you@university.edu.bd"
                           className="w-full h-10 px-3 rounded-ui bg-muted/30 border border-border text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-np-gold/50"
                         />
-                        <p className="text-[10px] text-muted-foreground">Accepted: .edu, .ac.uk, .edu.bd, .ac.in and other academic domains</p>
+                        <p className="text-[10px] text-muted-foreground">Any institutional email is accepted — .edu, .ac.uk, .edu.bd, .com.bd, or your university domain.</p>
                       </div>
-                      {message.text && message.type === 'error' && (
-                        <p className="text-[11px] text-np-crimson">{message.text}</p>
+
+                      {/* ID Card Upload */}
+                      <div className="space-y-2">
+                        <label className="label-category text-[10px]">Student ID Card</label>
+                        <div
+                          onClick={() => studentFileRef.current?.click()}
+                          className={cn(
+                            "relative border-2 border-dashed rounded-ui p-4 cursor-pointer transition-colors text-center",
+                            studentFile ? "border-np-gold/40 bg-np-gold/5" : "border-border hover:border-np-gold/40 hover:bg-muted/40"
+                          )}
+                        >
+                          {studentFilePreview && studentFile?.type.startsWith('image/') ? (
+                            <div className="flex flex-col items-center gap-2">
+                              <img src={studentFilePreview} alt="ID preview" className="max-h-32 rounded object-contain" />
+                              <p className="text-[10px] text-np-gold">{studentFile.name}</p>
+                            </div>
+                          ) : studentFile ? (
+                            <div className="flex flex-col items-center gap-2 py-2">
+                              <div className="h-10 w-10 rounded bg-np-gold/10 flex items-center justify-center">
+                                <GraduationCap className="h-5 w-5 text-np-gold" />
+                              </div>
+                              <p className="text-[10px] text-np-gold">{studentFile.name}</p>
+                            </div>
+                          ) : (
+                            <div className="py-2 space-y-1">
+                              <Camera className="h-6 w-6 text-muted-foreground mx-auto" />
+                              <p className="text-[12px] text-muted-foreground">Click to upload your student ID card</p>
+                              <p className="text-[10px] text-muted-foreground">JPG, PNG, WebP or PDF — max 5MB</p>
+                            </div>
+                          )}
+                          <input
+                            ref={studentFileRef}
+                            type="file"
+                            className="hidden"
+                            accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf"
+                            onChange={e => {
+                              const f = e.target.files?.[0] || null;
+                              setStudentFile(f);
+                              if (f && f.type.startsWith('image/')) {
+                                const reader = new FileReader();
+                                reader.onloadend = () => setStudentFilePreview(reader.result as string);
+                                reader.readAsDataURL(f);
+                              } else {
+                                setStudentFilePreview(null);
+                              }
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      {message.text && (
+                        <p className={cn("text-[11px]", message.type === 'error' ? "text-np-crimson" : "text-np-teal")}>
+                          {message.text}
+                        </p>
                       )}
+
                       <Button
                         onClick={async () => {
+                          if (!studentEduEmail || !studentFile) {
+                            setMessage({ type: 'error', text: 'Please fill in your email and upload your student ID card.' });
+                            return;
+                          }
                           setStudentLoading(true);
                           setMessage({ type: '', text: '' });
                           try {
+                            // Step 1: Upload ID card
+                            setStudentUploadProgress('uploading');
+                            const form = new FormData();
+                            form.append('file', studentFile);
+                            const uploadRes = await fetch('/api/student/upload', {
+                              method: 'POST',
+                              credentials: 'include',
+                              body: form,
+                            });
+                            const uploadData = await uploadRes.json();
+                            if (!uploadRes.ok) {
+                              setMessage({ type: 'error', text: uploadData.error || 'Upload failed.' });
+                              return;
+                            }
+                            setStudentUploadProgress('done');
+
+                            // Step 2: Submit application
                             const res = await fetch('/api/student/verify', {
                               method: 'POST',
                               headers: { 'Content-Type': 'application/json' },
                               credentials: 'include',
-                              body: JSON.stringify({ eduEmail: studentEduEmail }),
+                              body: JSON.stringify({ eduEmail: studentEduEmail, studentIdUrl: uploadData.url }),
                             });
                             const data = await res.json();
                             if (res.ok) {
-                              setMessage({ type: 'success', text: 'Student trial activated! You now have PRO access for 30 days.' });
-                              setStudentTrial({ hasTrial: true, eduEmail: studentEduEmail, expiresAt: data.expiresAt, isExpired: false });
-                              if (user) setUser({ ...user, plan: 'PRO' });
+                              setMessage({ type: 'success', text: 'Application submitted! We will review and email you within 1-2 business days.' });
+                              setStudentTrial({ hasTrial: true, status: 'PENDING', eduEmail: studentEduEmail });
                             } else {
-                              setMessage({ type: 'error', text: data.error || 'Verification failed.' });
+                              setMessage({ type: 'error', text: data.error || 'Submission failed.' });
                             }
                           } catch {
                             setMessage({ type: 'error', text: 'Network error. Please try again.' });
                           } finally {
                             setStudentLoading(false);
+                            setStudentUploadProgress('idle');
                           }
                         }}
-                        disabled={studentLoading || !studentEduEmail}
+                        disabled={studentLoading || !studentEduEmail || !studentFile}
                         className="w-full sm:w-auto px-8 h-10 uppercase tracking-widest text-[11px]"
                       >
-                        {studentLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Activate Student Trial'}
+                        {studentLoading
+                          ? studentUploadProgress === 'uploading'
+                            ? <><Loader2 className="h-4 w-4 animate-spin mr-2" />Uploading ID...</>
+                            : <><Loader2 className="h-4 w-4 animate-spin mr-2" />Submitting...</>
+                          : 'Submit Application'
+                        }
                       </Button>
                     </div>
                   </div>
