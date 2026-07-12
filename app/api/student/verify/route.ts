@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     const token = await getTokenFromRequest(req);
     if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const rl = await checkRateLimit(`student_verify_${token.userId}`, { maxRequests: 3, windowMs: 60 * 60 * 1000 });
+    const rl = await checkRateLimit(`student_verify_${token.userId}`, { maxRequests: 15, windowMs: 60 * 60 * 1000 });
     if (!rl.success) {
       return NextResponse.json({ error: 'Too many attempts. Please wait an hour.' }, { status: 429 });
     }
