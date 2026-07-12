@@ -63,7 +63,8 @@ export function PulseAI() {
         onClick={() => setIsOpen(!isOpen)}
         aria-label={isOpen ? "Close Pulse-AI" : "Open Pulse-AI"}
         className={cn(
-          "fixed bottom-24 md:bottom-6 right-6 h-14 w-14 rounded-full z-50 flex items-center justify-center transition-all duration-300 shadow-2xl group",
+          "fixed bottom-24 md:bottom-6 right-6 h-14 w-14 rounded-full z-50 items-center justify-center transition-all duration-300 shadow-2xl group",
+          isOpen ? "hidden md:flex" : "flex",
           isOpen ? "rotate-90 scale-90" : "hover:scale-110 active:scale-95"
         )}
         style={{
@@ -87,8 +88,14 @@ export function PulseAI() {
 
       {/* Chat Window */}
       {isOpen && (
-        <div 
-          className="fixed bottom-40 md:bottom-24 right-6 w-[350px] max-w-[calc(100vw-3rem)] h-[500px] max-h-[calc(100vh-10rem)] bg-card/80 backdrop-blur-xl border border-border rounded-card shadow-2xl z-50 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-300"
+        <div
+          className="fixed z-50 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-300
+            inset-0 md:inset-auto
+            md:bottom-24 md:right-6
+            md:w-[350px] md:max-w-[calc(100vw-3rem)]
+            md:h-[500px] md:max-h-[calc(100vh-10rem)]
+            md:rounded-card md:border md:border-border md:shadow-2xl
+            bg-card backdrop-blur-xl"
         >
           {/* Header */}
           <div className="p-4 border-b border-border bg-muted/30 flex items-center justify-between">
@@ -104,9 +111,9 @@ export function PulseAI() {
                 </p>
               </div>
             </div>
-            <button 
-              onClick={() => setIsOpen(false)} 
-              className="text-muted-foreground hover:text-foreground"
+            <button
+              onClick={() => setIsOpen(false)}
+              className="text-muted-foreground hover:text-foreground p-1"
               aria-label="Close"
             >
               <X className="h-4 w-4" />
@@ -146,20 +153,21 @@ export function PulseAI() {
             )}
           </div>
 
-          {/* Input */}
-          <div className="p-4 border-t border-border bg-muted/20">
+          {/* Input — sticky to bottom, clears keyboard on mobile */}
+          <div className="p-4 border-t border-border bg-muted/20 pb-[max(1rem,env(safe-area-inset-bottom))]">
             <div className="relative">
-              <input 
+              <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
                 placeholder="Ask something..."
-                className="w-full bg-background border border-border rounded-ui px-4 py-2.5 pr-10 text-[13px] outline-none focus:border-np-gold transition-colors"
+                enterKeyHint="send"
+                className="w-full bg-background border border-border rounded-ui px-4 py-3 pr-12 text-[14px] outline-none focus:border-np-gold transition-colors"
               />
-              <button 
+              <button
                 onClick={handleSend}
                 disabled={loading || !input.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-np-slate hover:text-np-gold disabled:opacity-30 transition-colors"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-np-slate hover:text-np-gold disabled:opacity-30 transition-colors"
                 aria-label="Send message"
               >
                 <Send className="h-4 w-4" />

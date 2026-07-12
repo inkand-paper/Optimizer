@@ -48,13 +48,13 @@ export async function POST(req: NextRequest) {
     const filename = `student-ids/${token.userId}/${Date.now()}.${ext}`;
 
     const blob = await put(filename, file, {
-      access: 'public', // URL is unguessable (content-addressed), readable by admin
+      access: 'private', // ID cards contain sensitive personal data — private access only
       contentType: file.type,
     });
 
     return NextResponse.json({
       success: true,
-      url: blob.url,
+      url: blob.url, // stored path — actual viewing requires a signed URL (see /api/admin/student-trials/signed-url)
     });
 
   } catch (error) {

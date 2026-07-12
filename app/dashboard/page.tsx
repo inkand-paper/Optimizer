@@ -384,6 +384,12 @@ export default function DashboardPage() {
                       <Book className="h-4 w-4" />
                       Documentation
                     </Link>
+                    {user?.role === 'ADMIN' && (
+                      <Link href="/dashboard/admin" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 p-3 rounded-ui text-[14px] font-medium text-np-gold hover:bg-np-gold/10">
+                        <ShieldCheck className="h-4 w-4" />
+                        Admin Panel
+                      </Link>
+                    )}
                   </div>
 
                   <div className="pt-4 border-t border-border">

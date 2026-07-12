@@ -256,85 +256,141 @@ export default function AdminPortal() {
             </Button>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[800px]">
+          {/* Desktop table */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-muted/40 border-b border-border">
-                  <th className="px-6 py-4 label-category text-muted-foreground">Unit Identity</th>
-                  <th className="px-6 py-4 label-category text-muted-foreground">Tier / Authorization</th>
-                  <th className="px-6 py-4 label-category text-muted-foreground text-center">Infrastructure Status</th>
-                  <th className="px-6 py-4 label-category text-muted-foreground">Activation Date</th>
-                  <th className="px-6 py-4 label-category text-muted-foreground text-right">Overrides</th>
+                  <th className="px-6 py-4 label-category text-muted-foreground">User</th>
+                  <th className="px-6 py-4 label-category text-muted-foreground">Plan / Role</th>
+                  <th className="px-6 py-4 label-category text-muted-foreground text-center">Usage</th>
+                  <th className="px-6 py-4 label-category text-muted-foreground">Joined</th>
+                  <th className="px-6 py-4 label-category text-muted-foreground text-right"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border bg-card">
                 {filteredUsers.map((user) => (
                   <tr key={user.id} className="hover:bg-muted/20 transition-all group">
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 rounded-ui bg-np-gold/10 border border-np-gold/20 flex items-center justify-center text-np-gold font-bold text-lg uppercase">
+                      <div className="flex items-center gap-3">
+                        <div className="h-9 w-9 rounded-ui bg-np-gold/10 border border-np-gold/20 flex items-center justify-center text-np-gold font-bold text-sm uppercase shrink-0">
                           {user.name?.[0] || user.email[0]}
                         </div>
-                        <div>
-                          <p className="text-[13px] font-semibold uppercase tracking-tight mb-0.5">{user.name || "UNIDENTIFIED UNIT"}</p>
-                          <p className="text-[11px] text-muted-foreground font-mono">{user.email}</p>
+                        <div className="min-w-0">
+                          <p className="text-[13px] font-semibold truncate">{user.name || "Unnamed"}</p>
+                          <p className="text-[11px] text-muted-foreground truncate font-mono">{user.email}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <select 
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <select
                           value={user.plan}
                           onChange={(e) => updateUser(user.id, { plan: e.target.value })}
                           disabled={updatingId === user.id}
-                          className="text-[10px] font-semibold uppercase tracking-widest px-2 py-1.5 rounded bg-muted border border-border focus:border-np-gold transition-all outline-none"
+                          className="text-[10px] font-semibold uppercase tracking-wider px-2 py-1.5 rounded bg-muted border border-border focus:border-np-gold outline-none"
                         >
-                          <option value="FREE">Standard</option>
-                          <option value="PRO">Optimizer Pro</option>
-                          <option value="BUSINESS">Agency Elite</option>
+                          <option value="FREE">Free</option>
+                          <option value="PRO">PRO</option>
+                          <option value="BUSINESS">Agency</option>
                         </select>
-                        <select 
+                        <select
                           value={user.role}
                           onChange={(e) => updateUser(user.id, { role: e.target.value })}
                           disabled={updatingId === user.id}
-                          className="text-[10px] font-semibold uppercase tracking-widest px-2 py-1.5 rounded bg-np-gold/10 text-np-gold border border-np-gold/20 transition-all outline-none"
+                          className="text-[10px] font-semibold uppercase tracking-wider px-2 py-1.5 rounded bg-np-gold/10 text-np-gold border border-np-gold/20 outline-none"
                         >
-                          <option value="DEVELOPER">Operator</option>
-                          <option value="ADMIN">Command</option>
+                          <option value="DEVELOPER">Developer</option>
+                          <option value="ADMIN">Admin</option>
                         </select>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                       <div className="flex items-center justify-center gap-6">
-                          <div className="flex flex-col items-center">
-                            <span className="text-[12px] font-mono font-semibold text-foreground mb-0.5">{user._count.monitors}</span>
-                            <span className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground">Assets</span>
-                          </div>
-                          <div className="flex flex-col items-center">
-                            <span className="text-[12px] font-mono font-semibold text-foreground mb-0.5">{user._count.apiKeys}</span>
-                            <span className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground">Keys</span>
-                          </div>
-                       </div>
+                      <div className="flex items-center justify-center gap-4">
+                        <div className="text-center">
+                          <p className="text-[12px] font-mono font-semibold">{user._count.monitors}</p>
+                          <p className="text-[9px] uppercase text-muted-foreground">Monitors</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-[12px] font-mono font-semibold">{user._count.apiKeys}</p>
+                          <p className="text-[9px] uppercase text-muted-foreground">Keys</p>
+                        </div>
+                      </div>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="text-[11px] font-mono font-semibold text-muted-foreground">
+                      <p className="text-[11px] font-mono text-muted-foreground">
                         {new Date(user.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()}
                       </p>
                     </td>
                     <td className="px-6 py-4 text-right">
-                       <button 
-                         onClick={() => deleteUser(user.id)}
-                         disabled={updatingId === user.id}
-                         className="p-2 text-muted-foreground hover:text-np-crimson transition-all opacity-0 group-hover:opacity-100 disabled:opacity-50"
-                         title="Decommission Unit"
-                       >
-                          <Trash2 className="h-4 w-4" />
-                       </button>
+                      <button
+                        onClick={() => deleteUser(user.id)}
+                        disabled={updatingId === user.id}
+                        className="p-2 text-muted-foreground hover:text-np-crimson transition-all opacity-0 group-hover:opacity-100 disabled:opacity-50"
+                        title="Delete user"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile card list */}
+          <div className="md:hidden divide-y divide-border">
+            {filteredUsers.map((user) => (
+              <div key={user.id} className="p-4 space-y-3">
+                {/* Identity */}
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 rounded-ui bg-np-gold/10 border border-np-gold/20 flex items-center justify-center text-np-gold font-bold text-sm uppercase shrink-0">
+                    {user.name?.[0] || user.email[0]}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[13px] font-semibold truncate">{user.name || "Unnamed"}</p>
+                    <p className="text-[11px] text-muted-foreground truncate">{user.email}</p>
+                  </div>
+                  <button
+                    onClick={() => deleteUser(user.id)}
+                    disabled={updatingId === user.id}
+                    className="p-2 text-muted-foreground hover:text-np-crimson transition-colors shrink-0"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+
+                {/* Controls */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <select
+                    value={user.plan}
+                    onChange={(e) => updateUser(user.id, { plan: e.target.value })}
+                    disabled={updatingId === user.id}
+                    className="flex-1 text-[11px] font-semibold uppercase tracking-wider px-3 py-2 rounded bg-muted border border-border focus:border-np-gold outline-none"
+                  >
+                    <option value="FREE">Free</option>
+                    <option value="PRO">PRO</option>
+                    <option value="BUSINESS">Agency</option>
+                  </select>
+                  <select
+                    value={user.role}
+                    onChange={(e) => updateUser(user.id, { role: e.target.value })}
+                    disabled={updatingId === user.id}
+                    className="flex-1 text-[11px] font-semibold uppercase tracking-wider px-3 py-2 rounded bg-np-gold/10 text-np-gold border border-np-gold/20 outline-none"
+                  >
+                    <option value="DEVELOPER">Developer</option>
+                    <option value="ADMIN">Admin</option>
+                  </select>
+                </div>
+
+                {/* Stats */}
+                <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
+                  <span>{user._count.monitors} monitors</span>
+                  <span>{user._count.apiKeys} keys</span>
+                  <span className="ml-auto">{new Date(user.createdAt).toLocaleDateString()}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </Card>
 
@@ -389,17 +445,19 @@ export default function AdminPortal() {
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
-                      {/* View ID card */}
+                      {/* View ID card — fetches signed URL (private blob) */}
                       {trial.studentIdUrl && (
-                        <a
-                          href={trial.studentIdUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        <button
+                          onClick={async () => {
+                            const res = await fetch(`/api/admin/student-trials/signed-url?trialId=${trial.id}`, { credentials: 'include' });
+                            const data = await res.json();
+                            if (data.url) window.open(data.url, '_blank');
+                          }}
                           className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-border text-[11px] text-muted-foreground hover:text-foreground hover:border-np-gold/40 transition-all"
                         >
                           <Eye className="h-3.5 w-3.5" />
                           View ID
-                        </a>
+                        </button>
                       )}
 
                       {trial.status === 'PENDING' && (
@@ -438,28 +496,21 @@ export default function AdminPortal() {
               <p className="text-[10px] text-muted-foreground">Submitted {new Date(reviewingTrial.submittedAt).toLocaleDateString()}</p>
             </div>
 
-            {/* ID card preview */}
+            {/* ID card preview — loads via signed URL */}
             {reviewingTrial.studentIdUrl && (
               <div className="space-y-2">
                 <p className="label-category text-[10px]">Student ID Card</p>
-                {reviewingTrial.studentIdUrl.match(/[.](jpg|jpeg|png|webp)$/i) ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={reviewingTrial.studentIdUrl}
-                    alt="Student ID"
-                    className="w-full max-h-48 object-contain rounded-ui border border-border bg-muted/20"
-                  />
-                ) : (
-                  <a
-                    href={reviewingTrial.studentIdUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 p-3 border border-border rounded-ui text-[12px] text-np-gold hover:bg-np-gold/5 transition-colors"
-                  >
-                    <Eye className="h-4 w-4" />
-                    Open PDF in new tab
-                  </a>
-                )}
+                <button
+                  onClick={async () => {
+                    const res = await fetch(`/api/admin/student-trials/signed-url?trialId=${reviewingTrial.id}`, { credentials: 'include' });
+                    const data = await res.json();
+                    if (data.url) window.open(data.url, '_blank');
+                  }}
+                  className="w-full flex items-center justify-center gap-2 p-4 border border-border rounded-ui text-[12px] text-np-gold hover:bg-np-gold/5 transition-colors"
+                >
+                  <Eye className="h-4 w-4" />
+                  Open ID card (secure link, expires in 60s)
+                </button>
               </div>
             )}
 
