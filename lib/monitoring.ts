@@ -21,7 +21,7 @@ export async function performCheck(monitorId: string, url: string) {
       headers: { 'User-Agent': 'NextOptimizerMonitor/1.0' },
       cache: 'no-store',
       // [PRODUCTION] Add a timeout to the fetch itself
-      signal: AbortSignal.timeout(10000) 
+      signal: AbortSignal.timeout(8000), // 8s — leaves headroom for DB writes within Vercel function limits
     });
 
     latency = Date.now() - startTime;
@@ -32,7 +32,17 @@ export async function performCheck(monitorId: string, url: string) {
   } catch (error) {
     latency = Date.now() - startTime;
     status = 'DOWN';
-    message = error instanceof Error ? error.message : 'Connection failed';
+    if (error instanceof Error) {
+      if (error.name === 'TimeoutError' || error.message.includes('aborted')) {
+        message = 'Request timed out';
+      } else if (error.message.includes('fetch failed') || error.message.includes('ECONNREFUSED')) {
+        message = 'Connection refused';
+      } else {
+        message = error.message;
+      }
+    } else {
+      message = 'Connection failed';
+    }
     console.error(`[MONITOR PROBE FAILED] ${url}: ${message}`);
   }
 

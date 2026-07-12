@@ -37,6 +37,7 @@ export function PulseAI() {
       const res = await fetch("/api/ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ 
           message: input,
           history: messages.slice(-4) 
@@ -44,10 +45,14 @@ export function PulseAI() {
       });
 
       const data = await res.json();
-      if (data.content) {
+      if (res.status === 401) {
+        setMessages((prev) => [...prev, { role: "assistant", content: "Session expired. Please refresh the page and log in again." }]);
+      } else if (res.status === 429) {
+        setMessages((prev) => [...prev, { role: "assistant", content: data.content || "Rate limit reached. Please wait a moment before sending another message." }]);
+      } else if (data.content) {
         setMessages((prev) => [...prev, { role: "assistant", content: data.content }]);
       } else {
-        setMessages((prev) => [...prev, { role: "assistant", content: "Signal lost. Please retry." }]);
+        setMessages((prev) => [...prev, { role: "assistant", content: "No response received. Please try again." }]);
       }
     } catch {
       setMessages((prev) => [...prev, { role: "assistant", content: "Communication failure." }]);

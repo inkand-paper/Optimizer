@@ -5,7 +5,7 @@ import { performCheck } from '@/lib/monitoring';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // Allow more time for checking multiple URLs
 
-const BATCH_SIZE = 50;
+const BATCH_SIZE = 10; // 10 concurrent checks — prevents timeout cascade when each probe takes up to 8s
 
 export async function GET(request: Request) {
   try {

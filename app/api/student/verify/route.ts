@@ -38,27 +38,49 @@ export async function POST(req: NextRequest) {
       if (existingByUser.status === 'APPROVED') {
         return NextResponse.json({ error: 'You have already used your student trial.' }, { status: 409 });
       }
-      // REJECTED — allow reapplication by deleting old record
-      await prisma.studentTrial.delete({ where: { userId: token.userId } });
-    }
+      // REJECTED — check email BEFORE deleting, then upsert atomically
+      // If the rejected record has the same email, we allow reuse (same person reapplying)
+      const isSameEmail = existingByUser.eduEmail === eduEmail.toLowerCase();
+      if (!isSameEmail) {
+        // Different email on reapply — check it's not used by someone else
+        const emailTakenByOther = await prisma.studentTrial.findUnique({
+          where: { eduEmail: eduEmail.toLowerCase() }
+        });
+        if (emailTakenByOther) {
+          return NextResponse.json({ error: 'This email has already been used for a student trial by another account.' }, { status: 409 });
+        }
+      }
+      // Delete the rejected record and recreate atomically
+      await prisma.$transaction([
+        prisma.studentTrial.delete({ where: { userId: token.userId } }),
+        prisma.studentTrial.create({
+          data: {
+            userId: token.userId,
+            eduEmail: eduEmail.toLowerCase(),
+            studentIdUrl,
+            status: 'PENDING',
+          },
+        }),
+      ]);
+    } else {
+      // No existing trial — check email not used by anyone
+      const existingByEmail = await prisma.studentTrial.findUnique({
+        where: { eduEmail: eduEmail.toLowerCase() }
+      });
+      if (existingByEmail) {
+        return NextResponse.json({ error: 'This email has already been used for a student trial.' }, { status: 409 });
+      }
 
-    // Check if email already used
-    const existingByEmail = await prisma.studentTrial.findUnique({
-      where: { eduEmail: eduEmail.toLowerCase() }
-    });
-    if (existingByEmail) {
-      return NextResponse.json({ error: 'This email has already been used for a student trial.' }, { status: 409 });
+      // Create PENDING record — no plan upgrade yet, admin must approve
+      await prisma.studentTrial.create({
+        data: {
+          userId: token.userId,
+          eduEmail: eduEmail.toLowerCase(),
+          studentIdUrl,
+          status: 'PENDING',
+        },
+      });
     }
-
-    // Create PENDING record — no plan upgrade yet, admin must approve
-    await prisma.studentTrial.create({
-      data: {
-        userId: token.userId,
-        eduEmail: eduEmail.toLowerCase(),
-        studentIdUrl,
-        status: 'PENDING',
-      },
-    });
 
     return NextResponse.json({
       success: true,
