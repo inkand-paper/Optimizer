@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
 
     // Rate limit: 5 uploads per hour per user (covers re-uploads)
     const rl = await checkRateLimit(`student_upload_${token.userId}`, {
-      maxRequests: 5,
+      maxRequests: 50,
       windowMs: 60 * 60 * 1000,
     });
     if (!rl.success) {
