@@ -267,3 +267,67 @@ export async function sendStudentRejectionEmail({
     return { success: false, error };
   }
 }
+
+export async function sendStudentTrialReminderEmail({
+  email,
+  userName,
+  expiresAt,
+  daysLeft,
+}: {
+  email: string;
+  userName: string;
+  expiresAt: string;
+  daysLeft: number;
+}) {
+  try {
+    const { StudentTrialReminderEmail } = await import('@/components/emails/student-trial-reminder');
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nexpulse.vercel.app';
+    const upgradeUrl = `${appUrl}/dashboard/profile`;
+    const html = await render(React.createElement(StudentTrialReminderEmail, { userName, expiresAt, daysLeft, upgradeUrl }));
+    return await sendEmail({
+      to: email,
+      subject: `⏳ NexPulse: Your student trial expires in ${daysLeft} day${daysLeft === 1 ? '' : 's'}`,
+      html,
+    });
+  } catch (error) {
+    console.error('❌ Failed to send student trial reminder email:', error);
+    return { success: false, error };
+  }
+}
+
+export async function sendStudentTrialExpiredEmail({
+  email,
+  userName,
+}: {
+  email: string;
+  userName: string;
+}) {
+  try {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nexpulse.vercel.app';
+    const upgradeUrl = `${appUrl}/dashboard/profile`;
+    const html = `
+      <div style="background:#0a0a0a;font-family:monospace;padding:40px 20px;max-width:560px;margin:0 auto">
+        <h1 style="color:#d4af37;font-size:22px;letter-spacing:0.1em;text-transform:uppercase">⚡ NexPulse</h1>
+        <hr style="border-color:#222" />
+        <p style="color:#e5e5e5;font-size:16px">Trial expired, ${userName}.</p>
+        <p style="color:#999;font-size:14px;line-height:1.6">
+          Your 30-day student PRO trial has ended. Your account has been returned to the <strong style="color:#d4af37">FREE</strong> tier.
+        </p>
+        <p style="color:#999;font-size:14px">
+          To keep your PRO features, upgrade at any time from your
+          <a href="${upgradeUrl}" style="color:#d4af37">profile page</a>.
+        </p>
+        <hr style="border-color:#222;margin-top:32px" />
+        <p style="color:#333;font-size:11px;text-align:center">NexPulse · Infrastructure Intelligence Engine</p>
+      </div>
+    `;
+    return await sendEmail({
+      to: email,
+      subject: 'NexPulse: Your student trial has ended',
+      html,
+    });
+  } catch (error) {
+    console.error('❌ Failed to send student trial expired email:', error);
+    return { success: false, error };
+  }
+}
