@@ -34,8 +34,8 @@ export const StudentTrialReminderEmail = ({ userName, expiresAt, daysLeft, upgra
           <Text style={{ color: "#d4af37", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.15em", margin: "0 0 12px" }}>
             What you will lose on FREE
           </Text>
-          <Text style={{ color: "#888", fontSize: "13px", margin: "4px 0" }}>✗ Drops from 10 monitors → 3 monitors</Text>
-          <Text style={{ color: "#888", fontSize: "13px", margin: "4px 0" }}>✗ Drops from 50 AI audits → 5 per month</Text>
+          <Text style={{ color: "#888", fontSize: "13px", margin: "4px 0" }}>✗ Drops from 10 monitors → 1 monitor</Text>
+          <Text style={{ color: "#888", fontSize: "13px", margin: "4px 0" }}>✗ Drops from 50 AI audits → 3 per month</Text>
           <Text style={{ color: "#888", fontSize: "13px", margin: "4px 0" }}>✗ No Intelligence Bank access</Text>
           <Text style={{ color: "#888", fontSize: "13px", margin: "4px 0" }}>✗ No webhooks or API keys</Text>
         </Section>
@@ -59,7 +59,7 @@ export const StudentTrialReminderEmail = ({ userName, expiresAt, daysLeft, upgra
             Upgrade to PRO — Keep Access
           </Button>
           <Text style={{ color: "#444", fontSize: "11px", marginTop: "12px" }}>
-            Or visit nexpulse.vercel.app → Dashboard → Profile → Manage Subscription
+            Or visit Dashboard → Profile → Manage Subscription
           </Text>
         </Section>
 

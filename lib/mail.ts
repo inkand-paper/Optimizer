@@ -303,24 +303,10 @@ export async function sendStudentTrialExpiredEmail({
   userName: string;
 }) {
   try {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nexpulse.vercel.app';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextjs-optimizer-suite.vercel.app';
     const upgradeUrl = `${appUrl}/dashboard/profile`;
-    const html = `
-      <div style="background:#0a0a0a;font-family:monospace;padding:40px 20px;max-width:560px;margin:0 auto">
-        <h1 style="color:#d4af37;font-size:22px;letter-spacing:0.1em;text-transform:uppercase">⚡ NexPulse</h1>
-        <hr style="border-color:#222" />
-        <p style="color:#e5e5e5;font-size:16px">Trial expired, ${userName}.</p>
-        <p style="color:#999;font-size:14px;line-height:1.6">
-          Your 30-day student PRO trial has ended. Your account has been returned to the <strong style="color:#d4af37">FREE</strong> tier.
-        </p>
-        <p style="color:#999;font-size:14px">
-          To keep your PRO features, upgrade at any time from your
-          <a href="${upgradeUrl}" style="color:#d4af37">profile page</a>.
-        </p>
-        <hr style="border-color:#222;margin-top:32px" />
-        <p style="color:#333;font-size:11px;text-align:center">NexPulse · Infrastructure Intelligence Engine</p>
-      </div>
-    `;
+    const { StudentTrialExpiredEmail } = await import('@/components/emails/student-trial-expired');
+    const html = await render(React.createElement(StudentTrialExpiredEmail, { userName, upgradeUrl }));
     return await sendEmail({
       to: email,
       subject: 'NexPulse: Your student trial has ended',
