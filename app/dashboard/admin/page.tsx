@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Navbar } from "@/components/navbar";
-import { Users, Zap, Search, ArrowLeft, Trash2, GraduationCap, Check, X, Eye, Clock, ChevronDown } from "lucide-react";
+import { Users, Zap, Search, ArrowLeft, Trash2, GraduationCap, Check, X, Eye, Clock, ChevronDown, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Card, Button, Input } from "@/components/ui-elements";
@@ -58,6 +58,40 @@ export default function AdminPortal() {
   const [rejectionNote, setRejectionNote] = React.useState('');
   const [reviewLoading, setReviewLoading] = React.useState(false);
   const [trialFilter, setTrialFilter] = React.useState<'PENDING' | 'APPROVED' | 'REJECTED'>('PENDING');
+  const [giftTarget, setGiftTarget] = React.useState<AdminUser | null>(null);
+  const [giftPlan, setGiftPlan] = React.useState<'PRO' | 'BUSINESS'>('PRO');
+  const [giftDays, setGiftDays] = React.useState(30);
+  const [giftPermanent, setGiftPermanent] = React.useState(false);
+  const [giftReason, setGiftReason] = React.useState('');
+  const [giftLoading, setGiftLoading] = React.useState(false);
+
+  const handleGift = async () => {
+    if (!giftTarget) return;
+    setGiftLoading(true);
+    try {
+      const res = await fetch('/api/admin/gift-trial', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          userId: giftTarget.id,
+          plan: giftPlan,
+          days: giftPermanent ? undefined : giftDays,
+          permanent: giftPermanent,
+          reason: giftReason || undefined,
+        }),
+      });
+      if (res.ok) {
+        setUsers(prev => prev.map(u => u.id === giftTarget.id ? { ...u, plan: giftPlan } : u));
+        setGiftTarget(null);
+        setGiftReason('');
+      }
+    } catch {
+      console.error('Gift failed');
+    } finally {
+      setGiftLoading(false);
+    }
+  };
 
   const fetchUsers = async () => {
     try {
@@ -327,14 +361,23 @@ export default function AdminPortal() {
                       </p>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => deleteUser(user.id)}
-                        disabled={updatingId === user.id}
-                        className="p-2 text-muted-foreground hover:text-np-crimson transition-all opacity-0 group-hover:opacity-100 disabled:opacity-50"
-                        title="Delete user"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => { setGiftTarget(user); setGiftPlan('PRO'); setGiftDays(30); setGiftPermanent(false); setGiftReason(''); }}
+                          className="p-2 text-muted-foreground hover:text-np-gold transition-all opacity-0 group-hover:opacity-100"
+                          title="Gift PRO"
+                        >
+                          <Zap className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => deleteUser(user.id)}
+                          disabled={updatingId === user.id}
+                          className="p-2 text-muted-foreground hover:text-np-crimson transition-all opacity-0 group-hover:opacity-100 disabled:opacity-50"
+                          title="Delete user"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -355,6 +398,13 @@ export default function AdminPortal() {
                     <p className="text-[13px] font-semibold truncate">{user.name || "Unnamed"}</p>
                     <p className="text-[11px] text-muted-foreground truncate">{user.email}</p>
                   </div>
+                  <button
+                    onClick={() => { setGiftTarget(user); setGiftPlan('PRO'); setGiftDays(30); setGiftPermanent(false); setGiftReason(''); }}
+                    className="p-2 text-muted-foreground hover:text-np-gold transition-colors shrink-0"
+                    title="Gift PRO"
+                  >
+                    <Zap className="h-4 w-4" />
+                  </button>
                   <button
                     onClick={() => deleteUser(user.id)}
                     disabled={updatingId === user.id}
@@ -478,6 +528,109 @@ export default function AdminPortal() {
           </Card>
         )}
       </main>
+
+      {/* ── Gift PRO Modal ── */}
+      {giftTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="w-full max-w-md bg-background border border-border rounded-ui shadow-2xl p-6 space-y-5 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between">
+              <h3 className="text-[14px] font-bold uppercase flex items-center gap-2">
+                <Zap className="h-4 w-4 text-np-gold" />
+                Gift Plan Access
+              </h3>
+              <button onClick={() => setGiftTarget(null)} className="text-muted-foreground hover:text-foreground">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* User info */}
+            <div className="p-3 bg-muted/30 rounded-ui">
+              <p className="text-[13px] font-medium">{giftTarget.name || giftTarget.email}</p>
+              <p className="text-[11px] text-muted-foreground">{giftTarget.email}</p>
+              <p className="text-[10px] text-muted-foreground mt-1">Current plan: <span className="text-np-gold">{giftTarget.plan}</span></p>
+            </div>
+
+            {/* Plan picker */}
+            <div className="space-y-2">
+              <p className="label-category text-[10px]">Plan to Gift</p>
+              <div className="grid grid-cols-2 gap-2">
+                {(['PRO', 'BUSINESS'] as const).map(p => (
+                  <button
+                    key={p}
+                    onClick={() => setGiftPlan(p)}
+                    className={cn(
+                      "py-2.5 rounded-ui border text-[12px] font-semibold uppercase tracking-wider transition-all",
+                      giftPlan === p
+                        ? "bg-np-gold/15 border-np-gold/40 text-np-gold"
+                        : "border-border text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {p === 'BUSINESS' ? 'Agency' : p}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Duration */}
+            <div className="space-y-3">
+              <p className="label-category text-[10px]">Duration</p>
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-2 text-[12px] cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={giftPermanent}
+                    onChange={e => setGiftPermanent(e.target.checked)}
+                    className="rounded"
+                  />
+                  Permanent (no expiry)
+                </label>
+              </div>
+              {!giftPermanent && (
+                <div className="grid grid-cols-4 gap-2">
+                  {[7, 30, 60, 90].map(d => (
+                    <button
+                      key={d}
+                      onClick={() => setGiftDays(d)}
+                      className={cn(
+                        "py-2 rounded-ui border text-[11px] font-medium transition-all",
+                        giftDays === d
+                          ? "bg-np-gold/15 border-np-gold/40 text-np-gold"
+                          : "border-border text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      {d}d
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Internal reason */}
+            <div className="space-y-2">
+              <p className="label-category text-[10px]">Internal Note (optional)</p>
+              <input
+                type="text"
+                value={giftReason}
+                onChange={e => setGiftReason(e.target.value)}
+                placeholder="e.g. launch promo, influencer, partner"
+                className="w-full h-9 px-3 rounded-ui bg-muted/30 border border-border text-[12px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-np-gold/50"
+              />
+            </div>
+
+            {/* Confirm */}
+            <Button
+              onClick={handleGift}
+              disabled={giftLoading}
+              className="w-full h-10 text-[11px] uppercase tracking-widest flex items-center justify-center gap-2"
+            >
+              {giftLoading
+                ? <><Loader2 className="h-4 w-4 animate-spin" />Gifting...</>
+                : <><Zap className="h-4 w-4" />Gift {giftPlan} {giftPermanent ? 'Permanently' : `for ${giftDays} days`}</>
+              }
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* ── Review Modal ── */}
       {reviewingTrial && (
