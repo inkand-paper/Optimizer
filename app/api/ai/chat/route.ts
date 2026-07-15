@@ -33,18 +33,18 @@ NexPulse is an infrastructure monitoring and auditing platform with these featur
 ## Plans and Pricing
 
 Starter (Free):
-- 1 monitored site, 500 health checks/month, 3 code audits/month
+- 1 monitored site, checked every 5 minutes, 500 health checks/month, 3 code audits/month
 - 1 webhook, 7-day log retention
 - No API keys, no cache revalidation, no AI diagnosis
 
 Professional ($29/month):
-- 10 monitored sites, 25,000 health checks/month, 50 code audits/month
+- 10 monitored sites, checked every 5 minutes, 25,000 health checks/month, 50 code audits/month
 - 5 webhooks, 30-day log retention
 - API keys and cache revalidation included
 - Full AI diagnosis on audits, Intelligence Bank access
 
 Agency ($129/month):
-- Unlimited everything
+- Unlimited everything, checked every 1 minute
 - 50 webhooks, 365-day log retention
 - All PRO features plus priority AI processing
 

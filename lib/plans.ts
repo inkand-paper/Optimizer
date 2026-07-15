@@ -7,7 +7,7 @@ export const PLAN_LIMITS = {
     checks: 500,
     webhooks: 1,
     audits: 3,
-    interval: 60,
+    interval: 300,  // 5 min — matches cron frequency
     retentionDays: 7,
     allowRevalidate: false,
     allowApiKeys: false,
@@ -31,7 +31,7 @@ export const PLAN_LIMITS = {
     checks: 25000,
     webhooks: 5,
     audits: 50,
-    interval: 30,
+    interval: 300,  // 5 min — matches cron frequency
     retentionDays: 30,
     allowRevalidate: true,
     allowApiKeys: true,
@@ -55,7 +55,7 @@ export const PLAN_LIMITS = {
     checks: 999999999,
     webhooks: 50,
     audits: 999999999,
-    interval: 10,
+    interval: 60,   // 1 min — honoured on Vercel Pro with 1-min cron
     retentionDays: 365,
     allowRevalidate: true,
     allowApiKeys: true,
