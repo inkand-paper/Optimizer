@@ -65,6 +65,7 @@ model User {
   webhooks     Webhook[]
   codeReviews CodeReview[]
   studentTrial StudentTrial?
+  giftedTrial  GiftedTrial?
 }
 
 model Account {
@@ -244,4 +245,19 @@ model StudentTrial {
   @@index([userId])
   @@index([eduEmail])
   @@index([status])
+}
+
+model GiftedTrial {
+  id        String    @id @default(uuid())
+  userId    String    @unique  // one active gift per user at a time
+  giftedBy  String             // admin userId who gifted it
+  plan      String    @default("PRO")
+  reason    String?            // internal note e.g. "launch promo", "influencer"
+  permanent Boolean   @default(false)
+  expiresAt DateTime?          // null if permanent=true
+  giftedAt  DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
 }
