@@ -12,7 +12,7 @@ interface GiftedTrialEmailProps {
 export const GiftedTrialEmail = ({ userName, plan, permanent, expiresAt, dashboardUrl }: GiftedTrialEmailProps) => (
   <Html>
     <Head />
-    <Preview>You've been gifted {plan} access on NexPulse</Preview>
+    <Preview>You&apos;ve been gifted {plan} access on NexPulse</Preview>
     <Body style={{ backgroundColor: "#0a0a0a", fontFamily: "monospace" }}>
       <Container style={{ maxWidth: "560px", margin: "0 auto", padding: "40px 20px" }}>
         <Heading style={{ color: "#d4af37", fontSize: "22px", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase" }}>
