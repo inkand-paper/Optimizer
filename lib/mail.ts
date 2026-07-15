@@ -331,13 +331,21 @@ export async function sendGiftedTrialEmail({
   permanent: boolean;
   expiresAt?: string;
 }) {
-  // Full template added in M4
   try {
-    const expiry = permanent ? 'This is a permanent upgrade.' : `Your access expires on ${expiresAt}.`;
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextjs-optimizer-suite.vercel.app';
+    const { GiftedTrialEmail } = await import('@/components/emails/gifted-trial');
+    const html = await render(React.createElement(GiftedTrialEmail, {
+      userName,
+      plan,
+      permanent,
+      expiresAt,
+      dashboardUrl: `${appUrl}/dashboard`,
+    }));
+    const planLabel = plan === 'BUSINESS' ? 'Agency' : plan;
     return await sendEmail({
       to: email,
-      subject: `⚡ NexPulse: You've been gifted ${plan} access`,
-      html: `<p>Hi ${userName},</p><p>You've been gifted <strong>${plan}</strong> access on NexPulse. ${expiry}</p><p>Log in to your dashboard to start using your upgraded features.</p>`,
+      subject: `⚡ NexPulse: You've been gifted ${planLabel} access`,
+      html,
     });
   } catch (error) {
     console.error('❌ Failed to send gifted trial email:', error);
