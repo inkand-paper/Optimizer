@@ -7,6 +7,10 @@
   "outputDirectory": ".next",
   "crons": [
     {
+      "path": "/api/cron/monitor",
+      "schedule": "*/5 * * * *"
+    },
+    {
       "path": "/api/cron/expire-trials",
       "schedule": "0 2 * * *"
     }
