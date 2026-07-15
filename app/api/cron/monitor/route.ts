@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { performCheck } from '@/lib/monitoring';
+import { PLAN_LIMITS } from '@/lib/plans';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // Allow more time for checking multiple URLs
@@ -15,20 +16,39 @@ export async function GET(request: Request) {
       return new Response('Unauthorized', { status: 401 });
     }
 
+    const now = new Date();
+
+    // Fetch monitors with user plan so we can honour per-plan check intervals
     const monitors = await prisma.monitor.findMany({
-      select: { id: true, url: true }
+      select: {
+        id: true,
+        url: true,
+        lastChecked: true,
+        user: { select: { plan: true } },
+      },
+    });
+
+    // Filter: only check monitors whose interval has elapsed since lastChecked
+    const dueMonitors = monitors.filter((m: {
+      lastChecked: Date | null;
+      user: { plan: string } | null;
+    }) => {
+      const plan = (m.user?.plan || 'FREE') as keyof typeof PLAN_LIMITS;
+      const intervalMs = PLAN_LIMITS[plan].interval * 1000;
+      if (!m.lastChecked) return true; // never checked — always due
+      return now.getTime() - new Date(m.lastChecked).getTime() >= intervalMs;
     });
     
-    if (monitors.length === 0) {
-      return NextResponse.json({ success: true, message: 'No active monitors found', checked: 0 });
+    if (dueMonitors.length === 0) {
+      return NextResponse.json({ success: true, message: 'No monitors due for checking', checked: 0 });
     }
 
     // [PRODUCTION SCALE] Batch execution to prevent connection pool exhaustion and memory spikes
     let successful = 0;
     let failed = 0;
 
-    for (let i = 0; i < monitors.length; i += BATCH_SIZE) {
-      const batch = monitors.slice(i, i + BATCH_SIZE);
+    for (let i = 0; i < dueMonitors.length; i += BATCH_SIZE) {
+      const batch = dueMonitors.slice(i, i + BATCH_SIZE);
       const checkPromises = batch.map((monitor: { id: string; url: string }) => performCheck(monitor.id, monitor.url));
       
       const results = await Promise.allSettled(checkPromises);
@@ -39,9 +59,10 @@ export async function GET(request: Request) {
     return NextResponse.json({
       success: true,
       message: 'Monitoring cycle completed',
-      checked: monitors.length,
+      total: monitors.length,
+      checked: dueMonitors.length,
       successful,
-      failed
+      failed,
     });
   } catch (error) {
     console.error('Monitoring cron failed:', error);
