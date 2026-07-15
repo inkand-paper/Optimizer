@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
     // ── 1. Send reminder emails for trials expiring in 1–3 days ─────────────
     const in3Days = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
-    const in1Day  = new Date(now.getTime() + 1 * 24 * 60 * 60 * 1000);
+    const in1Day = new Date(now.getTime() + 1 * 24 * 60 * 60 * 1000); // eslint-disable-line @typescript-eslint/no-unused-vars
 
     const soonExpiring = await prisma.studentTrial.findMany({
       where: {
@@ -85,10 +85,35 @@ export async function GET(request: NextRequest) {
       data: { isActive: false },
     });
 
+    // Expire gifted trials (non-permanent, past expiresAt, no active subscription)
+    const expiredGifts = await prisma.giftedTrial.findMany({
+      where: { permanent: false, expiresAt: { lt: now } },
+      include: { user: { select: { id: true, plan: true, subscriptionId: true } } },
+    });
+
+    const giftsToDowngrade = expiredGifts.filter(
+      (g: { user: { plan: string; subscriptionId: string | null } }) =>
+        g.user.plan !== 'FREE' && !g.user.subscriptionId
+    );
+
+    if (giftsToDowngrade.length > 0) {
+      await prisma.$transaction([
+        prisma.user.updateMany({
+          where: { id: { in: giftsToDowngrade.map((g: { userId: string }) => g.userId) } },
+          data: { plan: 'FREE' as never },
+        }),
+        prisma.giftedTrial.deleteMany({
+          where: { userId: { in: giftsToDowngrade.map((g: { userId: string }) => g.userId) } },
+        }),
+      ]);
+      console.log(`[CRON] Expired ${giftsToDowngrade.length} gifted trial(s) → downgraded to FREE`);
+    }
+
     return NextResponse.json({
       success: true,
       remindersSent,
       trialsExpired: toDowngrade.length,
+      giftsExpired: giftsToDowngrade.length,
       promotionsDeactivated: deactivated.count,
     });
   } catch (error) {

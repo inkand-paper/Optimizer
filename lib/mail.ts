@@ -317,3 +317,30 @@ export async function sendStudentTrialExpiredEmail({
     return { success: false, error };
   }
 }
+
+export async function sendGiftedTrialEmail({
+  email,
+  userName,
+  plan,
+  permanent,
+  expiresAt,
+}: {
+  email: string;
+  userName: string;
+  plan: string;
+  permanent: boolean;
+  expiresAt?: string;
+}) {
+  // Full template added in M4
+  try {
+    const expiry = permanent ? 'This is a permanent upgrade.' : `Your access expires on ${expiresAt}.`;
+    return await sendEmail({
+      to: email,
+      subject: `⚡ NexPulse: You've been gifted ${plan} access`,
+      html: `<p>Hi ${userName},</p><p>You've been gifted <strong>${plan}</strong> access on NexPulse. ${expiry}</p><p>Log in to your dashboard to start using your upgraded features.</p>`,
+    });
+  } catch (error) {
+    console.error('❌ Failed to send gifted trial email:', error);
+    return { success: false, error };
+  }
+}
