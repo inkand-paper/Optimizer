@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { performCheck } from '@/lib/monitoring';
 import { prisma } from '@/lib/prisma';
 import { getTokenFromRequest } from '@/lib/auth';
-import { performCheck } from '@/lib/monitoring';
 import { PLAN_LIMITS, PlanType } from '@/lib/plans';
 import { z } from 'zod';
 
@@ -29,34 +29,9 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: 'desc' }
     });
 
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
-      select: { role: true, plan: true }
-    });
-
-    const userPlan = (user?.plan || 'FREE') as PlanType;
-    const isAdmin = user?.role === 'ADMIN';
-    const checkIntervalSeconds = isAdmin ? 10 : PLAN_LIMITS[userPlan].interval;
-
-    // Proactive Health Checks based on user plan interval
-    try {
-      const thresholdTime = new Date(Date.now() - checkIntervalSeconds * 1000);
-      monitors.forEach((monitor: { id: string; name: string; url: string; lastChecked: Date | null }) => {
-        const needsCheck = !monitor.lastChecked || new Date(monitor.lastChecked) < thresholdTime;
-        
-        if (needsCheck) {
-          console.log(`[PROACTIVE] Triggering check for ${monitor.name}`);
-          // Fire and forget background check - completely isolated
-          performCheck(monitor.id, monitor.url).catch(err => 
-            console.error(`[PROACTIVE ERROR] ${monitor.name}:`, err)
-          );
-        }
-      });
-    } catch (proactiveError) {
-      console.error('[PROACTIVE SYSTEM ERROR]:', proactiveError);
-      // We don't return 500 here because the data fetch was successful
-    }
-    
+    // Scheduled checks are handled by /api/cron/monitor (every 5 minutes via Vercel Cron).
+    // Do NOT trigger checks here — this runs on every dashboard load and causes
+    // cascading timeout errors logged as false "DOWN" incidents.
     return NextResponse.json({ success: true, monitors });
   } catch (error) {
     console.error('CRITICAL ERROR Fetching Monitors:', error);
