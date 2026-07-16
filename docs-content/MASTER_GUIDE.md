@@ -1,236 +1,151 @@
 # NexPulse Master Guide
 
-Comprehensive technical and architectural reference for operators and contributors.
-Last updated: July 2025 (v2.0)
+Complete technical and architectural reference.
+Last updated: July 2025
 
 ---
 
 ## 1. Platform Overview
 
-NexPulse is a unified infrastructure monitoring and auditing platform for engineering teams. It provides:
+NexPulse is a unified infrastructure monitoring and auditing platform. It provides:
 
-- **Uptime Monitoring** — Health checks for any public URL with Discord/Slack alerts
-- **Cache Pulse Engine** — Remote cache revalidation for Next.js, Nuxt, and Remix
-- **SEO and Performance Audit** — Deep crawl of live URLs for Web Vitals, meta tags, security headers, and structured data
-- **Neural Code Audit** — AI-powered analysis of source code from GitHub repos, ZIP archives, or pasted code
-- **Intelligence Bank** — Hash-based incremental auditing that skips unchanged files on repeat audits
-- **Pulse-AI Assistant** — AI technical assistant embedded in the dashboard
-- **Webhooks** — Discord and Slack alerts for monitoring events
-- **Activity Logs** — Full audit trail of all platform events
-- **Promotions System** — Admin-managed sales and discount codes surfaced as dashboard banners with live countdown timers
-- **Student Trial** — 30-day PRO trial for users who verify a valid academic email (.edu, .ac.uk, .edu.bd, etc.)
+- **Uptime Monitoring** — Health checks for any public URL, checked every 5 minutes via external cron. Discord/Slack alerts on status change only.
+- **Cache Pulse Engine** — Remote cache revalidation for Next.js (and any framework with a revalidation endpoint). Triggered via Machine API Key.
+- **SEO & Performance Audit** — Deep crawl of live URLs for Core Web Vitals signals, meta tags, security headers, and structured data.
+- **Neural Code Audit** — AI-powered analysis of source code from GitHub repos, ZIP uploads, or pasted code. Streams results in real time.
+- **Intelligence Bank** — SHA-256 hash-based incremental auditing. Unchanged files skip the AI entirely and return cached results.
+- **Pulse-AI Assistant** — AI chat assistant embedded in the dashboard with accurate NexPulse product knowledge.
+- **Webhooks** — Discord and Slack alerts for monitoring events.
+- **Activity Logs** — Full audit trail of all platform events.
+- **Promotions System** — Admin-managed time-limited discount promotions shown as a dashboard banner with countdown timer.
+- **Student Trial** — 30-day PRO trial for users who submit an academic email + student ID card for manual admin review.
+- **Gifted Trial** — Admin can gift PRO or Agency access to any user for a set number of days or permanently.
 
 ---
 
 ## 2. Architecture
 
-NexPulse is a Next.js 16 App Router application with a three-layer structure:
-
 ```
 ┌─────────────────────────────────────────────┐
-│              Command Center (UI)             │
-│   Dashboard  Login  Docs  Landing Page      │
+│              Dashboard (UI)                  │
+│   Next.js 16 App Router — React components  │
 └───────────────────┬─────────────────────────┘
                     │ HTTP / SSE
 ┌───────────────────▼─────────────────────────┐
-│              Pulse Engine (API)              │
-│  /api/revalidate   /api/code-review          │
-│  /api/monitors     /api/analyze              │
-│  /api/ai/chat      /api/auth/*               │
-│  /api/promotions   /api/student/verify       │
-│  /api/webhooks/lemonsqueezy                  │
+│              API Layer                       │
+│  /api/revalidate   /api/code-review (SSE)   │
+│  /api/monitors     /api/analyze             │
+│  /api/ai/chat      /api/auth/*              │
+│  /api/promotions   /api/student/verify      │
+│  /api/admin/*      /api/webhooks/lemonsqueezy│
+│  /api/cron/monitor /api/cron/expire-trials  │
 └──────────┬──────────────────┬───────────────┘
            │                  │
 ┌──────────▼───────┐  ┌───────▼───────────────┐
 │  PostgreSQL DB   │  │  External Services     │
-│  (Prisma ORM)    │  │  Groq  Gemini  Redis   │
-│  Supabase hosted │  │  GitHub  Resend  LS    │
+│  (Prisma ORM)    │  │  Groq · Gemini · Redis │
+│  Supabase hosted │  │  GitHub · Resend       │
+│                  │  │  LemonSqueezy · Blob   │
 └──────────────────┘  └───────────────────────┘
 ```
 
-### Authentication System (Dual-Layer)
+### Authentication (Dual-Layer)
 
-NexPulse runs two parallel auth systems:
-
-| System | Used By | Token Type |
+| System | Cookie | Used by |
 |---|---|---|
-| Custom JWT | Email/password login | HttpOnly `token` cookie |
-| NextAuth v4 | Google / GitHub social login | `next-auth.session-token` cookie (DB session) |
+| Custom JWT | `token` (HttpOnly) | Email/password login |
+| NextAuth v4 | `next-auth.session-token` | Google / GitHub OAuth |
 
-`getTokenFromRequest()` in `lib/auth.ts` checks both automatically, in priority order:
-1. Custom JWT cookie
-2. NextAuth database session via `getServerSession`
-3. Bearer token header for API clients
-
-**Rule**: Every API route handler must call `getTokenFromRequest(req)`. Never read cookies manually.
+`getTokenFromRequest()` in `lib/auth.ts` checks both automatically — JWT first, then NextAuth session. Always use this function in route handlers. Never read cookies manually.
 
 ---
 
-## 3. Database Schema (All Tables)
+## 3. Database Schema
 
 | Table | Purpose |
 |---|---|
-| `User` | User accounts with email/password or OAuth |
+| `User` | Accounts with email/password or OAuth |
 | `Account` | NextAuth OAuth account links |
 | `Session` | NextAuth database sessions |
-| `ApiKey` | Machine API keys (SHA-256 hash only, never plain text) |
-| `Monitor` | Monitored URLs with check interval configuration |
-| `MonitorEvent` | Historical uptime and latency data points |
+| `Monitor` | Registered URLs for uptime monitoring |
+| `Check` | Every monitoring result (UP/DOWN, latency, message) |
+| `ApiKey` | Machine API keys (SHA-256 hash only) |
 | `CodeReview` | Saved code audit reports |
 | `AuditCache` | Intelligence Bank — per-file hash-to-review cache |
-| `ActivityLog` | Full audit trail of all platform events |
+| `ActivityLog` | Audit trail of all platform events |
 | `Webhook` | User-configured Discord/Slack alert endpoints |
 | `Promotion` | Admin-managed time-limited discount promotions |
-| `StudentTrial` | .edu email verifications for 30-day PRO trials |
+| `StudentTrial` | Academic email + ID card submissions for manual review |
+| `GiftedTrial` | Admin-gifted plan upgrades with optional expiry |
 
-### Key Field Notes
+### Key User Fields
 
-- `User.subscriptionId` — LemonSqueezy subscription ID, saved on `subscription_created` webhook
-- `User.lemonSqueezyId` — LemonSqueezy customer ID
-- `User.plan` — enum: `FREE`, `PRO`, `BUSINESS`
-- `User.role` — enum: `ADMIN`, `DEVELOPER`, `VIEWER`
-- `User.twoFactorEnabled` — TOTP-based MFA flag
-- `StudentTrial.expiresAt` — 30 days from verification; daily cron downgrades expired trials
-- `Promotion.isActive` — daily cron auto-sets to false when `endsAt` passes
+| Field | Description |
+|---|---|
+| `plan` | `FREE` / `PRO` / `BUSINESS` |
+| `role` | `ADMIN` / `DEVELOPER` / `VIEWER` |
+| `subscriptionId` | LemonSqueezy subscription ID (saved on subscription_created) |
+| `lemonSqueezyId` | LemonSqueezy customer ID |
+| `twoFactorEnabled` | TOTP-based MFA flag |
 
 ---
 
 ## 4. Plan Limits
 
-All plan limits are defined in `lib/plans.ts` as the single source of truth. Never hardcode limits elsewhere.
+All limits are in `lib/plans.ts` — single source of truth. Never hardcode elsewhere.
 
-| Limit | FREE | PRO | BUSINESS |
-|---|---|---|---|
-| Monitors | 1 | 10 | Unlimited |
-| Health checks/month | 500 | 25,000 | Unlimited |
-| Code audits/month | 3 | 50 | Unlimited |
+| Limit | Free | PRO | Agency |
+|---|:---:|:---:|:---:|
+| Monitored sites | 1 | 10 | Unlimited |
+| Check frequency | Every 5 min | Every 5 min | Every 1 min* |
+| Code audits/mo | 3 | 50 | Unlimited |
 | Webhooks | 1 | 5 | 50 |
-| Check interval (seconds) | 60 | 30 | 10 |
-| Log retention (days) | 7 | 30 | 365 |
+| Log retention | 7 days | 30 days | 365 days |
 | API keys | No | Yes | Yes |
 | Cache revalidation | No | Yes | Yes |
-| AI features | Basic | Full | Full (priority) |
-| Intelligence Bank | No | Yes | Yes |
+| AI diagnosis | No | Yes | Yes |
+| Intelligence Bank | Own files only | Global shared | Global shared |
+
+*Agency 1-min frequency requires Vercel Pro plan with cron every minute. Currently all plans check every 5 min via cron-job.org external cron.
 
 Admins (`role === 'ADMIN'`) bypass all plan limits on every route.
 
 ---
 
-## 5. Neural Code Audit Engine
+## 5. Uptime Monitoring
 
 ### How It Works
 
-1. User provides source via GitHub repo, ZIP upload, or code paste
-2. Files are filtered by extension: `.ts`, `.tsx`, `.js`, `.jsx`, `.py`, `.go`, `.java`, `.cs`, `.json`, `.yaml`, `.yml`, `.md`, `.txt`
-3. Each file is hashed with SHA-256 and checked against the AuditCache (Intelligence Bank)
-4. Cache hits are returned instantly. Cache misses are sent to Groq `llama-3.3-70b` for analysis
-5. Issues are aggregated by category: Security, Performance, Standards, Refactor
-6. A synthesis pass generates the overall Code Health Score and report
+1. User registers a URL (any public URL — no integration needed)
+2. External cron (cron-job.org) calls `GET /api/cron/monitor` every 5 minutes with `Authorization: Bearer CRON_SECRET`
+3. Cron fetches each monitor's user plan, calculates if the check interval has elapsed since `lastChecked`
+4. Due monitors are checked in batches of 10 with an 8-second timeout per probe
+5. Result is written to the `Check` table regardless of UP/DOWN
+6. If status changed since last check, webhooks fire and alert email is sent
+7. Dashboard reads stored `Check` records — it never triggers checks itself
 
-**Cache scoping by plan**: FREE users only benefit from their own prior submissions. PRO and BUSINESS users benefit from the shared global cache (Intelligence Bank).
+### Critical Architecture Note
 
-### Code Health Score
+The GET `/api/monitors` route only returns stored data. It does NOT trigger any checks. All checks happen exclusively via the cron. This was a previous source of false DOWN incidents (proactive checks fired on every page load) — that code has been removed.
 
-| Grade | Score |
+### Error Messages
+
+| Raw error | Displayed as |
 |---|---|
-| A | 90-100 |
-| B | 75-89 |
-| C | 60-74 |
-| D | Below 60 |
-
-### Streaming
-
-`/api/code-review` uses Server-Sent Events (SSE). Logs are streamed in real time:
-
-```
-data: {"log": "Scanning 42 files..."}
-data: {"log": "Analysing security: auth.ts"}
-data: {"done": true, "report": { ... }}
-```
+| AbortError / TimeoutError | Request timed out |
+| fetch failed / ECONNREFUSED | Connection refused |
+| HTTP 4xx/5xx | HTTP {status}: {statusText} |
 
 ---
 
-## 6. Pulse-AI Assistant
+## 6. Cache Revalidation
 
-Embedded AI chat widget in the dashboard. Uses a 3-tier fallback chain:
+Requires PRO or Agency plan + Machine API Key.
 
-| Tier | Model | When |
-|---|---|---|
-| 1 Primary | Groq `llama-3.3-70b-versatile` | All requests |
-| 2 Buffer | Groq `llama-3.1-8b-instant` | When 70B hits daily quota |
-| 3 Fallback | Google Gemini Flash then Pro | When all Groq engines are unavailable |
-
-Requires user authentication. Rate limited to 30 messages per minute per user.
-
----
-
-## 7. Billing (LemonSqueezy)
-
-### Webhook Events Handled
-
-All events are received at `/api/webhooks/lemonsqueezy` and verified via HMAC-SHA256 signature.
-
-| Event | Action |
-|---|---|
-| `order_created` / `order_paid` | Upgrade user plan, send payment confirmation email |
-| `subscription_created` | Upgrade plan, save `subscriptionId` and `lemonSqueezyId`, send email |
-| `subscription_updated` | Handle mid-cycle plan change or status update |
-| `subscription_cancelled` | Send cancellation email with access end date. Plan stays active until expiry |
-| `subscription_expired` | Downgrade user to FREE, clear `subscriptionId` |
-| `subscription_payment_failed` | Log only. LemonSqueezy handles retries and fires `expired` if all fail |
-| `subscription_payment_success` | Self-heal plan if DB got out of sync |
-
-### Student Trial
-
-FREE users can verify an academic email to receive 30 days of PRO access at no cost:
-
-- Supported domains: `.edu`, `.ac.uk`, `.edu.bd`, `.ac.in`, `.edu.au`, `.edu.sg`, `.edu.pk`, `.ac.nz`
-- One trial per user and one trial per email address (cannot be reused)
-- Daily cron at 2am UTC (`/api/cron/expire-trials`) downgrades expired trials to FREE
-- Users who subscribe during their trial retain PRO (cron checks `subscriptionId` before downgrading)
-
-### Promotions System
-
-Admins can create time-limited discount promotions via `POST /api/promotions`. When active, a banner with a live countdown timer and click-to-copy discount code appears across the dashboard. Promotions auto-deactivate when `endsAt` passes via the daily cron.
-
----
-
-## 8. Security Architecture
-
-| Layer | Implementation |
-|---|---|
-| Auth cookies | HttpOnly, Secure, SameSite=Strict |
-| Password storage | bcrypt with high salt rounds |
-| API key storage | SHA-256 hash only, plain text shown once |
-| SSRF prevention | `validateSafeUrl()` in `lib/ssrf.ts` called before every outbound fetch |
-| Rate limiting | `checkRateLimit()` in `lib/rate-limit.ts` on all auth and AI endpoints |
-| Input validation | Zod schemas on all API route inputs |
-| MFA | TOTP via speakeasy, optional per user |
-| Brute force detection | Failed login tracking with automatic Discord security alerts |
-| CSP | Strict Content Security Policy without `unsafe-eval` |
-| Timing attacks | `crypto.timingSafeEqual()` for secret comparisons |
-
----
-
-## 9. Cron Jobs
-
-Registered in `vercel.json`:
-
-| Route | Schedule | Purpose |
-|---|---|---|
-| `/api/cron/monitor` | Every 5 minutes | Run uptime health checks in batches |
-| `/api/cron/expire-trials` | Daily at 2am UTC | Expire student trials, deactivate ended promotions |
-
-Both endpoints require `Authorization: Bearer <CRON_SECRET>`.
-
----
-
-## 10. Integration Pattern
-
-To enable Cache Revalidation Pulses from NexPulse into your app, add this endpoint to your target Next.js project:
+### Setup (one time, in the user's app)
 
 ```ts
-// app/api/revalidate/route.ts (in YOUR app, not in NexPulse)
+// app/api/revalidate/route.ts — add this to YOUR Next.js app
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidateTag, revalidatePath } from 'next/cache';
 
@@ -246,13 +161,165 @@ export async function POST(req: NextRequest) {
 }
 ```
 
-Then register your site URL and Machine API Key in the NexPulse dashboard under API Keys.
+### Usage
+
+```ts
+// From CI/CD, CMS webhook, or GitHub Action:
+await fetch('https://nextjs-optimizer-suite.vercel.app/api/revalidate', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_MACHINE_API_KEY',
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ tag: 'products' }),
+});
+```
+
+NexPulse forwards the request to the user's registered endpoint using their `REVALIDATE_SECRET`. The user's app calls `revalidateTag()` / `revalidatePath()` and returns immediately.
 
 ---
 
-## 11. Environment Variables
+## 7. Neural Code Audit Engine
 
-See `.env.example` in the repo root for the full documented list. Key variables:
+### Flow
+
+1. User provides source: GitHub repo, ZIP upload, or pasted code
+2. Files filtered by extension: `.ts .tsx .js .jsx .py .go .java .cs .json .yaml .yml .md .txt`
+3. Each file hashed with SHA-256, checked against `AuditCache` table
+4. Cache hits returned instantly. Cache misses sent to Groq `llama-3.3-70b`
+5. Results stream back via SSE as each file completes
+6. AI Diagnosis generated for PRO/Agency (plain-English summary of biggest risks)
+7. Final report saved to `CodeReview` table
+
+### Cache Scoping by Plan
+
+- **Free**: only benefits from their own prior file submissions
+- **PRO/Agency**: benefits from the global shared cache — if any user ever audited the same file (by hash), result is returned instantly
+
+### Code Health Score
+
+| Grade | Score |
+|---|---|
+| A | 90–100 |
+| B | 75–89 |
+| C | 60–74 |
+| D | Below 60 |
+
+### AI Fallback Chain
+
+| Tier | Model | Trigger |
+|---|---|---|
+| 1 | Groq llama-3.3-70b-versatile | All requests |
+| 2 | Groq llama-3.1-8b-instant | 70B quota exhausted |
+| 3 | Gemini Flash → Gemini Pro | All Groq unavailable |
+
+---
+
+## 8. Pulse-AI Assistant
+
+- Requires user authentication — anonymous visitors cannot use it
+- Rate limited: 30 messages per minute per user
+- Uses the same 3-tier AI fallback chain as Code Audit
+- System prompt contains accurate plan pricing, feature descriptions, check frequencies, student trial info, cache revalidation setup, and what each dashboard tab does
+- On mobile: goes fullscreen so keyboard doesn't cover the input
+- Chat history is session-only — not persisted to DB
+
+---
+
+## 9. Billing (LemonSqueezy)
+
+### Webhook Events
+
+All received at `/api/webhooks/lemonsqueezy`, verified via HMAC-SHA256.
+
+| Event | Action |
+|---|---|
+| `order_created` / `order_paid` | Upgrade plan, send confirmation email |
+| `subscription_created` | Upgrade plan, save `subscriptionId` + `lemonSqueezyId`, send email |
+| `subscription_updated` | Handle mid-cycle plan change |
+| `subscription_cancelled` | Send cancellation email with end date. Plan stays active. |
+| `subscription_expired` | Downgrade to FREE, clear `subscriptionId` |
+| `subscription_payment_failed` | Log only — LS manages retries |
+| `subscription_payment_success` | Self-heal plan if DB out of sync |
+
+### Student Trial Flow
+
+1. User submits academic email + student ID card photo/PDF via Dashboard → Profile → Student Access
+2. ID card stored in Vercel Blob (private access — signed URL required to view)
+3. Record created with status `PENDING`
+4. Admin reviews in Admin → Student Trials tab — views ID card via signed URL (60s expiry)
+5. Approve → plan set to PRO, 30-day `expiresAt` set, approval email sent
+6. Reject → rejection reason + optional note saved, rejection email sent with reapply instructions
+7. Rejected users can reapply with corrected information
+8. Daily cron at 2am UTC checks for expired trials — downgrades to FREE unless `subscriptionId` is set
+
+### Gifted Trial Flow
+
+1. Admin goes to Admin → Users → clicks ⚡ icon on any user
+2. Modal: pick PRO or Agency, choose 7/30/60/90 days or permanent, optional internal note
+3. Plan upgraded immediately, `GiftedTrial` record created, email sent to user
+4. Daily cron expires non-permanent gifts — skips users with active `subscriptionId`
+
+### Emails Sent
+
+| Trigger | Template |
+|---|---|
+| Subscription created/paid | `payment-confirmation.tsx` |
+| Subscription cancelled | `subscription-cancelled.tsx` |
+| Student trial approved | `student-trial.tsx` |
+| Student trial rejected | `student-rejection.tsx` |
+| Student trial 3 days before expiry | `student-trial-reminder.tsx` |
+| Student trial 1 day before expiry | `student-trial-reminder.tsx` |
+| Student trial expired | `student-trial-expired.tsx` |
+| Gifted trial | `gifted-trial.tsx` |
+
+---
+
+## 10. Promotions System
+
+- Admin creates promotions via `POST /api/promotions` (admin only)
+- `GET /api/promotions` returns the current active promotion — no auth required
+- `PromoBanner` component fetches on mount, shows countdown timer and click-to-copy discount code
+- Banner hidden if user is already on the target plan
+- Banner dismissed per session (sessionStorage)
+- Daily cron auto-sets `isActive = false` when `endsAt` passes
+
+---
+
+## 11. Security Architecture
+
+| Layer | Implementation |
+|---|---|
+| Auth cookies | HttpOnly, Secure, SameSite=Strict |
+| Password storage | bcrypt |
+| API key storage | SHA-256 hash only, plain text shown once |
+| SSRF prevention | `validateSafeUrl()` called before every outbound fetch (monitors, webhooks, analyze) |
+| Rate limiting | `checkRateLimit()` on all auth and AI endpoints |
+| Input validation | Zod schemas on all API route inputs |
+| MFA | TOTP via speakeasy, optional per user |
+| Brute force | Failed login tracking + Discord security alerts |
+| CSP | No `unsafe-eval` globally |
+| Timing attacks | `crypto.timingSafeEqual()` for secret comparisons |
+| Student ID cards | Private Vercel Blob — served via signed URL (60s expiry), admin only |
+
+---
+
+## 12. Cron Jobs
+
+| Route | Schedule | External Trigger | Purpose |
+|---|---|---|---|
+| `/api/cron/monitor` | Every 5 min | cron-job.org | Uptime health checks |
+| `/api/cron/expire-trials` | Daily 2am UTC | cron-job.org | Expire student/gifted trials, deactivate ended promotions |
+
+Both require `Authorization: Bearer CRON_SECRET`.
+
+Vercel `vercel.json` also registers both as daily fallback crons (Hobby plan limit). The external cron-job.org runs at higher frequency.
+
+---
+
+## 13. Environment Variables
+
+See `.env.example` for the full documented list.
 
 | Variable | Required | Purpose |
 |---|---|---|
@@ -260,17 +327,20 @@ See `.env.example` in the repo root for the full documented list. Key variables:
 | `JWT_SECRET` | Yes | Custom JWT signing (min 32 chars) |
 | `NEXTAUTH_SECRET` | Yes | NextAuth session signing |
 | `ADMIN_EMAIL` | Yes | Auto-promoted to ADMIN on first registration |
-| `GROQ_API_KEY` | For AI | Groq API (free tier: 100k tokens/day) |
+| `GROQ_API_KEY` | For AI | Groq API |
 | `GEMINI_API_KEY` | For AI fallback | Google Gemini |
-| `LEMONSQUEEZY_WEBHOOK_SECRET` | For billing | Webhook signature verification |
-| `CRON_SECRET` | For cron jobs | Protects cron endpoints from unauthorized triggers |
+| `BLOB_READ_WRITE_TOKEN` | For student ID uploads | Vercel Blob (copy manually from Blob store Tokens tab) |
+| `LEMONSQUEEZY_WEBHOOK_SECRET` | For billing | Webhook HMAC verification |
+| `CRON_SECRET` | For cron jobs | Protects cron endpoints |
 
 ---
 
-## 12. Known Constraints
+## 14. Known Constraints
 
-| Constraint | Impact | Status |
+| Constraint | Impact | Workaround |
 |---|---|---|
-| Groq 100k tokens/day (free tier) | AI may fall back to smaller models | 3-tier fallback handles this |
-| Vercel function timeout | Long audits may time out on Hobby plan | Code audits batch files; use Pro plan for large repos |
-| `@react-email` packages deprecated | Build warnings (not errors) | Will migrate to new package names in a future update |
+| Vercel Hobby — cron max once/day | Can't run monitor cron every 5 min via Vercel | Use cron-job.org (free) |
+| Vercel Hobby — function timeout 10s | Long code audits may hit limit | Upgrade to Vercel Pro |
+| Groq 100k tokens/day (free tier) | AI falls back to smaller models | 3-tier fallback handles it |
+| `@react-email` packages deprecated | Build warnings (not errors) | Migrate to new package names eventually |
+| `subscriptionId` unique per user | Only one active LemonSqueezy sub tracked | Sufficient for current billing model |
