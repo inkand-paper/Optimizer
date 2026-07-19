@@ -65,7 +65,9 @@ model User {
   webhooks     Webhook[]
   codeReviews CodeReview[]
   studentTrial StudentTrial?
-  giftedTrial  GiftedTrial?
+  giftedTrial       GiftedTrial?
+  statusPageSlug    String?  @unique  // custom slug; defaults to username/email prefix
+  statusPageEnabled Boolean  @default(false)
 }
 
 model Account {
@@ -127,6 +129,7 @@ model Monitor {
   url         String
   status      String   @default("UP") // UP, DOWN, DEGRADED
   lastChecked DateTime?
+  isPublic    Boolean  @default(true)  // shown on public status page unless hidden by user
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   checks      Check[]
