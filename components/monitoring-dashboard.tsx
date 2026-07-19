@@ -13,7 +13,10 @@ import {
   AlertCircle,
   Edit2,
   Check,
-  X
+  X,
+  Eye,
+  EyeOff,
+  Link2,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -26,10 +29,21 @@ interface MonitorItem {
   checks?: { latency: number; status: string; createdAt: string }[];
   latencyHistory?: number[]; // fallback
   lastChecked: string;
+  isPublic: boolean;
+}
+
+interface StatusPageSettings {
+  enabled: boolean;
+  slug: string | null;
 }
 
 export function MonitoringDashboard() {
   const [monitors, setMonitors] = React.useState<MonitorItem[]>([]);
+  const [statusPage, setStatusPage] = React.useState<StatusPageSettings>({ enabled: false, slug: null });
+  const [slugInput, setSlugInput] = React.useState('');
+  const [slugSaving, setSlugSaving] = React.useState(false);
+  const [slugError, setSlugError] = React.useState('');
+  const [copied, setCopied] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const [isAdding, setIsAdding] = React.useState(false);
   
@@ -44,9 +58,17 @@ export function MonitoringDashboard() {
 
   const fetchMonitors = async () => {
     try {
-      const res = await fetch("/api/monitors", { credentials: 'include' });
-      const data = await res.json();
-      if (res.ok) setMonitors(data.monitors);
+      const [mRes, meRes] = await Promise.all([
+        fetch("/api/monitors", { credentials: 'include' }),
+        fetch("/api/auth/me", { credentials: 'include' }),
+      ]);
+      const mData = await mRes.json();
+      if (mRes.ok) setMonitors(mData.monitors);
+      const meData = await meRes.json();
+      if (meRes.ok && meData.user) {
+        setStatusPage({ enabled: meData.user.statusPageEnabled || false, slug: meData.user.statusPageSlug || null });
+        setSlugInput(meData.user.statusPageSlug || '');
+      }
     } catch (err) {
       console.error("Failed to fetch monitors", err);
     } finally {
@@ -255,6 +277,25 @@ export function MonitoringDashboard() {
                       <Badge variant={m.status === 'UP' ? 'success' : 'danger'} className="text-[10px] px-2.5 py-1">
                         {m.status}
                       </Badge>
+                      <button
+                        onClick={async () => {
+                          const newVal = !m.isPublic;
+                          await fetch('/api/monitors', {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({ monitorId: m.id, isPublic: newVal }),
+                          });
+                          setMonitors(prev => prev.map(mon => mon.id === m.id ? { ...mon, isPublic: newVal } : mon));
+                        }}
+                        className="sm:opacity-0 group-hover:opacity-100 p-2 text-muted-foreground hover:text-np-gold transition-all"
+                        title={m.isPublic ? "Shown on status page — click to hide" : "Hidden from status page — click to show"}
+                      >
+                        {m.isPublic
+                          ? <Eye className="h-4 w-4" />
+                          : <EyeOff className="h-4 w-4 opacity-40" />
+                        }
+                      </button>
                       <button 
                         onClick={() => handleDelete(m.id)}
                         className="sm:opacity-0 group-hover:opacity-100 p-2 text-muted-foreground hover:text-np-crimson transition-all"
@@ -310,6 +351,114 @@ export function MonitoringDashboard() {
           })
         )}
       </div>
+
+      {/* ── Status Page Settings ── */}
+      <Card className="p-6 border border-dashed border-np-gold/20">
+        <div className="flex items-start sm:items-center justify-between gap-4 flex-col sm:flex-row mb-4">
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-ui bg-np-gold/10 border border-np-gold/20 flex items-center justify-center">
+              <Globe className="h-4 w-4 text-np-gold" />
+            </div>
+            <div>
+              <h3 className="text-[13px] font-semibold">Public Status Page</h3>
+              <p className="label-category text-[10px] text-muted-foreground">Share a live uptime page with your users</p>
+            </div>
+          </div>
+          <button
+            onClick={async () => {
+              const newEnabled = !statusPage.enabled;
+              setSlugError('');
+              try {
+                const res = await fetch('/api/status', {
+                  method: 'PATCH',
+                  headers: { 'Content-Type': 'application/json' },
+                  credentials: 'include',
+                  body: JSON.stringify({ enabled: newEnabled }),
+                });
+                const data = await res.json();
+                if (res.ok) {
+                  setStatusPage({ enabled: data.statusPageEnabled, slug: data.statusPageSlug });
+                  setSlugInput(data.statusPageSlug || '');
+                }
+              } catch { setSlugError('Failed to update.'); }
+            }}
+            className={cn(
+              "px-4 py-2 rounded-ui text-[11px] font-semibold uppercase tracking-wider border transition-all",
+              statusPage.enabled
+                ? "bg-np-teal/10 border-np-teal/30 text-np-teal"
+                : "border-border text-muted-foreground hover:border-np-gold/40 hover:text-np-gold"
+            )}
+          >
+            {statusPage.enabled ? "● Live" : "Enable"}
+          </button>
+        </div>
+
+        {statusPage.enabled && (
+          <div className="space-y-4">
+            {/* Live URL */}
+            <div className="flex items-center gap-2 p-3 bg-muted/30 rounded-ui border border-border">
+              <Link2 className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+              <span className="text-[12px] font-mono text-np-gold flex-1 truncate">
+                {typeof window !== "undefined" ? window.location.origin : ""}/status/{statusPage.slug}
+              </span>
+              <button
+                onClick={() => {
+                  if (typeof window !== "undefined") {
+                    navigator.clipboard.writeText(`${window.location.origin}/status/${statusPage.slug}`);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }
+                }}
+                className="shrink-0 p-1.5 text-muted-foreground hover:text-np-gold transition-colors"
+              >
+                {copied ? <Check className="h-3.5 w-3.5 text-np-teal" /> : <Link2 className="h-3.5 w-3.5" />}
+              </button>
+            </div>
+
+            {/* Custom slug */}
+            <div className="flex gap-2 items-end">
+              <div className="flex-1 space-y-1.5">
+                <label className="label-category text-[10px]">Custom URL slug</label>
+                <input
+                  type="text"
+                  value={slugInput}
+                  onChange={e => { setSlugInput(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "")); setSlugError(""); }}
+                  placeholder="your-name"
+                  className="w-full h-9 px-3 rounded-ui bg-muted/30 border border-border text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-np-gold/50"
+                  maxLength={30}
+                />
+                {slugError && <p className="text-[11px] text-np-crimson">{slugError}</p>}
+                <p className="text-[10px] text-muted-foreground">3–30 chars · lowercase, numbers, hyphens only</p>
+              </div>
+              <button
+                onClick={async () => {
+                  setSlugSaving(true); setSlugError("");
+                  try {
+                    const res = await fetch("/api/status", {
+                      method: "PATCH",
+                      headers: { "Content-Type": "application/json" },
+                      credentials: "include",
+                      body: JSON.stringify({ slug: slugInput }),
+                    });
+                    const data = await res.json();
+                    if (res.ok) setStatusPage(prev => ({ ...prev, slug: data.statusPageSlug }));
+                    else setSlugError(data.error || "Failed to save.");
+                  } catch { setSlugError("Network error."); }
+                  finally { setSlugSaving(false); }
+                }}
+                disabled={slugSaving || slugInput.length < 3 || slugInput === statusPage.slug}
+                className="h-9 px-4 rounded-ui border border-np-gold/30 text-np-gold text-[11px] uppercase tracking-wider hover:bg-np-gold/10 transition-all disabled:opacity-40 mb-5"
+              >
+                {slugSaving ? "..." : "Save"}
+              </button>
+            </div>
+
+            <p className="text-[11px] text-muted-foreground flex items-center gap-1">
+              Click the <Eye className="inline h-3 w-3" /> icon on each monitor above to show or hide it from your status page.
+            </p>
+          </div>
+        )}
+      </Card>
     </div>
   );
 }
