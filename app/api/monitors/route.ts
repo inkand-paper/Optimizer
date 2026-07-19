@@ -114,3 +114,33 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
+// PATCH /api/monitors — toggle isPublic for status page visibility
+export async function PATCH(req: NextRequest) {
+  try {
+    const decoded = await getTokenFromRequest(req);
+    if (!decoded) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const { monitorId, isPublic } = await req.json();
+    if (!monitorId || typeof isPublic !== 'boolean') {
+      return NextResponse.json({ error: 'monitorId and isPublic (boolean) are required' }, { status: 400 });
+    }
+
+    // Verify monitor belongs to this user
+    const monitor = await prisma.monitor.findFirst({
+      where: { id: monitorId, userId: decoded.userId },
+    });
+    if (!monitor) return NextResponse.json({ error: 'Monitor not found' }, { status: 404 });
+
+    const updated = await prisma.monitor.update({
+      where: { id: monitorId },
+      data: { isPublic },
+      select: { id: true, isPublic: true },
+    });
+
+    return NextResponse.json({ success: true, monitor: updated });
+  } catch (error) {
+    console.error('PATCH /api/monitors error:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
