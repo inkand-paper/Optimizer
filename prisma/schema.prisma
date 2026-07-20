@@ -67,7 +67,9 @@ model User {
   studentTrial StudentTrial?
   giftedTrial       GiftedTrial?
   statusPageSlug    String?  @unique  // custom slug; defaults to username/email prefix
-  statusPageEnabled Boolean  @default(false)
+  statusPageEnabled   Boolean  @default(false)
+  weeklyDigestEnabled Boolean  @default(true)   // opt-out model — enabled by default
+  lastDigestSentAt    DateTime?                  // prevents double-sends
 }
 
 model Account {

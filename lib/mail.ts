@@ -352,3 +352,51 @@ export async function sendGiftedTrialEmail({
     return { success: false, error };
   }
 }
+
+export async function sendWeeklyDigestEmail({
+  email,
+  userName,
+  weekStart,
+  weekEnd,
+  monitors,
+  audits,
+  totalIncidents,
+  dashboardUrl,
+}: {
+  email: string;
+  userName: string;
+  weekStart: string;
+  weekEnd: string;
+  monitors: Array<{
+    name: string;
+    url: string;
+    uptimePct: number | null;
+    avgLatency: number | null;
+    incidents: number;
+    status: string;
+  }>;
+  audits: Array<{
+    repoName: string;
+    score: number;
+    grade: string;
+    language: string;
+    createdAt: string;
+  }>;
+  totalIncidents: number;
+  dashboardUrl: string;
+}) {
+  try {
+    const { WeeklyDigestEmail } = await import('@/components/emails/weekly-digest');
+    const html = await render(React.createElement(WeeklyDigestEmail, {
+      userName, weekStart, weekEnd, monitors, audits, totalIncidents, dashboardUrl,
+    }));
+    return await sendEmail({
+      to: email,
+      subject: `⚡ NexPulse weekly summary — ${weekStart}`,
+      html,
+    });
+  } catch (error) {
+    console.error('❌ Failed to send weekly digest:', error);
+    return { success: false, error };
+  }
+}
