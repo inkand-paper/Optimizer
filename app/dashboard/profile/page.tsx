@@ -18,6 +18,7 @@ interface UserIdentity {
   plan?: string;
   emailVerified?: boolean;
   twoFactorEnabled?: boolean;
+  weeklyDigestEnabled?: boolean;
   createdAt?: string;
   image?: string | null;
 }
@@ -45,6 +46,8 @@ export default function ProfilePage() {
   const studentFileRef = React.useRef<HTMLInputElement>(null);
   const [mfaCode, setMfaCode] = React.useState("");
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [digestEnabled, setDigestEnabled] = React.useState(true);
+  const [digestSaving, setDigestSaving] = React.useState(false);
 
   React.useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 3000);
@@ -58,6 +61,7 @@ export default function ProfilePage() {
           setName(d.user.name || "");
           setEmail(d.user.email || "");
           setImage(d.user.image || null);
+          setDigestEnabled(d.user.weeklyDigestEnabled !== false);
         } else {
           router.push("/login");
         }
@@ -529,6 +533,41 @@ export default function ProfilePage() {
                     </div>
                   )}
                 </div>
+              </div>
+
+              {/* Weekly Digest toggle */}
+              <div className="p-4 bg-muted/40 rounded-ui border border-dashed border-border flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-[12px] font-bold uppercase">Weekly Email Digest</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">
+                    Monday morning summary of uptime, incidents, and code audit scores.
+                  </p>
+                </div>
+                <button
+                  onClick={async () => {
+                    const newVal = !digestEnabled;
+                    setDigestSaving(true);
+                    try {
+                      await fetch('/api/auth/update', {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ weeklyDigestEnabled: newVal }),
+                      });
+                      setDigestEnabled(newVal);
+                    } catch { /* silent */ }
+                    finally { setDigestSaving(false); }
+                  }}
+                  disabled={digestSaving}
+                  className={cn(
+                    "shrink-0 px-3 py-1.5 rounded-ui border text-[11px] font-semibold uppercase tracking-wider transition-all",
+                    digestEnabled
+                      ? "bg-np-teal/10 border-np-teal/30 text-np-teal"
+                      : "border-border text-muted-foreground"
+                  )}
+                >
+                  {digestEnabled ? "On" : "Off"}
+                </button>
               </div>
             </Card>
 

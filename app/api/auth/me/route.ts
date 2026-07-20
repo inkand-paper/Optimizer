@@ -22,6 +22,9 @@ export async function GET(req: NextRequest) {
         emailVerified: true,
         githubUserName: true,
         twoFactorEnabled: true,
+        weeklyDigestEnabled: true,
+        statusPageEnabled: true,
+        statusPageSlug: true,
         createdAt: true
       }
     });

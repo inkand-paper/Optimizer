@@ -15,7 +15,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Payload too large" }, { status: 413 });
     }
 
-    const { name, image } = await req.json();
+    const { name, image, weeklyDigestEnabled } = await req.json();
     
     // Ensure Base64 image is not too large (> 2MB)
     if (image && image.length > 2.5 * 1024 * 1024) { // Roughly 2MB in binary
@@ -24,7 +24,7 @@ export async function PATCH(req: NextRequest) {
 
     const updatedUser = await prisma.user.update({
       where: { id: decoded.userId },
-      data: { name, image },
+      data: { name, image, ...(weeklyDigestEnabled !== undefined && { weeklyDigestEnabled }) },
     });
 
     return NextResponse.json({
