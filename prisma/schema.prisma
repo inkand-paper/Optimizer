@@ -179,26 +179,30 @@ model ActivityLog {
 }
 
 model CodeReview {
-  id           String           @id @default(uuid())
-  userId       String
-  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  source       CodeReviewSource // GITHUB | ZIP | PASTE
-  repoUrl      String? // if source = GITHUB
-  repoName     String? // e.g. "inkand-paper/Optimizer"
-  repoBranch   String?          @default("main")
-  fileName     String? // if source = ZIP or PASTE
-  status       CodeReviewStatus @default(PENDING)
-  score        Int? // 0-100 overall quality score
-  language     String? // detected or user-specified language
-  linesOfCode  Int?
-  filesReviewed Int?
-  result       Json? // Full structured AI review output (see types.ts)
-  error        String? // if status = FAILED
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
+  id              String           @id @default(uuid())
+  userId          String
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  source          CodeReviewSource // GITHUB | ZIP | PASTE
+  repoUrl         String?
+  repoName        String?
+  repoBranch      String?          @default("main")
+  fileName        String?
+  status          CodeReviewStatus @default(PENDING)
+  score           Int?
+  language        String?
+  linesOfCode     Int?
+  filesReviewed   Int?
+  result          Json?
+  error           String?
+  // Diff auditing — links this review to the previous one for the same source
+  previousReviewId String?
+  previousScore    Int?            // snapshot of previous score for delta calculation
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
   @@index([userId])
   @@index([userId, createdAt])
+  @@index([userId, repoName])     // fast lookup of previous review for same repo
 }
 
 model AuditCache {
