@@ -192,8 +192,28 @@ export async function POST(req: NextRequest) {
         sendLog(`[INTELLIGENCE] Found ${cachedEntries.length} modules in intelligence bank.`, "success");
       }
 
+      // Find previous completed review for same source (for diff auditing)
+      const previousReview = repoName ? await prisma.codeReview.findFirst({
+        where: {
+          userId: dbUser.id,
+          repoName,
+          status: 'COMPLETED',
+        },
+        orderBy: { createdAt: 'desc' },
+        select: { id: true, score: true },
+      }) : null;
+
       const reviewRecord = await prisma.codeReview.create({
-        data: { userId: dbUser.id, source, repoName, repoBranch, fileName, status: "PROCESSING" },
+        data: {
+          userId: dbUser.id,
+          source,
+          repoName,
+          repoBranch,
+          fileName,
+          status: "PROCESSING",
+          previousReviewId: previousReview?.id || null,
+          previousScore: previousReview?.score || null,
+        },
       });
 
       const auditStart = Date.now();
