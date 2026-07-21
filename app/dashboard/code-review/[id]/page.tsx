@@ -225,9 +225,21 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
   const { id } = unwrappedParams;
 
   const [result, setResult] = React.useState<CodeReviewResult | null>(null);
-  const [reviewMeta, setReviewMeta] = React.useState<{ repoName?: string; fileName?: string; source?: string; createdAt?: string } | null>(null);
+  const [reviewMeta, setReviewMeta] = React.useState<{ repoName?: string; fileName?: string; source?: string; createdAt?: string; previousReviewId?: string; previousScore?: number; score?: number } | null>(null);
   const [loading, setLoading] = React.useState(true);
-  const [activeTab, setActiveTab] = React.useState<"overview" | "files" | "issues">("overview");
+  const [activeTab, setActiveTab] = React.useState<"overview" | "files" | "issues" | "diff">("overview");
+  const [diff, setDiff] = React.useState<{
+    hasDiff: boolean;
+    scoreDelta?: number;
+    grade?: string;
+    newIssuesCount?: number;
+    fixedIssuesCount?: number;
+    newIssues?: Array<{ file: string; severity: string; category: string; message: string }>;
+    fixedIssues?: Array<{ file: string; severity: string; category: string; message: string }>;
+    previousAuditDate?: string;
+    reason?: string;
+  } | null>(null);
+  const [diffLoading, setDiffLoading] = React.useState(false);
 
   React.useEffect(() => {
     fetch(`/api/code-review/${id}`, { credentials: "include" })
@@ -237,6 +249,15 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
         // GET /api/code-review/[id] returns the record directly, not wrapped
         setReviewMeta(data);
         setResult(data.result as CodeReviewResult);
+        // Auto-fetch diff if this review has a previous one
+        if (data.previousReviewId) {
+          setDiffLoading(true);
+          fetch(`/api/code-review/diff?reviewId=${id}`, { credentials: "include" })
+            .then(r => r.json())
+            .then(d => setDiff(d))
+            .catch(() => {})
+            .finally(() => setDiffLoading(false));
+        }
       })
       .catch(() => { })
       .finally(() => setLoading(false));
@@ -331,11 +352,99 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
                       {t === "overview" ? `Top (${topIssues.length})` : t === "files" ? `Nodes (${filesReviewed})` : `Registry (${allIssues.length})`}
                     </button>
                   ))}
+                  {(diff?.hasDiff || diffLoading) && (
+                    <button onClick={() => setActiveTab("diff")} className={cn("flex-1 min-w-[120px] py-3 sm:py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg relative", activeTab === "diff" ? "text-np-gold bg-background shadow-sm" : "text-muted-foreground/40 hover:bg-muted/20")}>
+                      Diff
+                      {diff?.hasDiff && diff.scoreDelta !== undefined && diff.scoreDelta !== 0 && (
+                        <span className={cn("ml-1.5 text-[9px] font-bold", diff.scoreDelta > 0 ? "text-np-teal" : "text-np-crimson")}>
+                          {diff.scoreDelta > 0 ? `+${diff.scoreDelta}` : diff.scoreDelta}
+                        </span>
+                      )}
+                    </button>
+                  )}
                </div>
                <div className="space-y-6">
                   {activeTab === "overview" && topIssues.map((issue, i) => <IssueCard key={i} issue={issue} />)}
                   {activeTab === "files" && (result?.files || []).map((file, i) => <FileAccordion key={i} file={file} />)}
                   {activeTab === "issues" && allIssues.map((issue, i) => <IssueCard key={i} issue={issue as (LineIssue & { filePath?: string })} />)}
+                  {activeTab === "diff" && (
+                    <div className="space-y-6">
+                      {diffLoading && (
+                        <div className="flex items-center gap-3 text-muted-foreground p-4">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span className="text-[12px]">Computing diff...</span>
+                        </div>
+                      )}
+                      {diff && !diffLoading && (
+                        <>
+                          {/* Score delta card */}
+                          <div className={cn(
+                            "p-5 rounded-xl border flex items-center gap-6",
+                            diff.scoreDelta === 0 ? "bg-muted/20 border-border"
+                            : diff.scoreDelta! > 0 ? "bg-np-teal/5 border-np-teal/20"
+                            : "bg-np-crimson/5 border-np-crimson/20"
+                          )}>
+                            <div className="text-center">
+                              <p className={cn("text-4xl font-black", diff.scoreDelta === 0 ? "text-muted-foreground" : diff.scoreDelta! > 0 ? "text-np-teal" : "text-np-crimson")}>
+                                {diff.scoreDelta! > 0 ? `+${diff.scoreDelta}` : diff.scoreDelta}
+                              </p>
+                              <p className="text-[10px] uppercase text-muted-foreground mt-1">Score Delta</p>
+                            </div>
+                            <div className="flex-1 space-y-1">
+                              <p className="text-[14px] font-semibold capitalize">
+                                {diff.grade === "improved" ? "Score improved" : diff.grade === "regressed" ? "Score regressed" : "Score unchanged"}
+                              </p>
+                              <p className="text-[12px] text-muted-foreground">
+                                {reviewMeta?.previousScore ?? "?"} → {overallScore} · compared to audit from {diff.previousAuditDate ? new Date(diff.previousAuditDate).toLocaleDateString() : "previous run"}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Stats row */}
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="p-4 bg-np-crimson/5 border border-np-crimson/20 rounded-xl text-center">
+                              <p className="text-3xl font-black text-np-crimson">{diff.newIssuesCount}</p>
+                              <p className="text-[10px] uppercase text-muted-foreground mt-1">New Issues</p>
+                            </div>
+                            <div className="p-4 bg-np-teal/5 border border-np-teal/20 rounded-xl text-center">
+                              <p className="text-3xl font-black text-np-teal">{diff.fixedIssuesCount}</p>
+                              <p className="text-[10px] uppercase text-muted-foreground mt-1">Issues Fixed</p>
+                            </div>
+                          </div>
+
+                          {/* New issues */}
+                          {(diff.newIssues?.length ?? 0) > 0 && (
+                            <div className="space-y-3">
+                              <p className="text-[11px] font-bold uppercase tracking-widest text-np-crimson">New Issues Introduced</p>
+                              {diff.newIssues!.map((issue, i) => (
+                                <div key={i} className="p-3 bg-np-crimson/5 border border-np-crimson/10 rounded-lg">
+                                  <p className="text-[12px] font-medium text-foreground">{issue.message}</p>
+                                  <p className="text-[10px] text-muted-foreground mt-1">{issue.file} · {issue.severity} · {issue.category}</p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Fixed issues */}
+                          {(diff.fixedIssues?.length ?? 0) > 0 && (
+                            <div className="space-y-3">
+                              <p className="text-[11px] font-bold uppercase tracking-widest text-np-teal">Issues Fixed</p>
+                              {diff.fixedIssues!.map((issue, i) => (
+                                <div key={i} className="p-3 bg-np-teal/5 border border-np-teal/10 rounded-lg line-through opacity-60">
+                                  <p className="text-[12px] font-medium text-foreground">{issue.message}</p>
+                                  <p className="text-[10px] text-muted-foreground mt-1">{issue.file} · {issue.severity} · {issue.category}</p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {diff.newIssuesCount === 0 && diff.fixedIssuesCount === 0 && (
+                            <p className="text-[13px] text-muted-foreground text-center py-6">No issue changes detected between audits.</p>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  )}
                </div>
             </div>
          </div>
