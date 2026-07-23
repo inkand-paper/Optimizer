@@ -188,28 +188,35 @@ export function Toggle({
       aria-checked={checked}
       disabled={disabled}
       onClick={() => !disabled && onChange(!checked)}
+      style={{
+        width:  size === "sm" ? 36 : 44,
+        height: size === "sm" ? 20 : 24,
+        padding: 2,
+      }}
       className={cn(
-        "relative inline-flex shrink-0 cursor-pointer items-center rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-np-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 border border-border/60",
-        size === "sm" ? "h-5 w-9" : "h-6 w-11",
+        "relative inline-flex shrink-0 cursor-pointer items-center rounded-full transition-all duration-300 ease-in-out",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-np-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        "disabled:cursor-not-allowed disabled:opacity-40",
         checked
           ? isGold
-            ? "bg-np-gold border-np-gold/80 shadow-[0_0_12px_rgba(212,175,55,0.35)]"
-            : "bg-np-teal border-np-teal/80 shadow-[0_0_12px_rgba(29,158,117,0.35)]"
-          : "bg-muted/80 hover:bg-muted",
+            ? "bg-np-gold shadow-[0_0_10px_rgba(212,175,55,0.4)] border border-np-gold/50"
+            : "bg-np-teal shadow-[0_0_10px_rgba(29,158,117,0.4)] border border-np-teal/50"
+          : "bg-border hover:bg-muted-foreground/30 border border-border",
         className
       )}
     >
+      {/* Knob */}
       <span
-        className={cn(
-          "pointer-events-none inline-block rounded-full bg-white shadow-md ring-0 transition-transform duration-300 ease-in-out dark:bg-np-ink",
-          size === "sm" ? "h-3.5 w-3.5" : "h-4.5 w-4.5",
-          checked
-            ? size === "sm" ? "translate-x-[18px]" : "translate-x-[22px]"
-            : "translate-x-[2px]"
-        )}
+        style={{
+          width:     size === "sm" ? 16 : 20,
+          height:    size === "sm" ? 16 : 20,
+          transform: checked
+            ? `translateX(${size === "sm" ? 16 : 20}px)`
+            : "translateX(0px)",
+        }}
+        className="pointer-events-none block rounded-full bg-white shadow-[0_1px_4px_rgba(0,0,0,0.3)] transition-transform duration-300 ease-in-out"
       />
       {label && <span className="sr-only">{label}</span>}
     </button>
   );
 }
-
