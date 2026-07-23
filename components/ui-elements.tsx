@@ -156,3 +156,60 @@ export function StatusDot({
     />
   );
 }
+
+/* ─────────────────────────────────────────────
+   Toggle Switch — Theme-matched interactive switch
+───────────────────────────────────────────── */
+export interface ToggleProps {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  disabled?: boolean;
+  label?: string;
+  variant?: "teal" | "gold";
+  size?: "sm" | "md";
+  className?: string;
+}
+
+export function Toggle({
+  checked,
+  onChange,
+  disabled = false,
+  label,
+  variant = "teal",
+  size = "md",
+  className,
+}: ToggleProps) {
+  const isGold = variant === "gold";
+
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      disabled={disabled}
+      onClick={() => !disabled && onChange(!checked)}
+      className={cn(
+        "relative inline-flex shrink-0 cursor-pointer items-center rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-np-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 border border-border/60",
+        size === "sm" ? "h-5 w-9" : "h-6 w-11",
+        checked
+          ? isGold
+            ? "bg-np-gold border-np-gold/80 shadow-[0_0_12px_rgba(212,175,55,0.35)]"
+            : "bg-np-teal border-np-teal/80 shadow-[0_0_12px_rgba(29,158,117,0.35)]"
+          : "bg-muted/80 hover:bg-muted",
+        className
+      )}
+    >
+      <span
+        className={cn(
+          "pointer-events-none inline-block rounded-full bg-white shadow-md ring-0 transition-transform duration-300 ease-in-out dark:bg-np-ink",
+          size === "sm" ? "h-3.5 w-3.5" : "h-4.5 w-4.5",
+          checked
+            ? size === "sm" ? "translate-x-[18px]" : "translate-x-[22px]"
+            : "translate-x-[2px]"
+        )}
+      />
+      {label && <span className="sr-only">{label}</span>}
+    </button>
+  );
+}
+

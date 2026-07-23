@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Card, Button, Input, Badge } from "./ui-elements";
+import { Card, Button, Input, Badge, Toggle } from "./ui-elements";
 import { 
   Activity, 
   Globe, 
@@ -364,33 +364,34 @@ export function MonitoringDashboard() {
               <p className="label-category text-[10px] text-muted-foreground">Share a live uptime page with your users</p>
             </div>
           </div>
-          <button
-            onClick={async () => {
-              const newEnabled = !statusPage.enabled;
-              setSlugError('');
-              try {
-                const res = await fetch('/api/status', {
-                  method: 'PATCH',
-                  headers: { 'Content-Type': 'application/json' },
-                  credentials: 'include',
-                  body: JSON.stringify({ enabled: newEnabled }),
-                });
-                const data = await res.json();
-                if (res.ok) {
-                  setStatusPage({ enabled: data.statusPageEnabled, slug: data.statusPageSlug });
-                  setSlugInput(data.statusPageSlug || '');
-                }
-              } catch { setSlugError('Failed to update.'); }
-            }}
-            className={cn(
-              "px-4 py-2 rounded-ui text-[11px] font-semibold uppercase tracking-wider border transition-all",
-              statusPage.enabled
-                ? "bg-np-teal/10 border-np-teal/30 text-np-teal"
-                : "border-border text-muted-foreground hover:border-np-gold/40 hover:text-np-gold"
-            )}
-          >
-            {statusPage.enabled ? "● Live" : "Enable"}
-          </button>
+          <div className="flex items-center gap-3">
+            <span className={cn(
+              "text-[11px] font-mono font-semibold uppercase tracking-wider",
+              statusPage.enabled ? "text-np-teal" : "text-muted-foreground"
+            )}>
+              {statusPage.enabled ? "Live" : "Off"}
+            </span>
+            <Toggle
+              checked={statusPage.enabled}
+              variant="teal"
+              onChange={async (newEnabled) => {
+                setSlugError('');
+                try {
+                  const res = await fetch('/api/status', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ enabled: newEnabled }),
+                  });
+                  const data = await res.json();
+                  if (res.ok) {
+                    setStatusPage({ enabled: data.statusPageEnabled, slug: data.statusPageSlug });
+                    setSlugInput(data.statusPageSlug || '');
+                  }
+                } catch { setSlugError('Failed to update.'); }
+              }}
+            />
+          </div>
         </div>
 
         {statusPage.enabled && (

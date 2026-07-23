@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Card, Button, Input, Badge } from "@/components/ui-elements";
+import { Card, Button, Input, Badge, Toggle } from "@/components/ui-elements";
 import { User, Shield, Mail, Calendar, Key, ShieldCheck, Loader2, Camera, AlertTriangle, Eye, EyeOff, X, Check, ArrowLeft, GraduationCap } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -543,31 +543,32 @@ export default function ProfilePage() {
                     Monday morning summary of uptime, incidents, and code audit scores.
                   </p>
                 </div>
-                <button
-                  onClick={async () => {
-                    const newVal = !digestEnabled;
-                    setDigestSaving(true);
-                    try {
-                      await fetch('/api/auth/update', {
-                        method: 'PATCH',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
-                        body: JSON.stringify({ weeklyDigestEnabled: newVal }),
-                      });
-                      setDigestEnabled(newVal);
-                    } catch { /* silent */ }
-                    finally { setDigestSaving(false); }
-                  }}
-                  disabled={digestSaving}
-                  className={cn(
-                    "shrink-0 px-3 py-1.5 rounded-ui border text-[11px] font-semibold uppercase tracking-wider transition-all",
-                    digestEnabled
-                      ? "bg-np-teal/10 border-np-teal/30 text-np-teal"
-                      : "border-border text-muted-foreground"
-                  )}
-                >
-                  {digestEnabled ? "On" : "Off"}
-                </button>
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className={cn(
+                    "text-[11px] font-mono font-semibold uppercase tracking-wider",
+                    digestEnabled ? "text-np-teal" : "text-muted-foreground"
+                  )}>
+                    {digestEnabled ? "On" : "Off"}
+                  </span>
+                  <Toggle
+                    checked={digestEnabled}
+                    disabled={digestSaving}
+                    variant="teal"
+                    onChange={async (newVal) => {
+                      setDigestSaving(true);
+                      try {
+                        await fetch('/api/auth/update', {
+                          method: 'PATCH',
+                          headers: { 'Content-Type': 'application/json' },
+                          credentials: 'include',
+                          body: JSON.stringify({ weeklyDigestEnabled: newVal }),
+                        });
+                        setDigestEnabled(newVal);
+                      } catch { /* silent */ }
+                      finally { setDigestSaving(false); }
+                    }}
+                  />
+                </div>
               </div>
             </Card>
 
