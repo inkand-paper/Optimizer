@@ -316,8 +316,10 @@ export function CodeAuditConsole() {
             </div>
          </div>
 
-         {/* ── PR Bot ── */}
-         <div className="space-y-4 pt-6 border-t border-border">
+      </div>{/* close grid */}
+
+      {/* ── PR Bot — full width below the grid ── */}
+      <div className="space-y-4 pt-6 border-t border-border">
            <div className="flex items-center gap-3">
              <div className="h-9 w-9 rounded-ui bg-np-gold/10 border border-np-gold/20 flex items-center justify-center">
                <GitBranch className="h-4 w-4 text-np-gold" />
@@ -443,7 +445,6 @@ export function CodeAuditConsole() {
                </button>
              </div>
            )}
-         </div>
       </div>
     </div>
   );
