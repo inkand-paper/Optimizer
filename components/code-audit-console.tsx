@@ -11,7 +11,8 @@ import {
   FolderArchive, 
   Terminal,
   Clock,
-  Trash2
+  Trash2,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, Badge, Button, Input } from "@/components/ui-elements";
@@ -55,6 +56,14 @@ export function CodeAuditConsole() {
   const [pasteCode, setPasteCode] = React.useState("");
   const [pasteFileName, setPasteFileName] = React.useState("main.ts");
   const [zipFile, setZipFile] = React.useState<File | null>(null);
+  // PR Bot
+  interface PRBotConfig { id: string; repoFullName: string; enabled: boolean; webhookSecret: string; }
+  interface PRBotSetup { webhookUrl: string; webhookSecret: string; instructions: string[]; }
+  const [prBotConfigs, setPrBotConfigs] = React.useState<PRBotConfig[]>([]);
+  const [prBotRepo, setPrBotRepo] = React.useState('');
+  const [prBotAdding, setPrBotAdding] = React.useState(false);
+  const [prBotSetup, setPrBotSetup] = React.useState<PRBotSetup | null>(null);
+  const [prBotError, setPrBotError] = React.useState('');
   const [logs, setLogs] = React.useState<{ msg: string; type: string }[]>([]);
 
   React.useEffect(() => {
@@ -89,6 +98,11 @@ export function CodeAuditConsole() {
     } finally {
       setLoading(false);
     }
+    // Fetch PR bot configs
+    fetch('/api/pr-bot', { credentials: 'include' })
+      .then(r => r.json())
+      .then(d => { if (d.configs) setPrBotConfigs(d.configs); })
+      .catch(() => {});
   }
 
   async function deleteReview(id: string, e: React.MouseEvent) {
@@ -300,6 +314,135 @@ export function CodeAuditConsole() {
                  </div>
                ))}
             </div>
+         </div>
+
+         {/* ── PR Bot ── */}
+         <div className="space-y-4 pt-6 border-t border-border">
+           <div className="flex items-center gap-3">
+             <div className="h-9 w-9 rounded-ui bg-np-gold/10 border border-np-gold/20 flex items-center justify-center">
+               <GitBranch className="h-4 w-4 text-np-gold" />
+             </div>
+             <div>
+               <h3 className="text-[13px] font-semibold">PR Code Review Bot</h3>
+               <p className="label-category text-[10px] text-muted-foreground">Auto-audit pull requests and post a score comment on GitHub</p>
+             </div>
+           </div>
+
+           {/* Connected repos list */}
+           {prBotConfigs.length > 0 && (
+             <div className="space-y-2">
+               {prBotConfigs.map((cfg: { id: string; repoFullName: string; enabled: boolean; webhookSecret: string }) => (
+                 <div key={cfg.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-ui border border-border">
+                   <div className="flex items-center gap-3 min-w-0">
+                     <GitBranch className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                     <span className="text-[12px] font-mono truncate">{cfg.repoFullName}</span>
+                   </div>
+                   <div className="flex items-center gap-2 shrink-0">
+                     <button
+                       onClick={async () => {
+                         await fetch('/api/pr-bot', {
+                           method: 'PATCH',
+                           headers: { 'Content-Type': 'application/json' },
+                           credentials: 'include',
+                           body: JSON.stringify({ configId: cfg.id, enabled: !cfg.enabled }),
+                         });
+                         setPrBotConfigs(prev => prev.map(c => c.id === cfg.id ? { ...c, enabled: !c.enabled } : c));
+                       }}
+                       className={cn(
+                         "text-[10px] px-2 py-1 rounded border uppercase tracking-wider font-medium transition-all",
+                         cfg.enabled
+                           ? "bg-np-teal/10 border-np-teal/30 text-np-teal"
+                           : "border-border text-muted-foreground"
+                       )}
+                     >
+                       {cfg.enabled ? 'On' : 'Off'}
+                     </button>
+                     <button
+                       onClick={async () => {
+                         await fetch('/api/pr-bot', {
+                           method: 'DELETE',
+                           headers: { 'Content-Type': 'application/json' },
+                           credentials: 'include',
+                           body: JSON.stringify({ configId: cfg.id }),
+                         });
+                         setPrBotConfigs(prev => prev.filter(c => c.id !== cfg.id));
+                         setPrBotSetup(null);
+                       }}
+                       className="p-1.5 text-muted-foreground hover:text-np-crimson transition-colors"
+                     >
+                       <X className="h-3.5 w-3.5" />
+                     </button>
+                   </div>
+                 </div>
+               ))}
+             </div>
+           )}
+
+           {/* Add repo / setup instructions */}
+           {!prBotSetup ? (
+             <div className="space-y-2">
+               <div className="flex gap-2">
+                 <input
+                   type="text"
+                   value={prBotRepo}
+                   onChange={e => { setPrBotRepo(e.target.value); setPrBotError(''); }}
+                   placeholder="owner/repo"
+                   className="flex-1 h-9 px-3 rounded-ui bg-muted/30 border border-border text-[13px] placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-np-gold/50"
+                 />
+                 <button
+                   onClick={async () => {
+                     if (!prBotRepo.trim()) return;
+                     setPrBotAdding(true); setPrBotError('');
+                     try {
+                       const res = await fetch('/api/pr-bot', {
+                         method: 'POST',
+                         headers: { 'Content-Type': 'application/json' },
+                         credentials: 'include',
+                         body: JSON.stringify({ repoFullName: prBotRepo.trim() }),
+                       });
+                       const data = await res.json();
+                       if (res.ok) {
+                         setPrBotConfigs(prev => [data.config, ...prev]);
+                         setPrBotSetup(data.setup);
+                         setPrBotRepo('');
+                       } else {
+                         setPrBotError(data.error || 'Failed to connect repo.');
+                       }
+                     } catch { setPrBotError('Network error.'); }
+                     finally { setPrBotAdding(false); }
+                   }}
+                   disabled={prBotAdding || !prBotRepo.trim()}
+                   className="h-9 px-4 rounded-ui border border-np-gold/30 text-np-gold text-[11px] uppercase tracking-wider hover:bg-np-gold/10 transition-all disabled:opacity-40"
+                 >
+                   {prBotAdding ? '...' : 'Connect'}
+                 </button>
+               </div>
+               {prBotError && <p className="text-[11px] text-np-crimson">{prBotError}</p>}
+               <p className="text-[10px] text-muted-foreground">Enter a GitHub repo you have admin access to. Format: owner/repo</p>
+             </div>
+           ) : (
+             <div className="p-4 bg-muted/30 rounded-ui border border-np-gold/20 space-y-3">
+               <p className="text-[12px] font-semibold text-np-gold">One-time setup — add this webhook to GitHub</p>
+               <ol className="space-y-1.5">
+                 {prBotSetup.instructions.map((step: string, i: number) => (
+                   <li key={i} className="text-[11px] text-muted-foreground flex gap-2">
+                     <span className="text-np-gold shrink-0">{i + 1}.</span>
+                     <span>{step}</span>
+                   </li>
+                 ))}
+               </ol>
+               <div className="p-3 bg-background rounded-ui border border-border">
+                 <p className="text-[10px] text-muted-foreground mb-1">Webhook Secret — copy now, shown once:</p>
+                 <code className="text-[11px] text-np-gold break-all">{prBotSetup.webhookSecret}</code>
+               </div>
+               <button
+                 onClick={() => setPrBotSetup(null)}
+                 className="text-[10px] text-muted-foreground hover:text-foreground"
+               >
+                 Done — dismiss
+               </button>
+             </div>
+           )}
          </div>
       </div>
     </div>
