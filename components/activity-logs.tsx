@@ -97,7 +97,7 @@ export function ActivityLogs() {
             {logs.map((log, i) => (
               <div
                 key={log.id}
-                className="flex items-start gap-4 px-5 py-4 group hover:bg-muted/30 transition-colors"
+                className="flex items-start gap-3 px-4 sm:px-5 py-4 group hover:bg-muted/30 transition-colors"
                 style={i < logs.length - 1 ? { borderBottom: "0.5px solid var(--border)" } : {}}
               >
                 {/* Dot */}

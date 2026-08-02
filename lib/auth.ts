@@ -57,13 +57,26 @@ export async function getTokenFromRequest(req: NextRequest): Promise<JwtPayload 
   }
 
   // Priority 2: NextAuth Session (Social Logins)
-  const session = await getServerSession(authOptions);
-  if (session?.user) {
-    return {
-      userId: (session.user as Record<string, unknown>).id as string,
-      email: session.user.email!,
-      role: ((session.user as Record<string, unknown>).role as string) || 'DEVELOPER'
-    };
+  // In App Router route handlers, getServerSession needs req/res context
+  // We pass a minimal adapter so it can read cookies from the request
+  try {
+    const { cookies } = await import('next/headers');
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore.getAll()
+      .map(c => `${c.name}=${c.value}`)
+      .join('; ');
+    const fakeReq = { headers: { cookie: cookieHeader } };
+    const fakeRes = { getHeader: () => '', setHeader: () => '', end: () => '' };
+    const session = await getServerSession(fakeReq as never, fakeRes as never, authOptions);
+    if (session?.user) {
+      return {
+        userId: (session.user as Record<string, unknown>).id as string,
+        email: session.user.email!,
+        role: ((session.user as Record<string, unknown>).role as string) || 'DEVELOPER'
+      };
+    }
+  } catch {
+    // Fall through to bearer token check
   }
 
   // Priority 3: Bearer Token (API clients)

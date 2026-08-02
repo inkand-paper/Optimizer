@@ -116,7 +116,7 @@ export default function Home() {
             <h2 className="text-4xl font-semibold tracking-tight">Built for production teams</h2>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {features.map((f) => (
               <Card key={f.title} className="p-6 flex flex-col gap-4">
                 <div

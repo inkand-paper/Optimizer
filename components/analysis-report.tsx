@@ -108,7 +108,7 @@ export function AnalysisReport({ data }: Props) {
         </div>
 
         {/* Score cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3">
           {[
             { label: "SEO",       score: seoSection?.score  ?? (overallScore as unknown as Record<string, number>)?.seo  ?? 0 },
             { label: "Security",  score: secSection?.score  ?? (overallScore as unknown as Record<string, number>)?.security ?? 0 },
@@ -129,7 +129,7 @@ export function AnalysisReport({ data }: Props) {
       {/* ── Tabbed report ── */}
       <Card>
         {/* Tab bar */}
-        <div className="flex overflow-x-auto np-scroll-hide no-scrollbar" style={{ borderBottom: "0.5px solid var(--border)" }}>
+        <div className="flex overflow-x-auto" style={{ borderBottom: "0.5px solid var(--border)" }}>
           {tabs.map((t, i) => (
             <button
               key={t.label}

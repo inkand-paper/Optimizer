@@ -315,7 +315,7 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
                    {criticalCount > 0 && <div className="space-y-1"><p className="label-category text-[10px] text-np-crimson/60">Hazards</p><p className="text-lg sm:text-xl font-bold text-np-crimson flex items-center gap-2"><Shield className="h-4 w-4 sm:h-5 sm:w-5" /> {criticalCount}</p></div>}
                 </div>
             </div>
-            <Card className="p-6 sm:p-8 bg-card/40 dark:bg-card/20 border-border flex items-center justify-center sm:justify-start gap-8 min-w-0 sm:min-w-[280px]">
+            <Card className="p-5 sm:p-8 bg-card/40 dark:bg-card/20 border-border flex items-center justify-center sm:justify-start gap-6 sm:gap-8">
                 <ScoreRing score={overallScore} />
                 <div className="text-left">
                    <div className={cn("text-4xl sm:text-6xl font-bold tracking-tighter leading-none", scoreColor(overallScore))}>{grade}</div>
@@ -325,7 +325,7 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
          </div>
 
          {/* Metrics Grid */}
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             <CategoryCard label="Security"    cat="security"      data={result?.categories?.security} />
             <CategoryCard label="Performance" cat="performance"   data={result?.categories?.performance} />
             <CategoryCard label="Standards"   cat="best-practice" data={result?.categories?.bestPractices} />

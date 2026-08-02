@@ -511,7 +511,7 @@ export default function DashboardPage() {
                         </div>
                         <button
                           onClick={() => handleDeleteKey(k.id)}
-                          className="opacity-0 group-hover:opacity-100 np-btn-danger h-8 px-3 text-[12px] transition-opacity"
+                          className="np-btn-danger h-8 px-3 text-[12px] sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                         >
                           Revoke
                         </button>

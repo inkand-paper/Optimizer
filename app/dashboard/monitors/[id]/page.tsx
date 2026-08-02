@@ -93,7 +93,7 @@ export default function MonitorDetailsPage() {
         </div>
 
         {/* Top Grid: Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <Card className="p-5 space-y-3">
             <p className="label-category text-[10px]">Real-Time Pulse</p>
             <div className="flex items-end justify-between">
@@ -220,20 +220,19 @@ export default function MonitorDetailsPage() {
               </div>
               <div className="divide-y divide-border">
                 {incidents.length > 0 ? incidents.map((inc: MonitorCheck) => (
-                  <div key={inc.id} className="p-4 flex items-start gap-4">
-                    <div className="h-8 w-8 rounded-full bg-np-crimson/10 flex items-center justify-center shrink-0">
-                      <XCircle className="h-4 w-4 text-np-crimson" />
+                  <div key={inc.id} className="p-4 flex items-start gap-3">
+                    <div className="h-7 w-7 rounded-full bg-np-crimson/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <XCircle className="h-3.5 w-3.5 text-np-crimson" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[13px] font-bold text-np-crimson uppercase">Infrastructure Offline</p>
-                      <p className="text-[12px] text-muted-foreground font-mono mt-0.5 break-words whitespace-pre-wrap">
-                        Cause: {inc.message || "Timeout / Connection Refused"}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-[11px] font-bold uppercase">Failed</p>
-                      <p className="text-[10px] text-muted-foreground font-mono">
-                        {new Date(inc.createdAt).toLocaleTimeString()}
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <p className="text-[12px] font-bold text-np-crimson uppercase">Offline</p>
+                        <span className="text-[10px] text-muted-foreground font-mono shrink-0">
+                          Failed · {new Date(inc.createdAt).toLocaleTimeString()}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground font-mono mt-0.5 break-words">
+                        {inc.message || "Timeout / Connection Refused"}
                       </p>
                     </div>
                   </div>

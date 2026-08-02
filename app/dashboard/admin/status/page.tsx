@@ -69,7 +69,7 @@ export default async function AdminStatusPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         {metrics.map((m, i) => (
           <Card key={i} className="p-6 bg-card/50 backdrop-blur-xl border-border/50 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">

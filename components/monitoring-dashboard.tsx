@@ -288,7 +288,7 @@ export function MonitoringDashboard() {
                           });
                           setMonitors(prev => prev.map(mon => mon.id === m.id ? { ...mon, isPublic: newVal } : mon));
                         }}
-                        className="sm:opacity-0 group-hover:opacity-100 p-2 text-muted-foreground hover:text-np-gold transition-all"
+                        className="p-2 text-muted-foreground hover:text-np-gold transition-all"
                         title={m.isPublic ? "Shown on status page — click to hide" : "Hidden from status page — click to show"}
                       >
                         {m.isPublic
@@ -298,7 +298,7 @@ export function MonitoringDashboard() {
                       </button>
                       <button 
                         onClick={() => handleDelete(m.id)}
-                        className="sm:opacity-0 group-hover:opacity-100 p-2 text-muted-foreground hover:text-np-crimson transition-all"
+                        className="p-2 text-muted-foreground hover:text-np-crimson transition-all"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>

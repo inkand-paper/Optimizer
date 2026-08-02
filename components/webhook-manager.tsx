@@ -158,7 +158,7 @@ export function WebhookManager({ onLimitReached }: Props) {
                 </div>
                 <button
                   onClick={() => handleDelete(w.id)}
-                  className="np-btn-danger h-8 px-3 text-[12px] opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="np-btn-danger h-8 px-3 text-[12px] sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
