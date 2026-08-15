@@ -10,10 +10,11 @@ const categories = [
     title: "Getting Started",
     description: "Architecture overview, environment setup, and self-hosting guide.",
     links: [
-      { label: "Master Guide",      href: "/docs/master" },
-      { label: "Environment Vars",  href: "/docs/master#13-environment-variables" },
-      { label: "Cache Setup",       href: "/docs/master#6-cache-revalidation" },
-      { label: "Self-Hosting",      href: "https://github.com/inkand-paper/Optimizer#self-hosting" },
+      { label: "Master Guide",       href: "/docs/master" },
+      { label: "Environment Vars",   href: "/docs/master#13-environment-variables" },
+      { label: "Cache Setup",        href: "/docs/master#6-cache-revalidation" },
+      { label: "Status Page Setup",  href: "/docs/master#10-promotions-system" },
+      { label: "PR Bot Setup",       href: "/docs/api#post-apipr-bot" },
     ],
   },
   {
@@ -24,7 +25,9 @@ const categories = [
       { label: "All Endpoints",      href: "/docs/api" },
       { label: "Cache Revalidation", href: "/docs/api#post-apirevalidate" },
       { label: "Code Audit (SSE)",   href: "/docs/api#post-apicode-review" },
-      { label: "Outbound Webhooks",  href: "/docs/api#outbound-webhook-payload" },
+      { label: "Audit Diff",         href: "/docs/api#get-apicode-reviewdiff" },
+      { label: "Status Page",        href: "/docs/api#get-apistatus" },
+      { label: "PR Bot",             href: "/docs/api#post-apipr-bot" },
     ],
   },
   {

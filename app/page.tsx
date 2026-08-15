@@ -11,49 +11,69 @@ import {
   Check,
   Mail,
   Code2,
-  Bot,
+  Globe,
+  GitBranch,
+  MessageSquare,
+  GitCompare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const features = [
   {
     icon: Activity,
+    accent: "np-teal",
     title: "Real-Time Health Monitoring",
     body: "Uptime, latency, and status codes streamed live across every endpoint in your stack.",
-    accent: "np-teal",
   },
   {
     icon: Zap,
+    accent: "np-gold",
     title: "Cache Pulse Engine",
     body: "Surgically revalidate Next.js, Nuxt, and Remix caches by tag or path. Zero downtime.",
-    accent: "np-gold",
   },
   {
     icon: BarChart3,
+    accent: "np-teal",
     title: "SEO & Performance Audit",
     body: "Crawl any URL for Core Web Vitals, meta coverage, security headers, and structured data.",
-    accent: "np-teal",
   },
   {
     icon: Code2,
+    accent: "np-gold",
     title: "Neural Code Audit",
     body: "Connect a GitHub repo, upload a zip, or paste code and get AI-powered security, performance, and architecture recommendations instantly.",
-    accent: "np-gold",
   },
   {
-    icon: Bot,
+    icon: Globe,
+    accent: "np-teal",
+    title: "Public Status Page",
+    body: "Share a live uptime page at /status/your-name. Shows per-monitor history bars, uptime %, and overall system health. No login needed.",
+  },
+  {
+    icon: GitBranch,
+    accent: "np-gold",
+    title: "PR Code Review Bot",
+    body: "Auto-audits every pull request and posts a Code Health Score comment directly on GitHub. Works with any repo you have admin access to.",
+  },
+  {
+    icon: MessageSquare,
+    accent: "np-teal",
     title: "Pulse-AI Assistant",
     body: "An AI technical assistant embedded in your dashboard. Ask anything about your infrastructure, audit results, or NexPulse itself.",
-    accent: "np-teal",
+  },
+  {
+    icon: GitCompare,
+    accent: "np-gold",
+    title: "Diff Auditing",
+    body: "Audit the same repo twice and see exactly what changed — new issues introduced, issues fixed, and score delta between runs.",
   },
   {
     icon: Shield,
+    accent: "np-teal",
     title: "Webhook & Key Management",
-    body: "Scoped API keys, rotating secrets, Discord/Slack alerts, and a full audit trail. Everything your security team wants.",
-    accent: "np-gold",
+    body: "Scoped API keys, Discord/Slack alerts, and a full audit trail. Everything your security team wants.",
   },
 ];
-
 const valueProps = [
   { label: "Frameworks supported", value: "Any" },
   { label: "Avg. cache clear time", value: "< 200ms" },
@@ -116,7 +136,7 @@ export default function Home() {
             <h2 className="text-4xl font-semibold tracking-tight">Built for production teams</h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {features.map((f) => (
               <Card key={f.title} className="p-6 flex flex-col gap-4">
                 <div
