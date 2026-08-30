@@ -84,5 +84,6 @@ $analyzeResponse.results
 
 - [ ] **Theme Toggle**: Does the icon switch (Sun/Moon) smoothly?
 - [ ] **Password Eye**: Does clicking the eye reveal the password in Login/Register?
+- [ ] **Toggle Switch**: Do the status page and email digest toggle switches slide smoothly with glowing accents?
 - [ ] **Responsiveness**: Open the Dashboard on your phone. Does the "Create Key" form stack vertically?
 - [ ] **Shapes**: Do all Cards, Buttons, and Inputs have the same rounded corners (`rounded-xl`)?
