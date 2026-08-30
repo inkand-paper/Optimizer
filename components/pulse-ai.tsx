@@ -68,7 +68,7 @@ export function PulseAI() {
         onClick={() => setIsOpen(!isOpen)}
         aria-label={isOpen ? "Close Pulse-AI" : "Open Pulse-AI"}
         className={cn(
-          "fixed bottom-24 md:bottom-6 right-6 h-14 w-14 rounded-full z-50 items-center justify-center transition-all duration-300 shadow-2xl group",
+          "fixed bottom-24 md:bottom-6 right-6 h-14 w-14 rounded-full z-[90] items-center justify-center transition-all duration-300 shadow-2xl group cursor-pointer",
           isOpen ? "hidden md:flex" : "flex",
           isOpen ? "rotate-90 scale-90" : "hover:scale-110 active:scale-95"
         )}
@@ -94,7 +94,7 @@ export function PulseAI() {
       {/* Chat Window */}
       {isOpen && (
         <div
-          className="fixed z-50 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-300
+          className="fixed z-[90] flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-300
             inset-0 md:inset-auto
             md:bottom-24 md:right-6
             md:w-[350px] md:max-w-[calc(100vw-3rem)]
