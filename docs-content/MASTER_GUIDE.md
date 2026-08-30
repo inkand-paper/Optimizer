@@ -399,3 +399,9 @@ Sent every Monday at 8am UTC to all users with `weeklyDigestEnabled = true`.
 - `lastDigestSentAt` prevents double-sends if cron retries
 - Opt-out toggle in Dashboard → Profile → Advanced Protection → Weekly Digest
 - Cron: `/api/cron/weekly-digest` — add to cron-job.org for Monday 8am UTC
+
+### Design & Accessible Controls
+
+- Custom theme-matched `Toggle` component (`components/ui-elements.tsx`) used across Profile (Weekly Email Digest) and Monitoring Dashboard (Public Status Page enable/disable).
+- Pixel-perfect accessible toggle switches replacing legacy standard buttons, styling aligned with `bg-np-teal` and `bg-np-gold` accents with ambient glowing status indicators.
+
