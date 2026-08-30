@@ -188,3 +188,37 @@ Webhook handler: `app/api/webhooks/lemonsqueezy/route.ts`
 - No em dashes or unescaped apostrophes in UI copy
 - System prompt updated if any feature changed
 - Docs updated if any feature added or changed
+
+---
+
+## 15. New Features — Rules
+
+### Public Status Page
+- GET `/api/status` is public (no auth) — rate limited 60/min per IP
+- PATCH `/api/status` requires auth — validates slug format before saving
+- `isPublic` defaults to `true` on all new monitors
+- Status page only visible when `statusPageEnabled = true` on the user
+
+### PR Bot
+- `PRBotConfig.webhookSecret` is generated with `crypto.randomBytes(32)` — never expose it after initial setup response
+- Webhook handler at `/api/webhooks/github` verifies HMAC-SHA256 before processing
+- `runPRAudit()` in `lib/pr-bot.ts` runs async — always respond to GitHub within 10s
+- Max 20 files per PR audit to avoid token limits
+- Plan limits enforced in `POST /api/pr-bot`: Free=1, PRO=5, Agency=unlimited
+
+### Diff Auditing
+- `previousReviewId` is set at CodeReview creation time — look up most recent COMPLETED review for same `repoName` + `userId`
+- Diff is computed by issue fingerprint: `file::category::message`
+- `GET /api/code-review/diff` requires auth — user must own the review or be ADMIN
+- Returns `hasDiff: false` gracefully when no previous review exists
+
+### Weekly Digest
+- `weeklyDigestEnabled` defaults to `true` (opt-out model)
+- `lastDigestSentAt` prevents double-sends — only send if > 6 days ago
+- Skip users with zero monitors AND zero audits that week
+- Cron: `/api/cron/weekly-digest` — Monday 8am UTC — add to cron-job.org
+
+### Landing Page Features Grid
+- 9 features total in a 3-col grid (`lg:grid-cols-3`) so it divides evenly (3×3)
+- When adding new features: keep total divisible by 3 or use 2-col on last row intentionally
+- Icons: Lucide React only, import at top of `app/page.tsx`

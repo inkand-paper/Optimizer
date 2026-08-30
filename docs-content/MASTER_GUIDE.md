@@ -344,3 +344,58 @@ See `.env.example` for the full documented list.
 | Groq 100k tokens/day (free tier) | AI falls back to smaller models | 3-tier fallback handles it |
 | `@react-email` packages deprecated | Build warnings (not errors) | Migrate to new package names eventually |
 | `subscriptionId` unique per user | Only one active LemonSqueezy sub tracked | Sufficient for current billing model |
+
+---
+
+## 15. New Features (July 2025)
+
+### Public Status Page
+
+Users can enable a public status page at `/status/[slug]` from Dashboard → Monitoring → Status Page Settings card at the bottom.
+
+- Slug auto-generated from username on first enable, can be customised
+- All monitors shown by default; Eye icon per monitor to hide/show
+- Shows: overall status banner (OPERATIONAL/DEGRADED), per-monitor uptime %, avg latency, 90-check history bar chart
+- Server-side rendered — fast, SEO-friendly, no JS required to view
+- "Powered by NexPulse" footer on all plans
+- `statusPageEnabled` and `statusPageSlug` fields on User model
+- `isPublic` field on Monitor model (default true)
+
+### PR Code Review Bot
+
+Auto-audits pull requests and posts a Code Health Score comment on GitHub.
+
+Setup from Dashboard → Code Audit → PR Code Review Bot section:
+1. Enter repo in `owner/repo` format
+2. Follow the one-time webhook setup instructions shown after connecting
+3. Add the webhook to GitHub repo settings with the generated secret
+4. Every new PR or push to an existing PR triggers an audit automatically
+
+- Handles: `opened`, `synchronize`, `reopened` PR actions
+- Audits up to 20 changed files per PR (supported extensions only)
+- Saves result as a CodeReview record in DB
+- Posts a markdown comment with grade, score, top issues, dashboard link
+- Plan limits: Free = 1 repo, PRO = 5, Agency = unlimited
+- `PRBotConfig` table: one record per user per repo
+
+### Diff Auditing
+
+When the same repo is audited twice, a Diff tab appears automatically in the audit result page.
+
+- Score delta displayed in the tab badge (`+8` teal, `-3` red)
+- Score delta card: previous → current, improved/regressed/unchanged label
+- New issues: things introduced since the last audit (red)
+- Fixed issues: things resolved since the last audit (green strikethrough)
+- Computed by comparing issue fingerprints: `file + category + message`
+- `previousReviewId` and `previousScore` fields on CodeReview model
+
+### Weekly Email Digest
+
+Sent every Monday at 8am UTC to all users with `weeklyDigestEnabled = true`.
+
+- Per-monitor: uptime %, incident count, avg latency for the week
+- Code audits run that week with grade and score
+- Skips users with zero activity (no monitors + no audits)
+- `lastDigestSentAt` prevents double-sends if cron retries
+- Opt-out toggle in Dashboard → Profile → Advanced Protection → Weekly Digest
+- Cron: `/api/cron/weekly-digest` — add to cron-job.org for Monday 8am UTC

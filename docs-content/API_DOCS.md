@@ -375,3 +375,120 @@ Sent to user-configured Discord/Slack URLs on monitor status change:
 ```
 
 All outbound webhook URLs validated against SSRF blocklist before any request.
+
+---
+
+## PR Bot
+
+### `GET /api/pr-bot`
+List all PR bot configs for the authenticated user.
+
+### `POST /api/pr-bot`
+Connect a new GitHub repo. Requires user to have `githubAccessToken` set (connect GitHub under Code Audit tab first).
+Plan limits: Free = 1 repo, PRO = 5, Agency = unlimited.
+
+```json
+{ "repoFullName": "owner/repo" }
+```
+
+Response includes step-by-step GitHub webhook setup instructions and the webhook secret (shown once only):
+```json
+{
+  "success": true,
+  "config": { "id": "...", "repoFullName": "owner/repo", "enabled": true },
+  "setup": {
+    "webhookUrl": "https://nextjs-optimizer-suite.vercel.app/api/webhooks/github",
+    "webhookSecret": "abc123...",
+    "instructions": ["Go to github.com/owner/repo/settings/hooks", "..."]
+  }
+}
+```
+
+### `PATCH /api/pr-bot`
+Toggle a repo's bot on or off.
+```json
+{ "configId": "...", "enabled": false }
+```
+
+### `DELETE /api/pr-bot`
+Remove a PR bot config.
+```json
+{ "configId": "..." }
+```
+
+### `POST /api/webhooks/github`
+Receives GitHub `pull_request` webhook events. Verified via HMAC-SHA256 (`x-hub-signature-256` header).
+Called by GitHub — not by your application. Handles: `opened`, `synchronize`, `reopened` actions.
+Responds immediately, runs audit asynchronously.
+
+---
+
+## Audit Diff
+
+### `GET /api/code-review/diff?reviewId=xxx`
+Returns a diff between a review and its previous audit of the same repo.
+Requires: User session (must own the review).
+
+```json
+{
+  "hasDiff": true,
+  "currentScore": 82,
+  "previousScore": 74,
+  "scoreDelta": 8,
+  "grade": "improved",
+  "newIssuesCount": 2,
+  "fixedIssuesCount": 5,
+  "newIssues": [{ "file": "auth.ts", "severity": "high", "category": "Security", "message": "..." }],
+  "fixedIssues": [...],
+  "previousAuditDate": "2025-07-10T...",
+  "currentAuditDate": "2025-07-15T..."
+}
+```
+
+Returns `{ "hasDiff": false, "reason": "..." }` if no previous audit exists for the repo.
+
+---
+
+## Status Page
+
+### `GET /api/status?slug=xxx`
+Returns public status page data. No authentication required.
+Rate limited: 60 requests per minute per IP.
+
+```json
+{
+  "owner": "Tahsin",
+  "slug": "tahsin",
+  "overallStatus": "OPERATIONAL",
+  "monitors": [{
+    "id": "...",
+    "name": "My Site",
+    "url": "https://example.com",
+    "status": "UP",
+    "uptimePct": 99.8,
+    "avgLatency": 142,
+    "history": [{ "status": "UP", "latency": 142, "time": "..." }]
+  }],
+  "generatedAt": "..."
+}
+```
+
+`overallStatus`: `OPERATIONAL` | `DEGRADED` | `NO_MONITORS`
+
+### `PATCH /api/status`
+Enable/disable status page or update custom slug. Requires: User session.
+
+```json
+{ "enabled": true }
+// or
+{ "slug": "my-custom-slug" }
+```
+
+Slug rules: 3-30 chars, lowercase letters, numbers, hyphens only. Returns 409 if slug taken.
+
+### `PATCH /api/monitors`
+Toggle a monitor's visibility on the public status page.
+
+```json
+{ "monitorId": "...", "isPublic": false }
+```
