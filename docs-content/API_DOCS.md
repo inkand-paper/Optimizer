@@ -49,9 +49,16 @@ Returns the authenticated user's profile.
 ```json
 {
   "success": true,
-  "user": { "id": "...", "email": "...", "name": "...", "plan": "PRO", "role": "DEVELOPER", "emailVerified": true, "twoFactorEnabled": false }
+  "user": { "id": "...", "email": "...", "name": "...", "plan": "PRO", "role": "DEVELOPER", "emailVerified": true, "twoFactorEnabled": false, "weeklyDigestEnabled": true }
 }
 ```
+
+### `PATCH /api/auth/update`
+Update authenticated user profile preferences (e.g., toggling weekly email digest).
+```json
+{ "weeklyDigestEnabled": false }
+```
+Response: `{ "success": true, "user": { ... } }`
 
 ### `POST /api/auth/change-password`
 Requires current password + new password (min 8 chars).
