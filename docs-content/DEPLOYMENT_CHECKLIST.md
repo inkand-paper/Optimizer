@@ -54,8 +54,10 @@ Production readiness checklist for NexPulse operators and contributors.
 | `GITHUB_CODE_REVIEW_CLIENT_SECRET` | Same as above |
 | `GROQ_API_KEY` | Primary AI engine (Code Audit + Pulse-AI) |
 | `GEMINI_API_KEY` | Fallback AI engine |
-| `RESEND_API_KEY` | Transactional email (verification, reset) |
+| `RESEND_API_KEY` | Transactional email (verification, reset, notifications) |
 | `REVALIDATE_SECRET` | Authenticates cache revalidation webhooks |
+| `CRON_SECRET` | Secret token to secure monitoring & trial expiration cron endpoints |
+| `BLOB_READ_WRITE_TOKEN` | Vercel Blob storage access token for student ID uploads |
 | `UPSTASH_REDIS_REST_URL` | Rate limiting store |
 | `UPSTASH_REDIS_REST_TOKEN` | Rate limiting store auth |
 | `NEXT_PUBLIC_APP_URL` | `https://nextjs-optimizer-suite.vercel.app` |
