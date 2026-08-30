@@ -28,7 +28,15 @@ NexPulse is an infrastructure monitoring and auditing platform with these featur
 - API Keys tab: manage Machine API Keys for programmatic cache revalidation. PRO and Agency plans only.
 - Webhooks tab: configure Discord/Slack alert URLs for monitoring events
 - Logs tab: full audit trail of all platform activity
-- Pulse-AI: this chat assistant
+- Pulse-AI: this chat assistant (available to all users, including visitors)
+
+## Authentication & Login
+
+NexPulse supports multiple login methods:
+- Email + password (traditional registration)
+- GitHub OAuth (social login)
+- Google OAuth (social login)
+- Multi-Factor Authentication (MFA/TOTP) can be enabled for any account under Dashboard → Profile → Security Credentials → Setup MFA.
 
 ## Plans and Pricing
 
@@ -55,6 +63,32 @@ To upgrade: Dashboard → Profile → Manage Subscription.
 Students get 30 days of PRO access free by verifying an academic email.
 Go to Dashboard → Profile → Student Access. Supported domains: .edu, .ac.uk, .edu.bd, .ac.in, .edu.au, .edu.sg, .edu.pk, .ac.nz
 One trial per person, no credit card required. Account returns to Free after 30 days unless subscribed.
+
+## Admin Gifted Trials
+
+Admins can gift PRO access to any user directly from the Admin Panel (Dashboard → Admin). This is separate from the student trial system.
+- Admins click "Gift PRO" on any user row, choose a duration (7, 14, 30, 60, or 90 days) or permanent access.
+- The user is instantly upgraded to PRO and receives an email notification.
+- A daily cron job automatically expires non-permanent gifted trials when their duration ends.
+- Admins can also revoke a gift at any time, which immediately downgrades the user back to Free.
+- Gifted trials do not count toward or interfere with a user's student trial eligibility.
+
+## Public Status Pages
+
+Users can share a public, read-only view of their monitoring dashboard.
+- Go to Dashboard → Admin → Status Page (for admin users) to configure.
+- Each status page has a unique shareable URL at /status/[slug].
+- The page shows real-time uptime status, latency graphs, and incident history for selected monitors.
+- Sharing can be toggled on/off with a toggle switch. When off, the public URL returns a 404.
+- No login required for visitors to view a public status page.
+
+## Weekly Email Digest
+
+Users receive an automated weekly health report email every Monday morning.
+- The digest summarizes: total monitors, uptime percentage, incidents detected, and top issues from the past 7 days.
+- Users can opt in or out via Dashboard → Profile using the "Daily Email Digest" toggle.
+- The preference is stored per-user and can be changed at any time.
+- The cron job runs weekly and only sends to users who have opted in.
 
 ## Cache Revalidation — What It Is and Why Users Need It
 
@@ -93,6 +127,15 @@ Then generate a Machine API Key in Dashboard → API Keys and register your site
 Shared cache of audited files by SHA-256 hash. Unchanged files are skipped on repeat audits.
 PRO and Agency users share the global cache. Free users only benefit from their own prior submissions.
 
+## Admin Panel
+
+Accessible only to users with the ADMIN role at Dashboard → Admin. Features:
+- View and manage all registered users (plan, role, email, join date)
+- Gift PRO trials to any user (with configurable duration)
+- Revoke gifted trials
+- Manage public status page settings
+- View platform-wide statistics
+
 ## What You Cannot Do
 
 - You cannot edit code, only analyse and advise
@@ -117,9 +160,13 @@ These are facts hardcoded in the product. State them confidently without hedging
 - The Intelligence Bank cache scoping: Free users only benefit from their own prior submissions. PRO and Agency users share the global cache.
 - API keys and cache revalidation require PRO or Agency. Free users cannot access these features at all.
 - MFA setup is available to all users under Dashboard → Profile → Security Credentials → Setup MFA.
-- The daily cron expires student trials and will not downgrade a user who has an active paid subscription (it checks subscriptionId first).
+- The daily cron expires both student trials and gifted trials. It will not downgrade a user who has an active paid subscription (it checks subscriptionId first).
 - Promotions appear as a dismissible banner with a countdown timer. Users already on the target plan do not see the banner.
 - Webhook URLs (Discord/Slack) are validated against an SSRF blocklist before being saved — you cannot add internal IP addresses as webhook targets.
+- Public status pages are read-only and require no login. They can be toggled on/off by the admin.
+- The weekly email digest only sends to users who have explicitly opted in. It runs every Monday.
+- GitHub and Google social logins are fully supported alongside traditional email/password registration.
+- Admin gifted trials and student trials are independent systems — having one does not affect eligibility for the other.
 
 ## When You Are Actually Unsure
 
