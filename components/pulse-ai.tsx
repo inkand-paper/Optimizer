@@ -46,7 +46,7 @@ export function PulseAI() {
 
       const data = await res.json();
       if (res.status === 401) {
-        setMessages((prev) => [...prev, { role: "assistant", content: "Session expired. Please refresh the page and log in again." }]);
+        setMessages((prev) => [...prev, { role: "assistant", content: data.content || "Your session could not be verified. Please log in to access account features." }]);
       } else if (res.status === 429) {
         setMessages((prev) => [...prev, { role: "assistant", content: data.content || "Rate limit reached. Please wait a moment before sending another message." }]);
       } else if (data.content) {
