@@ -110,7 +110,7 @@ async function callGroq(sys: string, user: string, retries = 5): Promise<string>
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
+          model: "openai/gpt-oss-120b",
           max_tokens: 3000,
           temperature: 0.1,
           response_format: { type: "json_object" },
@@ -154,15 +154,15 @@ async function callGroq(sys: string, user: string, retries = 5): Promise<string>
 }
 
 /**
- * [TIER 2] - Gemini 1.5 Pro Fallback
- * Used when Groq 70B is rate-limited or down.
+ * [TIER 2] - Gemini 3.6 Flash Fallback
+ * Used when Groq 120B is rate-limited or down.
  */
 async function callGemini(sys: string, user: string): Promise<string> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error("GEMINI_API_KEY_MISSING");
 
   try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`, {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -183,8 +183,8 @@ async function callGemini(sys: string, user: string): Promise<string> {
 }
 
 /**
- * [TIER 3] - Groq 8B Emergency Fallback
- * Lightweight model, nearly impossible to rate-limit.
+ * [TIER 3] - Groq 20B Emergency Fallback
+ * Lightweight model, fast and reliable.
  */
 async function callGroq8B(sys: string, user: string): Promise<string> {
   const apiKey = process.env.GROQ_API_KEY;
@@ -193,7 +193,7 @@ async function callGroq8B(sys: string, user: string): Promise<string> {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({
-        model: "llama3-8b-8192",
+        model: "openai/gpt-oss-20b",
         temperature: 0.1,
         response_format: { type: "json_object" },
         messages: [{ role: "system", content: sys }, { role: "user", content: user }],

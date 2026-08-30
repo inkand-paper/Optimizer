@@ -136,12 +136,12 @@ Only say "I'm not sure" if the question is about something genuinely outside you
 
 
 /**
- * Primary: Groq (llama-3.3-70b-versatile) — Fast, generous free tier.
+ * Primary: Groq (openai/gpt-oss-120b or groq/compound) — High performance AI engine.
  */
 async function runGroq(
   message: string,
   history: { role: string; content: string }[],
-  modelName: string = "llama-3.3-70b-versatile"
+  modelName: string = "openai/gpt-oss-120b"
 ): Promise<string> {
   const groq = getGroq();
   if (!groq) throw new Error("Groq API client not initialized.");
@@ -166,7 +166,7 @@ async function runGroq(
 }
 
 /**
- * Fallback: Gemini (Tiered Flash -> Pro)
+ * Fallback: Gemini (Tiered 3.6 Flash -> 3.5 Flash Lite)
  */
 async function runGemini(
   message: string,
@@ -191,7 +191,7 @@ async function runGemini(
     cleanHistory.pop();
   }
 
-  const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
+  const models = ["gemini-3.6-flash", "gemini-3.5-flash-lite"];
   
   for (const modelName of models) {
     try {
@@ -241,20 +241,26 @@ export async function POST(req: NextRequest) {
     const { message, history } = await req.json();
     const safeHistory: { role: string; content: string }[] = history || [];
 
-    // TIER 1: Groq 70B (Primary)
+    // TIER 1: Groq GPT-OSS-120B (Primary)
     if (process.env.GROQ_API_KEY) {
       try {
-        const text = await runGroq(message, safeHistory, "llama-3.3-70b-versatile");
-        return NextResponse.json({ content: text, engine: "groq-70b" });
+        const text = await runGroq(message, safeHistory, "openai/gpt-oss-120b");
+        return NextResponse.json({ content: text, engine: "groq-120b" });
       } catch {
-        console.warn("⚡ Groq 70B failed, trying Groq 8B...");
+        console.warn("⚡ Groq 120B failed, trying Groq Compound / 20B...");
         
-        // TIER 2: Groq 8B (High Availability)
+        // TIER 2: Groq Compound / 20B (High Availability)
         try {
-          const text = await runGroq(message, safeHistory, "llama-3.1-8b-instant");
-          return NextResponse.json({ content: text, engine: "groq-8b" });
+          const text = await runGroq(message, safeHistory, "groq/compound");
+          return NextResponse.json({ content: text, engine: "groq-compound" });
         } catch {
-          console.warn("⚡ Groq 8B also failed, falling back to Gemini.");
+          console.warn("⚡ Groq Compound failed, trying Groq 20B...");
+          try {
+            const text = await runGroq(message, safeHistory, "openai/gpt-oss-20b");
+            return NextResponse.json({ content: text, engine: "groq-20b" });
+          } catch {
+            console.warn("⚡ All Groq models failed, falling back to Gemini.");
+          }
         }
       }
     }
