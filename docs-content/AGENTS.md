@@ -218,7 +218,7 @@ Webhook handler: `app/api/webhooks/lemonsqueezy/route.ts`
 - Skip users with zero monitors AND zero audits that week
 - Cron: `/api/cron/weekly-digest` — Monday 8am UTC — add to cron-job.org
 
-### Landing Page Features Grid
-- 9 features total in a 3-col grid (`lg:grid-cols-3`) so it divides evenly (3×3)
-- When adding new features: keep total divisible by 3 or use 2-col on last row intentionally
-- Icons: Lucide React only, import at top of `app/page.tsx`
+### UI Toggle Switches
+- Standard buttons should not be used for "On/Off" binary toggles. Use the custom `Toggle` switch component exported from `@/components/ui-elements`.
+- The `Toggle` switch component must use explicit pixel-based translation and sizing to avoid missing Tailwind class issues.
+
