@@ -141,7 +141,30 @@ The project is optimized for high-concurrency environments:
 
 ---
 
-## 8. UX Optimizations (Dashboard)
-- **Auth Resilience**: Added an `authLoading` state to the dashboard to eliminate verification screen flickering.
-- **Smart Forms**: Forgot password and reset password flows handle secure token validation and user feedback.
-- **Mobile First**: Uses a custom hybrid navigation model to ensure the UI feels native on both iOS and Android.
+---
+
+## 9. Student Access Upload & Storage (`app/api/student/upload/route.ts`)
+Handles student verification document uploads securely.
+
+```typescript
+// 1. Validate authenticated user session
+const token = await getTokenFromRequest(req);
+
+// 2. Enforce per-user rate limit (e.g. 50 attempts/hr)
+const rl = await checkRateLimit(`student_upload_${token.userId}`, { maxRequests: 50, windowMs: 3600000 });
+
+// 3. Upload file to Vercel Blob with private access
+const blob = await put(filename, file, {
+  access: 'private', // Keeps sensitive student ID data private
+  contentType: file.type,
+});
+```
+
+---
+
+## 10. UI Design System & Interactive Controls (`components/ui-elements.tsx`)
+Modern, theme-consistent UI components.
+
+- **Toggle Switch**: Built with pixel-perfect inline dimensions for knob translation (`16px` / `20px`), smooth CSS transitions, glowing accent shadows (`shadow-[0_0_10px_rgba(...)]`), and accessible WAI-ARIA role attributes.
+- Used across **Public Status Page** settings and **Weekly Email Digest** preference options.
+
