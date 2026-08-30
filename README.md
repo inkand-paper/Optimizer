@@ -17,15 +17,17 @@
 
 NexPulse gives engineering teams a unified command center for uptime monitoring, cache revalidation, AI-powered code auditing, and SEO analysis — across any framework, any region.
 
-## Features
-
 | Feature | Description |
 |---|---|
-| **Real-Time Monitoring** | Uptime, latency, and status tracking for any public URL. No integration required. |
+| **Real-Time Monitoring** | Uptime, latency, and status tracking for any public URL with global telemetry graphs. |
+| **Public Status Pages** | Customizable live status page (`/status/[slug]`) to showcase uptime to public users. |
 | **Cache Pulse Engine** | Remotely revalidate Next.js, Nuxt, and Remix caches by tag or path. |
 | **SEO & Performance Audit** | Crawl any live URL for Core Web Vitals, meta coverage, security headers, and structured data. |
 | **Neural Code Audit** | AI-powered source code analysis from GitHub repos, ZIP archives, or pasted snippets. |
 | **Intelligence Bank** | Hash-based incremental auditing — only re-analyses files that changed since the last audit. |
+| **Student Trial System** | Verification engine granting 30-day PRO access to students with automated 3-day/1-day reminder emails. |
+| **Admin Gifted Trials** | Admin functionality to grant custom duration (7–90 days or permanent) PRO/Agency trials with notes. |
+| **Weekly Email Digest** | Automated Monday morning summary of infrastructure health, incidents, and audit metrics. |
 | **Pulse-AI Assistant** | AI technical assistant embedded in the dashboard. Answers questions about your infrastructure and audit results. |
 | **Webhooks** | Real-time Discord and Slack alerts when monitored endpoints go down or recover. |
 | **Activity Logs** | Full audit trail of all API calls, revalidation pulses, and auth events. |
