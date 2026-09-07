@@ -24,23 +24,26 @@ export function FinOpsPreview() {
   const [toastMessage, setToastMessage] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    fetchResources();
-  }, []);
-
-  async function fetchResources() {
-    try {
-      const res = await fetch("/api/finops/resources");
-      if (res.ok) {
-        const data = await res.json();
-        setZombies(data.resources || []);
-        setTotalMonthlyWaste(data.totalMonthlyWaste || 0);
+    let isMounted = true;
+    async function load() {
+      try {
+        const res = await fetch("/api/finops/resources");
+        if (res.ok && isMounted) {
+          const data = await res.json();
+          setZombies(data.resources || []);
+          setTotalMonthlyWaste(data.totalMonthlyWaste || 0);
+        }
+      } catch (err) {
+        console.error("[FINOPS_FETCH_ERR]", err);
+      } finally {
+        if (isMounted) setLoading(false);
       }
-    } catch (err) {
-      console.error("[FINOPS_FETCH_ERR]", err);
-    } finally {
-      setLoading(false);
     }
-  }
+    load();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   async function handleClean(zombie: ZombieResource) {
     setCleaningId(zombie.id);

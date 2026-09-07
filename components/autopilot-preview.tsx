@@ -33,11 +33,7 @@ export function AutopilotPreview() {
 
   const activeIncident = incidents.find((i) => i.status === "OPEN") || incidents[0];
 
-  React.useEffect(() => {
-    fetchIncidents();
-  }, []);
-
-  async function fetchIncidents() {
+  const fetchIncidents = React.useCallback(async () => {
     try {
       const res = await fetch("/api/autopilot/incidents");
       if (res.ok) {
@@ -49,7 +45,12 @@ export function AutopilotPreview() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchIncidents();
+  }, [fetchIncidents]);
 
   async function handleAction(actionName: string, status = "REMEDIATED") {
     if (!activeIncident) return;
@@ -180,7 +181,8 @@ export function AutopilotPreview() {
               <Activity className="h-4 w-4 text-np-gold" />
               Root Cause Correlation Graph
             </h3>
-            <span className="text-[10px] font-mono text-np-teal bg-np-teal/10 px-2 py-0.5 rounded border border-np-teal/20">
+            <span className="text-[10px] font-mono text-np-teal bg-np-teal/10 px-2 py-0.5 rounded border border-np-teal/20 flex items-center gap-1.5">
+              {loading && <RefreshCw className="h-3 w-3 animate-spin" />}
               Confidence: {activeIncident?.confidence || 89}%
             </span>
           </div>

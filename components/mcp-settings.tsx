@@ -6,7 +6,6 @@ import {
   Terminal, Key, Copy, CheckCircle2, ExternalLink,
   Server, Cpu, Globe, RefreshCw,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface MCPTool {
   name: string;

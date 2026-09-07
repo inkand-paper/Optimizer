@@ -6,7 +6,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Card, Button, Input, PasswordInput, StatusDot } from "@/components/ui-elements";
+import { Card, Button, Input, StatusDot } from "@/components/ui-elements";
 import { AnalysisReport } from "@/components/analysis-report";
 import { ActivityLogs } from "@/components/activity-logs";
 import { WebhookManager } from "@/components/webhook-manager";
@@ -26,9 +26,9 @@ import { MCPSettings } from "@/components/mcp-settings";
 
 import {
   Activity, Key, Plus, Terminal, ShieldCheck, Copy,
-  CheckCircle2, Loader2, RefreshCw, LogOut, Search, FileText,
+  CheckCircle2, Loader2, LogOut, Search, FileText,
   Webhook, ShieldAlert, Book, Home, User,
-  Menu, X, HelpCircle, Cpu, DollarSign, ZapOff, Bot, GitPullRequest
+  Menu, X, Cpu, DollarSign, ZapOff, GitPullRequest
 } from "lucide-react";
 
 interface ApiKey { id: string; name: string; createdAt: string; lastUsedAt: string | null; }
