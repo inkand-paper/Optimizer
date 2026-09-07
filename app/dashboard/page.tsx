@@ -19,25 +19,68 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import type { AnalyzeResponse } from "@/lib/types";
 
 
+import { AutopilotPreview } from "@/components/autopilot-preview";
+import { FinOpsPreview } from "@/components/finops-preview";
+
 import {
   Activity, Key, Plus, Terminal, ShieldCheck, Copy,
   CheckCircle2, Loader2, RefreshCw, LogOut, Search, FileText,
   Webhook, ShieldAlert, Book, Home, User,
-  Menu, X, HelpCircle
+  Menu, X, HelpCircle, Cpu, DollarSign, ZapOff, Bot
 } from "lucide-react";
 
 interface ApiKey { id: string; name: string; createdAt: string; lastUsedAt: string | null; }
 interface UserProfile { id?: string; name?: string; email?: string; role?: string; plan?: string; emailVerified?: boolean; }
 
-type Tab = "monitoring" | "seo" | "audits" | "keys" | "webhooks" | "logs";
+export type Tab = "monitoring" | "seo" | "logs" | "autopilot" | "pulse-ai" | "cost" | "zombie-hunter" | "audits" | "keys" | "webhooks";
 
-const TABS: { id: Tab; label: string; icon: React.ElementType }[] = [
-  { id: "monitoring", label: "Monitoring",   icon: Activity  },
-  { id: "seo",        label: "SEO Analyzer", icon: Search    },
-  { id: "audits",     label: "Code Audit",   icon: ShieldCheck },
-  { id: "keys",       label: "API Keys",     icon: Key       },
-  { id: "webhooks",   label: "Webhooks",     icon: Webhook   },
-  { id: "logs",       label: "Logs",         icon: FileText  },
+export interface TabConfig {
+  id: Tab;
+  label: string;
+  badge?: string;
+  icon: React.ElementType;
+}
+
+export interface DomainGroup {
+  id: string;
+  category: string;
+  tabs: TabConfig[];
+}
+
+export const DOMAIN_GROUPS: DomainGroup[] = [
+  {
+    id: "observe",
+    category: "📡 OBSERVE",
+    tabs: [
+      { id: "monitoring", label: "Monitors", icon: Activity },
+      { id: "seo", label: "SEO & Perf", icon: Search },
+      { id: "logs", label: "Activity Logs", icon: FileText },
+    ],
+  },
+  {
+    id: "autopilot",
+    category: "🧠 AUTOPILOT AI",
+    tabs: [
+      { id: "autopilot", label: "Root Cause & Guard", badge: "AI", icon: Cpu },
+    ],
+  },
+  {
+    id: "finops",
+    category: "💰 FINOPS & WASTE",
+    tabs: [
+      { id: "cost", label: "Cost Intelligence", badge: "Beta", icon: DollarSign },
+      { id: "zombie-hunter", label: "Zombie Hunter", icon: ZapOff },
+    ],
+  },
+  {
+    id: "devtools",
+    category: "🛠️ DEV TOOLS",
+    tabs: [
+      { id: "audits", label: "Code Audit", icon: ShieldCheck },
+      { id: "keys", label: "API Keys", icon: Key },
+      { id: "webhooks", label: "Webhooks", icon: Webhook },
+    ],
+  },
 ];
 
 export default function DashboardPage() {
@@ -54,7 +97,8 @@ export default function DashboardPage() {
 
   React.useEffect(() => {
     const tabParam = searchParams.get("tab") as Tab;
-    if (tabParam && TABS.some(t => t.id === tabParam) && tabParam !== activeTab) {
+    const allTabs = DOMAIN_GROUPS.flatMap(g => g.tabs);
+    if (tabParam && allTabs.some(t => t.id === tabParam) && tabParam !== activeTab) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveTab(tabParam);
     }
@@ -223,66 +267,69 @@ export default function DashboardPage() {
           <span className="text-[14px] font-semibold">NexPulse</span>
         </Link>
 
-        {/* Nav items */}
-        <nav className="flex-1 py-4 px-2 space-y-0.5">
-          <p className="label-category px-3 py-2">Workspace</p>
-          {TABS.map((t) => {
-            const active = activeTab === t.id;
-            return (
-              <button
-                key={t.id}
-                onClick={() => setActiveTab(t.id)}
-                className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-[6px] text-[13px] font-medium transition-all",
-                  active
-                    ? "np-sidebar-active"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                )}
-              >
-                <t.icon className="h-4 w-4 shrink-0" />
-                {t.label}
-              </button>
-            );
-          })}
+        {/* Nav items — Supabase Style Domain Groups */}
+        <nav className="flex-1 py-3 px-2 space-y-4">
+          {DOMAIN_GROUPS.map((group) => (
+            <div key={group.id} className="space-y-0.5">
+              <p className="label-category px-3 py-1 text-[9px] uppercase tracking-wider text-np-gold/70">{group.category}</p>
+              {group.tabs.map((t) => {
+                const active = activeTab === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    onClick={() => setActiveTab(t.id)}
+                    className={cn(
+                      "w-full flex items-center justify-between px-3 py-2 rounded-[6px] text-[12px] font-medium transition-all",
+                      active
+                        ? "np-sidebar-active"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                    )}
+                  >
+                    <div className="flex items-center gap-2.5 truncate">
+                      <t.icon className="h-3.5 w-3.5 shrink-0" />
+                      <span className="truncate">{t.label}</span>
+                    </div>
+                    {t.badge && (
+                      <span className="text-[8px] uppercase tracking-widest px-1.5 py-0.5 rounded bg-np-gold/20 text-np-gold font-bold shrink-0">
+                        {t.badge}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+
           {user?.role === 'ADMIN' && (
-            <>
-              <div className="pt-4 pb-1">
-                <p className="label-category px-3">System</p>
-              </div>
+            <div className="pt-2 border-t border-border/40">
+              <p className="label-category px-3 py-1 text-[9px] uppercase tracking-wider">System</p>
               <Link
                 href="/dashboard/admin"
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[6px] text-[13px] font-medium text-np-gold hover:bg-np-gold/10 transition-all"
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-[6px] text-[12px] font-medium text-np-gold hover:bg-np-gold/10 transition-all"
               >
-                <ShieldCheck className="h-4 w-4 shrink-0" />
+                <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
                 Admin Panel
               </Link>
-            </>
+            </div>
           )}
 
-          <div className="pt-4 pb-1">
-            <p className="label-category px-3">Resources</p>
+          <div className="pt-2 border-t border-border/40">
+            <p className="label-category px-3 py-1 text-[9px] uppercase tracking-wider">Resources</p>
+            <Link
+              href="/docs"
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-[6px] text-[12px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+            >
+              <Book className="h-3.5 w-3.5 shrink-0" />
+              Docs
+            </Link>
+            <Link
+              href="/dashboard/profile"
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-[6px] text-[12px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+            >
+              <User className="h-3.5 w-3.5 shrink-0" />
+              Profile
+            </Link>
           </div>
-          <Link
-            href="/docs"
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[6px] text-[13px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-          >
-            <Book className="h-4 w-4 shrink-0" />
-            Documentation
-          </Link>
-          <Link
-            href="/faq"
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[6px] text-[13px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-          >
-            <HelpCircle className="h-4 w-4 shrink-0" />
-            FAQ
-          </Link>
-          <Link
-            href="/dashboard/profile"
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[6px] text-[13px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-          >
-            <User className="h-4 w-4 shrink-0" />
-            Profile Settings
-          </Link>
         </nav>
 
         {/* Health widget */}
@@ -359,20 +406,29 @@ export default function DashboardPage() {
                   </button>
                 </div>
 
-                <div className="flex-1 space-y-6 overflow-y-auto np-scroll -mx-2 px-2">
-                  <div className="space-y-1">
-                    <p className="label-category px-3 mb-2">Primary Nodes</p>
-                    {TABS.map((t) => (
-                      <button 
-                        key={t.id}
-                        onClick={() => { setActiveTab(t.id); setMobileMenuOpen(false); }}
-                        className={cn("w-full flex items-center gap-3 p-3 rounded-ui text-[14px] font-medium transition-all", activeTab === t.id ? "bg-np-gold/10 text-np-gold" : "text-muted-foreground hover:bg-muted/50")}
-                      >
-                        <t.icon className="h-4 w-4" />
-                        {t.label}
-                      </button>
-                    ))}
-                  </div>
+                <div className="flex-1 space-y-4 overflow-y-auto np-scroll -mx-2 px-2">
+                  {DOMAIN_GROUPS.map((group) => (
+                    <div key={group.id} className="space-y-1">
+                      <p className="label-category px-3 mb-1 text-[9px] uppercase tracking-wider text-np-gold/70">{group.category}</p>
+                      {group.tabs.map((t) => (
+                        <button 
+                          key={t.id}
+                          onClick={() => { setActiveTab(t.id); setMobileMenuOpen(false); }}
+                          className={cn("w-full flex items-center justify-between p-3 rounded-ui text-[13px] font-medium transition-all", activeTab === t.id ? "bg-np-gold/10 text-np-gold font-bold" : "text-muted-foreground hover:bg-muted/50")}
+                        >
+                          <div className="flex items-center gap-3">
+                            <t.icon className="h-4 w-4" />
+                            {t.label}
+                          </div>
+                          {t.badge && (
+                            <span className="text-[8px] uppercase tracking-widest px-1.5 py-0.5 rounded bg-np-gold/20 text-np-gold font-bold">
+                              {t.badge}
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  ))}
 
                   <div className="space-y-1">
                     <p className="label-category px-3 mb-2">Personal</p>
@@ -424,6 +480,20 @@ export default function DashboardPage() {
             </div>
           )}
 
+          {/* AUTOPILOT AI & ROOT CAUSE */}
+          {(activeTab === "autopilot" || activeTab === "pulse-ai") && (
+            <div className="w-full">
+              <AutopilotPreview />
+            </div>
+          )}
+
+          {/* FINOPS & COST INTELLIGENCE */}
+          {(activeTab === "cost" || activeTab === "zombie-hunter") && (
+            <div className="w-full">
+              <FinOpsPreview />
+            </div>
+          )}
+
           {/* SEO ANALYZER */}
           {activeTab === "seo" && (
             <div className="space-y-5 w-full animate-in fade-in duration-500">
@@ -456,99 +526,70 @@ export default function DashboardPage() {
           {/* CODE AUDIT */}
           {activeTab === "audits" && (
             <div className="w-full">
-               <CodeAuditConsole />
+              <CodeAuditConsole />
             </div>
           )}
 
           {/* API KEYS */}
           {activeTab === "keys" && (
-            <div className="grid lg:grid-cols-2 gap-5 w-full items-start">
-              {/* Left — key list */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-[14px] font-semibold">Access keys</h2>
-                  <Button variant="outline" size="sm" onClick={fetchKeys}>
-                    <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Refresh
-                  </Button>
+            <div className="space-y-6 w-full animate-in fade-in duration-500">
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h2 className="text-[14px] font-semibold">API Key Manager</h2>
+                    <p className="label-category text-[10px]">Manage developer credentials</p>
+                  </div>
                 </div>
 
                 {newKey && (
-                  <Card className="p-4" style={{ borderLeft: "3px solid var(--np-teal)" }}>
-                    <div className="flex items-center gap-2 mb-2">
-                      <CheckCircle2 className="h-4 w-4 text-np-teal" />
-                      <span className="text-[12px] font-semibold text-np-teal">Key generated. Copy it now</span>
+                  <div className="mb-6 p-4 rounded-ui bg-np-gold/10 border border-np-gold/20">
+                    <p className="text-[12px] font-medium text-np-gold mb-1">Key generated — copy now, it will not be displayed again:</p>
+                    <div className="flex items-center gap-2">
+                      <code className="font-mono text-[12px] p-2 bg-background rounded-ui border flex-1 truncate">{newKey}</code>
+                      <Button size="sm" onClick={() => copyKey(newKey)}>
+                        {copied ? <CheckCircle2 className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                      </Button>
                     </div>
-                    <div className="flex items-center gap-2 bg-np-obsidian rounded-ui p-3 font-mono text-[12px] text-np-gold break-all">
-                      <span className="flex-1">{newKey}</span>
-                      <button onClick={() => copyKey(newKey)} className="shrink-0 text-np-slate hover:text-np-gold transition-colors">
-                        {copied ? <CheckCircle2 className="h-4 w-4 text-np-teal" /> : <Copy className="h-4 w-4" />}
-                      </button>
-                    </div>
-                  </Card>
+                  </div>
                 )}
 
-                <Card className="overflow-hidden">
-                  <div className="p-4" style={{ borderBottom: "0.5px solid var(--border)" }}>
-                    <p className="label-category mb-3">Provision new key</p>
-                    <form onSubmit={handleCreateKey} className="flex flex-col sm:flex-row gap-2">
-                      <Input name="keyName" placeholder="Key name" className="sm:flex-1" required />
-                      <Button type="submit" disabled={creatingKey} size="md" className="w-full sm:w-auto">
-                        {creatingKey ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <><Plus className="h-3.5 w-3.5 mr-1" />Create</>}
-                      </Button>
-                    </form>
-                  </div>
-                  <div className="divide-y divide-border">
-                    {keys.length === 0 && (
-                      <p className="p-5 text-[13px] text-muted-foreground text-center">No keys yet</p>
-                    )}
-                    {keys.map((k) => (
-                      <div key={k.id} className="flex items-center justify-between px-4 py-3 group hover:bg-muted/40 transition-colors">
-                        <div className="min-w-0">
-                          <p className="text-[13px] font-medium truncate">{k.name}</p>
-                          <p className="mono-gold text-[11px]">
-                            Issued {new Date(k.createdAt).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <button
-                          onClick={() => handleDeleteKey(k.id)}
-                          className="np-btn-danger h-8 px-3 text-[12px] sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
-                        >
-                          Revoke
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-              </div>
+                <form onSubmit={handleCreateKey} className="flex gap-2 mb-6">
+                  <Input name="keyName" placeholder="Key description (e.g. CI/CD Pipeline)" required className="flex-1" />
+                  <Button type="submit" disabled={creatingKey}>
+                    {creatingKey ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Plus className="h-4 w-4 mr-1" /> Create Key</>}
+                  </Button>
+                </form>
 
-              {/* Right — playground */}
-              <Card className="p-6">
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="h-9 w-9 rounded-ui flex items-center justify-center bg-np-gold/10">
-                    <Terminal className="h-4 w-4 text-np-gold" />
-                  </div>
-                  <div>
-                    <h3 className="text-[14px] font-semibold">Revalidation Playground</h3>
-                    <p className="label-category text-[10px]">Test cache purge handshakes</p>
-                  </div>
+                <div className="space-y-2">
+                  {keys.map((k) => (
+                    <div key={k.id} className="flex items-center justify-between p-3 rounded-ui bg-muted/30 border text-[13px]">
+                      <div>
+                        <p className="font-medium">{k.name}</p>
+                        <p className="label-category text-[10px]">Created: {new Date(k.createdAt).toLocaleDateString()}</p>
+                      </div>
+                      <Button variant="ghost" size="sm" onClick={() => handleDeleteKey(k.id)} className="text-np-crimson hover:bg-np-crimson/10">
+                        Revoke
+                      </Button>
+                    </div>
+                  ))}
+                  {keys.length === 0 && <p className="text-[13px] text-muted-foreground text-center py-4">No active API keys found.</p>}
                 </div>
+              </Card>
+
+              {/* Cache Playground */}
+              <Card className="p-6">
+                <h2 className="text-[14px] font-semibold mb-1">Cache Revalidation Tester</h2>
+                <p className="label-category text-[10px] mb-4">Test instantly purging next.js tagged cache</p>
                 <div className="space-y-3">
-                  <div>
-                    <label className="label-category text-[10px] block mb-1.5">API key</label>
-                    <PasswordInput value={playgroundKey} onChange={(e) => setPlaygroundKey(e.target.value)} />
-                  </div>
-                  <div>
-                    <label className="label-category text-[10px] block mb-1.5">Cache tag / path</label>
-                    <Input placeholder="e.g. products-v2" value={playgroundTag} onChange={(e) => setPlaygroundTag(e.target.value)} />
-                  </div>
-                  <Button className="w-full" onClick={runPlayground} disabled={playgroundLoading || !playgroundKey}>
-                    {playgroundLoading ? "Running..." : "Execute purge"}
+                  <Input placeholder="Tag (e.g. products)" value={playgroundTag} onChange={(e) => setPlaygroundTag(e.target.value)} />
+                  <Button onClick={runPlayground} disabled={playgroundLoading || !playgroundTag}>
+                    {playgroundLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Trigger Purge"}
                   </Button>
                 </div>
                 {playgroundResult && (
-                  <div className="mt-4 np-codeblock text-[12px]">
+                  <pre className="mt-4 p-3 bg-black/50 text-emerald-400 rounded-ui text-[11px] font-mono overflow-auto max-h-48">
                     {JSON.stringify(playgroundResult, null, 2)}
-                  </div>
+                  </pre>
                 )}
               </Card>
             </div>
@@ -575,7 +616,7 @@ export default function DashboardPage() {
         className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center h-16 px-2 bg-background/95 backdrop-blur-md"
         style={{ borderTop: "0.5px solid var(--border)" }}
       >
-        {TABS.filter(t => t.id !== "logs").map((t) => {
+        {DOMAIN_GROUPS.flatMap(g => g.tabs).slice(0, 5).map((t) => {
           const active = activeTab === t.id;
           return (
             <button
