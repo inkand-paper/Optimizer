@@ -1,9 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Card, Button, Badge } from "@/components/ui-elements";
-import { DollarSign, Trash2, ArrowDownRight, Server, Database, Cloud, ShieldAlert, Check, RefreshCw } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Card, Button } from "@/components/ui-elements";
+import { DollarSign, Trash2, ArrowDownRight, Database, Cloud, ShieldAlert, Check, RefreshCw } from "lucide-react";
 
 interface ZombieResource {
   id: string;
@@ -24,13 +23,32 @@ const INITIAL_ZOMBIES: ZombieResource[] = [
 export function FinOpsPreview() {
   const [zombies, setZombies] = React.useState<ZombieResource[]>(INITIAL_ZOMBIES);
   const [cleaningId, setCleaningId] = React.useState<string | null>(null);
+  const [toastMessage, setToastMessage] = React.useState<string | null>(null);
 
-  const handleClean = (id: string) => {
-    setCleaningId(id);
-    setTimeout(() => {
-      setZombies(prev => prev.filter(z => z.id !== id));
+  const handleClean = async (zombie: ZombieResource) => {
+    setCleaningId(zombie.id);
+    try {
+      const res = await fetch("/api/finops/cleanup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          resourceId: zombie.id,
+          resourceName: zombie.name,
+          provider: zombie.provider,
+          costMonthly: zombie.costMonthly,
+        }),
+      });
+
+      if (res.ok) {
+        setZombies((prev) => prev.filter((z) => z.id !== zombie.id));
+        setToastMessage(`Recovered $${zombie.costMonthly}/mo by terminating ${zombie.name}`);
+        setTimeout(() => setToastMessage(null), 4000);
+      }
+    } catch (err) {
+      console.error("[FINOPS_CLEANUP_ERR]", err);
+    } finally {
       setCleaningId(null);
-    }, 1000);
+    }
   };
 
   const totalWaste = zombies.reduce((acc, z) => acc + z.costMonthly, 0);
@@ -68,6 +86,12 @@ export function FinOpsPreview() {
           </div>
         </div>
       </Card>
+
+      {toastMessage && (
+        <div className="p-3 bg-np-teal/10 border border-np-teal/30 text-np-teal text-[11px] rounded-ui text-center font-semibold animate-in fade-in duration-300">
+          {toastMessage}
+        </div>
+      )}
 
       {/* ── Zombie Resource Hunter ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -116,7 +140,7 @@ export function FinOpsPreview() {
                     </div>
 
                     <Button
-                      onClick={() => handleClean(z.id)}
+                      onClick={() => handleClean(z)}
                       disabled={cleaningId === z.id}
                       variant="outline"
                       className="h-8 text-[10px] uppercase tracking-wider text-np-crimson border-np-crimson/30 hover:bg-np-crimson/10"

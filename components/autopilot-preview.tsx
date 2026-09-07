@@ -2,7 +2,10 @@
 
 import * as React from "react";
 import { Card, Button, Badge } from "@/components/ui-elements";
-import { Cpu, ShieldCheck, AlertTriangle, Zap, Check, RotateCcw, Activity, RefreshCw, Globe, ArrowDown, Database } from "lucide-react";
+import {
+  Cpu, ShieldCheck, AlertTriangle, Zap, Check, RotateCcw, Activity,
+  RefreshCw, Globe, ArrowDown, Database,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type AutopilotMode = "observe" | "recommend" | "autopilot";
@@ -75,6 +78,35 @@ export function AutopilotPreview() {
     }
   }
 
+  async function handleSimulateAnomaly() {
+    setExecuting(true);
+    try {
+      const res = await fetch("/api/autopilot/incidents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: "Memory Leak Anomaly Detected",
+          severity: "HIGH",
+          mode: mode.toUpperCase(),
+          targetNode: "/api/checkout",
+          impact: "~24% of checkout requests failing with memory allocation limits",
+          rootCause: "Unclosed DB connection pool leak in service release #b92e10",
+          confidence: 94,
+          recommendedFix: "Restart service container and recycle worker connection pools",
+        }),
+      });
+      if (res.ok) {
+        setActionStatus("Simulated Telemetry Anomaly Detected!");
+        fetchIncidents();
+        setTimeout(() => setActionStatus(null), 4000);
+      }
+    } catch (err) {
+      console.error("[SIMULATE_ERR]", err);
+    } finally {
+      setExecuting(false);
+    }
+  }
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
       {/* ── Mode Header ── */}
@@ -95,22 +127,33 @@ export function AutopilotPreview() {
             </div>
           </div>
 
-          {/* Mode selector */}
-          <div className="flex items-center bg-muted/40 p-1 rounded-ui border border-border">
-            {(["observe", "recommend", "autopilot"] as AutopilotMode[]).map((m) => (
-              <button
-                key={m}
-                onClick={() => setMode(m)}
-                className={cn(
-                  "px-3 py-1.5 rounded-ui text-[11px] font-bold uppercase tracking-wider transition-all",
-                  mode === m
-                    ? "bg-np-gold text-black shadow-md"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {m}
-              </button>
-            ))}
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={handleSimulateAnomaly}
+              disabled={executing}
+              variant="outline"
+              className="h-8 text-[10px] uppercase tracking-wider text-np-crimson border-np-crimson/30 hover:bg-np-crimson/10"
+            >
+              Simulate Anomaly
+            </Button>
+
+            {/* Mode selector */}
+            <div className="flex items-center bg-muted/40 p-1 rounded-ui border border-border">
+              {(["observe", "recommend", "autopilot"] as AutopilotMode[]).map((m) => (
+                <button
+                  key={m}
+                  onClick={() => setMode(m)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-ui text-[11px] font-bold uppercase tracking-wider transition-all",
+                    mode === m
+                      ? "bg-np-gold text-black shadow-md"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
