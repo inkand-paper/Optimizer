@@ -22,6 +22,7 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { LandingFeatureShowcase } from "@/components/landing-feature-showcase";
 
 interface Feature {
   icon: React.ElementType;
@@ -178,8 +179,11 @@ export default function Home() {
           </div>
         </div>
 
+        {/* ── Interactive Live Console ──────────────────── */}
+        <LandingFeatureShowcase />
+
         {/* ── Feature grid ──────────────────────────────── */}
-        <section className="py-24 max-w-6xl mx-auto px-4">
+        <section className="py-16 max-w-6xl mx-auto px-4">
           <div className="text-center mb-16 space-y-2">
             <p className="label-category text-[11px] text-np-gold font-bold uppercase tracking-widest">Platform capabilities</p>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Built for Production Engineering</h2>
