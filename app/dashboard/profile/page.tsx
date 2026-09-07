@@ -48,6 +48,9 @@ export default function ProfilePage() {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [digestEnabled, setDigestEnabled] = React.useState(true);
   const [digestSaving, setDigestSaving] = React.useState(false);
+  const [cancelModal, setCancelModal] = React.useState(false);
+  const [cancelLoading, setCancelLoading] = React.useState(false);
+  const [cancelledUntil, setCancelledUntil] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 3000);
@@ -235,11 +238,38 @@ export default function ProfilePage() {
                     <div className="h-1.5 w-1.5 rounded-full bg-np-gold animate-pulse" />
                     <span className="text-[10px] uppercase font-bold text-np-gold">All Limits Unlocked</span>
                   </div>
+                  {/* Cancel link for Agency plan */}
+                  {!cancelledUntil && (
+                    <button
+                      onClick={() => setCancelModal(true)}
+                      className="text-[10px] text-muted-foreground hover:text-np-crimson transition-colors underline underline-offset-2 w-full text-center mt-1"
+                    >
+                      Cancel subscription
+                    </button>
+                  )}
+                  {cancelledUntil && (
+                    <p className="text-[10px] text-np-teal text-center">
+                      Cancelled — access until {new Date(cancelledUntil).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    </p>
+                  )}
+                </div>
+              ) : profileUser.plan === "FREE" ? (
+                <div className="space-y-4 relative z-10">
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">
+                    Operating on the <span className="text-np-gold font-bold">FREE</span> protocol. Upgrade to expand your monitoring perimeter.
+                  </p>
+                  <Button
+                    onClick={() => setIsPricingOpen(true)}
+                    variant="outline"
+                    className="w-full text-[11px] uppercase tracking-widest h-9"
+                  >
+                    Upgrade Plan
+                  </Button>
                 </div>
               ) : (
                 <div className="space-y-4 relative z-10">
                   <p className="text-[13px] text-muted-foreground leading-relaxed">
-                    Operating on the <span className="text-np-gold font-bold">{profileUser.plan}</span> protocol. Upgrade to expand your monitoring perimeter.
+                    Operating on the <span className="text-np-gold font-bold">{profileUser.plan}</span> protocol.
                   </p>
                   <Button
                     onClick={() => setIsPricingOpen(true)}
@@ -248,6 +278,20 @@ export default function ProfilePage() {
                   >
                     Manage Subscription
                   </Button>
+                  {/* Cancel link for PRO plan */}
+                  {!cancelledUntil && (
+                    <button
+                      onClick={() => setCancelModal(true)}
+                      className="text-[10px] text-muted-foreground hover:text-np-crimson transition-colors underline underline-offset-2 w-full text-center mt-1"
+                    >
+                      Cancel subscription
+                    </button>
+                  )}
+                  {cancelledUntil && (
+                    <p className="text-[10px] text-np-teal text-center">
+                      Cancelled — access until {new Date(cancelledUntil).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    </p>
+                  )}
                 </div>
               )}
             </Card>
@@ -875,6 +919,64 @@ export default function ProfilePage() {
               </p>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ── Cancel Subscription Confirmation Modal ── */}
+      {cancelModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-200">
+          <Card className="w-full max-w-md p-6 relative border-np-crimson/30 shadow-2xl">
+            <button
+              onClick={() => setCancelModal(false)}
+              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            
+            <div className="flex items-center gap-3 mb-4 text-np-crimson">
+              <AlertTriangle className="h-6 w-6 shrink-0" />
+              <h3 className="text-base font-bold uppercase tracking-tight">Cancel Subscription?</h3>
+            </div>
+
+            <p className="text-[13px] text-muted-foreground leading-relaxed mb-6">
+              Your subscription will be scheduled for cancellation. You will retain full access to all your plan features until the end of your current billing cycle.
+            </p>
+
+            <div className="flex items-center justify-end gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setCancelModal(false)}
+                disabled={cancelLoading}
+                className="text-[11px] uppercase tracking-widest h-9"
+              >
+                Keep Plan
+              </Button>
+              <Button
+                onClick={async () => {
+                  setCancelLoading(true);
+                  try {
+                    const res = await fetch("/api/billing/cancel", { method: "POST", credentials: "include" });
+                    const data = await res.json();
+                    if (res.ok) {
+                      setCancelledUntil(data.endsAt || new Date().toISOString());
+                      setMessage({ type: "success", text: "Subscription cancelled. Access remains active until the end of your billing cycle." });
+                    } else {
+                      setMessage({ type: "error", text: data.error || "Failed to cancel subscription." });
+                    }
+                  } catch {
+                    setMessage({ type: "error", text: "System communication timeout." });
+                  } finally {
+                    setCancelLoading(false);
+                    setCancelModal(false);
+                  }
+                }}
+                disabled={cancelLoading}
+                className="bg-np-crimson text-white hover:bg-np-crimson/90 text-[11px] uppercase tracking-widest h-9"
+              >
+                {cancelLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirm Cancel"}
+              </Button>
+            </div>
+          </Card>
         </div>
       )}
     </div>
