@@ -196,7 +196,7 @@ export async function POST(req: NextRequest) {
             }, { status: 400 });
           }
 
-          revalidateTag(tag, "max");
+          (revalidateTag as unknown as (t: string) => void)(tag);
           return NextResponse.json({
             jsonrpc: "2.0",
             id,

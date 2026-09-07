@@ -68,6 +68,7 @@ model User {
   giftedTrial       GiftedTrial?
   prBotConfigs      PRBotConfig[]
   autopilotIncidents AutopilotIncident[]
+  zombieResources   ZombieResource[]
   statusPageSlug    String?  @unique  // custom slug; defaults to username/email prefix
   statusPageEnabled   Boolean  @default(false)
   weeklyDigestEnabled Boolean  @default(true)   // opt-out model — enabled by default
@@ -308,5 +309,22 @@ model AutopilotIncident {
 
   @@index([userId])
   @@index([status])
+}
+
+model ZombieResource {
+  id           String   @id @default(uuid())
+  userId       String
+  name         String   // e.g. "staging-db-replica-v2"
+  provider     String   // AWS | Vercel | Supabase | Cloudflare
+  type         String   // e.g. "Database Instance"
+  costMonthly  Float    // monthly cost in USD
+  status       String   @default("idle") // idle | unattached | stale
+  dismissed    Boolean  @default(false)  // true after cleanup
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([dismissed])
 }
 

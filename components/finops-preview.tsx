@@ -2,30 +2,47 @@
 
 import * as React from "react";
 import { Card, Button } from "@/components/ui-elements";
-import { DollarSign, Trash2, ArrowDownRight, Database, Cloud, ShieldAlert, Check, RefreshCw } from "lucide-react";
+import {
+  DollarSign, Trash2, ArrowDownRight, Database, Cloud,
+  ShieldAlert, Check, RefreshCw, Loader2,
+} from "lucide-react";
 
 interface ZombieResource {
   id: string;
   name: string;
-  provider: "AWS" | "Vercel" | "Supabase" | "Cloudflare";
+  provider: string;
   type: string;
   costMonthly: number;
-  status: "idle" | "unattached" | "stale";
+  status: string;
 }
 
-const INITIAL_ZOMBIES: ZombieResource[] = [
-  { id: "1", name: "staging-db-replica-v2", provider: "Supabase", type: "Database Instance", costMonthly: 51, status: "idle" },
-  { id: "2", name: "ebs-volume-vol-08f3", provider: "AWS", type: "Unattached Disk", costMonthly: 38, status: "unattached" },
-  { id: "3", name: "legacy-analytics-logs", provider: "Vercel", type: "Excess Log Storage", costMonthly: 29, status: "stale" },
-  { id: "4", name: "unused-elastic-ip-92", provider: "AWS", type: "Unused IPv4 Address", costMonthly: 18, status: "unattached" },
-];
-
 export function FinOpsPreview() {
-  const [zombies, setZombies] = React.useState<ZombieResource[]>(INITIAL_ZOMBIES);
+  const [zombies, setZombies] = React.useState<ZombieResource[]>([]);
+  const [totalMonthlyWaste, setTotalMonthlyWaste] = React.useState(0);
+  const [loading, setLoading] = React.useState(true);
   const [cleaningId, setCleaningId] = React.useState<string | null>(null);
   const [toastMessage, setToastMessage] = React.useState<string | null>(null);
 
-  const handleClean = async (zombie: ZombieResource) => {
+  React.useEffect(() => {
+    fetchResources();
+  }, []);
+
+  async function fetchResources() {
+    try {
+      const res = await fetch("/api/finops/resources");
+      if (res.ok) {
+        const data = await res.json();
+        setZombies(data.resources || []);
+        setTotalMonthlyWaste(data.totalMonthlyWaste || 0);
+      }
+    } catch (err) {
+      console.error("[FINOPS_FETCH_ERR]", err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleClean(zombie: ZombieResource) {
     setCleaningId(zombie.id);
     try {
       const res = await fetch("/api/finops/cleanup", {
@@ -40,7 +57,9 @@ export function FinOpsPreview() {
       });
 
       if (res.ok) {
+        // Remove from local state immediately for snappiness, re-fetch for accuracy
         setZombies((prev) => prev.filter((z) => z.id !== zombie.id));
+        setTotalMonthlyWaste((prev) => Math.max(0, prev - zombie.costMonthly));
         setToastMessage(`Recovered $${zombie.costMonthly}/mo by terminating ${zombie.name}`);
         setTimeout(() => setToastMessage(null), 4000);
       }
@@ -49,9 +68,9 @@ export function FinOpsPreview() {
     } finally {
       setCleaningId(null);
     }
-  };
+  }
 
-  const totalWaste = zombies.reduce((acc, z) => acc + z.costMonthly, 0);
+  const projectedSpend = Math.max(0, 842 - totalMonthlyWaste);
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
@@ -68,7 +87,7 @@ export function FinOpsPreview() {
                 <span className="bg-np-teal/20 text-np-teal font-bold text-[9px] uppercase tracking-widest px-2 py-0.5 rounded border border-np-teal/30">FinOps v1.2</span>
               </div>
               <p className="text-[12px] text-muted-foreground mt-0.5">
-                Cloud spend optimization & autonomous zombie resource cleanup.
+                Cloud spend optimization & zombie resource cleanup. Changes persist to your account.
               </p>
             </div>
           </div>
@@ -81,7 +100,7 @@ export function FinOpsPreview() {
             <ArrowDownRight className="h-5 w-5 text-np-teal" />
             <div>
               <p className="label-category text-[9px] text-np-teal uppercase">Projected Target</p>
-              <p className="text-lg font-bold font-mono text-np-teal">${842 - totalWaste}/mo</p>
+              <p className="text-lg font-bold font-mono text-np-teal">${projectedSpend.toFixed(0)}/mo</p>
             </div>
           </div>
         </div>
@@ -95,7 +114,7 @@ export function FinOpsPreview() {
 
       {/* ── Zombie Resource Hunter ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
+
         {/* Left: Zombie List */}
         <Card className="lg:col-span-8 p-6 space-y-5">
           <div className="flex items-center justify-between">
@@ -105,27 +124,38 @@ export function FinOpsPreview() {
                 Zombie Infrastructure Hunter
               </h3>
               <p className="text-[11px] text-muted-foreground mt-0.5">
-                Identified unused, unattached, or abandoned cloud resources across connected providers.
+                Unused, unattached, or abandoned cloud resources detected on your account.
               </p>
             </div>
-            <span className="bg-np-gold/20 text-np-gold font-bold text-[9px] uppercase tracking-widest px-2 py-0.5 rounded border border-np-gold/30">
-              ${totalWaste}/mo recoverable
-            </span>
+            {!loading && zombies.length > 0 && (
+              <span className="bg-np-gold/20 text-np-gold font-bold text-[9px] uppercase tracking-widest px-2 py-0.5 rounded border border-np-gold/30">
+                ${totalMonthlyWaste.toFixed(0)}/mo recoverable
+              </span>
+            )}
           </div>
 
-          <div className="space-y-3">
-            {zombies.length === 0 ? (
-              <div className="p-8 text-center border border-dashed border-border rounded-ui text-muted-foreground">
-                <Check className="h-8 w-8 text-np-teal mx-auto mb-2" />
-                <p className="text-[13px] font-semibold text-foreground">Zero Waste Detected</p>
-                <p className="text-[11px]">All cloud resources are operating efficiently.</p>
-              </div>
-            ) : (
-              zombies.map((z) => (
-                <div key={z.id} className="flex items-center justify-between p-3.5 bg-muted/20 rounded-ui border border-border hover:border-np-gold/30 transition-all">
+          {loading ? (
+            <div className="flex justify-center py-10">
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            </div>
+          ) : zombies.length === 0 ? (
+            <div className="p-8 text-center border border-dashed border-border rounded-ui text-muted-foreground">
+              <Check className="h-8 w-8 text-np-teal mx-auto mb-2" />
+              <p className="text-[13px] font-semibold text-foreground">Zero Waste Detected</p>
+              <p className="text-[11px]">All cloud resources are operating efficiently.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {zombies.map((z) => (
+                <div
+                  key={z.id}
+                  className="flex items-center justify-between p-3.5 bg-muted/20 rounded-ui border border-border hover:border-np-gold/30 transition-all"
+                >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="h-8 w-8 rounded bg-background border border-border flex items-center justify-center shrink-0">
-                      {z.provider === "Supabase" ? <Database className="h-4 w-4 text-emerald-400" /> : <Cloud className="h-4 w-4 text-blue-400" />}
+                      {z.provider === "Supabase"
+                        ? <Database className="h-4 w-4 text-emerald-400" />
+                        : <Cloud className="h-4 w-4 text-blue-400" />}
                     </div>
                     <div className="min-w-0">
                       <p className="text-[13px] font-semibold font-mono truncate">{z.name}</p>
@@ -138,7 +168,6 @@ export function FinOpsPreview() {
                       <p className="text-[13px] font-bold font-mono text-np-crimson">+${z.costMonthly}/mo</p>
                       <span className="text-[9px] uppercase font-mono text-muted-foreground">{z.status}</span>
                     </div>
-
                     <Button
                       onClick={() => handleClean(z)}
                       disabled={cleaningId === z.id}
@@ -149,9 +178,9 @@ export function FinOpsPreview() {
                     </Button>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </Card>
 
         {/* Right: PR Cost Impact Estimator */}
@@ -162,7 +191,7 @@ export function FinOpsPreview() {
               PR Cost Prediction
             </h3>
             <p className="text-[11px] text-muted-foreground leading-relaxed mb-4">
-              NexPulse automatically calculates infrastructure bill impact before GitHub PRs are merged.
+              NexPulse calculates infrastructure bill impact before GitHub PRs are merged. Connect a repo in the <strong className="text-foreground">PR Bot</strong> tab to activate.
             </p>
 
             <div className="p-4 bg-muted/20 rounded-ui border border-border space-y-3 font-mono text-[11px]">

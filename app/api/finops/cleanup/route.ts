@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getTokenFromRequest } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-// POST /api/finops/cleanup — Execute zombie cloud resource termination
+// POST /api/finops/cleanup — Mark zombie resource as dismissed and log cost recovery
 export async function POST(req: NextRequest) {
   try {
     const decoded = await getTokenFromRequest(req);
@@ -17,7 +17,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing resource details" }, { status: 400 });
     }
 
-    // Record cleanup activity log
+    // Mark the DB record as dismissed so it won't reappear
+    if (resourceId) {
+      await prisma.zombieResource.updateMany({
+        where: { id: resourceId, userId },
+        data: { dismissed: true },
+      });
+    }
+
+    // Record cleanup in activity log for auditability
     await prisma.activityLog.create({
       data: {
         userId,
