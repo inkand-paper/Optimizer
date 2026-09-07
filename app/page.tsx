@@ -2,125 +2,70 @@ import Link from "next/link";
 import { Navbar } from "@/components/navbar";
 import { Card } from "@/components/ui-elements";
 import { PLAN_LIMITS } from "@/lib/plans";
+import { LandingFeatureShowcase } from "@/components/landing-feature-showcase";
 import {
   Activity,
   ArrowRight,
-  Zap,
-  Shield,
-  BarChart3,
   Check,
   Mail,
-  Code2,
-  Globe,
-  GitBranch,
-  MessageSquare,
-  GitCompare,
   Cpu,
   DollarSign,
-  Terminal,
   Sparkles,
-  ShieldAlert,
+  Layers,
+  CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { LandingFeatureShowcase } from "@/components/landing-feature-showcase";
-
-interface Feature {
-  icon: React.ElementType;
-  accent: "np-teal" | "np-gold";
-  title: string;
-  body: string;
-  badge?: string;
-  badgeType?: "new" | "ai" | "finops" | "mcp";
-}
-
-const features: Feature[] = [
-  {
-    icon: Cpu,
-    accent: "np-gold",
-    badge: "Autopilot AI",
-    badgeType: "ai",
-    title: "Autopilot Incident & Remediation",
-    body: "Autonomous root-cause analysis and incident engine. Correlates telemetry spikes, identifies culprit commits, and executes automatic rollbacks.",
-  },
-  {
-    icon: DollarSign,
-    accent: "np-teal",
-    badge: "FinOps",
-    badgeType: "finops",
-    title: "Cost Intelligence & Zombie Hunter",
-    body: "Continuous cloud waste monitoring. Detects and terminates unattached EBS disks, idle database replicas, and orphaned IPs to recover cloud spend.",
-  },
-  {
-    icon: Terminal,
-    accent: "np-gold",
-    badge: "MCP Server",
-    badgeType: "mcp",
-    title: "Model Context Protocol (MCP)",
-    body: "Expose real-time telemetry and control endpoints directly to AI agents in Cursor and Claude Desktop via JSON-RPC 2.0.",
-  },
-  {
-    icon: GitBranch,
-    accent: "np-teal",
-    badge: "PR Bot",
-    badgeType: "new",
-    title: "Automated PR Code Review Bot",
-    body: "Auto-audits pull requests on GitHub. Generates security, performance, and architecture scores with automated comment reports.",
-  },
-  {
-    icon: Activity,
-    accent: "np-teal",
-    title: "Real-Time Health Monitoring",
-    body: "Uptime, latency, and status codes streamed live across every endpoint and microservice in your stack.",
-  },
-  {
-    icon: Zap,
-    accent: "np-gold",
-    title: "Cache Pulse Engine",
-    body: "Surgically revalidate Next.js, Nuxt, and Remix edge caches by tag or path with sub-200ms global propagation.",
-  },
-  {
-    icon: BarChart3,
-    accent: "np-teal",
-    title: "SEO & Technical Performance Audit",
-    body: "Crawl any URL for Core Web Vitals, meta coverage, security headers, broken links, and structured schema data.",
-  },
-  {
-    icon: Code2,
-    accent: "np-gold",
-    title: "Neural Code Audit",
-    body: "Connect GitHub repos, upload code archives, or paste snippets to generate AI security and performance refactoring fixes.",
-  },
-  {
-    icon: Globe,
-    accent: "np-teal",
-    title: "Public Status Pages",
-    body: "Share live uptime dashboards at /status/your-org. Features per-monitor SLA history bars and real-time status indicators.",
-  },
-  {
-    icon: MessageSquare,
-    accent: "np-teal",
-    title: "Pulse-AI Assistant",
-    body: "Embedded AI technical assistant in your dashboard. Query telemetry, analyze root causes, or trigger system actions using natural language.",
-  },
-  {
-    icon: GitCompare,
-    accent: "np-gold",
-    title: "Diff Auditing & Regression Tracking",
-    body: "Audit two code versions side-by-side to track security regressions, resolved vulnerabilities, and health score deltas.",
-  },
-  {
-    icon: Shield,
-    accent: "np-teal",
-    title: "Enterprise Webhooks & API Keys",
-    body: "Scoped access tokens, HMAC webhook signature verification, Discord/Slack alert routing, and immutable audit logs.",
-  },
-];
 
 const valueProps = [
   { label: "Frameworks supported", value: "Any" },
   { label: "Avg. cache clear time", value: "< 200ms" },
   { label: "Uptime SLA", value: "99.9%" },
   { label: "Code audit languages", value: "15+" },
+];
+
+const bentoPillars = [
+  {
+    id: "observe",
+    pillar: "PILLAR 01",
+    title: "Deep Infrastructure Observability",
+    subtitle: "Real-Time Health, Edge Caches & Status Pages",
+    accent: "np-teal",
+    icon: Activity,
+    badge: "Observe Domain",
+    items: [
+      { name: "Live Uptime & Latency Monitors", desc: "HTTP, REST & gRPC endpoint health streaming in real-time across global PoPs." },
+      { name: "Cache Pulse Engine", desc: "Sub-200ms edge cache invalidation by tag or path for Next.js, Nuxt & Remix." },
+      { name: "Public Status Dashboards", desc: "Shareable SLA history pages at /status/your-org with zero setup required." },
+    ],
+  },
+  {
+    id: "autopilot",
+    pillar: "PILLAR 02",
+    title: "Autonomous AI Operations",
+    subtitle: "Root Cause Correlation & Remediation Autopilot",
+    accent: "np-gold",
+    icon: Cpu,
+    badge: "Autopilot AI Domain",
+    items: [
+      { name: "Incident Root-Cause Graph", desc: "Correlate telemetry latency spikes to precise culprit commits and database queries." },
+      { name: "Remediation Guardrails", desc: "Human-in-the-loop and autonomous rollback execution mode with safety gates." },
+      { name: "PR Code Review Bot", desc: "Automated GitHub pull request reviewer posting Code Health scores & recommendations." },
+    ],
+  },
+  {
+    id: "finops",
+    pillar: "PILLAR 03",
+    title: "FinOps & Developer Ecosystem",
+    subtitle: "Zombie Infrastructure Hunter & MCP Agent Protocol",
+    accent: "np-teal",
+    icon: DollarSign,
+    badge: "FinOps & Dev Domain",
+    items: [
+      { name: "Zombie Resource Hunter", desc: "Continuous scanning for unattached EBS disks, idle database replicas, and orphaned IPs." },
+      { name: "Model Context Protocol (MCP)", desc: "Direct JSON-RPC 2.0 telemetry interface for Cursor, Claude Desktop, and AI agents." },
+      { name: "Neural Code Auditing", desc: "AI-powered repository vulnerability auditing, diff analysis, and security webhooks." },
+    ],
+  },
 ];
 
 export default function Home() {
@@ -130,7 +75,7 @@ export default function Home() {
 
       <main className="flex-1">
         {/* ── Hero ──────────────────────────────────────── */}
-        <section className="relative pt-28 pb-24 md:pt-40 md:pb-36 overflow-hidden">
+        <section className="relative pt-28 pb-24 md:pt-40 md:pb-32 overflow-hidden">
           {/* subtle grid */}
           <div className="absolute inset-0 np-grid-bg opacity-60 pointer-events-none" />
           {/* warm glow */}
@@ -141,7 +86,7 @@ export default function Home() {
             {/* Announcement Pill */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-np-gold/10 border border-np-gold/30 text-np-gold text-[12px] font-semibold mb-8 animate-in fade-in slide-in-from-top-2 duration-500">
               <Sparkles className="h-3.5 w-3.5" />
-              <span>NexPulse v2.0 Released: Autopilot AI & FinOps Waste Hunter</span>
+              <span>NexPulse v2.0 Architecture: 3-Pillar Autonomous Engine</span>
               <ArrowRight className="h-3 w-3" />
             </div>
 
@@ -153,7 +98,7 @@ export default function Home() {
             </h1>
 
             <p className="text-[16px] md:text-[18px] text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10">
-              Uptime monitoring, cache revalidation, AI incident autopilot, FinOps cloud cost optimization, and MCP server protocols — unified in one sleek platform.
+              Stop toggling between 10 separate tools. NexPulse unifies real-time observability, autonomous AI incident response, and cloud FinOps waste recovery into 3 clean pillars.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -182,46 +127,63 @@ export default function Home() {
         {/* ── Interactive Live Console ──────────────────── */}
         <LandingFeatureShowcase />
 
-        {/* ── Feature grid ──────────────────────────────── */}
-        <section className="py-16 max-w-6xl mx-auto px-4">
-          <div className="text-center mb-16 space-y-2">
-            <p className="label-category text-[11px] text-np-gold font-bold uppercase tracking-widest">Platform capabilities</p>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Built for Production Engineering</h2>
+        {/* ── 3-Pillar Bento Grid Section ───────────────── */}
+        <section className="py-20 max-w-6xl mx-auto px-4">
+          <div className="text-center mb-16 space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-np-teal/10 border border-np-teal/30 text-np-teal text-[11px] font-bold uppercase tracking-widest">
+              <Layers className="h-3.5 w-3.5" />
+              3-Pillar Architecture
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Structured Around 3 Core Engineering Pillars</h2>
             <p className="text-[14px] text-muted-foreground max-w-xl mx-auto">
-              From real-time health telemetry to autonomous self-healing and cloud cost recovery.
+              No matter how many features your team needs, NexPulse organizes everything cleanly into 3 focused domains.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {features.map((f) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {bentoPillars.map((p) => (
               <Card
-                key={f.title}
-                className="p-6 flex flex-col justify-between gap-4 border-border/80 hover:border-np-gold/40 hover:shadow-xl hover:shadow-np-gold/5 hover:-translate-y-1 transition-all duration-300 bg-gradient-to-b from-card/60 to-card"
+                key={p.id}
+                className="p-7 flex flex-col justify-between border-border/80 hover:border-np-gold/40 hover:shadow-2xl transition-all duration-300 bg-gradient-to-b from-card/80 via-card to-card/60 relative overflow-hidden"
               >
-                <div className="space-y-3">
+                <div className="space-y-6">
+                  {/* Pillar Top */}
                   <div className="flex items-center justify-between">
-                    <div
-                      className="h-10 w-10 rounded-ui flex items-center justify-center border"
-                      style={{
-                        background: f.accent === "np-teal" ? "rgba(29,158,117,0.12)" : "rgba(180,140,60,0.12)",
-                        borderColor: f.accent === "np-teal" ? "rgba(29,158,117,0.3)" : "rgba(180,140,60,0.3)",
-                      }}
-                    >
-                      <f.icon
-                        className="h-5 w-5"
-                        style={{ color: f.accent === "np-teal" ? "var(--np-teal)" : "var(--np-gold)" }}
-                      />
-                    </div>
-
-                    {f.badge && (
-                      <span className="text-[9px] uppercase tracking-widest font-bold px-2 py-0.5 rounded border bg-np-gold/15 text-np-gold border-np-gold/30">
-                        {f.badge}
-                      </span>
-                    )}
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-np-gold px-2.5 py-1 rounded bg-np-gold/10 border border-np-gold/20">
+                      {p.pillar}
+                    </span>
+                    <span className="text-[10px] font-mono text-muted-foreground uppercase">{p.badge}</span>
                   </div>
 
-                  <h3 className="text-[15px] font-bold leading-tight text-foreground">{f.title}</h3>
-                  <p className="text-[13px] text-slate-300 leading-relaxed">{f.body}</p>
+                  {/* Title & Icon */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-ui bg-np-gold/10 border border-np-gold/30 flex items-center justify-center text-np-gold shrink-0">
+                        <p.icon className="h-5 w-5" />
+                      </div>
+                      <h3 className="text-lg font-bold leading-tight text-foreground">{p.title}</h3>
+                    </div>
+                    <p className="text-[12px] text-np-teal font-mono">{p.subtitle}</p>
+                  </div>
+
+                  {/* Bullet Sub-Items */}
+                  <div className="space-y-4 pt-2 border-t border-border/50">
+                    {p.items.map((item, idx) => (
+                      <div key={idx} className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="h-3.5 w-3.5 text-np-teal shrink-0" />
+                          <span className="text-[13px] font-bold text-foreground">{item.name}</span>
+                        </div>
+                        <p className="text-[12px] text-slate-300 leading-relaxed pl-5">{item.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-6 mt-6 border-t border-border/40">
+                  <Link href="/dashboard" className="np-btn-outline w-full justify-center text-[12px] gap-2">
+                    Explore {p.badge} <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
                 </div>
               </Card>
             ))}
