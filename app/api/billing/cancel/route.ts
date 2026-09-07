@@ -22,13 +22,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    if (!user.subscriptionId) {
-      return NextResponse.json(
-        { error: "No active subscription found on this account." },
-        { status: 400 }
-      );
-    }
-
     if (user.plan === "FREE") {
       return NextResponse.json(
         { error: "Your account is already on the Free plan." },
@@ -36,14 +29,38 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Call LemonSqueezy to cancel the subscription
-    // This schedules cancellation at end of current billing period.
+    // Case 1: Complimentary / Admin-granted plan (no LemonSqueezy subscription ID)
+    if (!user.subscriptionId) {
+      await prisma.user.update({
+        where: { id: decoded.userId },
+        data: { plan: "FREE" },
+      });
+
+      console.log(`[BILLING_CANCEL] Immediate downgrade to FREE for complimentary/admin account: ${user.email}`);
+
+      // Send cancellation email notification
+      const { sendSubscriptionCancelledEmail } = await import("@/lib/mail");
+      sendSubscriptionCancelledEmail({
+        email: user.email,
+        userName: user.email.split("@")[0],
+        plan: user.plan,
+      }).catch(console.error);
+
+      return NextResponse.json({
+        success: true,
+        immediateDowngrade: true,
+        message: "Subscription cancelled. Your account has been downgraded to the Free tier.",
+      });
+    }
+
+    // Case 2: Active LemonSqueezy recurring subscription
+    // Calls LemonSqueezy to schedule cancellation at end of current billing period.
     const { data, error } = await cancelSubscription(user.subscriptionId);
 
     if (error) {
       console.error("[BILLING_CANCEL] LemonSqueezy error:", error);
       return NextResponse.json(
-        { error: "Failed to cancel subscription. Please try again or contact support." },
+        { error: "Failed to cancel subscription with billing provider. Please try again or contact support." },
         { status: 500 }
       );
     }
@@ -57,7 +74,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      endsAt, // ISO date string — e.g. "2026-10-07T00:00:00.000Z"
+      endsAt,
     });
   } catch (error) {
     console.error("[BILLING_CANCEL] Unhandled error:", error);

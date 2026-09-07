@@ -958,8 +958,13 @@ export default function ProfilePage() {
                     const res = await fetch("/api/billing/cancel", { method: "POST", credentials: "include" });
                     const data = await res.json();
                     if (res.ok) {
-                      setCancelledUntil(data.endsAt || new Date().toISOString());
-                      setMessage({ type: "success", text: "Subscription cancelled. Access remains active until the end of your billing cycle." });
+                      if (data.immediateDowngrade) {
+                        setUser(prev => prev ? { ...prev, plan: "FREE" } : null);
+                        setMessage({ type: "success", text: data.message || "Subscription cancelled. Your account has been set to Free plan." });
+                      } else {
+                        setCancelledUntil(data.endsAt || new Date().toISOString());
+                        setMessage({ type: "success", text: "Subscription cancelled. Access remains active until the end of your billing cycle." });
+                      }
                     } else {
                       setMessage({ type: "error", text: data.error || "Failed to cancel subscription." });
                     }
