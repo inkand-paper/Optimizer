@@ -15,75 +15,116 @@ import {
   GitBranch,
   MessageSquare,
   GitCompare,
+  Cpu,
+  DollarSign,
+  Terminal,
+  Sparkles,
+  ShieldAlert,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const features = [
+interface Feature {
+  icon: React.ElementType;
+  accent: "np-teal" | "np-gold";
+  title: string;
+  body: string;
+  badge?: string;
+  badgeType?: "new" | "ai" | "finops" | "mcp";
+}
+
+const features: Feature[] = [
+  {
+    icon: Cpu,
+    accent: "np-gold",
+    badge: "Autopilot AI",
+    badgeType: "ai",
+    title: "Autopilot Incident & Remediation",
+    body: "Autonomous root-cause analysis and incident engine. Correlates telemetry spikes, identifies culprit commits, and executes automatic rollbacks.",
+  },
+  {
+    icon: DollarSign,
+    accent: "np-teal",
+    badge: "FinOps",
+    badgeType: "finops",
+    title: "Cost Intelligence & Zombie Hunter",
+    body: "Continuous cloud waste monitoring. Detects and terminates unattached EBS disks, idle database replicas, and orphaned IPs to recover cloud spend.",
+  },
+  {
+    icon: Terminal,
+    accent: "np-gold",
+    badge: "MCP Server",
+    badgeType: "mcp",
+    title: "Model Context Protocol (MCP)",
+    body: "Expose real-time telemetry and control endpoints directly to AI agents in Cursor and Claude Desktop via JSON-RPC 2.0.",
+  },
+  {
+    icon: GitBranch,
+    accent: "np-teal",
+    badge: "PR Bot",
+    badgeType: "new",
+    title: "Automated PR Code Review Bot",
+    body: "Auto-audits pull requests on GitHub. Generates security, performance, and architecture scores with automated comment reports.",
+  },
   {
     icon: Activity,
     accent: "np-teal",
     title: "Real-Time Health Monitoring",
-    body: "Uptime, latency, and status codes streamed live across every endpoint in your stack.",
+    body: "Uptime, latency, and status codes streamed live across every endpoint and microservice in your stack.",
   },
   {
     icon: Zap,
     accent: "np-gold",
     title: "Cache Pulse Engine",
-    body: "Surgically revalidate Next.js, Nuxt, and Remix caches by tag or path. Zero downtime.",
+    body: "Surgically revalidate Next.js, Nuxt, and Remix edge caches by tag or path with sub-200ms global propagation.",
   },
   {
     icon: BarChart3,
     accent: "np-teal",
-    title: "SEO & Performance Audit",
-    body: "Crawl any URL for Core Web Vitals, meta coverage, security headers, and structured data.",
+    title: "SEO & Technical Performance Audit",
+    body: "Crawl any URL for Core Web Vitals, meta coverage, security headers, broken links, and structured schema data.",
   },
   {
     icon: Code2,
     accent: "np-gold",
     title: "Neural Code Audit",
-    body: "Connect a GitHub repo, upload a zip, or paste code and get AI-powered security, performance, and architecture recommendations instantly.",
+    body: "Connect GitHub repos, upload code archives, or paste snippets to generate AI security and performance refactoring fixes.",
   },
   {
     icon: Globe,
     accent: "np-teal",
-    title: "Public Status Page",
-    body: "Share a live uptime page at /status/your-name. Shows per-monitor history bars, uptime %, and overall system health. No login needed.",
-  },
-  {
-    icon: GitBranch,
-    accent: "np-gold",
-    title: "PR Code Review Bot",
-    body: "Auto-audits every pull request and posts a Code Health Score comment directly on GitHub. Works with any repo you have admin access to.",
+    title: "Public Status Pages",
+    body: "Share live uptime dashboards at /status/your-org. Features per-monitor SLA history bars and real-time status indicators.",
   },
   {
     icon: MessageSquare,
     accent: "np-teal",
     title: "Pulse-AI Assistant",
-    body: "An AI technical assistant embedded in your dashboard. Ask anything about your infrastructure, audit results, or NexPulse itself.",
+    body: "Embedded AI technical assistant in your dashboard. Query telemetry, analyze root causes, or trigger system actions using natural language.",
   },
   {
     icon: GitCompare,
     accent: "np-gold",
-    title: "Diff Auditing",
-    body: "Audit the same repo twice and see exactly what changed — new issues introduced, issues fixed, and score delta between runs.",
+    title: "Diff Auditing & Regression Tracking",
+    body: "Audit two code versions side-by-side to track security regressions, resolved vulnerabilities, and health score deltas.",
   },
   {
     icon: Shield,
     accent: "np-teal",
-    title: "Webhook & Key Management",
-    body: "Scoped API keys, Discord/Slack alerts, and a full audit trail. Everything your security team wants.",
+    title: "Enterprise Webhooks & API Keys",
+    body: "Scoped access tokens, HMAC webhook signature verification, Discord/Slack alert routing, and immutable audit logs.",
   },
 ];
+
 const valueProps = [
   { label: "Frameworks supported", value: "Any" },
   { label: "Avg. cache clear time", value: "< 200ms" },
-  { label: "Uptime SLA", value: "99.9 %" },
+  { label: "Uptime SLA", value: "99.9%" },
   { label: "Code audit languages", value: "15+" },
 ];
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background selection:bg-np-gold/20">
       <Navbar />
 
       <main className="flex-1">
@@ -96,22 +137,30 @@ export default function Home() {
 
           <div className="relative max-w-5xl mx-auto px-4 text-center">
 
-            <h1 className="text-5xl sm:text-7xl md:text-8xl font-semibold tracking-tight leading-[1.02] text-foreground mb-6">
-              Performance you<br />
-              <span style={{ color: "var(--np-gold)" }}>can feel.</span>
+            {/* Announcement Pill */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-np-gold/10 border border-np-gold/30 text-np-gold text-[12px] font-semibold mb-8 animate-in fade-in slide-in-from-top-2 duration-500">
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>NexPulse v2.0 Released: Autopilot AI & FinOps Waste Hunter</span>
+              <ArrowRight className="h-3 w-3" />
+            </div>
+
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.05] text-foreground mb-6">
+              Unified Observability &<br />
+              <span className="text-np-gold bg-gradient-to-r from-np-gold via-amber-300 to-np-gold bg-clip-text text-transparent">
+                Autonomous AI Operations.
+              </span>
             </h1>
 
-            <p className="text-[17px] text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10">
-              NexPulse gives engineering teams a single authoritative view of health,
-              cache state, and audit results across every framework and every region.
+            <p className="text-[16px] md:text-[18px] text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10">
+              Uptime monitoring, cache revalidation, AI incident autopilot, FinOps cloud cost optimization, and MCP server protocols — unified in one sleek platform.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link href="/register" className="np-btn-primary h-12 px-8 text-[14px] gap-2">
+              <Link href="/register" className="np-btn-primary h-12 px-8 text-[14px] gap-2 shadow-lg shadow-np-gold/10">
                 Start for free <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link href="/docs" className="np-btn-outline h-12 px-8 text-[14px]">
-                View docs
+              <Link href="/dashboard" className="np-btn-outline h-12 px-8 text-[14px]">
+                Explore Dashboard
               </Link>
             </div>
           </div>
@@ -119,11 +168,11 @@ export default function Home() {
 
         {/* ── Value strip ───────────────────────────────── */}
         <div style={{ borderTop: "0.5px solid var(--border)", borderBottom: "0.5px solid var(--border)" }}>
-          <div className="max-w-5xl mx-auto px-4 py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-0 md:divide-x divide-border">
+          <div className="max-w-5xl mx-auto px-4 py-8 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0 md:divide-x divide-border">
             {valueProps.map((v) => (
               <div key={v.label} className="flex flex-col items-center gap-1 px-2 md:px-6">
-                <span className="text-2xl font-semibold" style={{ color: "var(--np-gold)" }}>{v.value}</span>
-                <span className="label-category text-center">{v.label}</span>
+                <span className="text-2xl md:text-3xl font-bold text-np-gold">{v.value}</span>
+                <span className="label-category text-center text-[10px] tracking-widest uppercase">{v.label}</span>
               </div>
             ))}
           </div>
@@ -131,25 +180,45 @@ export default function Home() {
 
         {/* ── Feature grid ──────────────────────────────── */}
         <section className="py-24 max-w-6xl mx-auto px-4">
-          <div className="text-center mb-14">
-            <p className="label-category mb-3">Platform capabilities</p>
-            <h2 className="text-4xl font-semibold tracking-tight">Built for production teams</h2>
+          <div className="text-center mb-16 space-y-2">
+            <p className="label-category text-[11px] text-np-gold font-bold uppercase tracking-widest">Platform capabilities</p>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Built for Production Engineering</h2>
+            <p className="text-[14px] text-muted-foreground max-w-xl mx-auto">
+              From real-time health telemetry to autonomous self-healing and cloud cost recovery.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {features.map((f) => (
-              <Card key={f.title} className="p-6 flex flex-col gap-4">
-                <div
-                  className="h-10 w-10 rounded-ui flex items-center justify-center"
-                  style={{ background: f.accent === "np-teal" ? "rgba(29,158,117,0.12)" : "rgba(180,140,60,0.12)" }}
-                >
-                  <f.icon
-                    className="h-5 w-5"
-                    style={{ color: f.accent === "np-teal" ? "var(--np-teal)" : "var(--np-gold)" }}
-                  />
+              <Card
+                key={f.title}
+                className="p-6 flex flex-col justify-between gap-4 border-border/80 hover:border-np-gold/40 hover:shadow-xl hover:shadow-np-gold/5 hover:-translate-y-1 transition-all duration-300 bg-gradient-to-b from-card/60 to-card"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div
+                      className="h-10 w-10 rounded-ui flex items-center justify-center border"
+                      style={{
+                        background: f.accent === "np-teal" ? "rgba(29,158,117,0.12)" : "rgba(180,140,60,0.12)",
+                        borderColor: f.accent === "np-teal" ? "rgba(29,158,117,0.3)" : "rgba(180,140,60,0.3)",
+                      }}
+                    >
+                      <f.icon
+                        className="h-5 w-5"
+                        style={{ color: f.accent === "np-teal" ? "var(--np-teal)" : "var(--np-gold)" }}
+                      />
+                    </div>
+
+                    {f.badge && (
+                      <span className="text-[9px] uppercase tracking-widest font-bold px-2 py-0.5 rounded border bg-np-gold/15 text-np-gold border-np-gold/30">
+                        {f.badge}
+                      </span>
+                    )}
+                  </div>
+
+                  <h3 className="text-[15px] font-bold leading-tight text-foreground">{f.title}</h3>
+                  <p className="text-[13px] text-slate-300 leading-relaxed">{f.body}</p>
                 </div>
-                <h3 className="text-[15px] font-semibold leading-snug">{f.title}</h3>
-                <p className="text-[13px] text-muted-foreground leading-relaxed">{f.body}</p>
               </Card>
             ))}
           </div>
@@ -159,8 +228,8 @@ export default function Home() {
         <section className="py-24" id="pricing" style={{ borderTop: "0.5px solid var(--border)" }}>
           <div className="max-w-5xl mx-auto px-4">
             <div className="text-center mb-14">
-              <p className="label-category mb-3">Pricing</p>
-              <h2 className="text-4xl font-semibold tracking-tight">Plans for every workflow</h2>
+              <p className="label-category mb-3 text-[11px] text-np-gold font-bold uppercase tracking-widest">Transparent Pricing</p>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Plans for every scale</h2>
             </div>
 
             <div className="grid md:grid-cols-3 gap-5 items-start">
@@ -170,8 +239,8 @@ export default function Home() {
                   <Card
                     key={key}
                     className={cn(
-                      "p-7 flex flex-col gap-6 relative",
-                      isPro && "ring-1 ring-np-gold"
+                      "p-7 flex flex-col gap-6 relative transition-all duration-300",
+                      isPro && "ring-1 ring-np-gold bg-gradient-to-b from-np-gold/5 to-card"
                     )}
                   >
                     {isPro && (
@@ -181,25 +250,34 @@ export default function Home() {
                       />
                     )}
                     <div>
-                      <p className="label-category mb-2">{plan.name}</p>
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="label-category font-bold">{plan.name}</p>
+                        {isPro && (
+                          <span className="text-[9px] uppercase tracking-widest bg-np-gold/20 text-np-gold font-bold px-2 py-0.5 rounded border border-np-gold/40">
+                            Most Popular
+                          </span>
+                        )}
+                      </div>
                       <div className="flex items-baseline gap-1 mb-3">
-                        <span className="text-4xl font-semibold">{plan.price}</span>
+                        <span className="text-4xl font-bold font-mono">{plan.price}</span>
                         <span className="text-[13px] text-muted-foreground">/mo</span>
                       </div>
-                      <p className="text-[13px] text-muted-foreground leading-relaxed">{plan.description}</p>
+                      <p className="text-[13px] text-slate-300 leading-relaxed">{plan.description}</p>
                     </div>
 
                     <ul className="space-y-2.5">
                       {plan.features.map((f: { active: boolean; text: string }, i: number) => (
                         <li
                           key={i}
-                          className={cn("flex items-center gap-2.5 text-[13px]", !f.active && "opacity-35")}
+                          className={cn("flex items-center gap-2.5 text-[13px]", !f.active && "opacity-40")}
                         >
                           <Check
                             className="h-3.5 w-3.5 shrink-0"
                             style={{ color: f.active ? "var(--np-teal)" : "var(--np-slate)" }}
                           />
-                          {f.text}
+                          <span className={f.active ? "text-foreground font-medium" : "text-muted-foreground"}>
+                            {f.text}
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -208,10 +286,10 @@ export default function Home() {
                       href="/register"
                       className={cn(
                         "mt-auto",
-                        isPro ? "np-btn-primary w-full justify-center" : "np-btn-outline w-full justify-center"
+                        isPro ? "np-btn-primary w-full justify-center shadow-lg shadow-np-gold/10" : "np-btn-outline w-full justify-center"
                       )}
                     >
-                      {key === "BUSINESS" ? "Get started" : "Get started"}
+                      Get started
                     </Link>
                   </Card>
                 );
@@ -222,23 +300,23 @@ export default function Home() {
 
         {/* ── CTA banner ────────────────────────────────── */}
         <section className="py-24 max-w-5xl mx-auto px-4">
-          <Card className="p-12 md:p-20 text-center relative overflow-hidden np-grid-bg">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-48 bg-np-gold/5 blur-[80px] pointer-events-none" />
-            <div className="relative">
-              <p className="label-category mb-4">Ready to ship</p>
-              <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-4">
-                Full-stack monitoring,<br />
-                <span style={{ color: "var(--np-gold)" }}>zero config.</span>
+          <Card className="p-10 md:p-16 text-center relative overflow-hidden np-grid-bg border-np-gold/20">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-48 bg-np-gold/10 blur-[80px] pointer-events-none" />
+            <div className="relative space-y-4">
+              <p className="label-category text-[11px] text-np-gold font-bold uppercase tracking-widest">Ready to ship</p>
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
+                Full-stack observability & AI ops,<br />
+                <span className="text-np-gold">zero hassle.</span>
               </h2>
-              <p className="text-muted-foreground text-[15px] mb-8 max-w-md mx-auto">
-                Connect your first asset in under two minutes. No infrastructure changes required.
+              <p className="text-slate-300 text-[15px] max-w-md mx-auto leading-relaxed">
+                Connect your first repository or endpoint in under 2 minutes. No complex agents or proxy setups.
               </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                <Link href="/register" className="np-btn-primary h-12 px-8 text-[14px] gap-2">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
+                <Link href="/register" className="np-btn-primary h-12 px-8 text-[14px] gap-2 shadow-lg shadow-np-gold/10">
                   Start free <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link href="/login" className="np-btn-outline h-12 px-8 text-[14px]">
-                  Sign in
+                  Sign in to console
                 </Link>
               </div>
             </div>
@@ -251,9 +329,9 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
             <Activity className="h-4 w-4 text-np-gold" />
-            <span className="text-[14px] font-medium">NexPulse</span>
+            <span className="text-[14px] font-bold">NexPulse</span>
           </div>
-          <p className="label-category text-center">© 2026 NexPulse. All rights reserved.</p>
+          <p className="label-category text-center text-[11px]">© 2026 NexPulse. All rights reserved.</p>
           <div className="flex items-center gap-4 flex-wrap justify-center">
             <Link href="/docs" className="text-[13px] text-muted-foreground hover:text-foreground transition-colors">Docs</Link>
             <Link href="/login" className="text-[13px] text-muted-foreground hover:text-foreground transition-colors">Login</Link>
