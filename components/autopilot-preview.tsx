@@ -7,19 +7,73 @@ import { cn } from "@/lib/utils";
 
 type AutopilotMode = "observe" | "recommend" | "autopilot";
 
+interface Incident {
+  id: string;
+  title: string;
+  severity: string;
+  status: string;
+  mode: string;
+  targetNode: string;
+  impact: string;
+  rootCause: string;
+  confidence: number;
+  recommendedFix: string;
+  actionTaken?: string | null;
+}
+
 export function AutopilotPreview() {
   const [mode, setMode] = React.useState<AutopilotMode>("recommend");
+  const [incidents, setIncidents] = React.useState<Incident[]>([]);
+  const [loading, setLoading] = React.useState(true);
   const [actionStatus, setActionStatus] = React.useState<string | null>(null);
   const [executing, setExecuting] = React.useState(false);
 
-  const handleAction = (actionName: string) => {
+  const activeIncident = incidents.find((i) => i.status === "OPEN") || incidents[0];
+
+  React.useEffect(() => {
+    fetchIncidents();
+  }, []);
+
+  async function fetchIncidents() {
+    try {
+      const res = await fetch("/api/autopilot/incidents");
+      if (res.ok) {
+        const data = await res.json();
+        setIncidents(data.incidents || []);
+      }
+    } catch (err) {
+      console.error("[AUTOPILOT_FETCH_ERR]", err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleAction(actionName: string, status = "REMEDIATED") {
+    if (!activeIncident) return;
     setExecuting(true);
-    setTimeout(() => {
+
+    try {
+      const res = await fetch("/api/autopilot/incidents", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          incidentId: activeIncident.id,
+          actionTaken: actionName,
+          status,
+        }),
+      });
+
+      if (res.ok) {
+        setActionStatus(`Executed: ${actionName}`);
+        fetchIncidents();
+        setTimeout(() => setActionStatus(null), 4000);
+      }
+    } catch (err) {
+      console.error("[AUTOPILOT_ACTION_ERR]", err);
+    } finally {
       setExecuting(false);
-      setActionStatus(`Executed: ${actionName}`);
-      setTimeout(() => setActionStatus(null), 4000);
-    }, 1200);
-  };
+    }
+  }
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
@@ -84,7 +138,7 @@ export function AutopilotPreview() {
               Root Cause Correlation Graph
             </h3>
             <span className="text-[10px] font-mono text-np-teal bg-np-teal/10 px-2 py-0.5 rounded border border-np-teal/20">
-              Confidence: 89%
+              Confidence: {activeIncident?.confidence || 89}%
             </span>
           </div>
 
@@ -104,7 +158,7 @@ export function AutopilotPreview() {
               <div className="flex justify-center text-muted-foreground">↓</div>
 
               <div className="flex items-center justify-between p-2.5 rounded bg-muted/20 border border-border/40">
-                <span className="text-foreground font-semibold">⚡ API Service (/api/products)</span>
+                <span className="text-foreground font-semibold">⚡ API Service ({activeIncident?.targetNode || "/api/products"})</span>
                 <span className="text-np-crimson font-bold">1.8s · 🔴 Degradation</span>
               </div>
 
@@ -113,7 +167,9 @@ export function AutopilotPreview() {
               <div className="flex items-center justify-between p-2.5 rounded bg-np-crimson/10 border border-np-crimson/30">
                 <div>
                   <span className="text-np-crimson font-bold">🗄️ PostgreSQL (Query Regression)</span>
-                  <p className="text-[10px] text-muted-foreground font-sans mt-0.5">Introduced in deployment <code className="text-np-gold">#a83f21</code></p>
+                  <p className="text-[10px] text-muted-foreground font-sans mt-0.5">
+                    {activeIncident?.rootCause || "Introduced in deployment #a83f21"}
+                  </p>
                 </div>
                 <span className="text-np-crimson font-bold">p95 +320%</span>
               </div>
@@ -134,27 +190,22 @@ export function AutopilotPreview() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2 text-np-crimson">
                 <AlertTriangle className="h-4 w-4" />
-                <h3 className="text-[13px] font-bold uppercase">Active Remediation</h3>
+                <h3 className="text-[13px] font-bold uppercase">{activeIncident?.title || "Active Remediation"}</h3>
               </div>
-              <Badge variant="danger" className="text-[8px] uppercase tracking-wider">Action Needed</Badge>
+              <Badge variant={activeIncident?.status === "OPEN" ? "danger" : "success"} className="text-[8px] uppercase tracking-wider">
+                {activeIncident?.status || "OPEN"}
+              </Badge>
             </div>
 
             <p className="text-[12px] text-muted-foreground leading-relaxed mb-4">
-              <strong className="text-foreground">Impact:</strong> ~18% of user checkout requests experiencing latency timeouts.
+              <strong className="text-foreground">Impact:</strong> {activeIncident?.impact || "~18% of user requests experiencing latency timeouts."}
             </p>
 
             <div className="p-4 bg-background rounded-ui border border-border space-y-3 mb-6">
               <p className="text-[11px] font-semibold text-np-gold uppercase tracking-wider">Recommended Remediation</p>
-              <ul className="space-y-2 text-[11px] text-muted-foreground">
-                <li className="flex items-center gap-2">
-                  <Check className="h-3.5 w-3.5 text-np-teal shrink-0" />
-                  <span>Roll back deployment <code className="text-foreground font-mono">#a83f21</code> to previous stable release</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-3.5 w-3.5 text-np-teal shrink-0" />
-                  <span>Flush Redis query cache pool</span>
-                </li>
-              </ul>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                {activeIncident?.recommendedFix || "Roll back deployment #a83f21 and flush Redis query cache pool"}
+              </p>
             </div>
           </div>
 
@@ -166,16 +217,22 @@ export function AutopilotPreview() {
 
           <div className="space-y-2 pt-4 border-t border-border">
             <Button
-              onClick={() => handleAction("Rollback Deployment #a83f21")}
-              disabled={executing}
+              onClick={() => handleAction("Rollback Deployment #a83f21", "REMEDIATED")}
+              disabled={executing || activeIncident?.status === "REMEDIATED"}
               className="w-full np-btn-primary h-10 text-[11px] uppercase tracking-wider justify-center"
             >
-              {executing ? <RefreshCw className="h-4 w-4 animate-spin" /> : <><RotateCcw className="h-4 w-4 mr-2" /> Execute Recommended Rollback</>}
+              {executing ? (
+                <RefreshCw className="h-4 w-4 animate-spin" />
+              ) : activeIncident?.status === "REMEDIATED" ? (
+                <><Check className="h-4 w-4 mr-2" /> Remediation Applied</>
+              ) : (
+                <><RotateCcw className="h-4 w-4 mr-2" /> Execute Recommended Rollback</>
+              )}
             </Button>
             <Button
-              onClick={() => handleAction("Ignore Incident")}
+              onClick={() => handleAction("Dismiss Incident", "DISMISSED")}
               variant="outline"
-              disabled={executing}
+              disabled={executing || activeIncident?.status === "REMEDIATED"}
               className="w-full h-9 text-[10px] uppercase tracking-wider text-muted-foreground"
             >
               Dismiss Incident

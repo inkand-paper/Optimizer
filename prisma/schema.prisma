@@ -67,6 +67,7 @@ model User {
   studentTrial StudentTrial?
   giftedTrial       GiftedTrial?
   prBotConfigs      PRBotConfig[]
+  autopilotIncidents AutopilotIncident[]
   statusPageSlug    String?  @unique  // custom slug; defaults to username/email prefix
   statusPageEnabled   Boolean  @default(false)
   weeklyDigestEnabled Boolean  @default(true)   // opt-out model — enabled by default
@@ -286,3 +287,26 @@ model PRBotConfig {
   @@index([userId])
   @@index([repoFullName])
 }
+
+model AutopilotIncident {
+  id              String   @id @default(uuid())
+  userId          String
+  title           String   // e.g. "API Latency Degradation"
+  severity        String   @default("HIGH") // HIGH | CRITICAL | MEDIUM | LOW
+  status          String   @default("OPEN") // OPEN | REMEDIATED | DISMISSED
+  mode            String   @default("RECOMMEND") // OBSERVE | RECOMMEND | AUTOPILOT
+  targetNode      String   // e.g. "/api/products"
+  impact          String   // e.g. "18% of requests affected"
+  rootCause       String   // e.g. "PostgreSQL query regression introduced in deployment #a83f21"
+  confidence      Int      @default(89) // 0 - 100
+  recommendedFix  String   // e.g. "Rollback deployment #a83f21"
+  actionTaken     String?  // e.g. "Executed Rollback #a83f21"
+  remediatedAt    DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
