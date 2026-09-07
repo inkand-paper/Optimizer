@@ -10,7 +10,6 @@ import {
   Mail,
   Cpu,
   DollarSign,
-  Sparkles,
   Layers,
   CheckCircle2,
 } from "lucide-react";
@@ -83,14 +82,7 @@ export default function Home() {
 
           <div className="relative max-w-5xl mx-auto px-4 text-center">
 
-            {/* Announcement Pill */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-np-gold/10 border border-np-gold/30 text-np-gold text-[12px] font-semibold mb-8 animate-in fade-in slide-in-from-top-2 duration-500">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>NexPulse v2.0 Architecture: 3-Pillar Autonomous Engine</span>
-              <ArrowRight className="h-3 w-3" />
-            </div>
-
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.05] text-foreground mb-6">
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.05] text-foreground mb-6 pt-4">
               Unified Observability &<br />
               <span className="text-np-gold bg-gradient-to-r from-np-gold via-amber-300 to-np-gold bg-clip-text text-transparent">
                 Autonomous AI Operations.

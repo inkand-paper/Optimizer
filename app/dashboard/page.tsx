@@ -14,7 +14,6 @@ import { useSearchParams } from "next/navigation";
 import { MonitoringDashboard } from "@/components/monitoring-dashboard";
 import { CodeAuditConsole } from "@/components/code-audit-console";
 import { PricingModal } from "@/components/pricing-modal";
-import { PromoBanner } from "@/components/promo-banner";
 import { ThemeToggle } from "@/components/theme-toggle";
 import type { AnalyzeResponse } from "@/lib/types";
 
@@ -258,7 +257,6 @@ export default function DashboardPage() {
   /* ──────────── MAIN LAYOUT ──────────── */
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <PromoBanner userPlan={currentUserPlan} />
       <div className="flex flex-1 min-h-0">
       {/* ── Sidebar ────────────────────────────── */}
       <aside
