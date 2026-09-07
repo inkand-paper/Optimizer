@@ -21,18 +21,20 @@ import type { AnalyzeResponse } from "@/lib/types";
 
 import { AutopilotPreview } from "@/components/autopilot-preview";
 import { FinOpsPreview } from "@/components/finops-preview";
+import { PRBotPanel } from "@/components/pr-bot-panel";
+import { MCPSettings } from "@/components/mcp-settings";
 
 import {
   Activity, Key, Plus, Terminal, ShieldCheck, Copy,
   CheckCircle2, Loader2, RefreshCw, LogOut, Search, FileText,
   Webhook, ShieldAlert, Book, Home, User,
-  Menu, X, HelpCircle, Cpu, DollarSign, ZapOff, Bot
+  Menu, X, HelpCircle, Cpu, DollarSign, ZapOff, Bot, GitPullRequest
 } from "lucide-react";
 
 interface ApiKey { id: string; name: string; createdAt: string; lastUsedAt: string | null; }
 interface UserProfile { id?: string; name?: string; email?: string; role?: string; plan?: string; emailVerified?: boolean; }
 
-export type Tab = "monitoring" | "seo" | "logs" | "autopilot" | "pulse-ai" | "cost" | "zombie-hunter" | "audits" | "keys" | "webhooks";
+export type Tab = "monitoring" | "seo" | "logs" | "autopilot" | "pulse-ai" | "cost" | "zombie-hunter" | "audits" | "keys" | "webhooks" | "pr-bot" | "mcp";
 
 export interface TabConfig {
   id: Tab;
@@ -50,7 +52,7 @@ export interface DomainGroup {
 export const DOMAIN_GROUPS: DomainGroup[] = [
   {
     id: "observe",
-    category: "📡 OBSERVE",
+    category: "OBSERVE",
     tabs: [
       { id: "monitoring", label: "Monitors", icon: Activity },
       { id: "seo", label: "SEO & Perf", icon: Search },
@@ -59,14 +61,14 @@ export const DOMAIN_GROUPS: DomainGroup[] = [
   },
   {
     id: "autopilot",
-    category: "🧠 AUTOPILOT AI",
+    category: "AUTOPILOT AI",
     tabs: [
       { id: "autopilot", label: "Root Cause & Guard", badge: "AI", icon: Cpu },
     ],
   },
   {
     id: "finops",
-    category: "💰 FINOPS & WASTE",
+    category: "FINOPS & WASTE",
     tabs: [
       { id: "cost", label: "Cost Intelligence", badge: "Beta", icon: DollarSign },
       { id: "zombie-hunter", label: "Zombie Hunter", icon: ZapOff },
@@ -74,9 +76,11 @@ export const DOMAIN_GROUPS: DomainGroup[] = [
   },
   {
     id: "devtools",
-    category: "🛠️ DEV TOOLS",
+    category: "DEV TOOLS",
     tabs: [
       { id: "audits", label: "Code Audit", icon: ShieldCheck },
+      { id: "pr-bot", label: "PR Bot", badge: "AI", icon: GitPullRequest },
+      { id: "mcp", label: "MCP Server", badge: "New", icon: Terminal },
       { id: "keys", label: "API Keys", icon: Key },
       { id: "webhooks", label: "Webhooks", icon: Webhook },
     ],
@@ -527,6 +531,20 @@ export default function DashboardPage() {
           {activeTab === "audits" && (
             <div className="w-full">
               <CodeAuditConsole />
+            </div>
+          )}
+
+          {/* PR CODE REVIEW BOT */}
+          {activeTab === "pr-bot" && (
+            <div className="w-full">
+              <PRBotPanel />
+            </div>
+          )}
+
+          {/* MCP SERVER SETTINGS */}
+          {activeTab === "mcp" && (
+            <div className="w-full">
+              <MCPSettings />
             </div>
           )}
 

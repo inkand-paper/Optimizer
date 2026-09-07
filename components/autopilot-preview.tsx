@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Card, Button, Badge } from "@/components/ui-elements";
-import { Cpu, ShieldCheck, AlertTriangle, ArrowRight, Zap, Check, RotateCcw, Activity, RefreshCw } from "lucide-react";
+import { Cpu, ShieldCheck, AlertTriangle, Zap, Check, RotateCcw, Activity, RefreshCw, Globe, ArrowDown, Database } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type AutopilotMode = "observe" | "recommend" | "autopilot";
@@ -151,22 +151,41 @@ export function AutopilotPreview() {
 
             <div className="space-y-3">
               <div className="flex items-center justify-between p-2.5 rounded bg-muted/20 border border-border/40">
-                <span className="text-foreground font-semibold">🌍 Edge Router (Cloudflare)</span>
-                <span className="text-emerald-400">42ms · 🟢 Normal</span>
+                <span className="text-foreground font-semibold flex items-center gap-2">
+                  <Globe className="h-3.5 w-3.5 text-muted-foreground" />
+                  Edge Router (Cloudflare)
+                </span>
+                <span className="text-emerald-400 flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  42ms · Normal
+                </span>
               </div>
 
-              <div className="flex justify-center text-muted-foreground">↓</div>
+              <div className="flex justify-center text-muted-foreground">
+                <ArrowDown className="h-4 w-4" />
+              </div>
 
               <div className="flex items-center justify-between p-2.5 rounded bg-muted/20 border border-border/40">
-                <span className="text-foreground font-semibold">⚡ API Service ({activeIncident?.targetNode || "/api/products"})</span>
-                <span className="text-np-crimson font-bold">1.8s · 🔴 Degradation</span>
+                <span className="text-foreground font-semibold flex items-center gap-2">
+                  <Zap className="h-3.5 w-3.5 text-np-gold" />
+                  API Service ({activeIncident?.targetNode || "/api/products"})
+                </span>
+                <span className="text-np-crimson font-bold flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-np-crimson animate-pulse" />
+                  1.8s · Degradation
+                </span>
               </div>
 
-              <div className="flex justify-center text-muted-foreground">↓</div>
+              <div className="flex justify-center text-muted-foreground">
+                <ArrowDown className="h-4 w-4" />
+              </div>
 
               <div className="flex items-center justify-between p-2.5 rounded bg-np-crimson/10 border border-np-crimson/30">
                 <div>
-                  <span className="text-np-crimson font-bold">🗄️ PostgreSQL (Query Regression)</span>
+                  <span className="text-np-crimson font-bold flex items-center gap-2">
+                    <Database className="h-3.5 w-3.5" />
+                    PostgreSQL (Query Regression)
+                  </span>
                   <p className="text-[10px] text-muted-foreground font-sans mt-0.5">
                     {activeIncident?.rootCause || "Introduced in deployment #a83f21"}
                   </p>
