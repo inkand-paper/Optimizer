@@ -10,7 +10,6 @@ import {
   Mail,
   Cpu,
   DollarSign,
-  Layers,
   CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -22,15 +21,12 @@ const valueProps = [
   { label: "Code audit languages", value: "15+" },
 ];
 
-const bentoPillars = [
+const featureDomains = [
   {
     id: "observe",
-    pillar: "PILLAR 01",
     title: "Deep Infrastructure Observability",
     subtitle: "Real-Time Health, Edge Caches & Status Pages",
-    accent: "np-teal",
     icon: Activity,
-    badge: "Observe Domain",
     items: [
       { name: "Live Uptime & Latency Monitors", desc: "HTTP, REST & gRPC endpoint health streaming in real-time across global PoPs." },
       { name: "Cache Pulse Engine", desc: "Sub-200ms edge cache invalidation by tag or path for Next.js, Nuxt & Remix." },
@@ -39,12 +35,9 @@ const bentoPillars = [
   },
   {
     id: "autopilot",
-    pillar: "PILLAR 02",
     title: "Autonomous AI Operations",
     subtitle: "Root Cause Correlation & Remediation Autopilot",
-    accent: "np-gold",
     icon: Cpu,
-    badge: "Autopilot AI Domain",
     items: [
       { name: "Incident Root-Cause Graph", desc: "Correlate telemetry latency spikes to precise culprit commits and database queries." },
       { name: "Remediation Guardrails", desc: "Human-in-the-loop and autonomous rollback execution mode with safety gates." },
@@ -53,12 +46,9 @@ const bentoPillars = [
   },
   {
     id: "finops",
-    pillar: "PILLAR 03",
     title: "FinOps & Developer Ecosystem",
     subtitle: "Zombie Infrastructure Hunter & MCP Agent Protocol",
-    accent: "np-teal",
     icon: DollarSign,
-    badge: "FinOps & Dev Domain",
     items: [
       { name: "Zombie Resource Hunter", desc: "Continuous scanning for unattached EBS disks, idle database replicas, and orphaned IPs." },
       { name: "Model Context Protocol (MCP)", desc: "Direct JSON-RPC 2.0 telemetry interface for Cursor, Claude Desktop, and AI agents." },
@@ -81,7 +71,6 @@ export default function Home() {
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-np-gold/5 rounded-full blur-[120px] pointer-events-none" />
 
           <div className="relative max-w-5xl mx-auto px-4 text-center">
-
             <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.05] text-foreground mb-6 pt-4">
               Unified Observability &<br />
               <span className="text-np-gold bg-gradient-to-r from-np-gold via-amber-300 to-np-gold bg-clip-text text-transparent">
@@ -90,7 +79,7 @@ export default function Home() {
             </h1>
 
             <p className="text-[16px] md:text-[18px] text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10">
-              Stop toggling between 10 separate tools. NexPulse unifies real-time observability, autonomous AI incident response, and cloud FinOps waste recovery into 3 clean pillars.
+              Stop toggling between 10 separate tools. NexPulse unifies real-time observability, autonomous AI incident response, and cloud FinOps waste recovery in one platform.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -119,48 +108,36 @@ export default function Home() {
         {/* ── Interactive Live Console ──────────────────── */}
         <LandingFeatureShowcase />
 
-        {/* ── 3-Pillar Bento Grid Section ───────────────── */}
+        {/* ── Feature Domains ───────────────────────────── */}
         <section className="py-20 max-w-6xl mx-auto px-4">
-          <div className="text-center mb-16 space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-np-teal/10 border border-np-teal/30 text-np-teal text-[11px] font-bold uppercase tracking-widest">
-              <Layers className="h-3.5 w-3.5" />
-              3-Pillar Architecture
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Structured Around 3 Core Engineering Pillars</h2>
-            <p className="text-[14px] text-muted-foreground max-w-xl mx-auto">
-              No matter how many features your team needs, NexPulse organizes everything cleanly into 3 focused domains.
+          <div className="text-center mb-14 space-y-2">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Everything your team needs</h2>
+            <p className="text-[14px] text-muted-foreground max-w-lg mx-auto">
+              From uptime monitoring to AI-driven incident response and cloud cost recovery — all in one console.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {bentoPillars.map((p) => (
+            {featureDomains.map((domain) => (
               <Card
-                key={p.id}
-                className="p-7 flex flex-col justify-between border-border/80 hover:border-np-gold/40 hover:shadow-2xl transition-all duration-300 bg-gradient-to-b from-card/80 via-card to-card/60 relative overflow-hidden"
+                key={domain.id}
+                className="p-7 flex flex-col justify-between border-border/80 hover:border-np-gold/40 hover:shadow-2xl transition-all duration-300 bg-gradient-to-b from-card/80 via-card to-card/60"
               >
                 <div className="space-y-6">
-                  {/* Pillar Top */}
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-np-gold px-2.5 py-1 rounded bg-np-gold/10 border border-np-gold/20">
-                      {p.pillar}
-                    </span>
-                    <span className="text-[10px] font-mono text-muted-foreground uppercase">{p.badge}</span>
-                  </div>
-
-                  {/* Title & Icon */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-ui bg-np-gold/10 border border-np-gold/30 flex items-center justify-center text-np-gold shrink-0">
-                        <p.icon className="h-5 w-5" />
-                      </div>
-                      <h3 className="text-lg font-bold leading-tight text-foreground">{p.title}</h3>
+                  {/* Icon & Title */}
+                  <div className="space-y-3">
+                    <div className="h-10 w-10 rounded-ui bg-np-gold/10 border border-np-gold/30 flex items-center justify-center text-np-gold">
+                      <domain.icon className="h-5 w-5" />
                     </div>
-                    <p className="text-[12px] text-np-teal font-mono">{p.subtitle}</p>
+                    <div>
+                      <h3 className="text-[16px] font-bold text-foreground leading-tight">{domain.title}</h3>
+                      <p className="text-[12px] text-np-teal font-mono mt-0.5">{domain.subtitle}</p>
+                    </div>
                   </div>
 
-                  {/* Bullet Sub-Items */}
+                  {/* Feature List */}
                   <div className="space-y-4 pt-2 border-t border-border/50">
-                    {p.items.map((item, idx) => (
+                    {domain.items.map((item, idx) => (
                       <div key={idx} className="space-y-1">
                         <div className="flex items-center gap-2">
                           <CheckCircle2 className="h-3.5 w-3.5 text-np-teal shrink-0" />
@@ -174,7 +151,7 @@ export default function Home() {
 
                 <div className="pt-6 mt-6 border-t border-border/40">
                   <Link href="/dashboard" className="np-btn-outline w-full justify-center text-[12px] gap-2">
-                    Explore {p.badge} <ArrowRight className="h-3.5 w-3.5" />
+                    Open Dashboard <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 </div>
               </Card>
@@ -261,7 +238,6 @@ export default function Home() {
           <Card className="p-10 md:p-16 text-center relative overflow-hidden np-grid-bg border-np-gold/20">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-48 bg-np-gold/10 blur-[80px] pointer-events-none" />
             <div className="relative space-y-4">
-              <p className="label-category text-[11px] text-np-gold font-bold uppercase tracking-widest">Ready to ship</p>
               <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
                 Full-stack observability & AI ops,<br />
                 <span className="text-np-gold">zero hassle.</span>
