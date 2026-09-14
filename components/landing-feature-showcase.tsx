@@ -4,7 +4,7 @@ import * as React from "react";
 import { Card, Button } from "@/components/ui-elements";
 import {
   Cpu, DollarSign, Terminal, GitBranch, Zap, Activity,
-  CheckCircle2, RefreshCw, AlertTriangle, ShieldCheck, ArrowRight, Play, Check
+  CheckCircle2, RefreshCw, AlertTriangle, ShieldCheck, ArrowRight, Check
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -82,19 +82,7 @@ export function LandingFeatureShowcase() {
   };
 
   return (
-    <section className="py-20 max-w-6xl mx-auto px-4">
-
-      {/* Header */}
-      <div className="text-center mb-12 space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-np-gold/10 border border-np-gold/30 text-np-gold text-[11px] font-bold uppercase tracking-widest">
-          <Play className="h-3 w-3 fill-np-gold" />
-          Interactive Live Console
-        </div>
-        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Experience NexPulse Features Live</h2>
-        <p className="text-[14px] text-muted-foreground max-w-xl mx-auto">
-          Test drive our autonomous incident engine, FinOps waste hunter, and edge cache purge directly below before signing up.
-        </p>
-      </div>
+    <section className="py-16 max-w-6xl mx-auto px-4">
 
       {/* Tab Selector */}
       <div className="flex flex-wrap justify-center gap-2 mb-8">
