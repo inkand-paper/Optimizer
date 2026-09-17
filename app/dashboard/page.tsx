@@ -490,9 +490,14 @@ export default function DashboardPage() {
           )}
 
           {/* FINOPS & COST INTELLIGENCE */}
-          {(activeTab === "cost" || activeTab === "zombie-hunter") && (
+          {activeTab === "cost" && (
             <div className="w-full">
-              <FinOpsPreview />
+              <FinOpsPreview mode="cost" />
+            </div>
+          )}
+          {activeTab === "zombie-hunter" && (
+            <div className="w-full">
+              <FinOpsPreview mode="zombie" />
             </div>
           )}
 

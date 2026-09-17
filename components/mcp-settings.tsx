@@ -111,7 +111,7 @@ export function MCPSettings() {
         <div className="space-y-2">
           <p className="text-[11px] text-muted-foreground uppercase tracking-widest">MCP URL</p>
           <div className="flex items-center gap-2">
-            <code className="flex-1 font-mono text-[12px] p-2.5 bg-black/50 rounded-ui border border-border text-np-gold truncate">
+            <code className="flex-1 font-mono text-[12px] p-2.5 bg-slate-950 rounded-ui border border-slate-800 text-np-gold truncate">
               {mcpEndpoint}
             </code>
             <Button size="sm" variant="outline" onClick={() => copyText(mcpEndpoint, "url")}>
@@ -193,12 +193,12 @@ export function MCPSettings() {
             </a>
           </div>
           <div className="relative">
-            <pre className="p-4 bg-black/50 rounded-ui border border-border text-[11px] font-mono text-emerald-400 overflow-auto max-h-52 leading-relaxed">
+            <pre className="p-4 bg-slate-950 rounded-ui border border-slate-800 text-[11px] font-mono text-emerald-400 overflow-auto max-h-52 leading-relaxed">
               {cursorConfig}
             </pre>
             <button
               onClick={() => copyText(cursorConfig, "cursor")}
-              className="absolute top-2 right-2 p-1.5 rounded bg-muted/60 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute top-2 right-2 p-1.5 rounded bg-slate-800/80 text-slate-300 hover:text-white transition-colors"
             >
               {copied === "cursor" ? <CheckCircle2 className="h-3.5 w-3.5 text-np-teal" /> : <Copy className="h-3.5 w-3.5" />}
             </button>
@@ -225,12 +225,12 @@ export function MCPSettings() {
             </a>
           </div>
           <div className="relative">
-            <pre className="p-4 bg-black/50 rounded-ui border border-border text-[11px] font-mono text-emerald-400 overflow-auto max-h-52 leading-relaxed">
+            <pre className="p-4 bg-slate-950 rounded-ui border border-slate-800 text-[11px] font-mono text-emerald-400 overflow-auto max-h-52 leading-relaxed">
               {claudeConfig}
             </pre>
             <button
               onClick={() => copyText(claudeConfig, "claude")}
-              className="absolute top-2 right-2 p-1.5 rounded bg-muted/60 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute top-2 right-2 p-1.5 rounded bg-slate-800/80 text-slate-300 hover:text-white transition-colors"
             >
               {copied === "claude" ? <CheckCircle2 className="h-3.5 w-3.5 text-np-teal" /> : <Copy className="h-3.5 w-3.5" />}
             </button>

@@ -188,16 +188,16 @@ export function AutopilotPreview() {
           </div>
 
           {/* Topology diagram */}
-          <div className="p-5 bg-slate-950 text-slate-100 rounded-ui border border-border font-mono text-[11px] space-y-4">
-            <div className="flex items-center justify-between text-muted-foreground pb-2 border-b border-border/40 text-[10px]">
+          <div className="p-5 bg-slate-950 text-slate-100 rounded-ui border border-slate-800 font-mono text-[11px] space-y-4">
+            <div className="flex items-center justify-between text-slate-400 pb-2 border-b border-slate-800 text-[10px]">
               <span>NODE AGGREGATION</span>
               <span>LATENCY IMPACT</span>
             </div>
 
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-2.5 rounded bg-muted/20 border border-border/40">
-                <span className="text-foreground font-semibold flex items-center gap-2">
-                  <Globe className="h-3.5 w-3.5 text-muted-foreground" />
+              <div className="flex items-center justify-between p-2.5 rounded bg-slate-900 border border-slate-800">
+                <span className="text-slate-200 font-semibold flex items-center gap-2">
+                  <Globe className="h-3.5 w-3.5 text-slate-400" />
                   Edge Router (Cloudflare)
                 </span>
                 <span className="text-emerald-400 flex items-center gap-1.5">
@@ -206,12 +206,12 @@ export function AutopilotPreview() {
                 </span>
               </div>
 
-              <div className="flex justify-center text-muted-foreground">
+              <div className="flex justify-center text-slate-500">
                 <ArrowDown className="h-4 w-4" />
               </div>
 
-              <div className="flex items-center justify-between p-2.5 rounded bg-muted/20 border border-border/40">
-                <span className="text-foreground font-semibold flex items-center gap-2">
+              <div className="flex items-center justify-between p-2.5 rounded bg-slate-900 border border-slate-800">
+                <span className="text-slate-200 font-semibold flex items-center gap-2">
                   <Zap className="h-3.5 w-3.5 text-np-gold" />
                   API Service ({activeIncident?.targetNode || "/api/products"})
                 </span>
@@ -221,17 +221,17 @@ export function AutopilotPreview() {
                 </span>
               </div>
 
-              <div className="flex justify-center text-muted-foreground">
+              <div className="flex justify-center text-slate-500">
                 <ArrowDown className="h-4 w-4" />
               </div>
 
-              <div className="flex items-center justify-between p-2.5 rounded bg-np-crimson/10 border border-np-crimson/30">
+              <div className="flex items-center justify-between p-2.5 rounded bg-np-crimson/20 border border-np-crimson/40">
                 <div>
                   <span className="text-np-crimson font-bold flex items-center gap-2">
                     <Database className="h-3.5 w-3.5" />
                     PostgreSQL (Query Regression)
                   </span>
-                  <p className="text-[10px] text-muted-foreground font-sans mt-0.5">
+                  <p className="text-[10px] text-slate-400 font-sans mt-0.5">
                     {activeIncident?.rootCause || "Introduced in deployment #a83f21"}
                   </p>
                 </div>
