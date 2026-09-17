@@ -110,10 +110,6 @@ export function PulseAI() {
               </div>
               <div>
                 <p className="text-[13px] font-bold uppercase tracking-tight">Pulse-AI</p>
-                <p className="text-[10px] text-np-teal font-medium flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-np-teal animate-pulse" />
-                  System Online
-                </p>
               </div>
             </div>
             <button
