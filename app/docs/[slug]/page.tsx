@@ -145,6 +145,7 @@ export default async function DocDetail({ params }: { params: Promise<{ slug: st
   const { slug } = await params;
 
   const fileMap: Record<string, string> = {
+    "features": "PRODUCT_DOCUMENTATION.md",
     "concepts": "CONCEPTS.md",
     "master": "MASTER_GUIDE.md",
     "api": "API_DOCS.md",

@@ -2,9 +2,21 @@ import * as React from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/navbar";
 import { Card } from "@/components/ui-elements";
-import { Book, Terminal, Smartphone, Compass, ArrowRight, Activity, Mail, GitBranch } from "lucide-react";
+import { Book, Terminal, Smartphone, Compass, ArrowRight, Activity, Mail, GitBranch, Cpu } from "lucide-react";
 
 const categories = [
+  {
+    icon: Cpu,
+    title: "Feature Guide & Analogies",
+    description: "Detailed breakdown of all 8 core NexPulse features, real-world analogies, and live operational statuses.",
+    links: [
+      { label: "Complete Feature Guide", href: "/docs/features" },
+      { label: "Autopilot AI Engine",     href: "/docs/features#2-nexpulse-autopilot-ai-engine-root-cause-remediation" },
+      { label: "FinOps Waste Hunter",    href: "/docs/features#3-finops-waste-hunter-cost-intelligence" },
+      { label: "MCP Protocol Server",    href: "/docs/features#7-model-context-protocol-mcp-server" },
+      { label: "GitHub PR Review Bot",   href: "/docs/features#6-github-pr-code-review-bot" },
+    ],
+  },
   {
     icon: Compass,
     title: "Getting Started",
