@@ -188,7 +188,7 @@ export function AutopilotPreview() {
           </div>
 
           {/* Topology diagram */}
-          <div className="p-5 bg-black/40 rounded-ui border border-border font-mono text-[11px] space-y-4">
+          <div className="p-5 bg-slate-950 text-slate-100 rounded-ui border border-border font-mono text-[11px] space-y-4">
             <div className="flex items-center justify-between text-muted-foreground pb-2 border-b border-border/40 text-[10px]">
               <span>NODE AGGREGATION</span>
               <span>LATENCY IMPACT</span>

@@ -153,7 +153,7 @@ export function LandingFeatureShowcase() {
       </div>
 
       {/* Main Interactive Screen */}
-      <Card className="p-6 md:p-8 bg-black/60 border-border/80 relative overflow-hidden shadow-2xl">
+      <Card className="p-6 md:p-8 bg-card border-border relative overflow-hidden shadow-2xl">
         <div className="absolute top-0 right-0 w-80 h-80 bg-np-gold/5 blur-[100px] pointer-events-none" />
 
         {/* ── 1. AUTOPILOT AI TAB ── */}
@@ -210,13 +210,13 @@ export function LandingFeatureShowcase() {
             </div>
 
             {/* Live Terminal Log */}
-            <div className="p-4 bg-black rounded-ui border border-border/80 font-mono text-[11px] space-y-2 min-h-[120px]">
-              <div className="text-[10px] text-muted-foreground uppercase border-b border-border/40 pb-1 flex justify-between">
+            <div className="p-4 bg-slate-950 text-slate-100 rounded-ui border border-border/80 font-mono text-[11px] space-y-2 min-h-[120px]">
+              <div className="text-[10px] text-slate-400 uppercase border-b border-border/40 pb-1 flex justify-between">
                 <span>AUTOPILOT TELEMETRY STREAM</span>
                 <span className="text-np-gold">LIVE</span>
               </div>
               {autopilotLog.length === 0 ? (
-                <p className="text-muted-foreground italic pt-2">System operating normally. Click &quot;Simulate Anomaly Spike&quot; above to test the AI engine.</p>
+                <p className="text-slate-400 italic pt-2">System operating normally. Click &quot;Simulate Anomaly Spike&quot; above to test the AI engine.</p>
               ) : (
                 autopilotLog.map((log, idx) => (
                   <p key={idx} className={log.includes("ALERT") ? "text-np-crimson font-bold" : log.includes("ACTION") ? "text-np-teal font-bold" : "text-slate-300"}>
@@ -304,8 +304,8 @@ export function LandingFeatureShowcase() {
               </Button>
             </div>
 
-            <div className="p-4 bg-black rounded-ui border border-border/80 font-mono text-[11px] space-y-2">
-              <div className="flex items-center justify-between text-muted-foreground pb-2 border-b border-border/40">
+            <div className="p-4 bg-slate-950 text-slate-100 rounded-ui border border-border/80 font-mono text-[11px] space-y-2">
+              <div className="flex items-center justify-between text-slate-400 pb-2 border-b border-border/40">
                 <span>EDGE POP NODE</span>
                 <span>STATUS</span>
                 <span>LATENCY</span>
@@ -346,7 +346,7 @@ export function LandingFeatureShowcase() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <p className="text-[11px] font-mono text-muted-foreground uppercase">Agent Request payload</p>
-                <pre className="p-4 bg-black rounded-ui border border-border text-[11px] font-mono text-np-teal leading-relaxed">
+                <pre className="p-4 bg-slate-950 text-np-teal rounded-ui border border-border text-[11px] font-mono leading-relaxed">
 {`{
   "jsonrpc": "2.0",
   "method": "tools/call",
@@ -359,7 +359,7 @@ export function LandingFeatureShowcase() {
 
               <div className="space-y-2">
                 <p className="text-[11px] font-mono text-muted-foreground uppercase">NexPulse Response payload</p>
-                <pre className="p-4 bg-black rounded-ui border border-border text-[11px] font-mono text-emerald-400 leading-relaxed">
+                <pre className="p-4 bg-slate-950 text-emerald-400 rounded-ui border border-border text-[11px] font-mono leading-relaxed">
 {mcpTested ? `{
   "jsonrpc": "2.0",
   "result": {
