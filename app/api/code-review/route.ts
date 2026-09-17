@@ -145,7 +145,10 @@ export async function POST(req: NextRequest) {
           if (!/^[a-zA-Z0-9-._/]+$/.test(repoBranch)) {
             throw new Error("Invalid branch name format.");
           }
-          files = await fetchGitHubFiles(name, dbUser.githubAccessToken!, repoBranch, sendLog);
+          if (!dbUser.githubAccessToken) {
+            throw new Error("GitHub account is not connected. Please link your GitHub account in settings to perform repository audits.");
+          }
+          files = await fetchGitHubFiles(name, dbUser.githubAccessToken, repoBranch, sendLog);
         } else {
           source = "PASTE"; 
           fileName = (body.fileName ?? "untitled.txt").trim();

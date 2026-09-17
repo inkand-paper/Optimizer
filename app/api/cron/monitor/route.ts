@@ -10,9 +10,25 @@ const BATCH_SIZE = 10; // 10 concurrent checks — prevents timeout cascade when
 
 export async function GET(request: Request) {
   try {
-    // [PRODUCTION SECURE] Enforce Cron Secret to prevent unauthorized DoS
+    // [PRODUCTION SECURE] Enforce Cron Secret or valid API key to prevent unauthorized DoS
     const authHeader = request.headers.get('authorization');
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    const token = authHeader?.replace('Bearer ', '').trim();
+    let isAuthorized = false;
+
+    if (token) {
+      if (process.env.CRON_SECRET && token === process.env.CRON_SECRET) {
+        isAuthorized = true;
+      } else {
+        const crypto = await import('crypto');
+        const keyHash = crypto.createHash('sha256').update(token).digest('hex');
+        const dbKey = await prisma.apiKey.findUnique({ where: { keyHash } });
+        if (dbKey) {
+          isAuthorized = true;
+        }
+      }
+    }
+
+    if (!isAuthorized) {
       return new Response('Unauthorized', { status: 401 });
     }
 

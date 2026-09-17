@@ -4,9 +4,17 @@ import crypto from "crypto";
 import { reviewCode } from "@/core/analyzer/code-review";
 
 function verifySignature(payload: string, signature: string, secret: string): boolean {
-  const hmac = crypto.createHmac("sha256", secret);
-  const digest = `sha256=${hmac.update(payload).digest("hex")}`;
-  return crypto.timingSafeEqual(Buffer.from(digest), Buffer.from(signature));
+  try {
+    const hmac = crypto.createHmac("sha256", secret);
+    const digest = Buffer.from(`sha256=${hmac.update(payload).digest("hex")}`, "utf8");
+    const sigBuffer = Buffer.from(signature, "utf8");
+    if (digest.length !== sigBuffer.length) {
+      return false;
+    }
+    return crypto.timingSafeEqual(digest, sigBuffer);
+  } catch {
+    return false;
+  }
 }
 
 // POST /api/webhooks/github-pr — Handles incoming GitHub pull_request events
@@ -43,9 +51,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No active bot configuration found for this repository" }, { status: 404 });
     }
 
-    // Verify signature if provided
-    if (signature && config.webhookSecret) {
-      if (!verifySignature(rawBody, signature, config.webhookSecret)) {
+    // Strictly enforce signature verification if a secret is configured, or if a signature header was sent
+    if (config.webhookSecret || signature) {
+      if (!signature || !config.webhookSecret || !verifySignature(rawBody, signature, config.webhookSecret)) {
         return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
       }
     }

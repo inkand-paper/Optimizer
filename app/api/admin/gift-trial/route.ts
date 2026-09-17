@@ -54,6 +54,7 @@ export async function POST(req: NextRequest) {
 
     // Send gifted PRO email
     const { sendGiftedTrialEmail } = await import('@/lib/mail');
+    const Sentry = await import('@sentry/nextjs');
     sendGiftedTrialEmail({
       email: user.email,
       userName: user.name || 'there',
@@ -62,7 +63,7 @@ export async function POST(req: NextRequest) {
       expiresAt: expiresAt
         ? expiresAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
         : undefined,
-    }).catch(console.error);
+    }).catch((err) => Sentry.captureException(err, { tags: { feature: 'gifted-trial-email' } }));
 
     return NextResponse.json({ success: true, expiresAt });
   } catch (error) {

@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { runFullAudit } from "@/core/analyzer";
 import { revalidateTag } from "next/cache";
+import { validateSafeUrl } from "@/lib/ssrf";
 
 // MCP (Model Context Protocol) API Endpoint Specification v1.0
 // Enables AI Agents (Claude Desktop, Cursor, Custom Agents) to inspect and operate NexPulse telemetry.
@@ -98,6 +99,14 @@ export async function POST(req: NextRequest) {
 
     // Call tool
     if (method === "tools/call") {
+      if (!user) {
+        return NextResponse.json({
+          jsonrpc: "2.0",
+          id,
+          error: { code: -32001, message: "Unauthorized. Valid Bearer API key required." },
+        }, { status: 401 });
+      }
+
       const toolName = params?.name;
       const args = params?.arguments || {};
 
@@ -111,9 +120,7 @@ export async function POST(req: NextRequest) {
 
       switch (toolName) {
         case "get_system_health": {
-          const monitors = user
-            ? await prisma.monitor.findMany({ where: { userId: user.id } })
-            : [];
+          const monitors = await prisma.monitor.findMany({ where: { userId: user.id } });
 
           return NextResponse.json({
             jsonrpc: "2.0",
@@ -139,13 +146,11 @@ export async function POST(req: NextRequest) {
         }
 
         case "get_active_incidents": {
-          const incidents = user
-            ? await prisma.autopilotIncident.findMany({
-                where: { userId: user.id },
-                orderBy: { createdAt: "desc" },
-                take: 5,
-              })
-            : [];
+          const incidents = await prisma.autopilotIncident.findMany({
+            where: { userId: user.id },
+            orderBy: { createdAt: "desc" },
+            take: 5,
+          });
 
           return NextResponse.json({
             jsonrpc: "2.0",
@@ -168,6 +173,16 @@ export async function POST(req: NextRequest) {
               jsonrpc: "2.0",
               id,
               error: { code: -32602, message: "Missing required argument 'url'" },
+            }, { status: 400 });
+          }
+
+          try {
+            await validateSafeUrl(targetUrl);
+          } catch (ssrfError) {
+            return NextResponse.json({
+              jsonrpc: "2.0",
+              id,
+              error: { code: -32602, message: ssrfError instanceof Error ? ssrfError.message : "Unsafe URL" },
             }, { status: 400 });
           }
 
