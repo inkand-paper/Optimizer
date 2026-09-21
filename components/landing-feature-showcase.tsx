@@ -4,7 +4,7 @@ import * as React from "react";
 import { Card, Button } from "@/components/ui-elements";
 import {
   Cpu, DollarSign, Terminal, GitBranch, Zap, Activity,
-  CheckCircle2, RefreshCw, AlertTriangle, ShieldCheck, ArrowRight, Check
+  RefreshCw, AlertTriangle, ShieldCheck, CheckCircle2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -411,8 +411,8 @@ export function LandingFeatureShowcase() {
 
                 <div className="space-y-2 text-[12px] text-slate-300">
                   <p className="font-semibold text-foreground">NexPulse Automated Audit Summary for <code className="font-mono text-np-gold">{prRepo}</code>:</p>
-                  <p className="flex items-center gap-2 text-emerald-400"><Check className="h-3.5 w-3.5 shrink-0" /> Zero security vulnerabilities detected in dependencies.</p>
-                  <p className="flex items-center gap-2 text-emerald-400"><Check className="h-3.5 w-3.5 shrink-0" /> Core Web Vitals impact: +4ms (well within SLA limits).</p>
+                  <p className="flex items-center gap-2 text-emerald-400"><CheckCircle2 className="h-3.5 w-3.5 shrink-0" /> Zero security vulnerabilities detected in dependencies.</p>
+                  <p className="flex items-center gap-2 text-emerald-400"><CheckCircle2 className="h-3.5 w-3.5 shrink-0" /> Core Web Vitals impact: +4ms (well within SLA limits).</p>
                   <p className="flex items-center gap-2 text-np-gold"><Activity className="h-3.5 w-3.5 shrink-0" /> Recommendation: Add memoization on heavy compute loop at line 42.</p>
                 </div>
               </div>
