@@ -85,76 +85,75 @@ export function LandingFeatureShowcase() {
     <section className="py-16 max-w-6xl mx-auto px-4">
 
       {/* Tab Selector */}
-      <div className="flex flex-wrap justify-center gap-2 mb-8">
+      <div className="flex flex-wrap justify-center gap-1.5 mb-8 p-1.5 bg-muted/40 backdrop-blur-sm rounded-full border border-border/40 max-w-max mx-auto">
         <button
           onClick={() => setActiveTab("autopilot")}
           className={cn(
-            "px-4 py-2 rounded-full text-[12px] font-bold uppercase tracking-wider transition-all flex items-center gap-2 border",
+            "px-4 py-1.5 rounded-full text-[12px] font-medium transition-all flex items-center gap-2 border",
             activeTab === "autopilot"
-              ? "bg-np-gold text-black border-np-gold shadow-md shadow-np-gold/20"
-              : "bg-card text-muted-foreground border-border hover:border-np-gold/40 hover:text-foreground"
+              ? "bg-card text-foreground border-border shadow-sm"
+              : "border-transparent text-muted-foreground hover:text-foreground"
           )}
         >
-          <Cpu className="h-3.5 w-3.5" />
+          <Cpu className="h-3.5 w-3.5 text-np-gold" />
           Autopilot AI
         </button>
 
         <button
           onClick={() => setActiveTab("finops")}
           className={cn(
-            "px-4 py-2 rounded-full text-[12px] font-bold uppercase tracking-wider transition-all flex items-center gap-2 border",
+            "px-4 py-1.5 rounded-full text-[12px] font-medium transition-all flex items-center gap-2 border",
             activeTab === "finops"
-              ? "bg-np-teal text-black border-np-teal shadow-md shadow-np-teal/20"
-              : "bg-card text-muted-foreground border-border hover:border-np-teal/40 hover:text-foreground"
+              ? "bg-card text-foreground border-border shadow-sm"
+              : "border-transparent text-muted-foreground hover:text-foreground"
           )}
         >
-          <DollarSign className="h-3.5 w-3.5" />
+          <DollarSign className="h-3.5 w-3.5 text-np-teal" />
           FinOps Waste Hunter
         </button>
 
         <button
           onClick={() => setActiveTab("cache")}
           className={cn(
-            "px-4 py-2 rounded-full text-[12px] font-bold uppercase tracking-wider transition-all flex items-center gap-2 border",
+            "px-4 py-1.5 rounded-full text-[12px] font-medium transition-all flex items-center gap-2 border",
             activeTab === "cache"
-              ? "bg-np-gold text-black border-np-gold shadow-md shadow-np-gold/20"
-              : "bg-card text-muted-foreground border-border hover:border-np-gold/40 hover:text-foreground"
+              ? "bg-card text-foreground border-border shadow-sm"
+              : "border-transparent text-muted-foreground hover:text-foreground"
           )}
         >
-          <Zap className="h-3.5 w-3.5" />
+          <Zap className="h-3.5 w-3.5 text-np-gold" />
           Cache Pulse Engine
         </button>
 
         <button
           onClick={() => setActiveTab("mcp")}
           className={cn(
-            "px-4 py-2 rounded-full text-[12px] font-bold uppercase tracking-wider transition-all flex items-center gap-2 border",
+            "px-4 py-1.5 rounded-full text-[12px] font-medium transition-all flex items-center gap-2 border",
             activeTab === "mcp"
-              ? "bg-np-teal text-black border-np-teal shadow-md shadow-np-teal/20"
-              : "bg-card text-muted-foreground border-border hover:border-np-teal/40 hover:text-foreground"
+              ? "bg-card text-foreground border-border shadow-sm"
+              : "border-transparent text-muted-foreground hover:text-foreground"
           )}
         >
-          <Terminal className="h-3.5 w-3.5" />
+          <Terminal className="h-3.5 w-3.5 text-np-teal" />
           MCP Protocol
         </button>
 
         <button
           onClick={() => setActiveTab("prbot")}
           className={cn(
-            "px-4 py-2 rounded-full text-[12px] font-bold uppercase tracking-wider transition-all flex items-center gap-2 border",
+            "px-4 py-1.5 rounded-full text-[12px] font-medium transition-all flex items-center gap-2 border",
             activeTab === "prbot"
-              ? "bg-np-gold text-black border-np-gold shadow-md shadow-np-gold/20"
-              : "bg-card text-muted-foreground border-border hover:border-np-gold/40 hover:text-foreground"
+              ? "bg-card text-foreground border-border shadow-sm"
+              : "border-transparent text-muted-foreground hover:text-foreground"
           )}
         >
-          <GitBranch className="h-3.5 w-3.5" />
+          <GitBranch className="h-3.5 w-3.5 text-np-gold" />
           PR Code Review Bot
         </button>
       </div>
 
       {/* Main Interactive Screen */}
-      <Card className="p-6 md:p-8 bg-card border-border relative overflow-hidden shadow-2xl">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-np-gold/5 blur-[100px] pointer-events-none" />
+      <Card className="p-6 md:p-8 bg-card border-border/60 relative overflow-hidden shadow-sm">
 
         {/* ── 1. AUTOPILOT AI TAB ── */}
         {activeTab === "autopilot" && (
