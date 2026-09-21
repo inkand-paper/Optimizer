@@ -1,4 +1,4 @@
-# Next.js Optimizer Suite
+﻿# Next.js Optimizer Suite
 
 Next.js Optimizer Suite is a high-performance analytics, caching, and health-monitoring platform designed exclusively for Next.js applications (App Router).
 
@@ -16,4 +16,4 @@ Next.js Optimizer Suite is a high-performance analytics, caching, and health-mon
 
 ## Author
 Built by MD MUSTAK TAHSIN ABIR.
-Website: https://nextjs-optimizer-suite.vercel.app
+Website: https://nexpulse-optimizer.vercel.app

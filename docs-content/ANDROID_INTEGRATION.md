@@ -1,4 +1,4 @@
-# NexPulse Android Integration Guide
+﻿# NexPulse Android Integration Guide
 
 This guide explains how to connect your **Android (Kotlin) apps** to the NexPulse engine to trigger global optimizations.
 
@@ -30,7 +30,7 @@ fun triggerNexPulse(tag: String, apiKey: String) {
     val body = jsonBody.toRequestBody("application/json".toMediaType())
     
     val request = Request.Builder()
-        .url("https://nextjs-optimizer-suite.vercel.app/api/revalidate")
+        .url("https://nexpulse-optimizer.vercel.app/api/revalidate")
         .addHeader("Authorization", "Bearer $apiKey")
         .post(body)
         .build()
@@ -59,7 +59,7 @@ fun triggerAudit(targetUrl: String, apiKey: String) {
     val body = jsonBody.toRequestBody("application/json".toMediaType())
     
     val request = Request.Builder()
-        .url("https://nextjs-optimizer-suite.vercel.app/api/analyze")
+        .url("https://nexpulse-optimizer.vercel.app/api/analyze")
         .addHeader("Authorization", "Bearer $apiKey")
         .post(body)
         .build()

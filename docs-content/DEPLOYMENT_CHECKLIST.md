@@ -1,4 +1,4 @@
-# NexPulse Deployment Checklist
+﻿# NexPulse Deployment Checklist
 
 Production readiness checklist for NexPulse operators and contributors.
 
@@ -44,7 +44,7 @@ Production readiness checklist for NexPulse operators and contributors.
 | `DATABASE_URL` | Supabase/Postgres (pooled via pgbouncer) |
 | `DIRECT_URL` | Supabase direct URL (for Prisma migrations) |
 | `JWT_SECRET` | Custom JWT signing secret |
-| `NEXTAUTH_URL` | `https://nextjs-optimizer-suite.vercel.app` |
+| `NEXTAUTH_URL` | `https://nexpulse-optimizer.vercel.app` |
 | `NEXTAUTH_SECRET` | NextAuth session signing |
 | `GITHUB_ID` | NextAuth GitHub OAuth App Client ID |
 | `GITHUB_SECRET` | NextAuth GitHub OAuth App Client Secret |
@@ -60,7 +60,7 @@ Production readiness checklist for NexPulse operators and contributors.
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob storage access token for student ID uploads |
 | `UPSTASH_REDIS_REST_URL` | Rate limiting store |
 | `UPSTASH_REDIS_REST_TOKEN` | Rate limiting store auth |
-| `NEXT_PUBLIC_APP_URL` | `https://nextjs-optimizer-suite.vercel.app` |
+| `NEXT_PUBLIC_APP_URL` | `https://nexpulse-optimizer.vercel.app` |
 
 > ⚠️ **NEVER** set `NEXT_PUBLIC_` for secrets. `NEXT_PUBLIC_` variables are exposed to the browser.
 
@@ -69,15 +69,15 @@ Production readiness checklist for NexPulse operators and contributors.
 ## 4. OAuth App Registration
 
 ### NextAuth GitHub (`GITHUB_ID`)
-- Homepage URL: `https://nextjs-optimizer-suite.vercel.app`
-- Callback URL: `https://nextjs-optimizer-suite.vercel.app/api/auth/callback/github`
+- Homepage URL: `https://nexpulse-optimizer.vercel.app`
+- Callback URL: `https://nexpulse-optimizer.vercel.app/api/auth/callback/github`
 
 ### NextAuth Google (`GOOGLE_ID`)
-- Authorized redirect URI: `https://nextjs-optimizer-suite.vercel.app/api/auth/callback/google`
+- Authorized redirect URI: `https://nexpulse-optimizer.vercel.app/api/auth/callback/google`
 
 ### Code Review GitHub (`GITHUB_CODE_REVIEW_CLIENT_ID`)
-- Homepage URL: `https://nextjs-optimizer-suite.vercel.app`
-- Callback URL: `https://nextjs-optimizer-suite.vercel.app/api/auth/github-connect/callback`
+- Homepage URL: `https://nexpulse-optimizer.vercel.app`
+- Callback URL: `https://nexpulse-optimizer.vercel.app/api/auth/github-connect/callback`
 
 > For local development, register a separate OAuth App with `http://localhost:3000` URLs and use those credentials in `.env.local`.
 

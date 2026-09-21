@@ -213,7 +213,7 @@ export default async function StatusPage({ params }: PageProps) {
         {/* Footer */}
         <div style={{ marginTop: 48, paddingTop: 24, borderTop: '0.5px solid #1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <a
-            href="https://nextjs-optimizer-suite.vercel.app"
+            href="https://nexpulse-optimizer.vercel.app"
             target="_blank"
             rel="noopener noreferrer"
             style={{ fontSize: 11, color: '#444', textDecoration: 'none', letterSpacing: '0.1em', textTransform: 'uppercase' }}

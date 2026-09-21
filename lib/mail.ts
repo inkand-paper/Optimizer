@@ -1,4 +1,4 @@
-import { PulseAlertEmail } from "@/components/emails/pulse-alert";
+﻿import { PulseAlertEmail } from "@/components/emails/pulse-alert";
 import { UptimeAlertEmail } from "@/components/emails/uptime-alert";
 import { VerificationEmail } from "@/components/emails/verification";
 import { SecurityAlertEmail } from "@/components/emails/security-alert";
@@ -303,7 +303,7 @@ export async function sendStudentTrialExpiredEmail({
   userName: string;
 }) {
   try {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextjs-optimizer-suite.vercel.app';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nexpulse-optimizer.vercel.app';
     const upgradeUrl = `${appUrl}/dashboard/profile`;
     const { StudentTrialExpiredEmail } = await import('@/components/emails/student-trial-expired');
     const html = await render(React.createElement(StudentTrialExpiredEmail, { userName, upgradeUrl }));
@@ -332,7 +332,7 @@ export async function sendGiftedTrialEmail({
   expiresAt?: string;
 }) {
   try {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextjs-optimizer-suite.vercel.app';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nexpulse-optimizer.vercel.app';
     const { GiftedTrialEmail } = await import('@/components/emails/gifted-trial');
     const html = await render(React.createElement(GiftedTrialEmail, {
       userName,

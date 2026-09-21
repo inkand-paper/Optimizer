@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextjs-optimizer-suite.vercel.app';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nexpulse-optimizer.vercel.app';
     const { sendWeeklyDigestEmail } = await import('@/lib/mail');
 
     let sent = 0;

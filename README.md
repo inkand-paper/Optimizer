@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 
 # NexPulse
 
@@ -9,7 +9,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)](https://typescriptlang.org)
 
-[Live Demo](https://nextjs-optimizer-suite.vercel.app) · [API Docs](./docs-content/API_DOCS.md) · [Self-Hosting](#self-hosting) · [Discord](https://discord.gg/gSw2sHxZtn)
+[Live Demo](https://nexpulse-optimizer.vercel.app) · [API Docs](./docs-content/API_DOCS.md) · [Self-Hosting](#self-hosting) · [Discord](https://discord.gg/gSw2sHxZtn)
 
 </div>
 
@@ -38,7 +38,7 @@ NexPulse gives engineering teams a unified command center for uptime monitoring,
 ## Quick Start
 
 ```bash
-# 1. Sign up at https://nextjs-optimizer-suite.vercel.app
+# 1. Sign up at https://nexpulse-optimizer.vercel.app
 # 2. Generate a Machine API Key from Dashboard → API Keys
 # 3. Use the key to trigger cache revalidations from your CI/CD pipeline
 ```
@@ -47,7 +47,7 @@ NexPulse gives engineering teams a unified command center for uptime monitoring,
 
 ```ts
 // In your deployment script or GitHub Action:
-await fetch('https://nextjs-optimizer-suite.vercel.app/api/revalidate', {
+await fetch('https://nexpulse-optimizer.vercel.app/api/revalidate', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer opt_your_key_here',

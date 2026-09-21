@@ -1,4 +1,4 @@
-# NexPulse Master Guide
+﻿# NexPulse Master Guide
 
 Complete technical and architectural reference.
 Last updated: July 2025
@@ -165,7 +165,7 @@ export async function POST(req: NextRequest) {
 
 ```ts
 // From CI/CD, CMS webhook, or GitHub Action:
-await fetch('https://nextjs-optimizer-suite.vercel.app/api/revalidate', {
+await fetch('https://nexpulse-optimizer.vercel.app/api/revalidate', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer YOUR_MACHINE_API_KEY',

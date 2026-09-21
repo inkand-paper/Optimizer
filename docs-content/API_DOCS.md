@@ -1,10 +1,10 @@
-# NexPulse API Reference
+﻿# NexPulse API Reference
 
 Last updated: July 2025
 
 ## Base URL
 
-Production: `https://nextjs-optimizer-suite.vercel.app`
+Production: `https://nexpulse-optimizer.vercel.app`
 
 ---
 
@@ -404,7 +404,7 @@ Response includes step-by-step GitHub webhook setup instructions and the webhook
   "success": true,
   "config": { "id": "...", "repoFullName": "owner/repo", "enabled": true },
   "setup": {
-    "webhookUrl": "https://nextjs-optimizer-suite.vercel.app/api/webhooks/github",
+    "webhookUrl": "https://nexpulse-optimizer.vercel.app/api/webhooks/github",
     "webhookSecret": "abc123...",
     "instructions": ["Go to github.com/owner/repo/settings/hooks", "..."]
   }
