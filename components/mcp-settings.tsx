@@ -193,12 +193,12 @@ export function MCPSettings() {
             </a>
           </div>
           <div className="relative">
-            <pre className="p-4 bg-slate-950 rounded-ui border border-slate-800 text-[11px] font-mono text-emerald-400 overflow-auto max-h-52 leading-relaxed">
+            <pre className="p-4 bg-muted/30 rounded-ui border border-border/40 text-[11px] font-mono text-np-teal overflow-auto max-h-52 leading-relaxed">
               {cursorConfig}
             </pre>
             <button
               onClick={() => copyText(cursorConfig, "cursor")}
-              className="absolute top-2 right-2 p-1.5 rounded bg-slate-800/80 text-slate-300 hover:text-white transition-colors"
+              className="absolute top-2 right-2 p-1.5 rounded bg-card text-foreground border border-border/40 hover:bg-muted transition-colors"
             >
               {copied === "cursor" ? <CheckCircle2 className="h-3.5 w-3.5 text-np-teal" /> : <Copy className="h-3.5 w-3.5" />}
             </button>
@@ -225,12 +225,12 @@ export function MCPSettings() {
             </a>
           </div>
           <div className="relative">
-            <pre className="p-4 bg-slate-950 rounded-ui border border-slate-800 text-[11px] font-mono text-emerald-400 overflow-auto max-h-52 leading-relaxed">
+            <pre className="p-4 bg-muted/30 rounded-ui border border-border/40 text-[11px] font-mono text-np-teal overflow-auto max-h-52 leading-relaxed">
               {claudeConfig}
             </pre>
             <button
               onClick={() => copyText(claudeConfig, "claude")}
-              className="absolute top-2 right-2 p-1.5 rounded bg-slate-800/80 text-slate-300 hover:text-white transition-colors"
+              className="absolute top-2 right-2 p-1.5 rounded bg-card text-foreground border border-border/40 hover:bg-muted transition-colors"
             >
               {copied === "claude" ? <CheckCircle2 className="h-3.5 w-3.5 text-np-teal" /> : <Copy className="h-3.5 w-3.5" />}
             </button>
