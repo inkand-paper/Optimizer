@@ -1,11 +1,50 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { AuthOptions } from "next-auth";
+import { AdapterUser, AdapterAccount } from "next-auth/adapters";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 
+const baseAdapter = PrismaAdapter(prisma);
+
+const customAdapter = {
+  ...baseAdapter,
+  async createUser(user: Omit<AdapterUser, "id">) {
+    try {
+      return await baseAdapter.createUser!(user);
+    } catch (err) {
+      console.error("[NEXTAUTH_ADAPTER_CREATE_USER_ERROR]", err);
+      throw err;
+    }
+  },
+  async getUserByAccount(provider_providerAccountId: { provider: string; providerAccountId: string }) {
+    try {
+      return await baseAdapter.getUserByAccount!(provider_providerAccountId);
+    } catch (err) {
+      console.error("[NEXTAUTH_ADAPTER_GET_USER_BY_ACCOUNT_ERROR]", err);
+      throw err;
+    }
+  },
+  async getUserByEmail(email: string) {
+    try {
+      return await baseAdapter.getUserByEmail!(email);
+    } catch (err) {
+      console.error("[NEXTAUTH_ADAPTER_GET_USER_BY_EMAIL_ERROR]", err);
+      throw err;
+    }
+  },
+  async linkAccount(account: AdapterAccount) {
+    try {
+      return await baseAdapter.linkAccount!(account);
+    } catch (err) {
+      console.error("[NEXTAUTH_ADAPTER_LINK_ACCOUNT_ERROR]", err);
+      throw err;
+    }
+  },
+};
+
 export const authOptions: AuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: customAdapter,
   secret: process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET || "abir-optimizer-jwt-secret-key-2026-production-ready",
   session: {
     strategy: "jwt",
