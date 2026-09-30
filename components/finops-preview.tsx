@@ -4,7 +4,7 @@ import * as React from "react";
 import { Card, Button } from "@/components/ui-elements";
 import {
   DollarSign, Trash2, ArrowDownRight, Database, Cloud,
-  ShieldAlert, Check, RefreshCw, Loader2, TrendingDown,
+  ShieldAlert, RefreshCw, Loader2, TrendingDown,
   Server, Sparkles, CheckCircle2, ZapOff
 } from "lucide-react";
 

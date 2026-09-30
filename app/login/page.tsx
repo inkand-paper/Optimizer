@@ -16,19 +16,18 @@ function LoginForm() {
   const [mfaToken, setMfaToken] = React.useState("");
   const [mfaCode, setMfaCode] = React.useState("");
 
+  // Derive OAuth error directly from URL params at render time (no useEffect needed)
+  const oauthErrorParam = searchParams?.get("error");
+  const oauthError = oauthErrorParam === "OAuthAccountNotLinked"
+    ? "An account with this email already exists. Please sign in again to link your accounts."
+    : oauthErrorParam
+    ? `Authentication error (${oauthErrorParam}). Please try again.`
+    : null;
+
   const isMounted = React.useRef(true);
   React.useEffect(() => {
     return () => { isMounted.current = false; };
   }, []);
-
-  React.useEffect(() => {
-    const err = searchParams?.get("error");
-    if (err === "OAuthAccountNotLinked") {
-      setError("An account with this email already exists under a different provider. Account linking has been enabled — please sign in again to link your accounts.");
-    } else if (err) {
-      setError(`Authentication error (${err}). Please try again.`);
-    }
-  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -169,7 +168,7 @@ function LoginForm() {
                 />
               </div>
 
-              {error && (
+              {(oauthError || error) && (
                 <div
                   className="flex items-center gap-2.5 p-3 rounded-ui text-[13px]"
                   style={{
@@ -179,7 +178,7 @@ function LoginForm() {
                   }}
                 >
                   <AlertCircle className="h-4 w-4 shrink-0" />
-                  {error}
+                  {oauthError || error}
                 </div>
               )}
 
