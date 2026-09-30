@@ -1,50 +1,9 @@
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { prisma } from "@/lib/prisma";
 import { AuthOptions } from "next-auth";
-import { AdapterUser, AdapterAccount } from "next-auth/adapters";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
-
-const baseAdapter = PrismaAdapter(prisma);
-
-const customAdapter = {
-  ...baseAdapter,
-  async createUser(user: Omit<AdapterUser, "id">) {
-    try {
-      return await baseAdapter.createUser!(user);
-    } catch (err) {
-      console.error("[NEXTAUTH_ADAPTER_CREATE_USER_ERROR]", err);
-      throw err;
-    }
-  },
-  async getUserByAccount(provider_providerAccountId: { provider: string; providerAccountId: string }) {
-    try {
-      return await baseAdapter.getUserByAccount!(provider_providerAccountId);
-    } catch (err) {
-      console.error("[NEXTAUTH_ADAPTER_GET_USER_BY_ACCOUNT_ERROR]", err);
-      throw err;
-    }
-  },
-  async getUserByEmail(email: string) {
-    try {
-      return await baseAdapter.getUserByEmail!(email);
-    } catch (err) {
-      console.error("[NEXTAUTH_ADAPTER_GET_USER_BY_EMAIL_ERROR]", err);
-      throw err;
-    }
-  },
-  async linkAccount(account: AdapterAccount) {
-    try {
-      return await baseAdapter.linkAccount!(account);
-    } catch (err) {
-      console.error("[NEXTAUTH_ADAPTER_LINK_ACCOUNT_ERROR]", err);
-      throw err;
-    }
-  },
-};
+import { prisma } from "@/lib/prisma";
 
 export const authOptions: AuthOptions = {
-  adapter: customAdapter,
   secret: process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET || "abir-optimizer-jwt-secret-key-2026-production-ready",
   session: {
     strategy: "jwt",
@@ -117,11 +76,47 @@ export const authOptions: AuthOptions = {
     },
   },
   callbacks: {
+    async signIn({ user }) {
+      if (user && user.email) {
+        try {
+          await prisma.user.upsert({
+            where: { email: user.email },
+            update: {
+              name: user.name || undefined,
+              image: user.image || undefined,
+              emailVerified: new Date(),
+            },
+            create: {
+              email: user.email,
+              name: user.name || user.email.split('@')[0],
+              image: user.image,
+              role: "DEVELOPER",
+              plan: "FREE",
+              emailVerified: new Date(),
+            },
+          });
+        } catch (err) {
+          console.error("[NEXTAUTH_SIGNIN_UPSERT_ERROR]", err);
+        }
+      }
+      return true;
+    },
     async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.role = (user as { role?: string }).role ?? "DEVELOPER";
-        token.plan = (user as { plan?: string }).plan ?? "FREE";
+      const email = user?.email || (token.email as string);
+      if (email) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { email },
+            select: { id: true, role: true, plan: true },
+          });
+          if (dbUser) {
+            token.id = dbUser.id;
+            token.role = dbUser.role;
+            token.plan = dbUser.plan;
+          }
+        } catch (err) {
+          console.error("[NEXTAUTH_JWT_FETCH_ERROR]", err);
+        }
       }
       return token;
     },
