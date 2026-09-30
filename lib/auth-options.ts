@@ -29,6 +29,14 @@ export const authOptions: AuthOptions = {
       clientId: process.env.GOOGLE_ID || "",
       clientSecret: process.env.GOOGLE_SECRET || "",
       allowDangerousEmailAccountLinking: true,
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture,
+        };
+      },
       authorization: {
         params: {
           prompt: "select_account",
@@ -56,23 +64,6 @@ export const authOptions: AuthOptions = {
         sUser.plan = (token.plan as string) ?? "FREE";
       }
       return session;
-    },
-  },
-  events: {
-    /**
-     * Ensure emailVerified is set for all OAuth users.
-     */
-    async signIn({ user, account }) {
-      try {
-        if (account?.provider !== "credentials" && user?.id && !(user as unknown as Record<string, unknown>).emailVerified) {
-          await prisma.user.update({
-            where: { id: user.id },
-            data: { emailVerified: new Date() },
-          });
-        }
-      } catch (err) {
-        console.error("[NEXTAUTH_SIGNIN_EVENT_ERROR]", err);
-      }
     },
   },
   pages: {
