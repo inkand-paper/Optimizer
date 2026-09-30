@@ -64,39 +64,36 @@ export default function Home() {
 
       <main className="flex-1">
         {/* ── Hero ───────────────────────── */}
-        <section className="relative pt-32 pb-28 md:pt-44 md:pb-36 overflow-hidden">
-          <div className="absolute inset-0 np-grid-bg opacity-40 pointer-events-none" />
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[420px] bg-np-gold/5 rounded-full blur-[130px] pointer-events-none" />
-
+        <section className="relative pt-24 pb-20 md:pt-36 md:pb-28 overflow-hidden">
           <div className="relative max-w-4xl mx-auto px-4 text-center">
-            <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.06] text-foreground mb-5">
-              Unified Observability<br />
-              <span className="bg-gradient-to-r from-np-gold via-amber-300 to-np-gold bg-clip-text text-transparent">
-                & autonomous ops.
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.1] text-foreground mb-6">
+              Monitor your sites.<br />
+              <span className="text-np-gold">
+                Audit your code. Ship faster.
               </span>
             </h1>
 
-            <p className="text-[17px] text-muted-foreground max-w-xl mx-auto leading-relaxed mb-10">
-              NexPulse gives your team real-time infrastructure health monitoring, autonomous AI incident resolution, and cloud cost recovery — in a single console.
+            <p className="text-[16px] md:text-[18px] text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10">
+              NexPulse combines real-time uptime monitoring, AI code auditing, edge cache revalidation, and status pages into a single developer platform.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link href="/register" className="np-btn-primary h-12 px-8 text-[14px] gap-2 shadow-lg shadow-np-gold/15">
+              <Link href="/register" className="np-btn-primary h-11 px-7 text-[14px] gap-2 shadow-sm">
                 Get started free <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link href="/dashboard" className="np-btn-outline h-12 px-8 text-[14px]">
-                Open dashboard
+              <Link href="/docs" className="np-btn-outline h-11 px-7 text-[14px]">
+                Documentation
               </Link>
             </div>
           </div>
         </section>
 
         {/* ── Stats strip ─────────────────── */}
-        <div style={{ borderTop: "0.5px solid var(--border)", borderBottom: "0.5px solid var(--border)" }}>
-          <div className="max-w-4xl mx-auto px-4 py-7 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0 md:divide-x divide-border">
+        <div className="border-y border-border/40 bg-muted/20">
+          <div className="max-w-4xl mx-auto px-4 py-6 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0 md:divide-x divide-border/40">
             {valueProps.map((v) => (
               <div key={v.label} className="flex flex-col items-center gap-1 px-2 md:px-6">
-                <span className="text-2xl md:text-3xl font-bold text-np-gold font-mono">{v.value}</span>
+                <span className="text-2xl md:text-3xl font-bold text-foreground font-mono">{v.value}</span>
                 <span className="text-center text-[10px] tracking-widest uppercase text-muted-foreground font-medium">{v.label}</span>
               </div>
             ))}
@@ -107,7 +104,7 @@ export default function Home() {
         <LandingFeatureShowcase />
 
         {/* ── Feature Domains ─────────────── */}
-        <section className="py-20 max-w-6xl mx-auto px-4" style={{ borderTop: "0.5px solid var(--border)" }}>
+        <section className="py-20 max-w-6xl mx-auto px-4 border-t border-border/40">
           <div className="text-center mb-14 space-y-2">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Everything your team needs</h2>
             <p className="text-[15px] text-muted-foreground max-w-lg mx-auto leading-relaxed">
@@ -119,27 +116,27 @@ export default function Home() {
             {featureDomains.map((domain) => (
               <Card
                 key={domain.id}
-                className="p-7 flex flex-col justify-between border-border/70 hover:border-np-gold/50 hover:shadow-xl hover:shadow-np-gold/5 transition-all duration-300 bg-gradient-to-b from-card/90 to-card"
+                className="p-7 flex flex-col justify-between border-border/50 bg-card hover:border-border transition-colors duration-200"
               >
                 <div className="space-y-6">
                   <div className="space-y-3">
-                    <div className="h-10 w-10 rounded-ui bg-np-gold/10 border border-np-gold/25 flex items-center justify-center text-np-gold">
-                      <domain.icon className="h-5 w-5" />
+                    <div className="h-9 w-9 rounded-ui bg-muted flex items-center justify-center text-foreground">
+                      <domain.icon className="h-4 w-4" />
                     </div>
                     <div>
                       <h3 className="text-[16px] font-bold text-foreground leading-snug">{domain.title}</h3>
-                      <p className="text-[11px] text-np-teal font-mono uppercase tracking-wide mt-0.5 opacity-80">{domain.subtitle}</p>
+                      <p className="text-[11px] text-muted-foreground font-mono uppercase tracking-wide mt-0.5">{domain.subtitle}</p>
                     </div>
                   </div>
 
-                  <div className="space-y-3.5 pt-2 border-t border-border/50">
+                  <div className="space-y-3.5 pt-2 border-t border-border/40">
                     {domain.items.map((item, idx) => (
                       <div key={idx} className="space-y-0.5">
                         <div className="flex items-start gap-2">
                           <CheckCircle2 className="h-3.5 w-3.5 text-np-teal shrink-0 mt-0.5" />
                           <span className="text-[13px] font-semibold text-foreground leading-snug">{item.name}</span>
                         </div>
-                        <p className="text-[12px] text-muted-foreground leading-relaxed pl-5">{item.desc}</p>
+                        <p className="text-[12px] text-muted-foreground leading-relaxed pl-5.5">{item.desc}</p>
                       </div>
                     ))}
                   </div>
@@ -156,7 +153,7 @@ export default function Home() {
         </section>
 
         {/* ── Pricing ─────────────────────── */}
-        <section className="py-24" id="pricing" style={{ borderTop: "0.5px solid var(--border)" }}>
+        <section className="py-24 border-t border-border/40" id="pricing">
           <div className="max-w-5xl mx-auto px-4">
             <div className="text-center mb-14 space-y-2">
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Simple, honest pricing</h2>
@@ -170,30 +167,21 @@ export default function Home() {
                   <Card
                     key={key}
                     className={cn(
-                      "p-7 flex flex-col gap-6 relative transition-all duration-300",
-                      isPro
-                        ? "ring-1 ring-np-gold shadow-lg shadow-np-gold/10 bg-gradient-to-b from-np-gold/5 to-card"
-                        : "border-border/70"
+                      "p-7 flex flex-col gap-6 relative transition-all duration-200 bg-card",
+                      isPro ? "border-np-gold/60 shadow-sm" : "border-border/50"
                     )}
                   >
-                    {isPro && (
-                      <div
-                        className="absolute -top-px left-0 right-0 h-[2px] rounded-t-[inherit]"
-                        style={{ background: "var(--np-gold)" }}
-                      />
-                    )}
-
                     <div>
                       <div className="flex items-center justify-between mb-3">
-                        <p className="text-[13px] font-bold uppercase tracking-widest text-muted-foreground">{plan.name}</p>
+                        <p className="text-[12px] font-semibold uppercase tracking-widest text-muted-foreground">{plan.name}</p>
                         {isPro && (
-                          <span className="text-[9px] uppercase tracking-widest bg-np-gold/20 text-np-gold font-bold px-2 py-0.5 rounded border border-np-gold/30">
+                          <span className="text-[9px] uppercase tracking-widest bg-np-gold/15 text-np-gold font-bold px-2 py-0.5 rounded border border-np-gold/30">
                             Most popular
                           </span>
                         )}
                       </div>
                       <div className="flex items-baseline gap-1 mb-3">
-                        <span className="text-[42px] font-bold font-mono leading-none">{plan.price}</span>
+                        <span className="text-[40px] font-bold font-mono leading-none">{plan.price}</span>
                         <span className="text-[13px] text-muted-foreground mb-1">/mo</span>
                       </div>
                       <p className="text-[13px] text-muted-foreground leading-relaxed">{plan.description}</p>
@@ -203,8 +191,7 @@ export default function Home() {
                       {plan.features.map((f: { active: boolean; text: string }, i: number) => (
                         <li key={i} className={cn("flex items-center gap-2.5 text-[13px]", !f.active && "opacity-35")}>
                           <Check
-                            className="h-3.5 w-3.5 shrink-0"
-                            style={{ color: f.active ? "var(--np-teal)" : "currentColor" }}
+                            className="h-3.5 w-3.5 shrink-0 text-np-teal"
                           />
                           <span className={f.active ? "text-foreground" : "text-muted-foreground"}>
                             {f.text}
@@ -218,7 +205,7 @@ export default function Home() {
                       className={cn(
                         "mt-auto text-center",
                         isPro
-                          ? "np-btn-primary w-full justify-center shadow-md shadow-np-gold/15"
+                          ? "np-btn-primary w-full justify-center shadow-sm"
                           : "np-btn-outline w-full justify-center"
                       )}
                     >
@@ -233,22 +220,20 @@ export default function Home() {
 
         {/* ── CTA ─────────────────────────── */}
         <section className="py-24 max-w-4xl mx-auto px-4">
-          <Card className="p-10 md:p-16 text-center relative overflow-hidden border-np-gold/20">
-            <div className="absolute inset-0 np-grid-bg opacity-30 pointer-events-none" />
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-40 bg-np-gold/8 blur-[70px] pointer-events-none" />
-            <div className="relative space-y-5">
+          <Card className="p-10 md:p-14 text-center border-border/50 bg-card">
+            <div className="space-y-5">
               <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
                 Connected in under 2 minutes.<br />
-                <span className="text-np-gold">No agents. No complexity.</span>
+                <span className="text-np-gold">No agents required.</span>
               </h2>
               <p className="text-muted-foreground text-[15px] max-w-sm mx-auto leading-relaxed">
                 Add your first endpoint or repository and start catching issues before your users ever do.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-                <Link href="/register" className="np-btn-primary h-12 px-8 text-[14px] gap-2 shadow-md shadow-np-gold/15">
+                <Link href="/register" className="np-btn-primary h-11 px-7 text-[14px] gap-2 shadow-sm">
                   Start for free <ArrowRight className="h-4 w-4" />
                 </Link>
-                <Link href="/login" className="np-btn-outline h-12 px-8 text-[14px]">
+                <Link href="/login" className="np-btn-outline h-11 px-7 text-[14px]">
                   Sign in
                 </Link>
               </div>
@@ -258,7 +243,7 @@ export default function Home() {
       </main>
 
       {/* ── Footer ──────────────────────── */}
-      <footer style={{ borderTop: "0.5px solid var(--border)" }} className="py-10">
+      <footer className="py-10 border-t border-border/40">
         <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-5">
           <div className="flex items-center gap-2">
             <Activity className="h-4 w-4 text-np-gold" />

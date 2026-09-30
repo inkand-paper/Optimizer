@@ -2,64 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Warm Obsidian Design System ─── */
+/* ─── NexPulse Handcrafted Developer Suite Design System ─── */
 :root {
-  --np-gold:     #B48C3C;
-  --np-teal:     #1D9E75;
-  --np-crimson:  #A32D2D;
-  --np-ink:      #1A1A18;
-  --np-vellum:   #F5F3EE;
-  --np-obsidian: #0D0F11;
-  --np-steel:    #16191E;
-  --np-slate:    #6B6A66;
+  --np-gold:     #D4A338;
+  --np-teal:     #10B981;
+  --np-crimson:  #EF4444;
+  --np-ink:      #0F172A;
+  --np-vellum:   #FAFAF8;
+  --np-obsidian: #090A0C;
+  --np-steel:    #121418;
+  --np-slate:    #64748B;
 
   /* Semantic tokens — light mode */
-  --background:        #F5F3EE;
-  --foreground:        #1A1A18;
+  --background:        #FAFAF8;
+  --foreground:        #0F172A;
   --card:              #FFFFFF;
-  --card-foreground:   #1A1A18;
-  --border:            rgba(0, 0, 0, 0.08);
-  --input:             rgba(0, 0, 0, 0.06);
-  --ring:              #B48C3C;
-  --muted:             #ECEAE4;
-  --muted-foreground:  #6B6A66;
-  --primary:           #B48C3C;
+  --card-foreground:   #0F172A;
+  --border:            rgba(15, 23, 42, 0.08);
+  --input:             rgba(15, 23, 42, 0.04);
+  --ring:              #D4A338;
+  --muted:             #F1F5F9;
+  --muted-foreground:  #64748B;
+  --primary:           #D4A338;
   --primary-foreground:#FFFFFF;
-  --secondary:         #1D9E75;
+  --secondary:         #10B981;
   --secondary-foreground: #FFFFFF;
-  --destructive:       #A32D2D;
+  --destructive:       #EF4444;
   --destructive-foreground: #FFFFFF;
-  --radius-card: 12px;
-  --radius-ui:   8px;
+  --radius-card: 10px;
+  --radius-ui:   6px;
 }
 
 .dark {
-  --background:        #0D0F11;
-  --foreground:        #F0EDE6;
-  --card:              #16191E;
-  --card-foreground:   #F0EDE6;
-  --border:            rgba(255, 255, 255, 0.07);
-  --input:             rgba(255, 255, 255, 0.05);
-  --ring:              #B48C3C;
-  --muted:             #1E2128;
-  --muted-foreground:  #6B6A66;
-  --primary:           #B48C3C;
-  --primary-foreground:#0D0F11;
-  --secondary:         #1D9E75;
-  --secondary-foreground: #0D0F11;
-  --destructive:       #A32D2D;
+  --background:        #090A0C;
+  --foreground:        #F8FAFC;
+  --card:              #121418;
+  --card-foreground:   #F8FAFC;
+  --border:            rgba(255, 255, 255, 0.08);
+  --input:             rgba(255, 255, 255, 0.06);
+  --ring:              #D4A338;
+  --muted:             #1A1D24;
+  --muted-foreground:  #94A3B8;
+  --primary:           #D4A338;
+  --primary-foreground:#090A0C;
+  --secondary:         #10B981;
+  --secondary-foreground: #090A0C;
+  --destructive:       #EF4444;
   --destructive-foreground: #FFFFFF;
 }
 
 /* Dark overrides for semantic component styles */
 .dark .np-codeblock {
-  background: var(--np-obsidian);
-  color: #E2E0D8;
-  border-color: rgba(255,255,255,0.07);
+  background: #0D0E12;
+  color: #E2E8F0;
+  border-color: rgba(255, 255, 255, 0.08);
 }
 .dark .np-diagnosis {
-  background: var(--np-obsidian);
-  color: #E2E0D8;
+  background: #121418;
+  color: #F8FAFC;
 }
 
 @layer base {

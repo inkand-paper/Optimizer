@@ -2,13 +2,14 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, Button, Input, PasswordInput } from "@/components/ui-elements";
 import { Activity, Loader2, AlertCircle } from "lucide-react";
 import { signIn } from "next-auth/react";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = React.useState(false);
   const [error, setError]     = React.useState("");
   const [mfaRequired, setMfaRequired] = React.useState(false);
@@ -20,7 +21,14 @@ export default function LoginPage() {
     return () => { isMounted.current = false; };
   }, []);
 
-  // ... useEffect for URL params ...
+  React.useEffect(() => {
+    const err = searchParams?.get("error");
+    if (err === "OAuthAccountNotLinked") {
+      setError("An account with this email already exists under a different provider. Account linking has been enabled — please sign in again to link your accounts.");
+    } else if (err) {
+      setError(`Authentication error (${err}). Please try again.`);
+    }
+  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -261,5 +269,13 @@ export default function LoginPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <React.Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-np-gold" /></div>}>
+      <LoginForm />
+    </React.Suspense>
   );
 }
