@@ -84,6 +84,11 @@ export const authOptions: AuthOptions = {
     async signIn({ user }) {
       if (user && user.email) {
         try {
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email },
+            select: { id: true, twoFactorEnabled: true },
+          });
+
           await prisma.user.upsert({
             where: { email: user.email },
             update: {
@@ -100,6 +105,12 @@ export const authOptions: AuthOptions = {
               emailVerified: new Date(),
             },
           });
+
+          if (existingUser?.twoFactorEnabled) {
+            const { signJwt } = await import("@/lib/auth");
+            const mfaToken = signJwt({ userId: existingUser.id, mfaChallenge: true }, '5m');
+            return `/login?mfaRequired=true&mfaToken=${encodeURIComponent(mfaToken)}`;
+          }
         } catch (err) {
           console.error("[NEXTAUTH_SIGNIN_UPSERT_ERROR]", err);
         }
@@ -112,12 +123,13 @@ export const authOptions: AuthOptions = {
         try {
           const dbUser = await prisma.user.findUnique({
             where: { email },
-            select: { id: true, role: true, plan: true },
+            select: { id: true, role: true, plan: true, twoFactorEnabled: true },
           });
           if (dbUser) {
             token.id = dbUser.id;
             token.role = dbUser.role;
             token.plan = dbUser.plan;
+            token.twoFactorEnabled = dbUser.twoFactorEnabled;
           }
         } catch (err) {
           console.error("[NEXTAUTH_JWT_FETCH_ERROR]", err);
