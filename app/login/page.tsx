@@ -12,9 +12,15 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = React.useState(false);
   const [error, setError]     = React.useState("");
-  const [mfaRequired, setMfaRequired] = React.useState(false);
-  const [mfaToken, setMfaToken] = React.useState("");
-  const [mfaCode, setMfaCode] = React.useState("");
+  const urlMfaRequired = searchParams?.get("mfaRequired") === "true";
+  const urlMfaToken    = searchParams?.get("mfaToken") || "";
+
+  const [internalMfaRequired, setInternalMfaRequired] = React.useState(false);
+  const [internalMfaToken, setInternalMfaToken]       = React.useState("");
+  const [mfaCode, setMfaCode]                         = React.useState("");
+
+  const mfaRequired = urlMfaRequired || internalMfaRequired;
+  const mfaToken    = urlMfaToken || internalMfaToken;
 
   // Derive OAuth error directly from URL params at render time (no useEffect needed)
   const oauthErrorParam = searchParams?.get("error");
@@ -51,8 +57,8 @@ function LoginForm() {
 
       if (res.ok) {
         if (data.mfaRequired) {
-          setMfaRequired(true);
-          setMfaToken(data.mfaToken);
+          setInternalMfaRequired(true);
+          setInternalMfaToken(data.mfaToken);
         } else {
           localStorage.setItem("user", JSON.stringify(data.user));
           router.push("/dashboard");
@@ -221,7 +227,7 @@ function LoginForm() {
 
               <button 
                 type="button"
-                onClick={() => setMfaRequired(false)}
+                onClick={() => setInternalMfaRequired(false)}
                 className="text-[11px] text-muted-foreground hover:text-np-gold w-full text-center transition-colors"
               >
                 Back to Login
