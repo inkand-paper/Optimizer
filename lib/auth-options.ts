@@ -15,6 +15,11 @@ export const authOptions: AuthOptions = {
       clientSecret: process.env.GITHUB_SECRET || "",
       allowDangerousEmailAccountLinking: true,
       checks: ["none"],
+      authorization: {
+        params: {
+          prompt: "consent",
+        },
+      },
       profile(profile) {
         return {
           id: profile.id.toString(),
