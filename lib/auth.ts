@@ -39,13 +39,12 @@ export function verifyJwt(token: string): JwtPayload | null {
   }
 }
 
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "./auth-options";
+import { getToken } from 'next-auth/jwt';
 
 /**
  * Extracts and verifies a JWT or NextAuth session from:
  * 1. A secure HttpOnly cookie named 'token'
- * 2. A NextAuth session (for social logins)
+ * 2. A NextAuth session token (for social logins)
  * 3. An Authorization: Bearer <token> header
  */
 export async function getTokenFromRequest(req: NextRequest): Promise<JwtPayload | null> {
@@ -56,27 +55,19 @@ export async function getTokenFromRequest(req: NextRequest): Promise<JwtPayload 
     if (verified) return verified;
   }
 
-  // Priority 2: NextAuth Session (Social Logins)
-  // In App Router route handlers, getServerSession needs req/res context
-  // We pass a minimal adapter so it can read cookies from the request
+  // Priority 2: NextAuth Session (Social Logins - GitHub / Google)
   try {
-    const { cookies } = await import('next/headers');
-    const cookieStore = await cookies();
-    const cookieHeader = cookieStore.getAll()
-      .map(c => `${c.name}=${c.value}`)
-      .join('; ');
-    const fakeReq = { headers: { cookie: cookieHeader } };
-    const fakeRes = { getHeader: () => '', setHeader: () => '', end: () => '' };
-    const session = await getServerSession(fakeReq as never, fakeRes as never, authOptions);
-    if (session?.user) {
+    const secret = process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET || "abir-optimizer-jwt-secret-key-2026-production-ready";
+    const nextAuthToken = await getToken({ req, secret });
+    if (nextAuthToken && (nextAuthToken.id || nextAuthToken.sub)) {
       return {
-        userId: (session.user as Record<string, unknown>).id as string,
-        email: session.user.email!,
-        role: ((session.user as Record<string, unknown>).role as string) || 'DEVELOPER'
+        userId: (nextAuthToken.id || nextAuthToken.sub) as string,
+        email: (nextAuthToken.email as string) || undefined,
+        role: (nextAuthToken.role as string) || 'DEVELOPER',
       };
     }
-  } catch {
-    // Fall through to bearer token check
+  } catch (err) {
+    console.error('[NEXTAUTH_GET_TOKEN_ERROR]', err);
   }
 
   // Priority 3: Bearer Token (API clients)
