@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { hashPassword, signJwt } from '@/lib/auth';
+import type { Role, Plan } from '@prisma/client';
 import { registerSchema } from '@/lib/validations';
 import { z } from 'zod';
 import { cookies } from 'next/headers';
@@ -64,8 +65,8 @@ export async function POST(req: NextRequest) {
         email: parsedData.email,
         passwordHash: hashed,
         name: parsedData.name,
-        role: role as never,
-        plan: plan as never,
+        role: role as Role,
+        plan: plan as Plan,
         emailVerified: emailVerifiedDate,
         verificationToken: isVerified ? null : verificationToken
       }

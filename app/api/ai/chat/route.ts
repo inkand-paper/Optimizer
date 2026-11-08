@@ -272,7 +272,9 @@ export async function POST(req: NextRequest) {
     const token = await getTokenFromRequest(req);
 
     // [SECURITY] Rate limit: 30 msgs/min for authenticated users, 15 msgs/min for guest IPs
-    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || 'anonymous';
+    // [SECURITY - H1] Use LAST IP from x-forwarded-for (pop) to prevent spoofing via prepended IPs.
+    const forwarded = req.headers.get('x-forwarded-for') ?? '';
+    const ip = forwarded.split(',').pop()?.trim() || req.headers.get('x-real-ip') || 'anonymous';
     const rateLimitKey = token ? `ai_chat_${token.userId}` : `ai_chat_ip_${ip}`;
     const maxRequests = token ? 30 : 15;
 

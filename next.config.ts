@@ -7,7 +7,10 @@ const nextConfig: NextConfig = {
 
   // Required for Docker standalone deployment
   output: "standalone",
-  allowedDevOrigins: ["turbine-importer-anyway.ngrok-free.dev", "localhost:3000"],
+  // [D1] Dev origins are now driven by an env var so no URLs are hardcoded in source.
+  allowedDevOrigins: process.env.ALLOWED_DEV_ORIGINS
+    ? process.env.ALLOWED_DEV_ORIGINS.split(`,`)
+    : ["localhost:3000"],
   
   // Performance optimizations
   compress: true,
