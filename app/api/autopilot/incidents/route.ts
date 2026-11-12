@@ -11,29 +11,10 @@ export async function GET(req: NextRequest) {
     }
     const userId = decoded.userId;
 
-    let incidents = await prisma.autopilotIncident.findMany({
+    const incidents = await prisma.autopilotIncident.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
     });
-
-    // Seed default sample incident if none exist for a realistic initial experience
-    if (incidents.length === 0) {
-      const sample = await prisma.autopilotIncident.create({
-        data: {
-          userId,
-          title: "API Latency Degradation Detected",
-          severity: "HIGH",
-          status: "OPEN",
-          mode: "RECOMMEND",
-          targetNode: "/api/products",
-          impact: "~18% of requests experiencing p95 latency spike from 420ms → 1.8s",
-          rootCause: "PostgreSQL query regression introduced in deployment #a83f21",
-          confidence: 89,
-          recommendedFix: "Rollback deployment #a83f21 and flush Redis query cache pool",
-        },
-      });
-      incidents = [sample];
-    }
 
     return NextResponse.json({ incidents });
   } catch (error) {
