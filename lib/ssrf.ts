@@ -1,7 +1,4 @@
-import dns from 'dns';
-import { promisify } from 'util';
-
-const lookupAsync = promisify(dns.lookup);
+import { lookup as dnsLookup } from 'dns/promises';
 
 /**
  * Checks if an IP address belongs to a private or reserved network range.
@@ -40,10 +37,10 @@ function isPrivateIP(ip: string): boolean {
 
   // IPv6 Link-Local (fe80::/10 = fe80 through febf)
   // The first 10 bits of fe80:: are 1111 1110 10xx xxxx
-  // In hex: fe80 through febf
+  // In hex: fe80 through febf — the third hex digit (index 2) is 8–b
   if (lower.startsWith('fe')) {
-    const thirdNibble = parseInt(lower[3] ?? '0', 16);
-    // fe80 (1000) through febf (1011) → third nibble 8–b
+    const thirdNibble = parseInt(lower[2] ?? '0', 16);
+    // fe8x (1000) through febx (1011) → third nibble 8–11
     if (thirdNibble >= 8 && thirdNibble <= 11) return true;
   }
 
@@ -76,7 +73,7 @@ export async function validateSafeUrl(urlString: string): Promise<string> {
     }
 
     // Resolve the hostname to an IP address (both IPv4 and IPv6)
-    const { address } = await lookupAsync(parsedUrl.hostname);
+    const { address } = await dnsLookup(parsedUrl.hostname);
 
     if (isPrivateIP(address)) {
       throw new Error(`SSRF Prevention: URL resolves to a private internal IP (${address}).`);
