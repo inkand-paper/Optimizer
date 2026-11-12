@@ -11,20 +11,24 @@ const config: Config = {
     extend: {
       screens: { xs: "375px" },
       fontFamily: {
-        sans: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
-        mono: ["var(--font-mono)", "monospace"],
+        sans: ["var(--font-geist-sans)", "Inter", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "JetBrains Mono", "SFMono-Regular", "Menlo", "monospace"],
       },
       colors: {
-        /* Warm Obsidian tokens */
-        "np-gold":     "#B48C3C",
-        "np-teal":     "#1D9E75",
-        "np-crimson":  "#A32D2D",
-        "np-ink":      "#1A1A18",
-        "np-vellum":   "#F5F3EE",
-        "np-obsidian": "#0D0F11",
-        "np-steel":    "#16191E",
-        "np-slate":    "#6B6A66",
-        /* Semantic aliases */
+        /* Functional status colors */
+        "np-teal":     "var(--np-teal)",
+        "np-crimson":  "var(--np-crimson)",
+        "np-amber":    "var(--np-amber)",
+
+        /* Monochromatic neutral aliases */
+        "np-gold":     "var(--np-gold)",
+        "np-ink":      "var(--np-ink)",
+        "np-vellum":   "var(--np-vellum)",
+        "np-obsidian": "var(--np-obsidian)",
+        "np-steel":    "var(--np-steel)",
+        "np-slate":    "var(--np-slate)",
+
+        /* Semantic design tokens */
         background:    "var(--background)",
         foreground:    "var(--foreground)",
         card:          "var(--card)",
@@ -34,15 +38,18 @@ const config: Config = {
         primary:       "var(--primary)",
         "primary-foreground": "var(--primary-foreground)",
         secondary:     "var(--secondary)",
+        "secondary-foreground": "var(--secondary-foreground)",
         border:        "var(--border)",
+        "border-strong": "var(--border-strong)",
         input:         "var(--input)",
         ring:          "var(--ring)",
         destructive:   "var(--destructive)",
+        "destructive-foreground": "var(--destructive-foreground)",
       },
       borderRadius: {
-        card: "12px",
-        ui:   "8px",
-        xl:   "12px",
+        card: "8px",
+        ui:   "6px",
+        xl:   "10px",
         lg:   "8px",
         md:   "6px",
         sm:   "4px",
@@ -51,4 +58,5 @@ const config: Config = {
   },
   plugins: [],
 };
+
 export default config;

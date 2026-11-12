@@ -1,10 +1,11 @@
-"use client";
+﻿"use client";
 
 import * as React from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Card, Button, Input, PasswordInput } from "@/components/ui-elements";
-import { Activity, Loader2, AlertCircle } from "lucide-react";
+import { Button, Input, PasswordInput } from "@/components/ui-elements";
+import { AuthSplitLayout } from "@/components/auth-split-layout";
+import { Loader2, AlertCircle } from "lucide-react";
 import { signIn } from "next-auth/react";
 
 function LoginForm() {
@@ -12,10 +13,8 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = React.useState(false);
   const [error, setError]     = React.useState("");
-  // [SECURITY - H2] MFA token is NEVER stored in URL query params (browser history / referrer risk).
-  // For email/password login: token stays in React state (never touches the URL).
-  // For OAuth MFA: auth-options.ts sets a short-lived HttpOnly cookie; we fetch it here
-  // via a dedicated server action and clear it immediately after reading.
+
+  // [SECURITY - H2] MFA token is NEVER stored in URL query params.
   const urlMfaRequired = searchParams?.get("mfaRequired") === "true";
 
   const [internalMfaRequired, setInternalMfaRequired] = React.useState(false);
@@ -25,8 +24,12 @@ function LoginForm() {
   const mfaRequired = urlMfaRequired || internalMfaRequired;
   const mfaToken    = internalMfaToken;
 
-  // On mount: if redirected here by OAuth with mfaRequired=true, fetch the
-  // HttpOnly mfa_challenge cookie from the server and store it in React state.
+  const isMounted = React.useRef(true);
+  React.useEffect(() => {
+    return () => { isMounted.current = false; };
+  }, []);
+
+  // Fetch HttpOnly mfa_challenge cookie on mount if redirected from OAuth
   React.useEffect(() => {
     if (urlMfaRequired && !internalMfaToken) {
       fetch('/api/auth/mfa-challenge', { credentials: 'include' })
@@ -37,23 +40,16 @@ function LoginForm() {
             setInternalMfaToken(d.mfaToken);
           }
         })
-        .catch(() => { /* ignore � user will see the form but submit will fail gracefully */ });
+        .catch(() => { /* handled gracefully on submit */ });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlMfaRequired]);
+  }, [urlMfaRequired, internalMfaToken]);
 
-  // Derive OAuth error directly from URL params at render time (no useEffect needed)
   const oauthErrorParam = searchParams?.get("error");
   const oauthError = oauthErrorParam === "OAuthAccountNotLinked"
     ? "An account with this email already exists. Please sign in again to link your accounts."
     : oauthErrorParam
     ? `Authentication error (${oauthErrorParam}). Please try again.`
     : null;
-
-  const isMounted = React.useRef(true);
-  React.useEffect(() => {
-    return () => { isMounted.current = false; };
-  }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -119,187 +115,149 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-      {/* Warm glow */}
-      <div
-        className="fixed top-0 left-0 right-0 bottom-0 pointer-events-none"
-        style={{
-          background: "radial-gradient(ellipse 600px 400px at 50% 30%, rgba(180,140,60,0.04), transparent)",
-        }}
-      />
-
-      <div className="relative w-full max-w-sm z-10">
-        {/* Logo mark */}
-        <div className="flex flex-col items-center mb-8">
-          <div
-            className="h-12 w-12 rounded-card flex items-center justify-center mb-4"
-            style={{
-              background: "rgba(180,140,60,0.10)",
-              border: "0.5px solid rgba(180,140,60,0.4)",
-            }}
-          >
-            <Activity className="h-5 w-5" style={{ color: "var(--np-gold)" }} />
-          </div>
-          <h1 className="text-[22px] font-semibold tracking-tight text-foreground">
-            {mfaRequired ? "Security Verification" : "Sign in to NexPulse"}
+    <AuthSplitLayout headline="Continuous endpoint observability & architectural guard.">
+      <div className="space-y-6">
+        <div className="space-y-1.5">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">
+            {mfaRequired ? "Two-Factor Verification" : "Sign in to NexPulse"}
           </h1>
-          <p className="text-[13px] mt-1" style={{ color: "var(--np-slate)" }}>
-            {mfaRequired ? "Enter your 6-digit authenticator code" : "Infrastructure command centre"}
+          <p className="text-[13px] text-muted-foreground">
+            {mfaRequired
+              ? "Enter the 6-digit authenticator code from your device."
+              : "Enter your credentials to access your infrastructure console."}
           </p>
         </div>
 
-        <Card className="p-6">
-          {!mfaRequired ? (
-            <form onSubmit={handleSubmit} noValidate className="space-y-4">
+        {oauthError && (
+          <div className="flex items-start gap-2.5 p-3 rounded-md text-[13px] bg-rose-500/10 border border-rose-500/20 text-rose-500">
+            <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+            <span>{oauthError}</span>
+          </div>
+        )}
+
+        {error && (
+          <div className="flex items-start gap-2.5 p-3 rounded-md text-[13px] bg-rose-500/10 border border-rose-500/20 text-rose-500">
+            <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {!mfaRequired ? (
+          <div className="space-y-5">
+            <div className="grid grid-cols-2 gap-2.5">
+              <Button
+                variant="outline"
+                className="w-full text-xs font-medium"
+                onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
+              >
+                <svg className="h-3.5 w-3.5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                </svg>
+                GitHub
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full text-xs font-medium"
+                onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+              >
+                <svg className="h-3.5 w-3.5 mr-2" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+                  <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Google
+              </Button>
+            </div>
+
+            <div className="relative flex items-center justify-center">
+              <div className="absolute inset-0 border-t border-border" />
+              <span className="relative bg-background px-3 text-[11px] uppercase tracking-wider text-muted-foreground font-mono">
+                or email
+              </span>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <label
-                  htmlFor="email"
-                  className="label-category"
-                  style={{ display: "block" }}
-                >
-                  Email
+                <label className="text-xs font-medium text-foreground" htmlFor="email">
+                  Work Email
                 </label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="you@company.com"
+                  placeholder="name@company.com"
                   required
                   autoFocus
-                  autoComplete="email"
                 />
               </div>
 
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label
-                    htmlFor="password"
-                    className="label-category"
-                  >
+                  <label className="text-xs font-medium text-foreground" htmlFor="password">
                     Password
                   </label>
                   <Link
                     href="/forgot-password"
-                    className="text-[11px] font-medium hover:underline transition-all"
-                    style={{ color: "var(--np-gold)" }}
+                    className="text-[12px] text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Forgot password?
                   </Link>
                 </div>
-                <PasswordInput
-                  id="password"
-                  name="password"
-                  required
-                  autoComplete="current-password"
-                />
+                <PasswordInput id="password" name="password" required />
               </div>
 
-              {(oauthError || error) && (
-                <div
-                  className="flex items-center gap-2.5 p-3 rounded-ui text-[13px]"
-                  style={{
-                    background: "rgba(163,45,45,0.08)",
-                    border: "0.5px solid var(--np-crimson)",
-                    color: "var(--np-crimson)",
-                  }}
-                >
-                  <AlertCircle className="h-4 w-4 shrink-0" />
-                  {oauthError || error}
-                </div>
-              )}
-
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={loading}
-              >
-                {loading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  "Sign in"
-                )}
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign In to Console"}
               </Button>
             </form>
-          ) : (
-            <form onSubmit={handleMfaSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <label className="label-category text-center block">Authentication Code</label>
-                <Input 
-                  value={mfaCode || ""}
-                  onChange={(e) => setMfaCode(e.target.value)}
-                  placeholder="000000"
-                  maxLength={6}
-                  autoFocus
-                  className="text-center tracking-[0.5em] font-mono h-12 text-lg"
-                />
-              </div>
+          </div>
+        ) : (
+          <form onSubmit={handleMfaSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground block text-center">
+                Security Verification Code
+              </label>
+              <Input
+                value={mfaCode || ""}
+                onChange={(e) => setMfaCode(e.target.value)}
+                placeholder="000000"
+                maxLength={6}
+                autoFocus
+                className="text-center tracking-[0.5em] font-mono h-11 text-lg"
+              />
+            </div>
 
-              {error && (
-                <div className="flex items-center gap-2.5 p-3 rounded-ui text-[13px] bg-np-crimson/10 border border-np-crimson/20 text-np-crimson">
-                  <AlertCircle className="h-4 w-4 shrink-0" />
-                  {error}
-                </div>
-              )}
+            <Button type="submit" className="w-full" disabled={loading || mfaCode.length < 6}>
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Verify Code & Proceed"}
+            </Button>
 
-              <Button type="submit" className="w-full h-11" disabled={loading}>
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Verify & Sign In"}
-              </Button>
-
-              <button 
-                type="button"
-                onClick={() => setInternalMfaRequired(false)}
-                className="text-[11px] text-muted-foreground hover:text-np-gold w-full text-center transition-colors"
-              >
-                Back to Login
-              </button>
-            </form>
-          )}
-
-          {!mfaRequired && (
-            <>
-              <div className="relative my-6">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-border" />
-                </div>
-                <div className="relative flex justify-center text-[10px] uppercase tracking-widest font-bold">
-                  <span className="bg-card px-2 text-muted-foreground">Social Connect</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <Button variant="outline" className="h-10 text-[11px] uppercase tracking-wider" onClick={() => signIn("github", { callbackUrl: "/dashboard" })}>
-                  <svg className="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-                  GitHub
-                </Button>
-                <Button variant="outline" className="h-10 text-[11px] uppercase tracking-wider" onClick={() => signIn("google", { callbackUrl: "/dashboard" })}>
-                  <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                  Google
-                </Button>
-              </div>
-            </>
-          )}
-        </Card>
+            <button
+              type="button"
+              onClick={() => setInternalMfaRequired(false)}
+              className="text-xs text-muted-foreground hover:text-foreground w-full text-center transition-colors pt-2 cursor-pointer"
+            >
+              ← Back to credentials
+            </button>
+          </form>
+        )}
 
         {!mfaRequired && (
-          <p className="text-center text-[13px] mt-5" style={{ color: "var(--np-slate)" }}>
-            New to NexPulse?{" "}
-            <Link
-              href="/register"
-              className="font-medium"
-              style={{ color: "var(--np-gold)" }}
-            >
-              Create an account
+          <p className="text-center text-[13px] text-muted-foreground pt-2">
+            Don't have an account?{" "}
+            <Link href="/register" className="font-medium text-foreground hover:underline">
+              Sign up
             </Link>
           </p>
         )}
       </div>
-    </div>
+    </AuthSplitLayout>
   );
 }
 
 export default function LoginPage() {
   return (
-    <React.Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-np-gold" /></div>}>
+    <React.Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>}>
       <LoginForm />
     </React.Suspense>
   );
