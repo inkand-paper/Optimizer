@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * app/api/code-review/route.ts
  * Hybrid SSE Streamer for Neural Code Audits.
  * Turbo Edition: Parallel Workers + Intelligence Cache.
@@ -14,6 +14,7 @@ import {
 } from "@/core/analyzer/code-review";
 import { getTokenFromRequest } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { PLAN_LIMITS } from "@/lib/plans";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -164,7 +165,7 @@ export async function POST(req: NextRequest) {
       const canUseSharedCache = isAdmin || dbUser.plan === 'PRO' || dbUser.plan === 'BUSINESS';
       const fileHashes = files.map(f => getFileHash(f.content));
 
-      // [SECURITY — M1] For FREE tier, only allow cache hits for files this specific
+      // [SECURITY ï¿½ M1] For FREE tier, only allow cache hits for files this specific
       // user has previously submitted. We build the allowed set by extracting hashes
       // from that user's own completed review results, not from the global AuditCache table.
       let userPriorHashes = new Set<string>();
@@ -241,8 +242,7 @@ export async function POST(req: NextRequest) {
             hash: f.hash!,
             path: f.path,
             language: f.language,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            review: f as any
+            review: f as unknown as Prisma.InputJsonValue
           })),
           skipDuplicates: true
         });
@@ -266,8 +266,7 @@ export async function POST(req: NextRequest) {
           language: result.language,
           linesOfCode: result.linesOfCode,
           filesReviewed: result.filesReviewed,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          result: slimResult as any,
+          result: slimResult as unknown as Prisma.InputJsonValue,
         },
       });
 
@@ -292,3 +291,4 @@ export async function POST(req: NextRequest) {
     headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache", "Connection": "keep-alive" },
   });
 }
+
