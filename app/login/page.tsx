@@ -5,18 +5,20 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button, Input, PasswordInput } from "@/components/ui-elements";
 import { AuthSplitLayout } from "@/components/auth-split-layout";
-import { Loader2, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle, ArrowRight, ShieldCheck } from "lucide-react";
 import { signIn } from "next-auth/react";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = React.useState(false);
+  const [devLoading, setDevLoading] = React.useState(false);
   const [error, setError]     = React.useState("");
 
-  // [SECURITY - H2] MFA token is NEVER stored in URL query params.
-  const urlMfaRequired = searchParams?.get("mfaRequired") === "true";
+  const [emailInput, setEmailInput] = React.useState(searchParams?.get("email") || "");
+  const [passwordInput, setPasswordInput] = React.useState(searchParams?.get("password") || "");
 
+  const urlMfaRequired = searchParams?.get("mfaRequired") === "true";
   const [internalMfaRequired, setInternalMfaRequired] = React.useState(false);
   const [internalMfaToken, setInternalMfaToken]       = React.useState("");
   const [mfaCode, setMfaCode]                         = React.useState("");
@@ -29,7 +31,6 @@ function LoginForm() {
     return () => { isMounted.current = false; };
   }, []);
 
-  // Fetch HttpOnly mfa_challenge cookie on mount if redirected from OAuth
   React.useEffect(() => {
     if (urlMfaRequired && !internalMfaToken) {
       fetch('/api/auth/mfa-challenge', { credentials: 'include' })
@@ -40,7 +41,7 @@ function LoginForm() {
             setInternalMfaToken(d.mfaToken);
           }
         })
-        .catch(() => { /* handled gracefully on submit */ });
+        .catch(() => {});
     }
   }, [urlMfaRequired, internalMfaToken]);
 
@@ -51,22 +52,16 @@ function LoginForm() {
     ? `Authentication error (${oauthErrorParam}). Please try again.`
     : null;
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function performLogin(email: string, pass: string) {
     setLoading(true);
     setError("");
-
-    const fd = new FormData(e.currentTarget);
 
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({
-          email:    fd.get("email"),
-          password: fd.get("password"),
-        }),
+        body: JSON.stringify({ email, password: pass }),
       });
 
       const data = await res.json();
@@ -87,6 +82,18 @@ function LoginForm() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    await performLogin(emailInput, passwordInput);
+  }
+
+  async function handleDevBypass() {
+    setDevLoading(true);
+    setError("");
+    await performLogin("admin@nexpulse.dev", "password123");
+    setDevLoading(false);
   }
 
   async function handleMfaSubmit(e: React.FormEvent) {
@@ -177,7 +184,7 @@ function LoginForm() {
               </span>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} method="POST" action="#" className="space-y-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-foreground" htmlFor="email">
                   Work Email
@@ -186,6 +193,8 @@ function LoginForm() {
                   id="email"
                   name="email"
                   type="email"
+                  value={emailInput}
+                  onChange={(e) => setEmailInput(e.target.value)}
                   placeholder="name@company.com"
                   required
                   autoFocus
@@ -204,16 +213,43 @@ function LoginForm() {
                     Forgot password?
                   </Link>
                 </div>
-                <PasswordInput id="password" name="password" required />
+                <PasswordInput 
+                  id="password" 
+                  name="password" 
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  required 
+                />
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full" disabled={loading || devLoading}>
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign In to Console"}
               </Button>
+
+              {/* One-click Dev Demo Access */}
+              <div className="pt-2 border-t border-border/60">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleDevBypass}
+                  disabled={loading || devLoading}
+                  className="w-full text-xs font-mono flex items-center justify-center gap-1.5 h-9"
+                >
+                  {devLoading ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <>
+                      <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
+                      <span>One-Click Dev Access (Admin)</span>
+                      <ArrowRight className="h-3 w-3 ml-auto opacity-60" />
+                    </>
+                  )}
+                </Button>
+              </div>
             </form>
           </div>
         ) : (
-          <form onSubmit={handleMfaSubmit} className="space-y-5">
+          <form onSubmit={handleMfaSubmit} method="POST" action="#" className="space-y-5">
             <div className="space-y-2">
               <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground block text-center">
                 Security Verification Code
