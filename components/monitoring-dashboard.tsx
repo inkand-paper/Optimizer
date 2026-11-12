@@ -1,12 +1,10 @@
-"use client";
+﻿"use client";
 
 import * as React from "react";
-import { Card, Button, Input, Badge, Toggle } from "./ui-elements";
+import { Card, Button, Input, StatusPip, Toggle, ConfirmDialog } from "./ui-elements";
 import { 
   Activity, 
   Globe, 
-  CheckCircle2, 
-  XCircle, 
   Trash2, 
   Plus, 
   Loader2,
@@ -17,6 +15,8 @@ import {
   Eye,
   EyeOff,
   Link2,
+  ExternalLink,
+  Copy,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -56,6 +56,10 @@ export function MonitoringDashboard() {
   const [editName, setEditName] = React.useState("");
   const [savingEdit, setSavingEdit] = React.useState(false);
 
+  // Deletion modal state
+  const [deletingId, setDeletingId] = React.useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = React.useState(false);
+
   const fetchMonitors = async () => {
     try {
       const [mRes, meRes] = await Promise.all([
@@ -77,7 +81,6 @@ export function MonitoringDashboard() {
   };
 
   React.useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchMonitors();
     const interval = setInterval(fetchMonitors, 10000); 
     return () => clearInterval(interval);
@@ -111,13 +114,19 @@ export function MonitoringDashboard() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Decommission this asset?")) return;
+  const confirmDelete = async () => {
+    if (!deletingId) return;
+    setIsDeleting(true);
     try {
-      const res = await fetch(`/api/monitors/${id}`, { method: "DELETE", credentials: 'include' });
-      if (res.ok) setMonitors(monitors.filter(m => m.id !== id));
+      const res = await fetch(`/api/monitors/${deletingId}`, { method: "DELETE", credentials: 'include' });
+      if (res.ok) {
+        setMonitors(prev => prev.filter(m => m.id !== deletingId));
+        setDeletingId(null);
+      }
     } catch (err) {
       console.error(err);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -150,73 +159,95 @@ export function MonitoringDashboard() {
   if (loading && monitors.length === 0) {
     return (
       <Card className="p-12 text-center bg-card border-border">
-        <Activity className="h-8 w-8 animate-pulse mx-auto mb-4 text-np-gold opacity-20" />
-        <p className="label-category text-muted-foreground">Initializing Infrastructure Checks...</p>
+        <Activity className="h-6 w-6 animate-pulse mx-auto mb-3 text-muted-foreground opacity-40" />
+        <p className="text-xs font-mono text-muted-foreground uppercase tracking-wider">Syncing Global Probes...</p>
       </Card>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-card p-4 rounded-card border border-border shadow-sm gap-4">
-        <div className="flex items-center gap-4">
-          <div className="h-10 w-10 rounded-ui bg-np-gold/10 flex items-center justify-center text-np-gold border border-np-gold/20 shrink-0">
-            <Activity className="h-5 w-5" />
+      {/* ─── Control Header ─── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-card p-4 rounded-lg border border-border gap-4">
+        <div className="flex items-center gap-3">
+          <div className="h-8 w-8 rounded border border-border bg-muted flex items-center justify-center text-foreground shrink-0">
+            <Activity className="h-4 w-4" />
           </div>
           <div>
-            <h2 className="text-[14px] sm:text-[16px] font-semibold tracking-tight uppercase">Real-Time Infrastructure</h2>
-            <p className="label-category text-[10px] mt-0.5">Global Asset Monitoring</p>
+            <h2 className="text-sm font-semibold tracking-tight text-foreground">Active Infrastructure</h2>
+            <p className="text-xs text-muted-foreground font-mono">
+              {monitors.length} endpoints monitored · 10s live interval
+            </p>
           </div>
         </div>
-        <Button size="sm" onClick={() => setIsAdding(!isAdding)} className="h-10 px-6 font-semibold uppercase tracking-widest text-[11px] w-full sm:w-auto">
-          {isAdding ? "Cancel" : <><Plus className="h-3 w-3 mr-1.5" /> Provision Target</>}
+        <Button
+          size="sm"
+          onClick={() => setIsAdding(!isAdding)}
+          className="text-xs font-medium w-full sm:w-auto"
+        >
+          {isAdding ? "Cancel" : <><Plus className="h-3.5 w-3.5 mr-1.5" /> Add Target</>}
         </Button>
       </div>
 
+      {/* ─── Provision Form Drawer ─── */}
       {isAdding && (
-        <Card className="p-6 bg-muted dark:bg-np-obsidian border-border animate-in fade-in slide-in-from-top-4">
-          <form onSubmit={handleAdd} className="space-y-5 max-w-2xl">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="label-category text-[10px]">Asset Identity</label>
+        <Card className="p-5 bg-card border-border animate-in fade-in duration-150">
+          <form onSubmit={handleAdd} className="space-y-4 max-w-2xl">
+            <div className="space-y-1">
+              <h3 className="text-sm font-semibold text-foreground">Provision New Endpoint</h3>
+              <p className="text-xs text-muted-foreground">Configure a global HTTP/S availability probe.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-foreground">Target Name</label>
                 <Input 
-                  placeholder="e.g. Primary Gateway" 
+                  placeholder="Production API Gateway" 
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="h-11 bg-card font-semibold uppercase text-[12px]"
+                  className="h-9 text-xs"
                   required
+                  autoFocus
                 />
               </div>
-              <div className="space-y-2">
-                <label className="label-category text-[10px]">Endpoint URL</label>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-foreground">Endpoint URL</label>
                 <Input 
-                  placeholder="https://api.gateway.com/health" 
+                  placeholder="https://api.domain.com/health" 
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-                  className="h-11 bg-card font-mono text-[12px]"
+                  className="h-9 font-mono text-xs"
                   required
                 />
               </div>
             </div>
             
             {errorMessage && (
-              <div className="p-3 bg-np-crimson/10 border border-np-crimson/20 rounded-ui flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-np-crimson" />
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-np-crimson">{errorMessage}</p>
+              <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-md flex items-center gap-2 text-rose-500 text-xs">
+                <AlertCircle className="h-4 w-4 shrink-0" />
+                <p>{errorMessage}</p>
               </div>
             )}
 
-            <Button type="submit" className="w-full h-11 uppercase tracking-widest text-[11px]" disabled={!name || !url || addingState}>
-              {addingState ? <Loader2 className="h-4 w-4 animate-spin" /> : "Deploy Monitoring Probe"}
-            </Button>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button type="button" variant="ghost" size="sm" onClick={() => setIsAdding(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" size="sm" disabled={!name || !url || addingState}>
+                {addingState ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Deploy Probe"}
+              </Button>
+            </div>
           </form>
         </Card>
       )}
 
-      <div className="space-y-4">
+      {/* ─── Monitors List ─── */}
+      <div className="space-y-3">
         {monitors.length === 0 ? (
-          <Card className="p-16 text-center border-dashed">
-            <p className="label-category text-muted-foreground">No assets provisioned. Infrastructure empty.</p>
+          <Card className="p-12 text-center border-dashed">
+            <Globe className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+            <p className="text-xs font-medium text-foreground">No endpoints provisioned yet</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Click "Add Target" above to start streaming uptime telemetry.</p>
           </Card>
         ) : (
           monitors.map((m) => {
@@ -225,58 +256,78 @@ export function MonitoringDashboard() {
                 : (m.latencyHistory || []);
             const currentLatency = history.length > 0 ? history[history.length - 1] : 0;
             return (
-              <Card key={m.id} className="p-0 overflow-hidden bg-card border-border shadow-sm group">
-                <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between border-b border-border bg-muted dark:bg-np-obsidian/20 gap-4">
-                  <Link 
-                    href={`/dashboard/monitors/${m.id}`}
-                    className="flex flex-1 items-center gap-4 min-w-0 hover:opacity-80 transition-opacity"
-                  >
-                    <div className={cn(
-                      "h-10 w-10 sm:h-12 sm:w-12 rounded-ui border flex items-center justify-center shrink-0",
-                      m.status === 'UP' ? "bg-np-teal/10 border-np-teal/20 text-np-teal" : "bg-np-crimson/10 border-np-crimson/20 text-np-crimson"
-                    )}>
-                      {m.status === 'UP' ? <CheckCircle2 className="h-5 w-5" /> : <XCircle className="h-5 w-5" />}
-                    </div>
+              <Card key={m.id} className="p-0 overflow-hidden bg-card border-border group hover:border-foreground/20 transition-colors">
+                {/* Top Row: Status, Info, Actions */}
+                <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between border-b border-border gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    {/* Precision Status Pip — replaces the old 48px mint pastel box */}
+                    <StatusPip status={m.status} />
+
                     <div className="min-w-0">
-                      <div className="flex items-center gap-3 mb-1">
+                      <div className="flex items-center gap-2">
                         {editingId === m.id ? (
-                          <div className="flex items-center gap-2" onClick={(e) => e.preventDefault()}>
+                          <div className="flex items-center gap-1.5" onClick={(e) => e.preventDefault()}>
                             <Input 
                               value={editName}
                               onChange={(e) => setEditName(e.target.value)}
-                              className="h-8 text-[14px] font-bold uppercase flex-1 min-w-0"
+                              className="h-7 text-xs font-medium flex-1 min-w-0"
                               disabled={savingEdit}
                               autoFocus
                             />
-                            <button onClick={() => saveEdit(m.id)} disabled={savingEdit} className="p-1 text-np-teal hover:bg-np-teal/10 rounded">
-                              {savingEdit ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-4 w-4" />}
+                            <button onClick={() => saveEdit(m.id)} disabled={savingEdit} className="p-1 text-emerald-500 hover:bg-muted rounded">
+                              {savingEdit ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
                             </button>
                             <button onClick={() => setEditingId(null)} disabled={savingEdit} className="p-1 text-muted-foreground hover:bg-muted rounded">
-                              <X className="h-4 w-4" />
+                              <X className="h-3.5 w-3.5" />
                             </button>
                           </div>
                         ) : (
                           <>
-                            <h3 className="text-[16px] sm:text-[18px] font-bold tracking-tight uppercase flex items-center gap-2 group/name truncate">
+                            <Link 
+                              href={`/dashboard/monitors/${m.id}`}
+                              className="text-sm font-medium tracking-tight text-foreground hover:underline truncate"
+                            >
                               {m.name}
-                              <button onClick={(e) => { e.preventDefault(); startEditing(m); }} className="opacity-0 group-hover/name:opacity-100 text-muted-foreground hover:text-np-gold transition-opacity">
-                                <Edit2 className="h-3 w-3" />
-                              </button>
-                            </h3>
-                            <Globe className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                            </Link>
+                            <button
+                              onClick={(e) => { e.preventDefault(); startEditing(m); }}
+                              className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-foreground transition-opacity p-0.5"
+                              aria-label="Rename monitor"
+                            >
+                              <Edit2 className="h-3 w-3" />
+                            </button>
                           </>
                         )}
                       </div>
-                      <p className="text-[11px] text-muted-foreground font-mono flex items-center gap-2 truncate">
-                        {m.url}
-                      </p>
+
+                      <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground pt-0.5 truncate">
+                        <span className="truncate">{m.url}</span>
+                        <a
+                          href={m.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:text-foreground transition-colors shrink-0"
+                          title="Open URL"
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </div>
                     </div>
-                  </Link>
-                  <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2">
-                    <div className="flex items-center gap-3">
-                      <Badge variant={m.status === 'UP' ? 'success' : 'danger'} className="text-[10px] px-2.5 py-1">
-                        {m.status}
-                      </Badge>
+                  </div>
+
+                  {/* Right: Metrics & Controls */}
+                  <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+                    <div className="text-right">
+                      <div className="text-xs font-mono font-medium text-foreground">
+                        {currentLatency}ms
+                      </div>
+                      <div className="text-[10px] font-mono text-muted-foreground">
+                        {new Date(m.lastChecked).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1 border-l border-border pl-3">
+                      {/* Visibility on status page */}
                       <button
                         onClick={async () => {
                           const newVal = !m.isPublic;
@@ -288,92 +339,82 @@ export function MonitoringDashboard() {
                           });
                           setMonitors(prev => prev.map(mon => mon.id === m.id ? { ...mon, isPublic: newVal } : mon));
                         }}
-                        className="p-2 text-muted-foreground hover:text-np-gold transition-all"
-                        title={m.isPublic ? "Shown on status page — click to hide" : "Hidden from status page — click to show"}
+                        className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded hover:bg-muted"
+                        title={m.isPublic ? "Public on status page — click to hide" : "Private — click to display on status page"}
                       >
-                        {m.isPublic
-                          ? <Eye className="h-4 w-4" />
-                          : <EyeOff className="h-4 w-4 opacity-40" />
-                        }
+                        {m.isPublic ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4 opacity-40" />}
                       </button>
+
+                      {/* Delete */}
                       <button 
-                        onClick={() => handleDelete(m.id)}
-                        className="p-2 text-muted-foreground hover:text-np-crimson transition-all"
+                        onClick={() => setDeletingId(m.id)}
+                        className="p-1.5 text-muted-foreground hover:text-rose-500 transition-colors rounded hover:bg-rose-500/10"
+                        title="Delete monitor"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
-                    <p className="mono-gold text-[10px] opacity-70">
-                      {new Date(m.lastChecked).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                    </p>
                   </div>
                 </div>
 
-                {/* Graph Area */}
-                <div className="p-6 bg-muted dark:bg-np-obsidian">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="label-category text-[9px] text-np-slate">Infrastructure Latency Matrix</span>
-                    <span className="mono-gold text-[12px] font-bold">{currentLatency}MS</span>
+                {/* Bottom Row: Micro-telemetry Sparkline (Clean 30-Check Timeline) */}
+                <div className="px-4 py-3 bg-muted/30">
+                  <div className="flex items-center justify-between text-[11px] font-mono text-muted-foreground mb-1.5">
+                    <span>Recent Checks (90-check history)</span>
+                    <span>{m.status === 'UP' ? '100% Operational' : 'Outage Detected'}</span>
                   </div>
-                  
-                  <div className="h-16 flex items-end gap-1 w-full mt-2">
-                    {/* Render exact history if exists, else filler */}
+
+                  <div className="h-8 flex items-end gap-1 w-full">
                     {history.length > 0 ? (
                       history.map((lat, i) => {
-                        const heightPercent = Math.max(10, Math.min(100, (lat / 1000) * 100));
-                        const isHigh = lat > 800;
+                        const heightPercent = Math.max(15, Math.min(100, (lat / 800) * 100));
+                        const isHigh = lat > 600;
                         return (
                           <div 
                             key={i} 
                             className={cn(
-                              "flex-1 rounded-t-[2px] transition-all duration-500",
-                              isHigh ? "bg-np-crimson" : "bg-np-teal"
+                              "flex-1 rounded-[1px] transition-all",
+                              isHigh ? "bg-rose-500" : "bg-emerald-500/80 hover:bg-emerald-400"
                             )}
-                            style={{ height: `${heightPercent}%`, opacity: (i + 1) / history.length }}
+                            style={{ height: `${heightPercent}%`, opacity: 0.3 + ((i + 1) / history.length) * 0.7 }}
                             title={`${lat}ms`}
                           />
-                        )
+                        );
                       })
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-[10px] uppercase font-bold text-np-slate tracking-widest border border-dashed border-np-slate/20">
+                      <div className="w-full h-full flex items-center justify-center text-[10px] font-mono text-muted-foreground">
                         Gathering Telemetry...
                       </div>
                     )}
                   </div>
-                  
-                  <div className="flex justify-between mt-3 text-[8px] font-black uppercase tracking-[0.2em] text-np-slate">
-                    <span>Historical</span>
-                    <span>Real-Time</span>
-                  </div>
                 </div>
               </Card>
-            )
+            );
           })
         )}
       </div>
 
-      {/* ── Status Page Settings ── */}
-      <Card className="p-6 border border-dashed border-np-gold/20">
+      {/* ─── Status Page Settings Card ─── */}
+      <Card className="p-5 border border-border bg-card">
         <div className="flex items-start sm:items-center justify-between gap-4 flex-col sm:flex-row mb-4">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-ui bg-np-gold/10 border border-np-gold/20 flex items-center justify-center">
-              <Globe className="h-4 w-4 text-np-gold" />
+            <div className="h-8 w-8 rounded border border-border bg-muted flex items-center justify-center text-foreground">
+              <Globe className="h-4 w-4" />
             </div>
             <div>
-              <h3 className="text-[13px] font-semibold">Public Status Page</h3>
-              <p className="label-category text-[10px] text-muted-foreground">Share a live uptime page with your users</p>
+              <h3 className="text-sm font-semibold text-foreground">Public Status Page</h3>
+              <p className="text-xs text-muted-foreground">Publish a live SLA and availability dashboard for your users.</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <span className={cn(
-              "text-[11px] font-mono font-semibold uppercase tracking-wider",
-              statusPage.enabled ? "text-np-teal" : "text-muted-foreground"
+              "text-xs font-mono font-medium",
+              statusPage.enabled ? "text-emerald-500" : "text-muted-foreground"
             )}>
-              {statusPage.enabled ? "Live" : "Off"}
+              {statusPage.enabled ? "Live" : "Disabled"}
             </span>
             <Toggle
               checked={statusPage.enabled}
-              variant="teal"
               onChange={async (newEnabled) => {
                 setSlugError('');
                 try {
@@ -395,11 +436,10 @@ export function MonitoringDashboard() {
         </div>
 
         {statusPage.enabled && (
-          <div className="space-y-4">
-            {/* Live URL */}
-            <div className="flex items-center gap-2 p-3 bg-muted/30 rounded-ui border border-border">
+          <div className="space-y-3 pt-2 border-t border-border">
+            <div className="flex items-center gap-2 p-2.5 bg-muted/40 rounded border border-border text-xs font-mono">
               <Link2 className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-              <span className="text-[12px] font-mono text-np-gold flex-1 truncate">
+              <span className="flex-1 truncate text-foreground">
                 {typeof window !== "undefined" ? window.location.origin : ""}/status/{statusPage.slug}
               </span>
               <button
@@ -410,28 +450,29 @@ export function MonitoringDashboard() {
                     setTimeout(() => setCopied(false), 2000);
                   }
                 }}
-                className="shrink-0 p-1.5 text-muted-foreground hover:text-np-gold transition-colors"
+                className="p-1 text-muted-foreground hover:text-foreground transition-colors"
+                title="Copy URL"
               >
-                {copied ? <Check className="h-3.5 w-3.5 text-np-teal" /> : <Link2 className="h-3.5 w-3.5" />}
+                {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
               </button>
             </div>
 
-            {/* Custom slug */}
             <div className="flex gap-2 items-end">
-              <div className="flex-1 space-y-1.5">
-                <label className="label-category text-[10px]">Custom URL slug</label>
-                <input
+              <div className="flex-1 space-y-1">
+                <label className="text-xs font-medium text-foreground">Custom URL slug</label>
+                <Input
                   type="text"
                   value={slugInput}
                   onChange={e => { setSlugInput(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "")); setSlugError(""); }}
-                  placeholder="your-name"
-                  className="w-full h-9 px-3 rounded-ui bg-muted/30 border border-border text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-np-gold/50"
+                  placeholder="acme-status"
+                  className="h-8 font-mono text-xs"
                   maxLength={30}
                 />
-                {slugError && <p className="text-[11px] text-np-crimson">{slugError}</p>}
-                <p className="text-[10px] text-muted-foreground">3–30 chars · lowercase, numbers, hyphens only</p>
+                {slugError && <p className="text-xs text-rose-500">{slugError}</p>}
               </div>
-              <button
+              <Button
+                size="sm"
+                variant="outline"
                 onClick={async () => {
                   setSlugSaving(true); setSlugError("");
                   try {
@@ -448,18 +489,27 @@ export function MonitoringDashboard() {
                   finally { setSlugSaving(false); }
                 }}
                 disabled={slugSaving || slugInput.length < 3 || slugInput === statusPage.slug}
-                className="h-9 px-4 rounded-ui border border-np-gold/30 text-np-gold text-[11px] uppercase tracking-wider hover:bg-np-gold/10 transition-all disabled:opacity-40 mb-5"
+                className="h-8 text-xs font-medium"
               >
-                {slugSaving ? "..." : "Save"}
-              </button>
+                {slugSaving ? "Saving..." : "Save Slug"}
+              </Button>
             </div>
-
-            <p className="text-[11px] text-muted-foreground flex items-center gap-1">
-              Click the <Eye className="inline h-3 w-3" /> icon on each monitor above to show or hide it from your status page.
-            </p>
           </div>
         )}
       </Card>
+
+      {/* ─── Accessible Decommission Confirm Dialog ─── */}
+      <ConfirmDialog
+        isOpen={!!deletingId}
+        onClose={() => setDeletingId(null)}
+        onConfirm={confirmDelete}
+        title="Decommission Endpoint Monitor"
+        description="Are you sure you want to delete this monitoring target? Historical latency logs and availability metrics will be permanently purged."
+        confirmText="Decommission Target"
+        cancelText="Cancel"
+        variant="danger"
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

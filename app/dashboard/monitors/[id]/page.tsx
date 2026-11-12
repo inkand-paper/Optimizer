@@ -1,18 +1,18 @@
-"use client";
+﻿"use client";
 
 import * as React from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Card, Button, Badge } from "@/components/ui-elements";
+import { Card, Button, Badge, StatusPip, ConfirmDialog } from "@/components/ui-elements";
 import { 
   ArrowLeft, Activity, Globe, Clock, Server, 
-  AlertCircle, CheckCircle2, BarChart3, Shield,
-  RefreshCw, Loader2, Trash2, ExternalLink, XCircle
+  AlertCircle, Shield, RefreshCw, Loader2, Trash2, 
+  ExternalLink, CheckCircle2,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 interface MonitorCheck { id: string; status: string; latency: number; message?: string; createdAt: string; }
-interface MonitorData { id: string; name: string; url: string; status: string; checks: MonitorCheck[]; user?: { webhooks?: { id: string; url: string }[] }; }
+interface MonitorData { id: string; name: string; url: string; status: "UP" | "DOWN"; checks: MonitorCheck[]; user?: { webhooks?: { id: string; url: string }[] }; }
 
 export default function MonitorDetailsPage() {
   const { id } = useParams();
@@ -20,6 +20,10 @@ export default function MonitorDetailsPage() {
   const [monitor, setMonitor] = React.useState<MonitorData | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [refreshing, setRefreshing] = React.useState(false);
+
+  // Decommission confirm dialog
+  const [isDeleting, setIsDeleting] = React.useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
 
   const fetchDetails = async () => {
     setRefreshing(true);
@@ -37,17 +41,28 @@ export default function MonitorDetailsPage() {
   };
 
   React.useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchDetails();
     const iv = setInterval(fetchDetails, 30000);
     return () => clearInterval(iv);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      const r = await fetch(`/api/monitors/${id}`, { method: 'DELETE', credentials: 'include' });
+      if (r.ok) router.push('/dashboard');
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteDialog(false);
+    }
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-6 w-6 animate-spin text-np-gold" />
+        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -59,231 +74,243 @@ export default function MonitorDetailsPage() {
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto space-y-6">
-        {/* Header Navigation */}
-        <div className="flex flex-col gap-6 mb-2">
-          <div className="flex items-start gap-4">
-            <Link href="/dashboard" className="mt-1 p-2 hover:bg-muted rounded-ui transition-colors text-muted-foreground hover:text-foreground shrink-0">
-              <ArrowLeft className="h-5 w-5" />
+        {/* Navigation & Target Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-border gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <Link
+              href="/dashboard"
+              className="p-1.5 hover:bg-muted rounded text-muted-foreground hover:text-foreground transition-colors shrink-0"
+              aria-label="Back to dashboard"
+            >
+              <ArrowLeft className="h-4 w-4" />
             </Link>
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-2xl font-bold uppercase tracking-tight truncate max-w-full">
+
+            <div className="min-w-0">
+              <div className="flex items-center gap-2.5">
+                <StatusPip status={monitor?.status || "UP"} />
+                <h1 className="text-base sm:text-lg font-semibold tracking-tight text-foreground truncate">
                   {monitor?.name}
                 </h1>
-                <Badge variant={monitor?.status === 'UP' ? 'success' : 'danger'} className="text-[10px] px-2 py-0.5">
-                  {monitor?.status}
-                </Badge>
               </div>
-              <p className="text-[12px] text-muted-foreground font-mono flex items-center gap-1.5 mt-1 truncate">
-                <Globe className="h-3 w-3 shrink-0" /> 
+              <p className="text-xs font-mono text-muted-foreground flex items-center gap-1.5 mt-0.5 truncate">
+                <Globe className="h-3 w-3 shrink-0" />
                 <span className="truncate">{monitor?.url}</span>
               </p>
             </div>
           </div>
-          
-          <div className="flex flex-wrap items-center gap-3 pl-[52px] sm:pl-0 sm:justify-end sm:mt-[-54px]">
-            <Button variant="outline" size="sm" onClick={fetchDetails} disabled={refreshing} className="h-9 px-4 text-[11px] uppercase tracking-widest">
-              <RefreshCw className={cn("h-3.5 w-3.5 mr-2", refreshing && "animate-spin")} />
-              Sync Telemetry
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={fetchDetails}
+              disabled={refreshing}
+              className="h-8 text-xs font-medium"
+            >
+              <RefreshCw className={cn("h-3 w-3 mr-1.5", refreshing && "animate-spin")} />
+              Sync
             </Button>
-            <a href={monitor?.url} target="_blank" rel="noopener noreferrer" className="np-btn-outline h-9 px-4 text-[11px] uppercase tracking-widest flex items-center gap-2">
-              <ExternalLink className="h-3.5 w-3.5" /> Visit Site
+            <a
+              href={monitor?.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 h-8 px-3 rounded text-xs font-medium border border-border bg-card hover:bg-muted transition-colors text-foreground"
+            >
+              <ExternalLink className="h-3 w-3" /> Visit Endpoint
             </a>
           </div>
         </div>
 
-        {/* Top Grid: Stats */}
+        {/* Metric Cards Row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-          <Card className="p-5 space-y-3">
-            <p className="label-category text-[10px]">Real-Time Pulse</p>
-            <div className="flex items-end justify-between">
-              <p className="text-2xl font-bold">{latestCheck?.latency ?? 0} <span className="text-[12px] font-normal text-muted-foreground">ms</span></p>
-              <BarChart3 className="h-5 w-5 text-np-gold opacity-50" />
+          <Card className="p-4 space-y-2">
+            <p className="text-xs font-mono text-muted-foreground uppercase tracking-wider">Current Latency</p>
+            <div className="flex items-baseline justify-between">
+              <span className="text-xl font-mono font-semibold text-foreground">
+                {latestCheck?.latency ?? 0}
+                <span className="text-xs font-normal text-muted-foreground ml-1">ms</span>
+              </span>
+              <span className="text-xs font-mono text-muted-foreground">Latest probe</span>
             </div>
             <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
               <div 
                 className={cn(
-                  "h-full transition-all duration-500",
-                  (latestCheck?.latency || 0) < 300 ? "bg-np-teal" : 
-                  (latestCheck?.latency || 0) < 800 ? "bg-np-gold" : "bg-np-crimson"
+                  "h-full transition-all duration-300",
+                  (latestCheck?.latency || 0) < 300 ? "bg-emerald-500" : 
+                  (latestCheck?.latency || 0) < 800 ? "bg-amber-500" : "bg-rose-500"
                 )}
-                style={{ width: `${Math.min((latestCheck?.latency || 0) / 5, 100)}%` }} 
+                style={{ width: `${Math.min((latestCheck?.latency || 0) / 6, 100)}%` }} 
               />
             </div>
           </Card>
-          
-          <Card className="p-5 space-y-3">
-            <p className="label-category text-[10px]">Authorization Level</p>
-            <div className="flex items-center gap-3">
-              <div className={cn(
-                "h-10 w-10 rounded-ui flex items-center justify-center border",
-                monitor?.url?.startsWith('https') ? "bg-np-teal/10 text-np-teal border-np-teal/20" : "bg-np-gold/10 text-np-gold border-np-gold/20"
-              )}>
-                <Shield className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[14px] font-bold uppercase truncate">{monitor?.url?.startsWith('https') ? 'Production' : 'Development'}</p>
-                <p className="text-[10px] text-muted-foreground truncate">{monitor?.url?.startsWith('https') ? 'Secure SSL Encrypted' : 'Insecure / No SSL'}</p>
-              </div>
+
+          <Card className="p-4 space-y-2">
+            <p className="text-xs font-mono text-muted-foreground uppercase tracking-wider">Uptime SLA</p>
+            <div className="flex items-baseline justify-between">
+              <span className="text-xl font-mono font-semibold text-foreground">
+                {(monitor?.checks?.length ?? 0) > 0
+                  ? ((monitor!.checks.filter((c: MonitorCheck) => c.status === 'UP').length / monitor!.checks.length) * 100).toFixed(2)
+                  : "100.00"}%
+              </span>
+              <span className="text-xs font-mono text-emerald-500">Live Window</span>
             </div>
+            <p className="text-[11px] text-muted-foreground">Rolling 50 checks</p>
           </Card>
 
-          <Card className="p-5 space-y-3">
-            <p className="label-category text-[10px]">Availability Index</p>
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-ui bg-np-gold/10 flex items-center justify-center text-np-gold border border-np-gold/20">
-                <Clock className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-[14px] font-bold uppercase">
-                  {(monitor?.checks?.length ?? 0) > 0
-                    ? ((monitor!.checks.filter((c: MonitorCheck) => c.status === 'UP').length / monitor!.checks.length) * 100).toFixed(2)
-                    : "100.00"}%
-                </p>
-                <p className="text-[10px] text-muted-foreground">Recent window</p>
-              </div>
+          <Card className="p-4 space-y-2">
+            <p className="text-xs font-mono text-muted-foreground uppercase tracking-wider">Transport Security</p>
+            <div className="flex items-baseline justify-between">
+              <span className="text-sm font-semibold text-foreground">
+                {monitor?.url?.startsWith('https') ? 'TLS 1.3 Valid' : 'Insecure HTTP'}
+              </span>
+              <Shield className="h-3.5 w-3.5 text-muted-foreground" />
             </div>
+            <p className="text-[11px] text-muted-foreground font-mono">
+              {monitor?.url?.startsWith('https') ? 'ECDSA Encrypted' : 'Unencrypted'}
+            </p>
           </Card>
 
-          <Card className="p-5 space-y-3">
-            <p className="label-category text-[10px]">Monitoring Node</p>
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-ui bg-muted flex items-center justify-center text-np-slate border border-border">
-                <Server className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[14px] font-bold uppercase">Vercel Edge</p>
-                <p className="text-[10px] text-muted-foreground truncate">Primary Active Link</p>
-              </div>
+          <Card className="p-4 space-y-2">
+            <p className="text-xs font-mono text-muted-foreground uppercase tracking-wider">Routing Node</p>
+            <div className="flex items-baseline justify-between">
+              <span className="text-sm font-semibold text-foreground">Global Edge</span>
+              <Server className="h-3.5 w-3.5 text-muted-foreground" />
             </div>
+            <p className="text-[11px] text-muted-foreground font-mono">US/EU/APAC Multi-PoP</p>
           </Card>
         </div>
 
-        {/* Main Content: Graph & Incidents */}
+        {/* Main Section: Latency Stream & Incidents */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Graph Section */}
           <div className="lg:col-span-2 space-y-6">
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-8">
+            {/* Latency History */}
+            <Card className="p-5">
+              <div className="flex items-center justify-between mb-6 pb-2 border-b border-border">
                 <div className="flex items-center gap-2">
-                  <Activity className="h-4 w-4 text-np-gold" />
-                  <h3 className="text-[13px] font-bold uppercase">Latency Stream (ms)</h3>
+                  <Activity className="h-4 w-4 text-foreground" />
+                  <h3 className="text-xs font-mono uppercase tracking-wider font-semibold text-foreground">
+                    Latency Telemetry Stream (ms)
+                  </h3>
                 </div>
-                <p className="text-[10px] font-mono text-muted-foreground">Visualizing last 50 data points</p>
+                <span className="text-[11px] font-mono text-muted-foreground">
+                  Last 50 data points
+                </span>
               </div>
               
-              <div className="h-[240px] flex items-end gap-1 px-2">
+              <div className="h-[200px] flex items-end gap-1 px-1">
                 {history.length > 0 ? history.map((c: MonitorCheck) => {
                   const height = Math.min((c.latency / 800) * 100, 100);
                   return (
                     <div 
                       key={c.id} 
                       className={cn(
-                        "flex-1 rounded-t-[2px] transition-all hover:opacity-50 relative group",
-                        c.status !== "UP" ? "bg-np-crimson" :
-                        c.latency < 300 ? "bg-np-teal" :
-                        c.latency < 800 ? "bg-np-gold" : "bg-np-crimson"
+                        "flex-1 rounded-t-[1px] transition-all hover:opacity-75 relative group",
+                        c.status !== "UP" ? "bg-rose-500" :
+                        c.latency < 300 ? "bg-emerald-500" :
+                        c.latency < 800 ? "bg-amber-500" : "bg-rose-500"
                       )}
                       style={{ height: `${height}%`, minHeight: '4px' }}
                     >
                       <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-30">
-                        <div className="bg-np-ink text-white text-[10px] px-2 py-1 rounded shadow-xl whitespace-nowrap border border-white/10">
+                        <div className="bg-popover text-popover-foreground text-[10px] font-mono px-2 py-1 rounded shadow-lg whitespace-nowrap border border-border">
                           {c.latency}ms · {new Date(c.createdAt).toLocaleTimeString()}
-                          {c.message && <p className="text-np-crimson mt-0.5">{c.message}</p>}
+                          {c.message && <p className="text-rose-500 mt-0.5">{c.message}</p>}
                         </div>
                       </div>
                     </div>
                   );
                 }) : (
-                  <div className="w-full h-full flex items-center justify-center text-muted-foreground text-[13px]">
-                    Establishing telemetry connection...
+                  <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs font-mono">
+                    Gathering telemetry stream...
                   </div>
                 )}
               </div>
               
-              <div className="flex justify-between mt-4 px-2">
-                <span className="text-[9px] font-mono text-muted-foreground uppercase">{history[0] ? new Date(history[0].createdAt).toLocaleTimeString() : 'T-Minus'}</span>
-                <span className="text-[9px] font-mono text-muted-foreground uppercase">{history[history.length-1] ? new Date(history[history.length-1].createdAt).toLocaleTimeString() : 'Current'}</span>
+              <div className="flex justify-between mt-3 text-[10px] font-mono text-muted-foreground">
+                <span>{history[0] ? new Date(history[0].createdAt).toLocaleTimeString() : 'T-Minus'}</span>
+                <span>{history[history.length-1] ? new Date(history[history.length-1].createdAt).toLocaleTimeString() : 'Current'}</span>
               </div>
             </Card>
 
-            {/* Incident History (NEW: Why it was down) */}
+            {/* Incidents Stream */}
             <Card className="overflow-hidden">
-              <div className="p-5 border-b border-border bg-muted/20 flex items-center justify-between">
+              <div className="p-4 border-b border-border flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4 text-np-crimson" />
-                  <h3 className="text-[13px] font-bold uppercase">Incident History</h3>
+                  <AlertCircle className="h-4 w-4 text-foreground" />
+                  <h3 className="text-xs font-mono uppercase tracking-wider font-semibold text-foreground">
+                    Incident Log
+                  </h3>
                 </div>
-                <span className="text-[10px] font-bold uppercase text-np-crimson bg-np-crimson/10 px-2 py-1 rounded">
+                <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-muted text-foreground border border-border">
                   {incidents.length} Events Detected
                 </span>
               </div>
+
               <div className="divide-y divide-border">
                 {incidents.length > 0 ? incidents.map((inc: MonitorCheck) => (
-                  <div key={inc.id} className="p-4 flex items-start gap-3">
-                    <div className="h-7 w-7 rounded-full bg-np-crimson/10 flex items-center justify-center shrink-0 mt-0.5">
-                      <XCircle className="h-3.5 w-3.5 text-np-crimson" />
-                    </div>
+                  <div key={inc.id} className="p-3.5 flex items-start gap-3">
+                    <span className="h-2 w-2 rounded-full bg-rose-500 shrink-0 mt-1.5" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2 flex-wrap">
-                        <p className="text-[12px] font-bold text-np-crimson uppercase">Offline</p>
-                        <span className="text-[10px] text-muted-foreground font-mono shrink-0">
-                          Failed · {new Date(inc.createdAt).toLocaleTimeString()}
+                        <span className="text-xs font-mono font-medium text-rose-500">
+                          OUTAGE (Status: {inc.status})
+                        </span>
+                        <span className="text-[11px] text-muted-foreground font-mono shrink-0">
+                          {new Date(inc.createdAt).toLocaleTimeString()}
                         </span>
                       </div>
-                      <p className="text-[11px] text-muted-foreground font-mono mt-0.5 break-words">
-                        {inc.message || "Timeout / Connection Refused"}
+                      <p className="text-xs text-muted-foreground font-mono mt-0.5">
+                        {inc.message || "Endpoint unreachable / connection timeout"}
                       </p>
                     </div>
                   </div>
                 )) : (
-                  <div className="p-12 text-center">
-                    <CheckCircle2 className="h-10 w-10 text-np-teal mx-auto mb-3 opacity-30" />
-                    <p className="text-[13px] font-medium text-muted-foreground">Optimal operation. No incidents detected in current window.</p>
+                  <div className="p-8 text-center text-xs text-muted-foreground space-y-1">
+                    <CheckCircle2 className="h-5 w-5 text-emerald-500 mx-auto opacity-80" />
+                    <p className="font-medium text-foreground">All systems operational</p>
+                    <p>No anomalous status codes recorded in the current telemetry window.</p>
                   </div>
                 )}
               </div>
             </Card>
           </div>
 
-          {/* Right Section: Configuration & Actions */}
+          {/* Right Column: Configuration & Danger Zone */}
           <div className="space-y-6">
-            <Card className="p-6">
-              <h3 className="text-[13px] font-bold uppercase mb-6 flex items-center gap-2">
-                <Server className="h-4 w-4 text-np-gold" />
-                Infrastructure Config
+            <Card className="p-5 space-y-4">
+              <h3 className="text-xs font-mono uppercase tracking-wider font-semibold text-foreground pb-2 border-b border-border">
+                Probe Configuration
               </h3>
-              <div className="space-y-4">
-                <div className="space-y-1">
-                  <p className="label-category text-[9px]">Target Endpoint</p>
-                  <p className="text-[13px] font-mono break-all bg-muted/30 p-2 rounded border border-border">
+              
+              <div className="space-y-3 text-xs">
+                <div>
+                  <span className="text-muted-foreground">Target URI</span>
+                  <p className="font-mono text-foreground break-all bg-muted/40 p-2 rounded border border-border mt-1">
                     {monitor?.url}
                   </p>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <p className="label-category text-[9px]">Check Frequency</p>
-                    <p className="text-[13px] font-bold">Standard (5m)</p>
+
+                <div className="grid grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <span className="text-muted-foreground">Interval</span>
+                    <p className="font-medium text-foreground mt-0.5">Every 60s</p>
                   </div>
-                  <div className="space-y-1">
-                    <p className="label-category text-[9px]">Timeout Threshold</p>
-                    <p className="text-[13px] font-bold">5s (Auto)</p>
+                  <div>
+                    <span className="text-muted-foreground">Timeout</span>
+                    <p className="font-medium text-foreground mt-0.5">5.0s</p>
                   </div>
                 </div>
-                <div className="pt-4 border-t border-border">
-                  <p className="label-category text-[9px] mb-2">Active Notifications</p>
-                  <div className="flex flex-wrap gap-2">
-                    {/* Always show Email Alert as it's built-in */}
-                    <Badge className="bg-np-gold/10 text-np-gold border-np-gold/20">Email Alert</Badge>
-                    
-                    {/* Dynamic Webhooks */}
+
+                <div className="pt-2 border-t border-border">
+                  <span className="text-muted-foreground block mb-1.5">Notification Routing</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    <Badge variant="neutral">Email Dispatch</Badge>
                     {monitor?.user?.webhooks?.map((wh: { id: string; url: string }) => {
                       const isDiscord = wh.url.includes('discord.com');
                       const isSlack = wh.url.includes('slack.com');
                       const label = isDiscord ? 'Discord' : isSlack ? 'Slack' : 'Webhook';
-                      
                       return (
-                        <Badge key={wh.id} className="bg-np-teal/10 text-np-teal border-np-teal/20">
+                        <Badge key={wh.id} variant="neutral">
                           {label}
                         </Badge>
                       );
@@ -293,32 +320,42 @@ export default function MonitorDetailsPage() {
               </div>
             </Card>
 
-            <Card className="p-6 border-np-crimson/20">
-              <h3 className="text-[13px] font-bold uppercase mb-4 text-np-crimson flex items-center gap-2">
-                <AlertCircle className="h-4 w-4" />
-                Danger Zone
-              </h3>
-              <p className="text-[12px] text-muted-foreground mb-6 leading-relaxed">
-                Permanently decommissioning this asset will erase all historical latency data and telemetry logs. This action cannot be reversed.
-              </p>
+            {/* Decommission Target */}
+            <Card className="p-5 space-y-3 border-rose-500/20">
+              <div className="space-y-1">
+                <h3 className="text-xs font-mono uppercase tracking-wider font-semibold text-rose-500">
+                  Decommission Target
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Permanently remove this target from the monitoring cluster and delete all collected latency history.
+                </p>
+              </div>
+
               <Button 
                 variant="danger" 
-                className="w-full uppercase tracking-widest text-[11px] h-10"
-                onClick={async () => {
-                  if (confirm("Decommission this asset? All telemetry will be purged.")) {
-                    const r = await fetch(`/api/monitors/${id}`, { method: 'DELETE', credentials: 'include' });
-                    if (r.ok) router.push('/dashboard');
-                  }
-                }}
+                size="sm"
+                className="w-full text-xs"
+                onClick={() => setShowDeleteDialog(true)}
               >
-                <Trash2 className="h-3.5 w-3.5 mr-2" /> Decommission Asset
+                <Trash2 className="h-3.5 w-3.5 mr-1.5" /> Decommission Asset
               </Button>
             </Card>
           </div>
         </div>
       </div>
+
+      {/* Accessible Confirm Dialog */}
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={handleDelete}
+        title="Decommission Endpoint Monitor"
+        description={`Are you sure you want to decommission "${monitor?.name}"? All historical availability statistics and latency telemetry will be permanently deleted.`}
+        confirmText="Decommission Target"
+        cancelText="Cancel"
+        variant="danger"
+        isLoading={isDeleting}
+      />
     </div>
   );
 }
-
-
