@@ -7,7 +7,10 @@ const nextConfig: NextConfig = {
 
   // Required for Docker standalone deployment
   output: "standalone",
-  allowedDevOrigins: ["turbine-importer-anyway.ngrok-free.dev", "localhost:3000"],
+  // [D1] Dev origins are now driven by an env var so no URLs are hardcoded in source.
+  allowedDevOrigins: process.env.ALLOWED_DEV_ORIGINS
+    ? process.env.ALLOWED_DEV_ORIGINS.split(`,`)
+    : ["localhost:3000"],
   
   // Performance optimizations
   compress: true,
@@ -57,6 +60,9 @@ const nextConfig: NextConfig = {
               // script-src: removed unsafe-eval globally; mermaid and next/image need it at runtime
               // so we allow it only via nonce in production (Vercel auto-injects).
               // unsafe-inline kept for Next.js inline hydration scripts.
+              // TODO(security): Replace 'unsafe-inline' with nonce-based CSP via middleware
+              //   when upgrading to Next.js App Router middleware nonce injection:
+              //   https://nextjs.org/docs/app/building-your-application/configuring/content-security-policy
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' https://vercel.live",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
@@ -72,7 +78,8 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+            // payment, usb, display-capture added to restrict additional sensitive APIs
+            value: "camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=(), usb=(), display-capture=()",
           }
         ],
       },

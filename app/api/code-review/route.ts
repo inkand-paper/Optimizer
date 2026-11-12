@@ -1,4 +1,4 @@
-/**
+﻿/**
  * app/api/code-review/route.ts
  * Hybrid SSE Streamer for Neural Code Audits.
  * Turbo Edition: Parallel Workers + Intelligence Cache.
@@ -14,6 +14,7 @@ import {
 } from "@/core/analyzer/code-review";
 import { getTokenFromRequest } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { PLAN_LIMITS } from "@/lib/plans";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -164,17 +165,24 @@ export async function POST(req: NextRequest) {
       const canUseSharedCache = isAdmin || dbUser.plan === 'PRO' || dbUser.plan === 'BUSINESS';
       const fileHashes = files.map(f => getFileHash(f.content));
 
-      // Fetch previously reviewed file hashes by this user (for FREE tier cache)
-      const userPriorHashes = canUseSharedCache ? new Set<string>() : new Set(
-        (await prisma.auditCache.findMany({
-          where: {
-            hash: { in: fileHashes },
-            // Filter to hashes the user has submitted before via their own codeReviews
-            // We use a subquery pattern: find hashes that appear in this user's completed reviews
-          },
-          select: { hash: true }
-        })).map((e: { hash: string }) => e.hash)
-      );
+      // [SECURITY � M1] For FREE tier, only allow cache hits for files this specific
+      // user has previously submitted. We build the allowed set by extracting hashes
+      // from that user's own completed review results, not from the global AuditCache table.
+      let userPriorHashes = new Set<string>();
+      if (!canUseSharedCache) {
+        const userReviews = await prisma.codeReview.findMany({
+          where: { userId: dbUser.id, status: 'COMPLETED' },
+          select: { result: true },
+        });
+        for (const review of userReviews) {
+          const result = review.result as { files?: { hash?: string }[] } | null;
+          if (result?.files) {
+            for (const f of result.files) {
+              if (f.hash) userPriorHashes.add(f.hash);
+            }
+          }
+        }
+      }
 
       const cachedEntries = await prisma.auditCache.findMany({
         where: {
@@ -234,8 +242,7 @@ export async function POST(req: NextRequest) {
             hash: f.hash!,
             path: f.path,
             language: f.language,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            review: f as any
+            review: f as unknown as Prisma.InputJsonValue
           })),
           skipDuplicates: true
         });
@@ -259,8 +266,7 @@ export async function POST(req: NextRequest) {
           language: result.language,
           linesOfCode: result.linesOfCode,
           filesReviewed: result.filesReviewed,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          result: slimResult as any,
+          result: slimResult as unknown as Prisma.InputJsonValue,
         },
       });
 
@@ -285,3 +291,5 @@ export async function POST(req: NextRequest) {
     headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache", "Connection": "keep-alive" },
   });
 }
+
+

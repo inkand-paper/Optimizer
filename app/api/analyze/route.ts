@@ -5,6 +5,8 @@ import type { AnalyzeRequest, AnalyzeResponse } from '@/lib/types';
 import { runFullAudit } from '@/core/analyzer';
 import { validateSafeUrl } from '@/lib/ssrf';
 import { logActivity } from '@/lib/logger';
+import { PLAN_LIMITS } from '@/lib/plans';
+import { getAiDiagnosis } from '@/lib/ai';
 
 /**
  * [PRODUCTION-GRADE] - Advanced Website Analyzer API
@@ -63,9 +65,6 @@ export async function POST(request: NextRequest) {
     const auditResult = await runFullAudit(url);
 
     // 3.5 Generate AI Diagnosis (Gated by Plan)
-    const { PLAN_LIMITS } = await import('@/lib/plans');
-    const { getAiDiagnosis } = await import('@/lib/ai');
-    
     let aiInsight = null;
     if (PLAN_LIMITS[userPlan as keyof typeof PLAN_LIMITS]?.allowAi || dbKey.user.role === 'ADMIN') {
       aiInsight = await getAiDiagnosis(auditResult as unknown as AnalyzeResponse["results"]);

@@ -17,7 +17,13 @@ import crypto from 'crypto';
  */
 
 function verifySignature(rawBody: string, signature: string): boolean {
-  const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET || '';
+  // [SECURITY - H4] Hard-require the webhook secret; never fall back to empty string.
+  // An empty secret would let anyone pass HMAC verification, enabling plan upgrades.
+  const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
+  if (!secret) {
+    console.error('[LS_WEBHOOK] LEMONSQUEEZY_WEBHOOK_SECRET is not configured.');
+    return false;
+  }
   const hmac = crypto.createHmac('sha256', secret);
   const digest = Buffer.from(hmac.update(rawBody).digest('hex'), 'utf8');
   const sigBuffer = Buffer.from(signature, 'utf8');

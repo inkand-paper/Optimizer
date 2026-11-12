@@ -12,15 +12,35 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = React.useState(false);
   const [error, setError]     = React.useState("");
+  // [SECURITY - H2] MFA token is NEVER stored in URL query params (browser history / referrer risk).
+  // For email/password login: token stays in React state (never touches the URL).
+  // For OAuth MFA: auth-options.ts sets a short-lived HttpOnly cookie; we fetch it here
+  // via a dedicated server action and clear it immediately after reading.
   const urlMfaRequired = searchParams?.get("mfaRequired") === "true";
-  const urlMfaToken    = searchParams?.get("mfaToken") || "";
 
   const [internalMfaRequired, setInternalMfaRequired] = React.useState(false);
   const [internalMfaToken, setInternalMfaToken]       = React.useState("");
   const [mfaCode, setMfaCode]                         = React.useState("");
 
   const mfaRequired = urlMfaRequired || internalMfaRequired;
-  const mfaToken    = urlMfaToken || internalMfaToken;
+  const mfaToken    = internalMfaToken;
+
+  // On mount: if redirected here by OAuth with mfaRequired=true, fetch the
+  // HttpOnly mfa_challenge cookie from the server and store it in React state.
+  React.useEffect(() => {
+    if (urlMfaRequired && !internalMfaToken) {
+      fetch('/api/auth/mfa-challenge', { credentials: 'include' })
+        .then(r => r.ok ? r.json() : null)
+        .then(d => {
+          if (d?.mfaToken && isMounted.current) {
+            setInternalMfaRequired(true);
+            setInternalMfaToken(d.mfaToken);
+          }
+        })
+        .catch(() => { /* ignore — user will see the form but submit will fail gracefully */ });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlMfaRequired]);
 
   // Derive OAuth error directly from URL params at render time (no useEffect needed)
   const oauthErrorParam = searchParams?.get("error");

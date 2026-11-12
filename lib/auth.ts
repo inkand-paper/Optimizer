@@ -3,13 +3,19 @@ import jwt, { type SignOptions } from 'jsonwebtoken';
 import { NextRequest } from 'next/server';
 
 const SALT_ROUNDS = 10;
-const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_only';
 
+// [SECURITY — C1] Hard-fail at startup if JWT_SECRET is missing in production.
+// Never fall back to a hardcoded string — anyone with repo access could forge sessions.
 if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
   if (typeof window === 'undefined') {
-    console.warn('⚠️ WARNING: JWT_SECRET is missing in production environment. Authentication will fail.');
+    throw new Error(
+      'FATAL: JWT_SECRET environment variable is required in production. Set it before starting the server.'
+    );
   }
 }
+
+const JWT_SECRET =
+  process.env.JWT_SECRET || 'dev_secret_only_do_not_use_in_production';
 
 export interface JwtPayload {
   userId: string;
@@ -18,16 +24,21 @@ export interface JwtPayload {
   mfaChallenge?: boolean;
 }
 
-
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, SALT_ROUNDS);
 }
 
-export async function comparePasswords(plain: string, hashed: string): Promise<boolean> {
+export async function comparePasswords(
+  plain: string,
+  hashed: string
+): Promise<boolean> {
   return bcrypt.compare(plain, hashed);
 }
 
-export function signJwt(payload: JwtPayload, expiresIn: SignOptions['expiresIn'] = '7d'): string {
+export function signJwt(
+  payload: JwtPayload,
+  expiresIn: SignOptions['expiresIn'] = '7d'
+): string {
   return jwt.sign(payload, JWT_SECRET, { expiresIn });
 }
 
@@ -47,7 +58,9 @@ import { getToken } from 'next-auth/jwt';
  * 2. A NextAuth session token (for social logins)
  * 3. An Authorization: Bearer <token> header
  */
-export async function getTokenFromRequest(req: NextRequest): Promise<JwtPayload | null> {
+export async function getTokenFromRequest(
+  req: NextRequest
+): Promise<JwtPayload | null> {
   // Priority 1: HttpOnly Cookie (custom JWT)
   const cookieToken = req.cookies.get('token')?.value;
   if (cookieToken) {
@@ -56,18 +69,21 @@ export async function getTokenFromRequest(req: NextRequest): Promise<JwtPayload 
   }
 
   // Priority 2: NextAuth Session (Social Logins - GitHub / Google)
-  try {
-    const secret = process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET || "abir-optimizer-jwt-secret-key-2026-production-ready";
-    const nextAuthToken = await getToken({ req, secret });
-    if (nextAuthToken && (nextAuthToken.id || nextAuthToken.sub)) {
-      return {
-        userId: (nextAuthToken.id || nextAuthToken.sub) as string,
-        email: (nextAuthToken.email as string) || undefined,
-        role: (nextAuthToken.role as string) || 'DEVELOPER',
-      };
+  // [SECURITY — C1] Use only real env vars; no hardcoded fallback strings.
+  const nextAuthSecret = process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET;
+  if (nextAuthSecret) {
+    try {
+      const nextAuthToken = await getToken({ req, secret: nextAuthSecret });
+      if (nextAuthToken && (nextAuthToken.id || nextAuthToken.sub)) {
+        return {
+          userId: (nextAuthToken.id || nextAuthToken.sub) as string,
+          email: (nextAuthToken.email as string) || undefined,
+          role: (nextAuthToken.role as string) || 'DEVELOPER',
+        };
+      }
+    } catch (err) {
+      console.error('[NEXTAUTH_GET_TOKEN_ERROR]', err);
     }
-  } catch (err) {
-    console.error('[NEXTAUTH_GET_TOKEN_ERROR]', err);
   }
 
   // Priority 3: Bearer Token (API clients)
