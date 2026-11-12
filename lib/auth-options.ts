@@ -156,7 +156,12 @@ export const authOptions: AuthOptions = {
       }
       return true;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
+      // [PERF — P3] Only hit the DB on initial sign-in or explicit session update.
+      // On every subsequent token refresh (trigger === undefined and user is null),
+      // return the cached token to avoid a DB round-trip per request.
+      if (!user && trigger !== 'update') return token;
+
       const email = user?.email || (token.email as string);
       if (email) {
         try {
