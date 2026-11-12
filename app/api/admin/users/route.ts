@@ -29,28 +29,46 @@ async function ensureAdmin(req: NextRequest) {
   return decoded.userId;
 }
 
+const DEFAULT_LIMIT = 50;
+const MAX_LIMIT = 100;
+
 export async function GET(req: NextRequest) {
   const adminId = await ensureAdmin(req);
   if (!adminId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        plan: true,
-        createdAt: true,
-        _count: {
-          select: { monitors: true, apiKeys: true }
-        }
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 100 // [PRODUCTION SCALE] Cap results to prevent OOM on large userbases
-    });
+    const { searchParams } = new URL(req.url);
+    const cursor = searchParams.get('cursor') ?? undefined;
+    const limitRaw = parseInt(searchParams.get('limit') ?? String(DEFAULT_LIMIT), 10);
+    const limit = Math.min(isNaN(limitRaw) || limitRaw < 1 ? DEFAULT_LIMIT : limitRaw, MAX_LIMIT);
 
-    return NextResponse.json({ success: true, users });
+    const userSelect = {
+      id: true,
+      email: true,
+      name: true,
+      role: true,
+      plan: true,
+      createdAt: true,
+      _count: {
+        select: { monitors: true, apiKeys: true }
+      }
+    } as const;
+
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        select: userSelect,
+        orderBy: { createdAt: 'desc' },
+        take: limit + 1,
+        ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+      }),
+      prisma.user.count(),
+    ]);
+
+    const hasMore = users.length > limit;
+    const page = hasMore ? users.slice(0, limit) : users;
+    const nextCursor = hasMore ? page[page.length - 1].id : null;
+
+    return NextResponse.json({ success: true, users: page, nextCursor, total });
   } catch {
     return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 });
   }
