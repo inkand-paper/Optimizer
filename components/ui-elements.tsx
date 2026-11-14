@@ -198,9 +198,9 @@ export function StatusDot({
   status: "healthy" | "warning" | "error" | "offline";
 }) {
   const colors = {
-    healthy: "bg-emerald-500",
-    warning: "bg-amber-500",
-    error:   "bg-rose-500 animate-pulse",
+    healthy: "bg-status-up",
+    warning: "bg-status-warn",
+    error:   "bg-status-down",
     offline: "bg-muted-foreground",
   };
   return (
@@ -325,8 +325,8 @@ export function ConfirmDialog({
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">
             {variant === "danger" && (
-              <div className="h-8 w-8 rounded-md bg-rose-500/10 border border-rose-500/20 text-rose-500 flex items-center justify-center shrink-0">
-                <AlertTriangle className="h-4 w-4" />
+              <div className="h-8 w-8 rounded-md bg-status-down/10 border border-status-down/20 text-status-down flex items-center justify-center shrink-0">
+                <AlertTriangle className="h-4 w-4" strokeWidth={1.5} />
               </div>
             )}
             <h3 id="confirm-dialog-title" className="text-[15px] font-semibold tracking-tight text-foreground">
@@ -367,6 +367,88 @@ export function ConfirmDialog({
           </Button>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   EmptyState — Clean, honest empty container
+───────────────────────────────────────────── */
+export function EmptyState({
+  icon: Icon,
+  title,
+  description,
+  action,
+  className,
+}: {
+  icon?: React.ElementType;
+  title: string;
+  description: string;
+  action?: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("p-12 text-center border border-dashed border-border rounded-card bg-card/50 space-y-3", className)}>
+      {Icon && (
+        <div className="h-10 w-10 rounded-ui bg-muted border border-border flex items-center justify-center text-muted-foreground mx-auto">
+          <Icon className="h-5 w-5" strokeWidth={1.5} />
+        </div>
+      )}
+      <div className="space-y-1">
+        <h4 className="text-sm font-semibold text-foreground">{title}</h4>
+        <p className="text-xs text-muted-foreground max-w-sm mx-auto leading-relaxed">{description}</p>
+      </div>
+      {action && <div className="pt-2">{action}</div>}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   Skeleton — Monochromatic subtle loader
+───────────────────────────────────────────── */
+export function Skeleton({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn("animate-pulse rounded bg-muted/60", className)}
+      {...props}
+    />
+  );
+}
+
+/* ─────────────────────────────────────────────
+   SegmentedControl — Monochromatic tab control
+───────────────────────────────────────────── */
+export function SegmentedControl<T extends string>({
+  options,
+  value,
+  onChange,
+  className,
+}: {
+  options: { value: T; label: string }[];
+  value: T;
+  onChange: (val: T) => void;
+  className?: string;
+}) {
+  return (
+    <div className={cn("inline-flex bg-muted p-1 rounded-ui border border-border", className)}>
+      {options.map((opt) => (
+        <button
+          key={opt.value}
+          type="button"
+          onClick={() => onChange(opt.value)}
+          className={cn(
+            "px-3 py-1 rounded-ui text-xs font-medium transition-colors cursor-pointer",
+            value === opt.value
+              ? "bg-background text-foreground shadow-sm font-semibold"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          {opt.label}
+        </button>
+      ))}
     </div>
   );
 }
