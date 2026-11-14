@@ -2,7 +2,8 @@ import { prisma } from "../lib/prisma";
 import { hashPassword } from "../lib/auth";
 
 async function main() {
-  const pass = await hashPassword("password123");
+  const seedPass = process.env.ADMIN_SEED_PASSWORD || "AdminDev2026!ChangeMe";
+  const pass = await hashPassword(seedPass);
   const user = await prisma.user.upsert({
     where: { email: "admin@nexpulse.dev" },
     update: { passwordHash: pass, emailVerified: new Date(), role: "ADMIN" },

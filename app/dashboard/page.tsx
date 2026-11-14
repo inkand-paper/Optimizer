@@ -47,7 +47,7 @@ export interface DomainGroup {
   tabs: TabConfig[];
 }
 
-export const DOMAIN_GROUPS: DomainGroup[] = [
+const DOMAIN_GROUPS: DomainGroup[] = [
   {
     id: "observe",
     category: "OBSERVE",
