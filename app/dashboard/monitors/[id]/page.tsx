@@ -136,8 +136,8 @@ export default function MonitorDetailsPage() {
               <div 
                 className={cn(
                   "h-full transition-all duration-300",
-                  (latestCheck?.latency || 0) < 300 ? "bg-emerald-500" : 
-                  (latestCheck?.latency || 0) < 800 ? "bg-amber-500" : "bg-rose-500"
+                  (latestCheck?.latency || 0) < 300 ? "bg-status-up" : 
+                  (latestCheck?.latency || 0) < 800 ? "bg-status-warn" : "bg-status-down"
                 )}
                 style={{ width: `${Math.min((latestCheck?.latency || 0) / 6, 100)}%` }} 
               />
@@ -145,20 +145,20 @@ export default function MonitorDetailsPage() {
           </Card>
 
           <Card className="p-4 space-y-2">
-            <p className="text-xs font-mono text-muted-foreground uppercase tracking-wider">Uptime SLA</p>
+            <p className="text-xs font-mono text-muted-foreground">Uptime SLA</p>
             <div className="flex items-baseline justify-between">
               <span className="text-xl font-mono font-semibold text-foreground">
                 {(monitor?.checks?.length ?? 0) > 0
                   ? ((monitor!.checks.filter((c: MonitorCheck) => c.status === 'UP').length / monitor!.checks.length) * 100).toFixed(2)
                   : "100.00"}%
               </span>
-              <span className="text-xs font-mono text-emerald-500">Live Window</span>
+              <span className="text-xs font-mono text-status-up">Live window</span>
             </div>
             <p className="text-[11px] text-muted-foreground">Rolling 50 checks</p>
           </Card>
 
           <Card className="p-4 space-y-2">
-            <p className="text-xs font-mono text-muted-foreground uppercase tracking-wider">Transport Security</p>
+            <p className="text-xs font-mono text-muted-foreground">Transport security</p>
             <div className="flex items-baseline justify-between">
               <span className="text-sm font-semibold text-foreground">
                 {monitor?.url?.startsWith('https') ? 'TLS 1.3 Valid' : 'Insecure HTTP'}
@@ -205,16 +205,16 @@ export default function MonitorDetailsPage() {
                       key={c.id} 
                       className={cn(
                         "flex-1 rounded-t-[1px] transition-all hover:opacity-75 relative group",
-                        c.status !== "UP" ? "bg-rose-500" :
-                        c.latency < 300 ? "bg-emerald-500" :
-                        c.latency < 800 ? "bg-amber-500" : "bg-rose-500"
+                        c.status !== "UP" ? "bg-status-down" :
+                        c.latency < 300 ? "bg-status-up" :
+                        c.latency < 800 ? "bg-status-warn" : "bg-status-down"
                       )}
                       style={{ height: `${height}%`, minHeight: '4px' }}
                     >
                       <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-30">
                         <div className="bg-popover text-popover-foreground text-[10px] font-mono px-2 py-1 rounded shadow-lg whitespace-nowrap border border-border">
                           {c.latency}ms · {new Date(c.createdAt).toLocaleTimeString()}
-                          {c.message && <p className="text-rose-500 mt-0.5">{c.message}</p>}
+                          {c.message && <p className="text-status-down mt-0.5">{c.message}</p>}
                         </div>
                       </div>
                     </div>
@@ -236,23 +236,23 @@ export default function MonitorDetailsPage() {
             <Card className="overflow-hidden">
               <div className="p-4 border-b border-border flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4 text-foreground" />
-                  <h3 className="text-xs font-mono uppercase tracking-wider font-semibold text-foreground">
-                    Incident Log
+                  <AlertCircle className="h-4 w-4 text-foreground" strokeWidth={1.5} />
+                  <h3 className="text-xs font-mono font-semibold text-foreground">
+                    Incident log
                   </h3>
                 </div>
                 <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-muted text-foreground border border-border">
-                  {incidents.length} Events Detected
+                  {incidents.length} events detected
                 </span>
               </div>
 
               <div className="divide-y divide-border">
                 {incidents.length > 0 ? incidents.map((inc: MonitorCheck) => (
                   <div key={inc.id} className="p-3.5 flex items-start gap-3">
-                    <span className="h-2 w-2 rounded-full bg-rose-500 shrink-0 mt-1.5" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-status-down shrink-0 mt-1.5" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2 flex-wrap">
-                        <span className="text-xs font-mono font-medium text-rose-500">
+                        <span className="text-xs font-mono font-medium text-status-down">
                           OUTAGE (Status: {inc.status})
                         </span>
                         <span className="text-[11px] text-muted-foreground font-mono shrink-0">
@@ -266,7 +266,7 @@ export default function MonitorDetailsPage() {
                   </div>
                 )) : (
                   <div className="p-8 text-center text-xs text-muted-foreground space-y-1">
-                    <CheckCircle2 className="h-5 w-5 text-emerald-500 mx-auto opacity-80" />
+                    <CheckCircle2 className="h-5 w-5 text-foreground mx-auto opacity-70" strokeWidth={1.5} />
                     <p className="font-medium text-foreground">All systems operational</p>
                     <p>No anomalous status codes recorded in the current telemetry window.</p>
                   </div>
@@ -321,10 +321,10 @@ export default function MonitorDetailsPage() {
             </Card>
 
             {/* Decommission Target */}
-            <Card className="p-5 space-y-3 border-rose-500/20">
+            <Card className="p-5 space-y-3 border-status-down/30">
               <div className="space-y-1">
-                <h3 className="text-xs font-mono uppercase tracking-wider font-semibold text-rose-500">
-                  Decommission Target
+                <h3 className="text-xs font-mono font-semibold text-status-down">
+                  Decommission target
                 </h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   Permanently remove this target from the monitoring cluster and delete all collected latency history.

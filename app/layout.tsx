@@ -1,22 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 
 import { InfrastructureProvider } from "@/components/infrastructure-provider";
 import { PulseAI } from "@/components/pulse-ai";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-geist-sans",
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  display: "swap",
-});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -52,7 +41,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${jetbrainsMono.variable}`}
+      className={`${GeistSans.variable} ${GeistMono.variable}`}
     >
       <body 
         className="min-h-screen flex flex-col bg-background text-foreground antialiased"

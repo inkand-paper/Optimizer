@@ -223,7 +223,7 @@ export function MonitoringDashboard() {
             </div>
             
             {errorMessage && (
-              <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-md flex items-center gap-2 text-rose-500 text-xs">
+              <div className="p-3 bg-status-down/10 border border-status-down/20 rounded-md flex items-center gap-2 text-status-down text-xs">
                 <AlertCircle className="h-4 w-4 shrink-0" />
                 <p>{errorMessage}</p>
               </div>
@@ -348,7 +348,7 @@ export function MonitoringDashboard() {
                       {/* Delete */}
                       <button 
                         onClick={() => setDeletingId(m.id)}
-                        className="p-1.5 text-muted-foreground hover:text-rose-500 transition-colors rounded hover:bg-rose-500/10"
+                        className="p-1.5 text-muted-foreground hover:text-status-down transition-colors rounded hover:bg-status-down/10"
                         title="Delete monitor"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -374,7 +374,7 @@ export function MonitoringDashboard() {
                             key={i} 
                             className={cn(
                               "flex-1 rounded-[1px] transition-all",
-                              isHigh ? "bg-rose-500" : "bg-emerald-500/80 hover:bg-emerald-400"
+                              isHigh ? "bg-status-down" : "bg-status-up hover:opacity-90"
                             )}
                             style={{ height: `${heightPercent}%`, opacity: 0.3 + ((i + 1) / history.length) * 0.7 }}
                             title={`${lat}ms`}
@@ -409,7 +409,7 @@ export function MonitoringDashboard() {
           <div className="flex items-center gap-3">
             <span className={cn(
               "text-xs font-mono font-medium",
-              statusPage.enabled ? "text-emerald-500" : "text-muted-foreground"
+              statusPage.enabled ? "text-status-up" : "text-muted-foreground"
             )}>
               {statusPage.enabled ? "Live" : "Disabled"}
             </span>
@@ -453,7 +453,7 @@ export function MonitoringDashboard() {
                 className="p-1 text-muted-foreground hover:text-foreground transition-colors"
                 title="Copy URL"
               >
-                {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+                {copied ? <Check className="h-3.5 w-3.5 text-foreground" /> : <Copy className="h-3.5 w-3.5" />}
               </button>
             </div>
 
@@ -468,7 +468,7 @@ export function MonitoringDashboard() {
                   className="h-8 font-mono text-xs"
                   maxLength={30}
                 />
-                {slugError && <p className="text-xs text-rose-500">{slugError}</p>}
+                {slugError && <p className="text-xs text-status-down">{slugError}</p>}
               </div>
               <Button
                 size="sm"

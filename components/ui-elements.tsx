@@ -123,9 +123,9 @@ export function Badge({
   children: React.ReactNode;
 }) {
   const v = {
-    success: "np-badge-success",
-    warning: "np-badge-warning",
-    danger:  "np-badge-danger",
+    success: "bg-status-up/10 text-status-up border border-status-up/20",
+    warning: "bg-status-warn/10 text-status-warn border border-status-warn/20",
+    danger:  "bg-status-down/10 text-status-down border border-status-down/20",
     neutral: "bg-muted text-foreground border border-border rounded text-[11px] font-mono px-1.5 py-0.5",
   }[variant];
   return (
@@ -137,7 +137,7 @@ export function Badge({
 
 /* ─────────────────────────────────────────────
    StatusPip — Precision 6px telemetry indicator
-   (Replaces oversized pastel checkmark cards)
+   (Strictly functional status: up, down, warn)
 ───────────────────────────────────────────── */
 export function StatusPip({
   status,
@@ -149,25 +149,44 @@ export function StatusPip({
   className?: string;
 }) {
   const pipColors = {
-    UP: "bg-emerald-500",
-    DOWN: "bg-rose-500 animate-pulse",
-    DEGRADED: "bg-amber-500",
+    UP: "bg-status-up",
+    DOWN: "bg-status-down",
+    DEGRADED: "bg-status-warn",
     PENDING: "bg-muted-foreground",
   };
 
   const textColors = {
-    UP: "text-emerald-500 dark:text-emerald-400",
-    DOWN: "text-rose-500 dark:text-rose-400",
-    DEGRADED: "text-amber-500 dark:text-amber-400",
+    UP: "text-status-up",
+    DOWN: "text-status-down",
+    DEGRADED: "text-status-warn",
     PENDING: "text-muted-foreground",
   };
 
   return (
-    <div className={cn("inline-flex items-center gap-2 font-mono text-[11px] font-medium tracking-tight", className)}>
-      <span className={cn("h-2 w-2 rounded-full shrink-0", pipColors[status])} />
+    <div className={cn("inline-flex items-center gap-1.5 font-mono text-[11px] font-medium tracking-tight", className)}>
+      <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", pipColors[status])} />
       {label && <span className={textColors[status]}>{label}</span>}
     </div>
   );
+}
+
+/* ─────────────────────────────────────────────
+   IconWrapper — Standardized 1.5 stroke Lucide icon
+───────────────────────────────────────────── */
+export function IconWrapper({
+  icon: IconComponent,
+  size = 16,
+  strokeWidth = 1.5,
+  className,
+  ...props
+}: {
+  icon: React.ElementType;
+  size?: number;
+  strokeWidth?: number;
+  className?: string;
+  [key: string]: any;
+}) {
+  return <IconComponent size={size} strokeWidth={strokeWidth} className={className} {...props} />;
 }
 
 /* ─────────────────────────────────────────────

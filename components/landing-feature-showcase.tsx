@@ -92,7 +92,7 @@ export function LandingFeatureShowcase() {
               : "border-transparent text-muted-foreground hover:text-foreground"
           )}
         >
-          <Cpu className="h-3.5 w-3.5 text-np-gold" />
+          <Cpu className="h-3.5 w-3.5 text-foreground" />
           Autopilot AI
         </button>
 
@@ -105,7 +105,7 @@ export function LandingFeatureShowcase() {
               : "border-transparent text-muted-foreground hover:text-foreground"
           )}
         >
-          <DollarSign className="h-3.5 w-3.5 text-np-teal" />
+          <DollarSign className="h-3.5 w-3.5 text-status-up" />
           FinOps Waste Hunter
         </button>
 
@@ -118,7 +118,7 @@ export function LandingFeatureShowcase() {
               : "border-transparent text-muted-foreground hover:text-foreground"
           )}
         >
-          <Zap className="h-3.5 w-3.5 text-np-gold" />
+          <Zap className="h-3.5 w-3.5 text-foreground" />
           Cache Pulse Engine
         </button>
 
@@ -131,7 +131,7 @@ export function LandingFeatureShowcase() {
               : "border-transparent text-muted-foreground hover:text-foreground"
           )}
         >
-          <Terminal className="h-3.5 w-3.5 text-np-teal" />
+          <Terminal className="h-3.5 w-3.5 text-status-up" />
           MCP Protocol
         </button>
 
@@ -144,7 +144,7 @@ export function LandingFeatureShowcase() {
               : "border-transparent text-muted-foreground hover:text-foreground"
           )}
         >
-          <GitBranch className="h-3.5 w-3.5 text-np-gold" />
+          <GitBranch className="h-3.5 w-3.5 text-foreground" />
           PR Code Review Bot
         </button>
       </div>
@@ -156,18 +156,18 @@ export function LandingFeatureShowcase() {
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/40">
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-np-gold font-bold">Autopilot AI Engine</span>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-foreground font-bold">Autopilot AI Engine</span>
                 <h3 className="text-lg font-bold text-foreground">Autonomous Anomaly Detection & Self-Healing Guard</h3>
               </div>
 
               <div className="flex items-center gap-2">
                 {anomalyState === "normal" && (
-                  <Button onClick={handleTriggerAnomaly} variant="outline" className="text-np-gold border-np-gold/40 hover:bg-np-gold/10 text-[11px] gap-2">
+                  <Button onClick={handleTriggerAnomaly} variant="outline" className="text-foreground border-border hover:bg-primary text-primary-foreground/10 text-[11px] gap-2">
                     <AlertTriangle className="h-3.5 w-3.5" /> Simulate Anomaly Spike
                   </Button>
                 )}
                 {anomalyState === "anomaly" && (
-                  <Button onClick={handleExecuteRemediation} className="bg-np-gold text-black hover:bg-np-gold/90 text-[11px] font-bold gap-2">
+                  <Button onClick={handleExecuteRemediation} className="bg-primary text-primary-foreground font-medium hover:opacity-90 text-[11px] font-bold gap-2">
                     <ShieldCheck className="h-3.5 w-3.5" /> Execute Auto-Rollback
                   </Button>
                 )}
@@ -183,7 +183,7 @@ export function LandingFeatureShowcase() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="p-4 bg-muted/30 rounded-ui border border-border/40 space-y-1">
                 <p className="text-[10px] font-mono text-muted-foreground uppercase">System Latency</p>
-                <p className={cn("text-2xl font-bold font-mono", anomalyState === "anomaly" ? "text-np-crimson" : "text-np-teal")}>
+                <p className={cn("text-2xl font-bold font-mono", anomalyState === "anomaly" ? "text-status-down" : "text-status-up")}>
                   {anomalyState === "normal" ? "38ms" : anomalyState === "anomaly" ? "2,420ms" : "41ms"}
                 </p>
                 <p className="text-[11px] text-muted-foreground">{anomalyState === "anomaly" ? "SLA Breach Detected" : "Healthy SLA"}</p>
@@ -191,7 +191,7 @@ export function LandingFeatureShowcase() {
 
               <div className="p-4 bg-muted/30 rounded-ui border border-border/40 space-y-1">
                 <p className="text-[10px] font-mono text-muted-foreground uppercase">Root Cause Confidence</p>
-                <p className="text-2xl font-bold font-mono text-np-gold">
+                <p className="text-2xl font-bold font-mono text-foreground">
                   {anomalyState === "normal" ? "100%" : "89%"}
                 </p>
                 <p className="text-[11px] text-muted-foreground">{anomalyState === "normal" ? "Zero Incidents" : "Culprit: Commit #a83f21"}</p>
@@ -199,7 +199,7 @@ export function LandingFeatureShowcase() {
 
               <div className="p-4 bg-muted/30 rounded-ui border border-border/40 space-y-1">
                 <p className="text-[10px] font-mono text-muted-foreground uppercase">Autopilot Guard Mode</p>
-                <p className="text-2xl font-bold font-mono text-np-teal">RECOMMEND</p>
+                <p className="text-2xl font-bold font-mono text-status-up">RECOMMEND</p>
                 <p className="text-[11px] text-muted-foreground">Human-in-the-loop Guardrail</p>
               </div>
             </div>
@@ -208,13 +208,13 @@ export function LandingFeatureShowcase() {
             <div className="p-4 bg-muted/40 text-foreground rounded-ui border border-border/40 font-mono text-[11px] space-y-2 min-h-[120px]">
               <div className="text-[10px] text-muted-foreground uppercase border-b border-border/40 pb-1 flex justify-between">
                 <span>AUTOPILOT TELEMETRY STREAM</span>
-                <span className="text-np-gold font-bold">LIVE</span>
+                <span className="text-foreground font-bold">LIVE</span>
               </div>
               {autopilotLog.length === 0 ? (
                 <p className="text-muted-foreground italic pt-2">System operating normally. Click &quot;Simulate Anomaly Spike&quot; above to test the AI engine.</p>
               ) : (
                 autopilotLog.map((log, idx) => (
-                  <p key={idx} className={log.includes("ALERT") ? "text-np-crimson font-bold" : log.includes("ACTION") ? "text-np-teal font-bold" : "text-muted-foreground"}>
+                  <p key={idx} className={log.includes("ALERT") ? "text-status-down font-bold" : log.includes("ACTION") ? "text-status-up font-bold" : "text-muted-foreground"}>
                     {log}
                   </p>
                 ))
@@ -228,19 +228,19 @@ export function LandingFeatureShowcase() {
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/40">
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-np-teal font-bold">FinOps & Cloud Waste Hunter</span>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-status-up font-bold">FinOps & Cloud Waste Hunter</span>
                 <h3 className="text-lg font-bold text-foreground">Recover Monthly Cloud Budget From Zombie Infrastructure</h3>
               </div>
 
-              <div className="bg-np-teal/10 px-4 py-2 rounded-ui border border-np-teal/30 text-right">
-                <span className="text-[10px] font-mono text-np-teal uppercase block">Recovered Budget</span>
-                <span className="text-xl font-bold font-mono text-np-teal">+${savedCost}/mo</span>
+              <div className="bg-status-up/10 px-4 py-2 rounded-ui border border-status-up/20 text-right">
+                <span className="text-[10px] font-mono text-status-up uppercase block">Recovered Budget</span>
+                <span className="text-xl font-bold font-mono text-status-up">+${savedCost}/mo</span>
               </div>
             </div>
 
             <div className="space-y-3">
               {zombies.length === 0 ? (
-                <div className="p-8 text-center border border-dashed border-np-teal/30 rounded-ui text-np-teal space-y-2">
+                <div className="p-8 text-center border border-dashed border-status-up/20 rounded-ui text-status-up space-y-2">
                   <CheckCircle2 className="h-8 w-8 mx-auto" />
                   <p className="text-sm font-bold">All Zombie Cloud Resources Cleaned!</p>
                   <p className="text-[12px] text-muted-foreground">You recovered ${savedCost}/mo in monthly cloud spend.</p>
@@ -258,8 +258,8 @@ export function LandingFeatureShowcase() {
                       <p className="text-[11px] text-muted-foreground">{z.type} · Idle & unattached</p>
                     </div>
                     <div className="flex items-center gap-4">
-                      <span className="text-sm font-bold font-mono text-np-crimson">+${z.cost}/mo</span>
-                      <Button onClick={() => handleCleanZombie(z.id, z.cost)} size="sm" variant="outline" className="text-np-teal border-np-teal/30 hover:bg-np-teal/10 text-[11px]">
+                      <span className="text-sm font-bold font-mono text-status-down">+${z.cost}/mo</span>
+                      <Button onClick={() => handleCleanZombie(z.id, z.cost)} size="sm" variant="outline" className="text-status-up border-status-up/20 hover:bg-status-up/10 text-[11px]">
                         Terminate & Save
                       </Button>
                     </div>
@@ -275,13 +275,13 @@ export function LandingFeatureShowcase() {
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/40">
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-np-gold font-bold">Cache Pulse Engine</span>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-foreground font-bold">Cache Pulse Engine</span>
                 <h3 className="text-lg font-bold text-foreground">Surgical Edge Cache Purging by Tag or Path</h3>
               </div>
 
               <div className="text-right">
                 <span className="text-[10px] font-mono text-muted-foreground uppercase block">Total Edge Revalidations</span>
-                <span className="text-xl font-bold font-mono text-np-gold">{purgedCount} tags</span>
+                <span className="text-xl font-bold font-mono text-foreground">{purgedCount} tags</span>
               </div>
             </div>
 
@@ -291,9 +291,9 @@ export function LandingFeatureShowcase() {
                 value={cacheTag}
                 onChange={(e) => setCacheTag(e.target.value)}
                 placeholder="Tag name (e.g. products)"
-                className="flex-1 font-mono text-[13px] px-3.5 py-2.5 bg-background border border-border/40 rounded-ui focus:outline-none focus:border-np-gold"
+                className="flex-1 font-mono text-[13px] px-3.5 py-2.5 bg-background border border-border/40 rounded-ui focus:outline-none focus:border-border"
               />
-              <Button onClick={handlePurgeCache} disabled={purging || !cacheTag} className="bg-np-gold text-black font-bold hover:bg-np-gold/90 text-[12px] gap-2 px-6">
+              <Button onClick={handlePurgeCache} disabled={purging || !cacheTag} className="bg-primary text-primary-foreground font-medium font-bold hover:opacity-90 text-[12px] gap-2 px-6">
                 {purging ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
                 Purge Global Edge
               </Button>
@@ -307,17 +307,17 @@ export function LandingFeatureShowcase() {
               </div>
               <div className="flex justify-between text-foreground">
                 <span>iad1 (US East — N. Virginia)</span>
-                <span className="text-np-teal font-bold">PURGED</span>
+                <span className="text-status-up font-bold">PURGED</span>
                 <span>12ms</span>
               </div>
               <div className="flex justify-between text-foreground">
                 <span>fra1 (EU Central — Frankfurt)</span>
-                <span className="text-np-teal font-bold">PURGED</span>
+                <span className="text-status-up font-bold">PURGED</span>
                 <span>18ms</span>
               </div>
               <div className="flex justify-between text-foreground">
                 <span>sin1 (Asia Pacific — Singapore)</span>
-                <span className="text-np-teal font-bold">PURGED</span>
+                <span className="text-status-up font-bold">PURGED</span>
                 <span>34ms</span>
               </div>
             </div>
@@ -329,11 +329,11 @@ export function LandingFeatureShowcase() {
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/40">
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-np-teal font-bold">Model Context Protocol</span>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-status-up font-bold">Model Context Protocol</span>
                 <h3 className="text-lg font-bold text-foreground">Connect AI Agents Directly to Infrastructure Telemetry</h3>
               </div>
 
-              <Button onClick={() => setMcpTested(true)} variant="outline" className="text-np-teal border-np-teal/40 hover:bg-np-teal/10 text-[11px] gap-2">
+              <Button onClick={() => setMcpTested(true)} variant="outline" className="text-status-up border-np-teal/40 hover:bg-status-up/10 text-[11px] gap-2">
                 <Terminal className="h-3.5 w-3.5" /> Ping JSON-RPC 2.0
               </Button>
             </div>
@@ -341,7 +341,7 @@ export function LandingFeatureShowcase() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <p className="text-[11px] font-mono text-muted-foreground uppercase">Agent Request payload</p>
-                <pre className="p-4 bg-muted/30 text-np-teal rounded-ui border border-border/40 text-[11px] font-mono leading-relaxed overflow-x-auto">
+                <pre className="p-4 bg-muted/30 text-status-up rounded-ui border border-border/40 text-[11px] font-mono leading-relaxed overflow-x-auto">
 {`{
   "jsonrpc": "2.0",
   "method": "tools/call",
@@ -354,7 +354,7 @@ export function LandingFeatureShowcase() {
 
               <div className="space-y-2">
                 <p className="text-[11px] font-mono text-muted-foreground uppercase">NexPulse Response payload</p>
-                <pre className="p-4 bg-muted/30 text-np-teal rounded-ui border border-border/40 text-[11px] font-mono leading-relaxed overflow-x-auto">
+                <pre className="p-4 bg-muted/30 text-status-up rounded-ui border border-border/40 text-[11px] font-mono leading-relaxed overflow-x-auto">
 {mcpTested ? `{
   "jsonrpc": "2.0",
   "result": {
@@ -376,7 +376,7 @@ export function LandingFeatureShowcase() {
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/40">
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-np-gold font-bold">PR Code Review Bot</span>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-foreground font-bold">PR Code Review Bot</span>
                 <h3 className="text-lg font-bold text-foreground">Automated GitHub Pull Request Audit Score Comments</h3>
               </div>
 
@@ -387,7 +387,7 @@ export function LandingFeatureShowcase() {
                   onChange={(e) => setPrRepo(e.target.value)}
                   className="font-mono text-[12px] px-3 py-1.5 bg-background border border-border/40 rounded-ui"
                 />
-                <Button onClick={handleRunPrAudit} disabled={botAuditing} className="bg-np-gold text-black font-bold text-[11px]">
+                <Button onClick={handleRunPrAudit} disabled={botAuditing} className="bg-primary text-primary-foreground font-medium font-bold text-[11px]">
                   {botAuditing ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : "Run Audit"}
                 </Button>
               </div>
@@ -397,18 +397,18 @@ export function LandingFeatureShowcase() {
               <div className="p-5 bg-muted/20 rounded-ui border border-border/40 space-y-3 font-sans">
                 <div className="flex items-center justify-between border-b border-border/40 pb-3">
                   <div className="flex items-center gap-2">
-                    <div className="h-7 w-7 rounded-full bg-np-gold/20 text-np-gold flex items-center justify-center font-bold text-[11px]">NP</div>
+                    <div className="h-7 w-7 rounded-full bg-primary text-primary-foreground/20 text-foreground flex items-center justify-center font-bold text-[11px]">NP</div>
                     <span className="text-[13px] font-bold">nexpulse-bot [bot]</span>
                     <span className="text-[11px] text-muted-foreground">commented on PR #142</span>
                   </div>
-                  <span className="text-[12px] font-mono font-bold text-np-teal bg-np-teal/10 px-2.5 py-0.5 rounded border border-np-teal/30">Score: 94 / 100</span>
+                  <span className="text-[12px] font-mono font-bold text-status-up bg-status-up/10 px-2.5 py-0.5 rounded border border-status-up/20">Score: 94 / 100</span>
                 </div>
 
                 <div className="space-y-2 text-[12px] text-muted-foreground">
-                  <p className="font-semibold text-foreground">NexPulse Automated Audit Summary for <code className="font-mono text-np-gold">{prRepo}</code>:</p>
-                  <p className="flex items-center gap-2 text-np-teal"><CheckCircle2 className="h-3.5 w-3.5 shrink-0" /> Zero security vulnerabilities detected in dependencies.</p>
-                  <p className="flex items-center gap-2 text-np-teal"><CheckCircle2 className="h-3.5 w-3.5 shrink-0" /> Core Web Vitals impact: +4ms (well within SLA limits).</p>
-                  <p className="flex items-center gap-2 text-np-gold"><Activity className="h-3.5 w-3.5 shrink-0" /> Recommendation: Add memoization on heavy compute loop at line 42.</p>
+                  <p className="font-semibold text-foreground">NexPulse Automated Audit Summary for <code className="font-mono text-foreground">{prRepo}</code>:</p>
+                  <p className="flex items-center gap-2 text-status-up"><CheckCircle2 className="h-3.5 w-3.5 shrink-0" /> Zero security vulnerabilities detected in dependencies.</p>
+                  <p className="flex items-center gap-2 text-status-up"><CheckCircle2 className="h-3.5 w-3.5 shrink-0" /> Core Web Vitals impact: +4ms (well within SLA limits).</p>
+                  <p className="flex items-center gap-2 text-foreground"><Activity className="h-3.5 w-3.5 shrink-0" /> Recommendation: Add memoization on heavy compute loop at line 42.</p>
                 </div>
               </div>
             )}

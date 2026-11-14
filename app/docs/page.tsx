@@ -96,7 +96,7 @@ export default function DocsPage() {
         {/* Header */}
         <div className="mb-14">
           <p className="label-category mb-3 flex items-center gap-2">
-            <Book className="h-3.5 w-3.5 text-np-gold" />
+            <Book className="h-3.5 w-3.5 text-foreground" />
             Documentation
           </p>
           <h1 className="text-4xl md:text-6xl font-semibold tracking-tight leading-tight mb-4">
@@ -117,7 +117,7 @@ export default function DocsPage() {
                 className="h-10 w-10 rounded-ui flex items-center justify-center"
                 style={{ background: "rgba(180,140,60,0.10)" }}
               >
-                <cat.icon className="h-5 w-5 text-np-gold" />
+                <cat.icon className="h-5 w-5 text-foreground" />
               </div>
 
               <div className="flex-1">
@@ -133,10 +133,10 @@ export default function DocsPage() {
                     className="flex items-center justify-between group px-3 py-2.5 rounded-ui transition-colors hover:bg-muted"
                     style={{ border: "0.5px solid var(--border)" }}
                   >
-                    <span className="text-[13px] font-medium group-hover:text-np-gold transition-colors">
+                    <span className="text-[13px] font-medium group-hover:text-foreground transition-colors">
                       {link.label}
                     </span>
-                    <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-np-gold group-hover:translate-x-0.5 transition-all" />
+                    <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all" />
                   </Link>
                 ))}
               </div>
@@ -146,11 +146,11 @@ export default function DocsPage() {
 
         {/* Support CTA */}
         <Card className="p-10 md:p-14 text-center relative overflow-hidden">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-40 bg-np-gold/5 blur-[60px] pointer-events-none" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-40 bg-primary text-primary-foreground/5 blur-[60px] pointer-events-none" />
           <div className="relative">
             <div
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-ui mb-5 text-[11px] font-semibold"
-              style={{ background: "rgba(180,140,60,0.10)", color: "var(--np-gold)" }}
+              style={{ background: "rgba(180,140,60,0.10)", color: "var(--foreground)" }}
             >
               <Activity className="h-3.5 w-3.5" /> Support
             </div>

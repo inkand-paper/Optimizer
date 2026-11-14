@@ -4,71 +4,80 @@
 
 /* ─── NexPulse Engineered Monochromatic Design System ─── */
 :root {
-  /* Functional Status Colors (Used STRICTLY for data, never decorative) */
-  --np-teal:     #10B981;
-  --np-crimson:  #EF4444;
-  --np-amber:    #F59E0B;
+  /* Page Canvas & Surfaces */
+  --background:         250 250 250; /* #FAFAFA */
+  --foreground:         9 9 11;      /* #09090B */
+  --card:               255 255 255; /* #FFFFFF */
+  --card-foreground:    9 9 11;
+  --surface-raised:     244 244 245; /* #F4F4F5 */
+  --border:             228 228 231; /* #E4E4E7 */
+  --border-strong:      212 212 216; /* #D4D4D8 */
+  --input:              244 244 245;
+  --ring:               9 9 11;
+  --muted:              244 244 245;
+  --muted-foreground:   113 113 122; /* #71717A */
+  --primary:            9 9 11;
+  --primary-foreground: 255 255 255;
+  --secondary:          244 244 245;
+  --secondary-foreground: 9 9 11;
+  --destructive:        185 28 28;   /* #B91C1C */
+  --destructive-foreground: 255 255 255;
 
-  /* Monochromatic Neutral Aliases (Light mode) */
-  --np-gold:     #09090B; /* Replaced gold with crisp high-contrast black */
-  --np-ink:      #09090B;
-  --np-vellum:   #FFFFFF;
-  --np-obsidian: #18181B;
-  --np-steel:    #27272A;
-  --np-slate:    #71717A;
+  /* Functional Status Colors (STRICTLY for data signals) */
+  --status-up:          21 128 61;   /* #15803D */
+  --status-down:        185 28 28;   /* #B91C1C */
+  --status-warn:        180 83 9;    /* #B45309 */
 
-  /* Semantic tokens — light mode */
-  --background:        #FFFFFF;
-  --foreground:        #09090B;
-  --card:              #FFFFFF;
-  --card-foreground:   #09090B;
-  --border:            #E4E4E7;
-  --border-strong:     #D4D4D8;
-  --input:             #F4F4F5;
-  --ring:              #09090B;
-  --muted:             #F4F4F5;
-  --muted-foreground:  #71717A;
-  --primary:           #09090B;
-  --primary-foreground:#FFFFFF;
-  --secondary:         #F4F4F5;
-  --secondary-foreground: #09090B;
-  --destructive:       #EF4444;
-  --destructive-foreground: #FFFFFF;
+  /* Backward Compatibility Aliases */
+  --np-teal:            21 128 61;
+  --np-crimson:         185 28 28;
+  --np-amber:           180 83 9;
+  --np-gold:            9 9 11;
+  --np-ink:             9 9 11;
+  --np-vellum:          255 255 255;
+  --np-obsidian:        24 24 27;
+  --np-steel:           39 39 42;
+  --np-slate:           113 113 122;
+
   --radius-card: 8px;
   --radius-ui:   6px;
 }
 
 .dark {
+  /* Page Canvas & Surfaces */
+  --background:         9 9 11;      /* #09090B */
+  --foreground:         244 244 245; /* #F4F4F5 */
+  --card:               16 16 18;    /* #101012 */
+  --card-foreground:    244 244 245;
+  --surface-raised:     24 24 27;    /* #18181B */
+  --border:             39 39 42;    /* #27272A */
+  --border-strong:      63 63 70;    /* #3F3F46 */
+  --input:              24 24 27;
+  --ring:               244 244 245;
+  --muted:              24 24 27;
+  --muted-foreground:   161 161 170; /* #A1A1AA */
+  --primary:            244 244 245;
+  --primary-foreground: 9 9 11;
+  --secondary:          24 24 27;
+  --secondary-foreground: 244 244 245;
+  --destructive:        248 113 113; /* #F87171 */
+  --destructive-foreground: 9 9 11;
+
   /* Functional Status Colors (Dark mode) */
-  --np-teal:     #10B981;
-  --np-crimson:  #EF4444;
-  --np-amber:    #F59E0B;
+  --status-up:          74 222 128;  /* #4ADE80 */
+  --status-down:        248 113 113; /* #F87171 */
+  --status-warn:        251 191 36;  /* #FBBF24 */
 
-  /* Monochromatic Neutral Aliases (Dark mode) */
-  --np-gold:     #F4F4F5; /* Replaced gold with crisp high-contrast light */
-  --np-ink:      #F4F4F5;
-  --np-vellum:   #121215;
-  --np-obsidian: #09090B;
-  --np-steel:    #18181B;
-  --np-slate:    #A1A1AA;
-
-  /* Semantic tokens — dark mode */
-  --background:        #09090B;
-  --foreground:        #F4F4F5;
-  --card:              #121215;
-  --card-foreground:   #F4F4F5;
-  --border:            rgba(255, 255, 255, 0.08);
-  --border-strong:     rgba(255, 255, 255, 0.16);
-  --input:             rgba(255, 255, 255, 0.05);
-  --ring:              #F4F4F5;
-  --muted:             #18181B;
-  --muted-foreground:  #A1A1AA;
-  --primary:           #F4F4F5;
-  --primary-foreground:#09090B;
-  --secondary:         #18181B;
-  --secondary-foreground: #F4F4F5;
-  --destructive:       #EF4444;
-  --destructive-foreground: #FFFFFF;
+  /* Backward Compatibility Aliases */
+  --np-teal:            74 222 128;
+  --np-crimson:         248 113 113;
+  --np-amber:           251 191 36;
+  --np-gold:            244 244 245;
+  --np-ink:             244 244 245;
+  --np-vellum:          18 18 21;
+  --np-obsidian:        9 9 11;
+  --np-steel:           24 24 27;
+  --np-slate:           161 161 170;
 }
 
 /* Dark overrides for semantic component styles */

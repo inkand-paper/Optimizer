@@ -30,11 +30,9 @@ interface ReviewSummary {
 }
 
 function scoreColor(score: number) {
-  if (score >= 90) return "text-np-teal";
-  if (score >= 75) return "text-blue-400";
-  if (score >= 60) return "text-np-gold";
-  if (score >= 45) return "text-orange-400";
-  return "text-np-crimson";
+  if (score >= 90) return "text-status-up";
+  if (score >= 70) return "text-status-warn";
+  return "text-status-down";
 }
 
 export function CodeAuditConsole() {
@@ -205,9 +203,16 @@ export function CodeAuditConsole() {
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
          <div className="xl:col-span-4 space-y-4">
             <Card className="overflow-hidden shadow-sm">
-               <div className="flex bg-muted/30 overflow-x-auto np-scroll" style={{ borderBottom: "0.5px solid var(--border)" }}>
+               <div className="flex bg-muted p-1 border-b border-border">
                   {(["github", "zip", "paste"] as TabType[]).map((t) => (
-                    <button key={t} onClick={() => setTab(t)} className={cn("flex-1 min-w-[80px] py-3 text-[10px] font-black uppercase tracking-widest transition-all", tab === t ? "text-np-gold bg-background" : "text-muted-foreground/40 hover:bg-muted")}>
+                    <button
+                      key={t}
+                      onClick={() => setTab(t)}
+                      className={cn(
+                        "flex-1 py-1.5 text-xs font-medium capitalize rounded-ui transition-colors cursor-pointer",
+                        tab === t ? "bg-background text-foreground shadow-sm font-semibold" : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
                       {t}
                     </button>
                   ))}
@@ -235,30 +240,30 @@ export function CodeAuditConsole() {
                     {tab === "zip" && (
                       <div onClick={() => fileInputRef.current?.click()} className="h-32 border-2 border-dashed border-border rounded-ui flex flex-col items-center justify-center cursor-pointer hover:bg-muted/30 transition-all">
                          <input ref={fileInputRef} type="file" className="hidden" onChange={(e) => setZipFile(e.target.files?.[0] ?? null)} />
-                         <Plus className="h-6 w-6 mb-2 opacity-20" />
-                         <p className="text-[12px] font-medium text-muted-foreground">{zipFile ? zipFile.name : "Inject Archive"}</p>
+                         <Plus className="h-5 w-5 mb-2 opacity-30" strokeWidth={1.5} />
+                         <p className="text-xs font-medium text-muted-foreground">{zipFile ? zipFile.name : "Upload ZIP bundle"}</p>
                       </div>
                     )}
                     {tab === "paste" && (
-                      <div className="space-y-4 animate-in fade-in duration-300">
-                         <Input placeholder="filename.ts" value={pasteFileName} onChange={(e) => setPasteFileName(e.target.value)} className="font-mono" />
-                         <textarea value={pasteCode} onChange={(e) => setPasteCode(e.target.value)} placeholder="// Source stream..." className="w-full bg-muted/10 border border-border rounded-ui p-4 font-mono text-[11px] min-h-[120px] outline-none focus:border-np-gold/30 transition-all" />
+                      <div className="space-y-4 animate-in fade-in duration-200">
+                         <Input placeholder="filename.ts" value={pasteFileName} onChange={(e) => setPasteFileName(e.target.value)} className="font-mono text-xs" />
+                         <textarea value={pasteCode} onChange={(e) => setPasteCode(e.target.value)} placeholder="// Paste source code..." className="w-full bg-muted/10 border border-border rounded-ui p-3 font-mono text-xs min-h-[120px] outline-none focus:border-primary transition-all text-foreground" />
                       </div>
                     )}
                   </div>
 
-                  {error && <p className="text-[11px] text-np-crimson font-medium bg-np-crimson/5 p-3 rounded-ui border border-np-crimson/10">{error}</p>}
+                  {error && <p className="text-xs text-status-down font-medium bg-status-down/10 p-3 rounded-ui border border-status-down/20">{error}</p>}
                   
-                  <Button onClick={submitReview} disabled={submitting || (!isUnlimited && usage >= limit)} className={cn("w-full h-11 text-[11px] font-bold", submitting ? "animate-pulse" : "")}>
-                    {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Start Audit"}
+                  <Button onClick={submitReview} disabled={submitting || (!isUnlimited && usage >= limit)} className="w-full h-10 text-xs font-medium">
+                    {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Run code audit"}
                   </Button>
 
                   {(submitting || logs.length > 0) && (
-                    <div className="bg-muted/50 dark:bg-black/80 backdrop-blur-sm rounded-ui border border-border p-4 font-mono text-[10px] space-y-1.5 h-[180px] overflow-y-auto np-scroll shadow-inner">
-                       {logs.length === 0 && <p className="text-muted-foreground animate-pulse">Establishing neural link...</p>}
+                    <div className="bg-muted/50 rounded-ui border border-border p-3.5 font-mono text-xs space-y-1.5 h-[180px] overflow-y-auto np-scroll shadow-inner">
+                       {logs.length === 0 && <p className="text-muted-foreground animate-pulse">Initializing analyzer engine...</p>}
                        {logs.map((log, i) => (
-                         <div key={i} className={cn("flex gap-3", log.type === "error" ? "text-np-crimson" : log.type === "success" ? "text-emerald-400" : "text-muted-foreground")}>
-                           <span className="opacity-30">[{new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}]</span>
+                         <div key={i} className={cn("flex gap-2.5", log.type === "error" ? "text-status-down" : log.type === "success" ? "text-status-up" : "text-muted-foreground")}>
+                           <span className="opacity-40">[{new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}]</span>
                            <span className="flex-1 leading-relaxed">{log.msg}</span>
                          </div>
                        ))}
@@ -270,10 +275,10 @@ export function CodeAuditConsole() {
 
          <div className="xl:col-span-8 space-y-4">
             <div className="flex items-center justify-between mb-2">
-               <h3 className="text-[12px] font-semibold flex items-center gap-2">
-                 <History className="h-3.5 w-3.5 text-np-gold/60" /> Registry Archives
+               <h3 className="text-xs font-semibold flex items-center gap-2 text-foreground">
+                 <History className="h-3.5 w-3.5 text-foreground" strokeWidth={1.5} /> Audit history
                </h3>
-               <button onClick={loadReviews} className="text-[10px] font-semibold text-muted-foreground/40 hover:text-foreground transition-all">Refresh</button>
+               <button onClick={loadReviews} className="text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer">Refresh</button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -284,7 +289,7 @@ export function CodeAuditConsole() {
                    {/* Delete Button - Outside the Link to avoid swallowing events */}
                    <button 
                      onClick={(e) => deleteReview(r.id, e)}
-                     className="absolute top-3 right-3 p-2 rounded-md bg-background/80 backdrop-blur-md border border-border/50 text-np-crimson hover:bg-np-crimson hover:text-white transition-all z-30 shadow-lg"
+                     className="absolute top-3 right-3 p-2 rounded-md bg-background/80 backdrop-blur-md border border-border/50 text-status-down hover:bg-np-crimson hover:text-white transition-all z-30 shadow-lg"
                      title="Remove Archive"
                    >
                      <Trash2 className="h-3.5 w-3.5" />
@@ -293,7 +298,7 @@ export function CodeAuditConsole() {
                    <Link href={`/dashboard/code-review/${r.id}`}>
                      <Card className="p-4 sm:p-5 hover:bg-muted/30 transition-all border-border h-full flex flex-col justify-between overflow-hidden relative">
                         <div className="flex justify-between items-start mb-6 pr-8 sm:pr-10">
-                           <div className="h-10 w-10 rounded-ui bg-muted flex items-center justify-center text-muted-foreground/60 group-hover:text-np-gold transition-colors">
+                           <div className="h-10 w-10 rounded-ui bg-muted flex items-center justify-center text-muted-foreground/60 group-hover:text-foreground transition-colors">
                               {r.source === "GITHUB" ? <GitBranch className="h-5 w-5" /> : r.source === "ZIP" ? <FolderArchive className="h-5 w-5" /> : <Terminal className="h-5 w-5" />}
                            </div>
                            <Badge variant={r.status === "COMPLETED" ? "success" : "warning"} className="text-[8px] sm:text-[9px] px-2 py-0.5 tracking-widest">{r.status}</Badge>
@@ -321,8 +326,8 @@ export function CodeAuditConsole() {
       {/* ── PR Bot — full width below the grid ── */}
       <div className="space-y-4 pt-6 border-t border-border">
            <div className="flex items-center gap-3">
-             <div className="h-9 w-9 rounded-ui bg-np-gold/10 border border-np-gold/20 flex items-center justify-center">
-               <GitBranch className="h-4 w-4 text-np-gold" />
+             <div className="h-9 w-9 rounded-ui bg-muted border border-border flex items-center justify-center">
+               <GitBranch className="h-4 w-4 text-foreground" strokeWidth={1.5} />
              </div>
              <div>
                <h3 className="text-[13px] font-semibold">PR Code Review Bot</h3>
@@ -353,7 +358,7 @@ export function CodeAuditConsole() {
                        className={cn(
                          "text-[10px] px-2 py-1 rounded border uppercase tracking-wider font-medium transition-all",
                          cfg.enabled
-                           ? "bg-np-teal/10 border-np-teal/30 text-np-teal"
+                           ? "bg-status-up/10 border-status-up/20 text-status-up"
                            : "border-border text-muted-foreground"
                        )}
                      >
@@ -370,7 +375,7 @@ export function CodeAuditConsole() {
                          setPrBotConfigs(prev => prev.filter(c => c.id !== cfg.id));
                          setPrBotSetup(null);
                        }}
-                       className="p-1.5 text-muted-foreground hover:text-np-crimson transition-colors"
+                       className="p-1.5 text-muted-foreground hover:text-status-down transition-colors"
                      >
                        <X className="h-3.5 w-3.5" />
                      </button>
@@ -389,7 +394,7 @@ export function CodeAuditConsole() {
                    value={prBotRepo}
                    onChange={e => { setPrBotRepo(e.target.value); setPrBotError(''); }}
                    placeholder="owner/repo"
-                   className="flex-1 h-9 px-3 rounded-ui bg-muted/30 border border-border text-[13px] placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-np-gold/50"
+                   className="flex-1 h-9 px-3 rounded-ui bg-muted/30 border border-border text-[13px] placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                  />
                  <button
                    onClick={async () => {
@@ -414,28 +419,28 @@ export function CodeAuditConsole() {
                      finally { setPrBotAdding(false); }
                    }}
                    disabled={prBotAdding || !prBotRepo.trim()}
-                   className="h-9 px-4 rounded-ui border border-np-gold/30 text-np-gold text-[11px] uppercase tracking-wider hover:bg-np-gold/10 transition-all disabled:opacity-40"
+                   className="h-9 px-4 rounded-ui border border-border text-foreground text-xs font-medium hover:bg-muted transition-colors disabled:opacity-40"
                  >
                    {prBotAdding ? '...' : 'Connect'}
                  </button>
                </div>
-               {prBotError && <p className="text-[11px] text-np-crimson">{prBotError}</p>}
+               {prBotError && <p className="text-xs text-status-down">{prBotError}</p>}
                <p className="text-[10px] text-muted-foreground">Enter a GitHub repo you have admin access to. Format: owner/repo</p>
              </div>
            ) : (
-             <div className="p-4 bg-muted/30 rounded-ui border border-np-gold/20 space-y-3">
-               <p className="text-[12px] font-semibold text-np-gold">One-time setup — add this webhook to GitHub</p>
+             <div className="p-4 bg-muted/30 rounded-ui border border-border space-y-3">
+               <p className="text-xs font-semibold text-foreground">One-time setup — add this webhook to GitHub</p>
                <ol className="space-y-1.5">
                  {prBotSetup.instructions.map((step: string, i: number) => (
                    <li key={i} className="text-[11px] text-muted-foreground flex gap-2">
-                     <span className="text-np-gold shrink-0">{i + 1}.</span>
+                     <span className="text-muted-foreground shrink-0">{i + 1}.</span>
                      <span>{step}</span>
                    </li>
                  ))}
                </ol>
                <div className="p-3 bg-background rounded-ui border border-border">
                  <p className="text-[10px] text-muted-foreground mb-1">Webhook Secret — copy now, shown once:</p>
-                 <code className="text-[11px] text-np-gold break-all">{prBotSetup.webhookSecret}</code>
+                 <code className="text-xs font-mono text-foreground break-all">{prBotSetup.webhookSecret}</code>
                </div>
                <button
                  onClick={() => setPrBotSetup(null)}

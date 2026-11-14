@@ -30,25 +30,25 @@ import { ThemeToggle } from "@/components/theme-toggle";
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function scoreColor(score: number) {
-  if (score >= 90) return "text-np-teal";
+  if (score >= 90) return "text-status-up";
   if (score >= 75) return "text-blue-400";
-  if (score >= 60) return "text-np-gold";
+  if (score >= 60) return "text-foreground";
   if (score >= 45) return "text-orange-400";
-  return "text-np-crimson";
+  return "text-status-down";
 }
 
 function scoreBg(score: number) {
   if (score >= 90) return "bg-np-teal/5 border-np-teal/10";
   if (score >= 75) return "bg-blue-500/5 border-blue-500/10";
-  if (score >= 60) return "bg-np-gold/5 border-np-gold/10";
+  if (score >= 60) return "bg-primary text-primary-foreground/5 border-border/10";
   if (score >= 45) return "bg-orange-500/5 border-orange-500/10";
-  return "bg-np-crimson/5 border-np-crimson/10";
+  return "bg-np-crimson/5 border-status-down/20";
 }
 
 function severityBadge(severity: LineIssue["severity"]) {
   const map = {
-    critical: "bg-np-crimson/20 text-np-crimson border-np-crimson/30",
-    warning: "bg-np-gold/20 text-np-gold border-np-gold/30",
+    critical: "bg-status-down/15 text-status-down border-status-down/20",
+    warning: "bg-primary text-primary-foreground/20 text-foreground border-border",
     info: "bg-blue-500/20 text-blue-400 border-blue-500/30",
   };
   return map[severity];
@@ -109,7 +109,7 @@ function CategoryCard({ label, cat, data }: {
       </div>
       <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
         <span>{issueCount} Items</span>
-        {critical > 0 && <span className="text-np-crimson">{critical} Critical</span>}
+        {critical > 0 && <span className="text-status-down">{critical} Critical</span>}
       </div>
     </Card>
   );
@@ -146,12 +146,12 @@ function IssueCard({ issue }: { issue: LineIssue & { filePath?: string } }) {
           {issue.codeSnippet && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <p className="label-category text-[9px] uppercase tracking-widest text-np-crimson/50">Vulnerable Source</p>
+                <p className="label-category text-[9px] uppercase tracking-widest text-status-down/50">Vulnerable Source</p>
                 <pre className="np-codeblock text-[11px] bg-np-crimson/5 border-border max-h-[300px]">{issue.codeSnippet}</pre>
               </div>
               {issue.fixedSnippet && (
                 <div className="space-y-2">
-                  <p className="label-category text-[9px] uppercase tracking-widest text-np-teal/50">Optimized Source</p>
+                  <p className="label-category text-[9px] uppercase tracking-widest text-status-up/50">Optimized Source</p>
                   <pre className="np-codeblock text-[11px] bg-np-teal/5 border-border max-h-[300px]">{issue.fixedSnippet}</pre>
                 </div>
               )}
@@ -176,7 +176,7 @@ function FileAccordion({ file }: { file: FileReview }) {
           <p className="text-[14px] sm:text-[16px] font-semibold font-mono text-foreground/80 truncate tracking-tight">{file.path}</p>
           <div className="flex items-center gap-3 sm:gap-4 mt-0.5 sm:mt-1">
              <span className="label-category text-[9px] sm:text-[10px]">{file.language}</span>
-             <span className="text-[9px] sm:text-[10px] font-bold text-np-gold/60 uppercase tracking-widest flex items-center gap-1.5"><ShieldCheck className="h-3 w-3" /> {file.issues.length} Issues</span>
+             <span className="text-[9px] sm:text-[10px] font-bold text-foreground/60 uppercase tracking-widest flex items-center gap-1.5"><ShieldCheck className="h-3 w-3" /> {file.issues.length} Issues</span>
           </div>
         </div>
         <div className="flex items-center gap-4 sm:gap-8">
@@ -197,18 +197,18 @@ function FileAccordion({ file }: { file: FileReview }) {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
              <div className="lg:col-span-4 space-y-4">
                 <div className="bg-np-teal/5 border border-border rounded-ui p-4 sm:p-6">
-                   <p className="label-category text-[10px] mb-4 text-np-teal/60 uppercase tracking-widest flex items-center gap-2"><CheckCircle2 className="h-3 w-3" /> Strengths</p>
+                   <p className="label-category text-[10px] mb-4 text-status-up/60 uppercase tracking-widest flex items-center gap-2"><CheckCircle2 className="h-3 w-3" /> Strengths</p>
                    <ul className="space-y-2 sm:space-y-3">
                      {file.positives.map((p, i) => (
                        <li key={i} className="text-[12px] sm:text-[13px] text-foreground/50 flex gap-3 leading-relaxed">
-                         <ArrowRight className="h-3.5 w-3.5 text-np-teal/30 shrink-0 mt-0.5" /> {p}
+                         <ArrowRight className="h-3.5 w-3.5 text-status-up/30 shrink-0 mt-0.5" /> {p}
                        </li>
                      ))}
                    </ul>
                 </div>
              </div>
              <div className="lg:col-span-8 space-y-4">
-                <p className="label-category text-[10px] mb-2 uppercase tracking-widest text-np-gold/40">Audit Logs</p>
+                <p className="label-category text-[10px] mb-2 uppercase tracking-widest text-foreground/40">Audit Logs</p>
                 {file.issues.map((issue, i) => <IssueCard key={i} issue={issue} />)}
              </div>
           </div>
@@ -263,7 +263,7 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
       .finally(() => setLoading(false));
   }, [id]);
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="h-6 w-6 animate-spin text-np-gold" /></div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="h-6 w-6 animate-spin text-foreground" /></div>;
 
   const allIssues = (result?.files || []).flatMap((f) => (f.issues || []).map((i) => ({ ...i, filePath: f.path })));
   const criticalCount = allIssues.filter((i) => i.severity === "critical").length;
@@ -305,14 +305,14 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
          <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 items-stretch">
             <div className="flex-1 space-y-4 sm:space-y-6">
                 <div className="flex items-center gap-3">
-                   <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-np-gold/10 border border-np-gold/20 flex items-center justify-center"><Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-np-gold" /></div>
+                   <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-primary text-primary-foreground/10 border border-border flex items-center justify-center"><Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-foreground" /></div>
                    <h2 className="text-[18px] sm:text-[20px] font-bold tracking-tight leading-none">Architectural Intelligence</h2>
                 </div>
                 <p className="text-[14px] sm:text-[16px] text-foreground/50 leading-relaxed font-medium max-w-2xl">{result?.summary}</p>
                 <div className="flex flex-wrap gap-4 sm:gap-8 pt-2">
                    <div className="space-y-1"><p className="label-category text-[10px]">Registry Logs</p><p className="text-lg sm:text-xl font-bold tabular-nums">{result?.linesOfCode?.toLocaleString()}</p></div>
                    <div className="space-y-1"><p className="label-category text-[10px]">Stack</p><p className="text-lg sm:text-xl font-bold uppercase">{result?.language}</p></div>
-                   {criticalCount > 0 && <div className="space-y-1"><p className="label-category text-[10px] text-np-crimson/60">Hazards</p><p className="text-lg sm:text-xl font-bold text-np-crimson flex items-center gap-2"><Shield className="h-4 w-4 sm:h-5 sm:w-5" /> {criticalCount}</p></div>}
+                   {criticalCount > 0 && <div className="space-y-1"><p className="label-category text-[10px] text-status-down/60">Hazards</p><p className="text-lg sm:text-xl font-bold text-status-down flex items-center gap-2"><Shield className="h-4 w-4 sm:h-5 sm:w-5" /> {criticalCount}</p></div>}
                 </div>
             </div>
             <Card className="p-5 sm:p-8 bg-card/40 dark:bg-card/20 border-border flex items-center justify-center sm:justify-start gap-6 sm:gap-8">
@@ -348,15 +348,15 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
             <div className="xl:col-span-8 space-y-6">
                <div className="flex border-b border-border bg-muted/10 rounded-xl overflow-x-auto np-scroll p-0.5">
                   {(["overview", "files", "issues"] as const).map((t) => (
-                    <button key={t} onClick={() => setActiveTab(t)} className={cn("flex-1 min-w-[120px] py-3 sm:py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg", activeTab === t ? "text-np-gold bg-background shadow-sm" : "text-muted-foreground/40 hover:bg-muted/20")}>
+                    <button key={t} onClick={() => setActiveTab(t)} className={cn("flex-1 min-w-[120px] py-3 sm:py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg", activeTab === t ? "text-foreground bg-background shadow-sm" : "text-muted-foreground/40 hover:bg-muted/20")}>
                       {t === "overview" ? `Top (${topIssues.length})` : t === "files" ? `Nodes (${filesReviewed})` : `Registry (${allIssues.length})`}
                     </button>
                   ))}
                   {(diff?.hasDiff || diffLoading) && (
-                    <button onClick={() => setActiveTab("diff")} className={cn("flex-1 min-w-[120px] py-3 sm:py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg relative", activeTab === "diff" ? "text-np-gold bg-background shadow-sm" : "text-muted-foreground/40 hover:bg-muted/20")}>
+                    <button onClick={() => setActiveTab("diff")} className={cn("flex-1 min-w-[120px] py-3 sm:py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg relative", activeTab === "diff" ? "text-foreground bg-background shadow-sm" : "text-muted-foreground/40 hover:bg-muted/20")}>
                       Diff
                       {diff?.hasDiff && diff.scoreDelta !== undefined && diff.scoreDelta !== 0 && (
-                        <span className={cn("ml-1.5 text-[9px] font-bold", diff.scoreDelta > 0 ? "text-np-teal" : "text-np-crimson")}>
+                        <span className={cn("ml-1.5 text-[9px] font-bold", diff.scoreDelta > 0 ? "text-status-up" : "text-status-down")}>
                           {diff.scoreDelta > 0 ? `+${diff.scoreDelta}` : diff.scoreDelta}
                         </span>
                       )}
@@ -381,11 +381,11 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
                           <div className={cn(
                             "p-5 rounded-xl border flex items-center gap-6",
                             diff.scoreDelta === 0 ? "bg-muted/20 border-border"
-                            : diff.scoreDelta! > 0 ? "bg-np-teal/5 border-np-teal/20"
-                            : "bg-np-crimson/5 border-np-crimson/20"
+                            : diff.scoreDelta! > 0 ? "bg-np-teal/5 border-status-up/20"
+                            : "bg-np-crimson/5 border-status-down/20"
                           )}>
                             <div className="text-center">
-                              <p className={cn("text-4xl font-black", diff.scoreDelta === 0 ? "text-muted-foreground" : diff.scoreDelta! > 0 ? "text-np-teal" : "text-np-crimson")}>
+                              <p className={cn("text-4xl font-black", diff.scoreDelta === 0 ? "text-muted-foreground" : diff.scoreDelta! > 0 ? "text-status-up" : "text-status-down")}>
                                 {diff.scoreDelta! > 0 ? `+${diff.scoreDelta}` : diff.scoreDelta}
                               </p>
                               <p className="text-[10px] uppercase text-muted-foreground mt-1">Score Delta</p>
@@ -402,12 +402,12 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
 
                           {/* Stats row */}
                           <div className="grid grid-cols-2 gap-4">
-                            <div className="p-4 bg-np-crimson/5 border border-np-crimson/20 rounded-xl text-center">
-                              <p className="text-3xl font-black text-np-crimson">{diff.newIssuesCount}</p>
+                            <div className="p-4 bg-np-crimson/5 border border-status-down/20 rounded-xl text-center">
+                              <p className="text-3xl font-black text-status-down">{diff.newIssuesCount}</p>
                               <p className="text-[10px] uppercase text-muted-foreground mt-1">New Issues</p>
                             </div>
-                            <div className="p-4 bg-np-teal/5 border border-np-teal/20 rounded-xl text-center">
-                              <p className="text-3xl font-black text-np-teal">{diff.fixedIssuesCount}</p>
+                            <div className="p-4 bg-np-teal/5 border border-status-up/20 rounded-xl text-center">
+                              <p className="text-3xl font-black text-status-up">{diff.fixedIssuesCount}</p>
                               <p className="text-[10px] uppercase text-muted-foreground mt-1">Issues Fixed</p>
                             </div>
                           </div>
@@ -415,9 +415,9 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
                           {/* New issues */}
                           {(diff.newIssues?.length ?? 0) > 0 && (
                             <div className="space-y-3">
-                              <p className="text-[11px] font-bold uppercase tracking-widest text-np-crimson">New Issues Introduced</p>
+                              <p className="text-[11px] font-bold uppercase tracking-widest text-status-down">New Issues Introduced</p>
                               {diff.newIssues!.map((issue, i) => (
-                                <div key={i} className="p-3 bg-np-crimson/5 border border-np-crimson/10 rounded-lg">
+                                <div key={i} className="p-3 bg-np-crimson/5 border border-status-down/20 rounded-lg">
                                   <p className="text-[12px] font-medium text-foreground">{issue.message}</p>
                                   <p className="text-[10px] text-muted-foreground mt-1">{issue.file} · {issue.severity} · {issue.category}</p>
                                 </div>
@@ -428,7 +428,7 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
                           {/* Fixed issues */}
                           {(diff.fixedIssues?.length ?? 0) > 0 && (
                             <div className="space-y-3">
-                              <p className="text-[11px] font-bold uppercase tracking-widest text-np-teal">Issues Fixed</p>
+                              <p className="text-[11px] font-bold uppercase tracking-widest text-status-up">Issues Fixed</p>
                               {diff.fixedIssues!.map((issue, i) => (
                                 <div key={i} className="p-3 bg-np-teal/5 border border-np-teal/10 rounded-lg line-through opacity-60">
                                   <p className="text-[12px] font-medium text-foreground">{issue.message}</p>

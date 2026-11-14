@@ -68,25 +68,21 @@ export function PulseAI() {
         onClick={() => setIsOpen(!isOpen)}
         aria-label={isOpen ? "Close Pulse-AI" : "Open Pulse-AI"}
         className={cn(
-          "fixed bottom-24 md:bottom-6 right-6 h-14 w-14 rounded-full z-[90] items-center justify-center transition-all duration-300 shadow-2xl group cursor-pointer",
+          "fixed bottom-24 md:bottom-6 right-6 h-12 w-12 rounded-full z-[90] items-center justify-center transition-all duration-200 shadow-lg cursor-pointer bg-primary text-primary-foreground border border-border",
           isOpen ? "hidden md:flex" : "flex",
-          isOpen ? "rotate-90 scale-90" : "hover:scale-110 active:scale-95"
+          isOpen ? "rotate-90 scale-95" : "hover:scale-105 active:scale-95"
         )}
-        style={{
-          background: "linear-gradient(135deg, var(--np-gold), #D4AF37)",
-          boxShadow: "0 0 20px rgba(180, 140, 60, 0.3)"
-        }}
       >
         {isOpen ? (
-          <X className="h-6 w-6 text-white" />
+          <X className="h-5 w-5" strokeWidth={1.5} />
         ) : (
-          <Activity className="h-6 w-6 text-white" />
+          <Activity className="h-5 w-5" strokeWidth={1.5} />
         )}
         
         {/* Tooltip */}
         {!isOpen && (
-          <div className="absolute right-16 px-3 py-1.5 bg-card border border-border rounded-ui text-[11px] font-bold uppercase tracking-widest text-foreground whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-xl">
-            Ask Pulse-AI
+          <div className="absolute right-14 px-2.5 py-1 bg-card border border-border rounded-ui text-xs font-medium text-foreground whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-md">
+            Ask Pulse AI
           </div>
         )}
       </button>
@@ -94,30 +90,30 @@ export function PulseAI() {
       {/* Chat Window */}
       {isOpen && (
         <div
-          className="fixed z-[90] flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-300
+          className="fixed z-[90] flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-200
             inset-0 md:inset-auto
             md:bottom-24 md:right-6
             md:w-[350px] md:max-w-[calc(100vw-3rem)]
             md:h-[500px] md:max-h-[calc(100vh-10rem)]
-            md:rounded-card md:border md:border-border md:shadow-2xl
-            bg-card backdrop-blur-xl"
+            md:rounded-card md:border md:border-border md:shadow-xl
+            bg-card"
         >
           {/* Header */}
-          <div className="p-4 border-b border-border bg-muted/30 flex items-center justify-between">
+          <div className="p-3.5 border-b border-border bg-muted/40 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="h-8 w-8 rounded-ui bg-np-gold/10 flex items-center justify-center">
-                <Activity className="h-4 w-4 text-np-gold" />
+              <div className="h-7 w-7 rounded-ui bg-muted border border-border flex items-center justify-center">
+                <Activity className="h-3.5 w-3.5 text-foreground" strokeWidth={1.5} />
               </div>
               <div>
-                <p className="text-[13px] font-bold uppercase tracking-tight">Pulse-AI</p>
+                <p className="text-[13px] font-semibold text-foreground">Pulse AI</p>
               </div>
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-muted-foreground hover:text-foreground p-1"
+              className="text-muted-foreground hover:text-foreground p-1 transition-colors"
               aria-label="Close"
             >
-              <X className="h-4 w-4" />
+              <X className="h-4 w-4" strokeWidth={1.5} />
             </button>
           </div>
 
@@ -127,55 +123,55 @@ export function PulseAI() {
             className="flex-1 overflow-y-auto p-4 space-y-4 np-scroll"
           >
             {messages.map((m, i) => (
-              <div key={i} className={cn("flex gap-3", m.role === "user" ? "flex-row-reverse" : "flex-row")}>
+              <div key={i} className={cn("flex gap-2.5", m.role === "user" ? "flex-row-reverse" : "flex-row")}>
                 <div className={cn(
-                  "h-7 w-7 rounded-full flex items-center justify-center shrink-0",
-                  m.role === "user" ? "bg-np-gold/10 text-np-gold" : "bg-muted text-muted-foreground"
+                  "h-6 w-6 rounded-full flex items-center justify-center shrink-0 text-xs font-medium border border-border",
+                  m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                 )}>
-                  {m.role === "user" ? <User className="h-3.5 w-3.5" /> : <Activity className="h-3.5 w-3.5" />}
+                  {m.role === "user" ? <User className="h-3 w-3" strokeWidth={1.5} /> : <Activity className="h-3 w-3" strokeWidth={1.5} />}
                 </div>
                 <div className={cn(
-                  "max-w-[80%] p-3 rounded-ui text-[12.5px] leading-relaxed prose dark:prose-invert prose-p:my-0 prose-sm",
-                  m.role === "user" ? "bg-np-gold text-white" : "bg-muted/50 border border-border"
+                  "max-w-[80%] p-3 rounded-ui text-xs leading-relaxed prose dark:prose-invert prose-p:my-0 prose-sm",
+                  m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted border border-border text-foreground"
                 )}>
                   <ReactMarkdown>{m.content}</ReactMarkdown>
                 </div>
               </div>
             ))}
             {loading && (
-              <div className="flex gap-3">
-                <div className="h-7 w-7 rounded-full bg-muted flex items-center justify-center">
-                  <Bot className="h-3.5 w-3.5 text-muted-foreground animate-bounce" />
+              <div className="flex gap-2.5">
+                <div className="h-6 w-6 rounded-full bg-muted border border-border flex items-center justify-center">
+                  <Bot className="h-3 w-3 text-muted-foreground animate-bounce" strokeWidth={1.5} />
                 </div>
-                <div className="bg-muted/30 p-3 rounded-ui">
-                  <Loader2 className="h-3.5 w-3.5 animate-spin text-np-gold" />
+                <div className="bg-muted p-3 rounded-ui border border-border">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
                 </div>
               </div>
             )}
           </div>
 
           {/* Input — sticky to bottom, clears keyboard on mobile */}
-          <div className="p-4 border-t border-border bg-muted/20 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div className="p-3 border-t border-border bg-card pb-[max(0.75rem,env(safe-area-inset-bottom))]">
             <div className="relative">
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-                placeholder="Ask something..."
+                placeholder="Ask about endpoints, incidents, or audits..."
                 enterKeyHint="send"
-                className="w-full bg-background border border-border rounded-ui px-4 py-3 pr-12 text-[14px] outline-none focus:border-np-gold transition-colors"
+                className="w-full bg-background border border-border rounded-ui px-3.5 py-2.5 pr-10 text-xs outline-none focus:border-primary transition-colors text-foreground placeholder:text-muted-foreground"
               />
               <button
                 onClick={handleSend}
                 disabled={loading || !input.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-np-slate hover:text-np-gold disabled:opacity-30 transition-colors"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-muted-foreground hover:text-foreground disabled:opacity-30 transition-colors"
                 aria-label="Send message"
               >
-                <Send className="h-4 w-4" />
+                <Send className="h-3.5 w-3.5" strokeWidth={1.5} />
               </button>
             </div>
-            <p className="text-[9px] text-center mt-2 text-muted-foreground uppercase tracking-widest font-medium">
-              Powered by NexPulse Intelligence
+            <p className="text-[10px] text-center mt-2 text-muted-foreground">
+              Direct telemetry &amp; code analysis
             </p>
           </div>
         </div>

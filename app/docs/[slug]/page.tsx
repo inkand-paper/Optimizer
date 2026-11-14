@@ -178,14 +178,14 @@ export default async function DocDetail({ params }: { params: Promise<{ slug: st
         <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-16 md:py-24">
           <Link
             href="/docs"
-            className="inline-flex items-center gap-2 text-muted-foreground hover:text-np-gold transition-colors mb-12 group font-semibold text-[11px] uppercase tracking-widest"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-12 group font-semibold text-[11px] uppercase tracking-widest"
           >
             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
             Return to Knowledge Base
           </Link>
 
           <div className="flex items-center gap-4 mb-10 pb-6 border-b border-border">
-            <div className="px-3 py-1.5 rounded-ui bg-np-gold/10 text-np-gold text-[11px] font-semibold uppercase tracking-widest flex items-center gap-1.5 border border-np-gold/20">
+            <div className="px-3 py-1.5 rounded-ui bg-primary text-primary-foreground/10 text-foreground text-[11px] font-semibold uppercase tracking-widest flex items-center gap-1.5 border border-border">
               <BookOpen className="h-3.5 w-3.5" />
               <span>Protocol Document</span>
             </div>
@@ -205,7 +205,7 @@ export default async function DocDetail({ params }: { params: Promise<{ slug: st
           />
 
           <Card className="mt-20 p-10 text-center relative overflow-hidden">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-40 bg-np-gold/5 blur-[60px] pointer-events-none" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-40 bg-primary text-primary-foreground/5 blur-[60px] pointer-events-none" />
             <div className="relative z-10">
               <h4 className="text-[20px] font-semibold mb-4 tracking-tight">Need further clarification?</h4>
               <p className="text-[14px] text-muted-foreground mb-6">Our engineering team is available for direct support.</p>

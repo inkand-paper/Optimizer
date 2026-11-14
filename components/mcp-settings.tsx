@@ -84,15 +84,15 @@ export function MCPSettings() {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
 
       {/* ── Header ── */}
-      <Card className="p-6 bg-gradient-to-r from-np-gold/5 via-background to-background border-np-gold/20">
+      <Card className="p-6 border-border bg-card">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-ui bg-np-gold/10 border border-np-gold/30 flex items-center justify-center text-np-gold">
+          <div className="h-8 w-8 rounded-ui bg-muted border border-border flex items-center justify-center text-foreground">
             <Terminal className="h-5 w-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-base font-bold uppercase tracking-tight">MCP Server Integration</h2>
-              <span className="bg-np-gold/20 text-np-gold font-bold text-[9px] uppercase tracking-widest px-2 py-0.5 rounded border border-np-gold/30">v1.0</span>
+              <span className="bg-muted text-foreground text-[10px] font-mono px-2 py-0.5 rounded border border-border">v1.0</span>
             </div>
             <p className="text-[12px] text-muted-foreground mt-0.5">
               Connect AI agents (Cursor, Claude Desktop) directly to your NexPulse infrastructure telemetry.
@@ -104,18 +104,18 @@ export function MCPSettings() {
       {/* ── MCP Endpoint & Test ── */}
       <Card className="p-6 space-y-5">
         <h3 className="text-[13px] font-semibold uppercase tracking-wider flex items-center gap-2">
-          <Server className="h-4 w-4 text-np-gold" />
+          <Server className="h-4 w-4 text-foreground" />
           Server Endpoint
         </h3>
 
         <div className="space-y-2">
           <p className="text-[11px] text-muted-foreground uppercase tracking-widest">MCP URL</p>
           <div className="flex items-center gap-2">
-            <code className="flex-1 font-mono text-[12px] p-2.5 bg-slate-950 rounded-ui border border-slate-800 text-np-gold truncate">
+            <code className="flex-1 font-mono text-[12px] p-2.5 bg-slate-950 rounded-ui border border-slate-800 text-foreground truncate">
               {mcpEndpoint}
             </code>
             <Button size="sm" variant="outline" onClick={() => copyText(mcpEndpoint, "url")}>
-              {copied === "url" ? <CheckCircle2 className="h-3.5 w-3.5 text-np-teal" /> : <Copy className="h-3.5 w-3.5" />}
+              {copied === "url" ? <CheckCircle2 className="h-3.5 w-3.5 text-status-up" /> : <Copy className="h-3.5 w-3.5" />}
             </Button>
           </div>
         </div>
@@ -128,20 +128,20 @@ export function MCPSettings() {
               placeholder="npx_xxxxxxxxxxxxxxxxxxxxxxxx"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
-              className="flex-1 font-mono text-[12px] px-3 py-2 bg-background border border-border rounded-ui focus:outline-none focus:border-np-gold/50 transition-colors"
+              className="flex-1 font-mono text-[12px] px-3 py-2 bg-background border border-border rounded-ui focus:outline-none focus:border-primary transition-colors"
             />
             <Button onClick={testConnection} disabled={testing || !apiKey} variant="outline">
               {testing ? <RefreshCw className="h-4 w-4 animate-spin" /> : "Ping"}
             </Button>
           </div>
           {testResult === "ok" && (
-            <p className="text-[11px] text-np-teal flex items-center gap-1.5">
+            <p className="text-[11px] text-status-up flex items-center gap-1.5">
               <CheckCircle2 className="h-3.5 w-3.5" />
               Connection successful — MCP server is reachable.
             </p>
           )}
           {testResult === "fail" && (
-            <p className="text-[11px] text-np-crimson">
+            <p className="text-[11px] text-status-down">
               Connection failed — check your API key and try again.
             </p>
           )}
@@ -151,17 +151,17 @@ export function MCPSettings() {
       {/* ── Available Tools ── */}
       <Card className="p-6 space-y-4">
         <h3 className="text-[13px] font-semibold uppercase tracking-wider flex items-center gap-2">
-          <Terminal className="h-4 w-4 text-np-gold" />
+          <Terminal className="h-4 w-4 text-foreground" />
           Available Tools
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {MCP_TOOLS.map((tool) => (
             <div
               key={tool.name}
-              className="p-3.5 rounded-ui border border-border bg-muted/20 hover:border-np-gold/30 transition-all space-y-1"
+              className="p-3.5 rounded-ui border border-border bg-muted/20 hover:border-foreground/30 transition-all space-y-1"
             >
               <div className="flex items-center gap-2">
-                <tool.icon className="h-3.5 w-3.5 text-np-gold shrink-0" />
+                <tool.icon className="h-3.5 w-3.5 text-foreground shrink-0" />
                 <code className="text-[11px] font-mono text-foreground font-semibold">{tool.name}</code>
                 {tool.inputRequired && (
                   <span className="ml-auto text-[8px] uppercase tracking-widest bg-muted px-1.5 py-0.5 rounded text-muted-foreground">args</span>
@@ -180,7 +180,7 @@ export function MCPSettings() {
         <Card className="p-6 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-[13px] font-semibold uppercase tracking-wider flex items-center gap-2">
-              <Key className="h-4 w-4 text-np-gold" />
+              <Key className="h-4 w-4 text-foreground" />
               Cursor Config
             </h3>
             <a
@@ -193,14 +193,14 @@ export function MCPSettings() {
             </a>
           </div>
           <div className="relative">
-            <pre className="p-4 bg-muted/30 rounded-ui border border-border/40 text-[11px] font-mono text-np-teal overflow-auto max-h-52 leading-relaxed">
+            <pre className="p-4 bg-muted/30 rounded-ui border border-border/40 text-[11px] font-mono text-status-up overflow-auto max-h-52 leading-relaxed">
               {cursorConfig}
             </pre>
             <button
               onClick={() => copyText(cursorConfig, "cursor")}
               className="absolute top-2 right-2 p-1.5 rounded bg-card text-foreground border border-border/40 hover:bg-muted transition-colors"
             >
-              {copied === "cursor" ? <CheckCircle2 className="h-3.5 w-3.5 text-np-teal" /> : <Copy className="h-3.5 w-3.5" />}
+              {copied === "cursor" ? <CheckCircle2 className="h-3.5 w-3.5 text-status-up" /> : <Copy className="h-3.5 w-3.5" />}
             </button>
           </div>
           <p className="text-[10px] text-muted-foreground">
@@ -212,7 +212,7 @@ export function MCPSettings() {
         <Card className="p-6 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-[13px] font-semibold uppercase tracking-wider flex items-center gap-2">
-              <Key className="h-4 w-4 text-np-gold" />
+              <Key className="h-4 w-4 text-foreground" />
               Claude Desktop Config
             </h3>
             <a
@@ -225,14 +225,14 @@ export function MCPSettings() {
             </a>
           </div>
           <div className="relative">
-            <pre className="p-4 bg-muted/30 rounded-ui border border-border/40 text-[11px] font-mono text-np-teal overflow-auto max-h-52 leading-relaxed">
+            <pre className="p-4 bg-muted/30 rounded-ui border border-border/40 text-[11px] font-mono text-status-up overflow-auto max-h-52 leading-relaxed">
               {claudeConfig}
             </pre>
             <button
               onClick={() => copyText(claudeConfig, "claude")}
               className="absolute top-2 right-2 p-1.5 rounded bg-card text-foreground border border-border/40 hover:bg-muted transition-colors"
             >
-              {copied === "claude" ? <CheckCircle2 className="h-3.5 w-3.5 text-np-teal" /> : <Copy className="h-3.5 w-3.5" />}
+              {copied === "claude" ? <CheckCircle2 className="h-3.5 w-3.5 text-status-up" /> : <Copy className="h-3.5 w-3.5" />}
             </button>
           </div>
           <p className="text-[10px] text-muted-foreground">

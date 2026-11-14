@@ -19,7 +19,7 @@ export default function CodeReviewRedirect() {
 
   return (
     <div className="min-h-screen bg-np-obsidian flex flex-col items-center justify-center space-y-4">
-      <Loader2 className="h-8 w-8 animate-spin text-np-gold" />
+      <Loader2 className="h-8 w-8 animate-spin text-foreground" />
       <p className="text-[12px] font-mono text-muted-foreground animate-pulse tracking-widest uppercase">
         Synchronizing Neural Console...
       </p>

@@ -38,7 +38,7 @@ export default async function AdminStatusPage() {
       title: "Active API Keys",
       value: activeKeys,
       icon: Key,
-      color: "text-np-gold",
+      color: "text-foreground",
       description: "Machine API access tokens"
     },
     {
@@ -52,7 +52,7 @@ export default async function AdminStatusPage() {
       title: "Access Violations",
       value: rlsBlockedCount,
       icon: AlertTriangle,
-      color: rlsBlockedCount > 0 ? "text-red-500" : "text-np-gold",
+      color: rlsBlockedCount > 0 ? "text-red-500" : "text-foreground",
       description: "Attempts blocked by RBAC/RLS"
     }
   ];
@@ -86,19 +86,19 @@ export default async function AdminStatusPage() {
 
       <Card className="p-8 border-border/50 bg-card/30">
         <h3 className="text-[18px] font-semibold mb-6 flex items-center gap-2">
-          <Shield className="h-5 w-5 text-np-gold" /> System Hardening Log
+          <Shield className="h-5 w-5 text-foreground" /> System Hardening Log
         </h3>
         <div className="space-y-4">
-          <div className="text-[13px] text-muted-foreground border-l-2 border-np-gold pl-4 py-1">
+          <div className="text-[13px] text-muted-foreground border-l-2 border-border pl-4 py-1">
             <span className="text-foreground font-medium">Phase 1:</span> Transport Security (HSTS, CSP, X-Frame) — <span className="text-green-500">Verified</span>
           </div>
-          <div className="text-[13px] text-muted-foreground border-l-2 border-np-gold pl-4 py-1">
+          <div className="text-[13px] text-muted-foreground border-l-2 border-border pl-4 py-1">
             <span className="text-foreground font-medium">Phase 2:</span> Edge Defense (Global Rate Limiting, RBAC) — <span className="text-green-500">Verified</span>
           </div>
-          <div className="text-[13px] text-muted-foreground border-l-2 border-np-gold pl-4 py-1">
+          <div className="text-[13px] text-muted-foreground border-l-2 border-border pl-4 py-1">
             <span className="text-foreground font-medium">Phase 3:</span> Data Isolation (PostgreSQL RLS) — <span className="text-green-500">Verified</span>
           </div>
-          <div className="text-[13px] text-muted-foreground border-l-2 border-np-gold pl-4 py-1">
+          <div className="text-[13px] text-muted-foreground border-l-2 border-border pl-4 py-1">
             <span className="text-foreground font-medium">Phase 4:</span> Zero-Trust Observability (Anomalies, Alerts) — <span className="text-green-500">Active</span>
           </div>
         </div>

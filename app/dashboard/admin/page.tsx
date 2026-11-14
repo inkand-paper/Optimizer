@@ -215,21 +215,21 @@ export default function AdminPortal() {
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-6 sm:py-10">
         {/* Header */}
         <div className="mb-8">
-          <Link href="/dashboard" className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground hover:text-np-gold mb-6 transition-all group w-fit">
+          <Link href="/dashboard" className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground hover:text-foreground mb-6 transition-all group w-fit">
             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
             <span>Return to Mission Control</span>
           </Link>
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
               <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight uppercase">
-                Admin <span className="text-np-gold">Panel</span>
+                Admin <span className="text-foreground">Panel</span>
               </h1>
               <p className="label-category text-muted-foreground mt-2">Manage users, plans, and student trial applications.</p>
             </div>
             {/* Stats card */}
             <Card className="p-4 flex items-center gap-3 sm:min-w-[180px]">
-              <div className="h-10 w-10 rounded-ui bg-np-gold/10 flex items-center justify-center border border-np-gold/20 shrink-0">
-                <Users className="h-4 w-4 text-np-gold" />
+              <div className="h-10 w-10 rounded-ui bg-primary text-primary-foreground/10 flex items-center justify-center border border-border shrink-0">
+                <Users className="h-4 w-4 text-foreground" />
               </div>
               <div>
                 <p className="label-category text-muted-foreground text-[9px] mb-0.5">Total Users</p>
@@ -246,7 +246,7 @@ export default function AdminPortal() {
             className={cn(
               "flex items-center gap-2 px-4 py-2 rounded-ui text-[12px] font-medium uppercase tracking-wider border transition-all",
               activeTab === 'users'
-                ? "bg-np-gold/15 border-np-gold/40 text-np-gold"
+                ? "bg-primary text-primary-foreground/15 border-border text-foreground"
                 : "border-border text-muted-foreground hover:text-foreground"
             )}
           >
@@ -258,7 +258,7 @@ export default function AdminPortal() {
             className={cn(
               "flex items-center gap-2 px-4 py-2 rounded-ui text-[12px] font-medium uppercase tracking-wider border transition-all",
               activeTab === 'trials'
-                ? "bg-np-gold/15 border-np-gold/40 text-np-gold"
+                ? "bg-primary text-primary-foreground/15 border-border text-foreground"
                 : "border-border text-muted-foreground hover:text-foreground"
             )}
           >
@@ -290,7 +290,7 @@ export default function AdminPortal() {
               onClick={fetchUsers} 
               className="h-10 w-10 p-0 shrink-0 border-border"
             >
-               <Zap className={cn("h-4 w-4 text-muted-foreground", loading && "animate-spin text-np-gold")} />
+               <Zap className={cn("h-4 w-4 text-muted-foreground", loading && "animate-spin text-foreground")} />
             </Button>
           </div>
 
@@ -311,7 +311,7 @@ export default function AdminPortal() {
                   <tr key={user.id} className="hover:bg-muted/20 transition-all group">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-ui bg-np-gold/10 border border-np-gold/20 flex items-center justify-center text-np-gold font-bold text-sm uppercase shrink-0">
+                        <div className="h-9 w-9 rounded-ui bg-primary text-primary-foreground/10 border border-border flex items-center justify-center text-foreground font-bold text-sm uppercase shrink-0">
                           {user.name?.[0] || user.email[0]}
                         </div>
                         <div className="min-w-0">
@@ -326,7 +326,7 @@ export default function AdminPortal() {
                           value={user.plan}
                           onChange={(e) => updateUser(user.id, { plan: e.target.value })}
                           disabled={updatingId === user.id}
-                          className="text-[10px] font-semibold uppercase tracking-wider px-2 py-1.5 rounded bg-muted border border-border focus:border-np-gold outline-none"
+                          className="text-[10px] font-semibold uppercase tracking-wider px-2 py-1.5 rounded bg-muted border border-border focus:border-border outline-none"
                         >
                           <option value="FREE">Free</option>
                           <option value="PRO">PRO</option>
@@ -336,7 +336,7 @@ export default function AdminPortal() {
                           value={user.role}
                           onChange={(e) => updateUser(user.id, { role: e.target.value })}
                           disabled={updatingId === user.id}
-                          className="text-[10px] font-semibold uppercase tracking-wider px-2 py-1.5 rounded bg-np-gold/10 text-np-gold border border-np-gold/20 outline-none"
+                          className="text-[10px] font-semibold uppercase tracking-wider px-2 py-1.5 rounded bg-primary text-primary-foreground/10 text-foreground border border-border outline-none"
                         >
                           <option value="DEVELOPER">Developer</option>
                           <option value="ADMIN">Admin</option>
@@ -364,7 +364,7 @@ export default function AdminPortal() {
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => { setGiftTarget(user); setGiftPlan('PRO'); setGiftDays(30); setGiftPermanent(false); setGiftReason(''); }}
-                          className="p-2 text-muted-foreground hover:text-np-gold transition-all opacity-0 group-hover:opacity-100"
+                          className="p-2 text-muted-foreground hover:text-foreground transition-all opacity-0 group-hover:opacity-100"
                           title="Gift PRO"
                         >
                           <Zap className="h-4 w-4" />
@@ -372,7 +372,7 @@ export default function AdminPortal() {
                         <button
                           onClick={() => deleteUser(user.id)}
                           disabled={updatingId === user.id}
-                          className="p-2 text-muted-foreground hover:text-np-crimson transition-all opacity-0 group-hover:opacity-100 disabled:opacity-50"
+                          className="p-2 text-muted-foreground hover:text-status-down transition-all opacity-0 group-hover:opacity-100 disabled:opacity-50"
                           title="Delete user"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -391,7 +391,7 @@ export default function AdminPortal() {
               <div key={user.id} className="p-4 space-y-3">
                 {/* Identity */}
                 <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-ui bg-np-gold/10 border border-np-gold/20 flex items-center justify-center text-np-gold font-bold text-sm uppercase shrink-0">
+                  <div className="h-9 w-9 rounded-ui bg-primary text-primary-foreground/10 border border-border flex items-center justify-center text-foreground font-bold text-sm uppercase shrink-0">
                     {user.name?.[0] || user.email[0]}
                   </div>
                   <div className="min-w-0 flex-1">
@@ -400,7 +400,7 @@ export default function AdminPortal() {
                   </div>
                   <button
                     onClick={() => { setGiftTarget(user); setGiftPlan('PRO'); setGiftDays(30); setGiftPermanent(false); setGiftReason(''); }}
-                    className="p-2 text-muted-foreground hover:text-np-gold transition-colors shrink-0"
+                    className="p-2 text-muted-foreground hover:text-foreground transition-colors shrink-0"
                     title="Gift PRO"
                   >
                     <Zap className="h-4 w-4" />
@@ -408,7 +408,7 @@ export default function AdminPortal() {
                   <button
                     onClick={() => deleteUser(user.id)}
                     disabled={updatingId === user.id}
-                    className="p-2 text-muted-foreground hover:text-np-crimson transition-colors shrink-0"
+                    className="p-2 text-muted-foreground hover:text-status-down transition-colors shrink-0"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -420,7 +420,7 @@ export default function AdminPortal() {
                     value={user.plan}
                     onChange={(e) => updateUser(user.id, { plan: e.target.value })}
                     disabled={updatingId === user.id}
-                    className="flex-1 text-[11px] font-semibold uppercase tracking-wider px-3 py-2 rounded bg-muted border border-border focus:border-np-gold outline-none"
+                    className="flex-1 text-[11px] font-semibold uppercase tracking-wider px-3 py-2 rounded bg-muted border border-border focus:border-border outline-none"
                   >
                     <option value="FREE">Free</option>
                     <option value="PRO">PRO</option>
@@ -430,7 +430,7 @@ export default function AdminPortal() {
                     value={user.role}
                     onChange={(e) => updateUser(user.id, { role: e.target.value })}
                     disabled={updatingId === user.id}
-                    className="flex-1 text-[11px] font-semibold uppercase tracking-wider px-3 py-2 rounded bg-np-gold/10 text-np-gold border border-np-gold/20 outline-none"
+                    className="flex-1 text-[11px] font-semibold uppercase tracking-wider px-3 py-2 rounded bg-primary text-primary-foreground/10 text-foreground border border-border outline-none"
                   >
                     <option value="DEVELOPER">Developer</option>
                     <option value="ADMIN">Admin</option>
@@ -460,9 +460,9 @@ export default function AdminPortal() {
                   className={cn(
                     "px-3 py-1.5 rounded text-[11px] font-medium uppercase tracking-wider transition-all",
                     trialFilter === s
-                      ? s === 'PENDING' ? "bg-np-gold/15 text-np-gold"
-                        : s === 'APPROVED' ? "bg-np-teal/15 text-np-teal"
-                        : "bg-np-crimson/15 text-np-crimson"
+                      ? s === 'PENDING' ? "bg-primary text-primary-foreground/15 text-foreground"
+                        : s === 'APPROVED' ? "bg-np-teal/15 text-status-up"
+                        : "bg-np-crimson/15 text-status-down"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
@@ -486,14 +486,14 @@ export default function AdminPortal() {
                         <p className="text-[13px] font-medium truncate">{trial.user.name || trial.user.email}</p>
                         <span className="text-[10px] text-muted-foreground shrink-0">{trial.user.email}</span>
                       </div>
-                      <p className="text-[12px] text-np-gold truncate">{trial.eduEmail}</p>
+                      <p className="text-[12px] text-foreground truncate">{trial.eduEmail}</p>
                       <div className="flex items-center gap-3 mt-1">
                         <span className="text-[10px] text-muted-foreground flex items-center gap-1">
                           <Clock className="h-3 w-3" />
                           {new Date(trial.submittedAt).toLocaleDateString()}
                         </span>
                         {trial.rejectionReason && (
-                          <span className="text-[10px] text-np-crimson truncate max-w-xs">{trial.rejectionReason}</span>
+                          <span className="text-[10px] text-status-down truncate max-w-xs">{trial.rejectionReason}</span>
                         )}
                       </div>
                     </div>
@@ -505,7 +505,7 @@ export default function AdminPortal() {
                           onClick={() => {
                             window.open(`/api/admin/student-trials/signed-url?trialId=${trial.id}`, '_blank');
                           }}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-border text-[11px] text-muted-foreground hover:text-foreground hover:border-np-gold/40 transition-all"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-border text-[11px] text-muted-foreground hover:text-foreground hover:border-border transition-all"
                         >
                           <Eye className="h-3.5 w-3.5" />
                           View ID
@@ -515,7 +515,7 @@ export default function AdminPortal() {
                       {trial.status === 'PENDING' && (
                         <button
                           onClick={() => { setReviewingTrial(trial); setRejectionReason(''); setRejectionNote(''); }}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-np-gold/30 text-[11px] text-np-gold hover:bg-np-gold/10 transition-all"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-border text-[11px] text-foreground hover:bg-primary text-primary-foreground/10 transition-all"
                         >
                           Review
                         </button>
@@ -535,7 +535,7 @@ export default function AdminPortal() {
           <div className="w-full max-w-md bg-background border border-border rounded-ui shadow-2xl p-6 space-y-5 animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between">
               <h3 className="text-[14px] font-bold uppercase flex items-center gap-2">
-                <Zap className="h-4 w-4 text-np-gold" />
+                <Zap className="h-4 w-4 text-foreground" />
                 Gift Plan Access
               </h3>
               <button onClick={() => setGiftTarget(null)} className="text-muted-foreground hover:text-foreground">
@@ -547,7 +547,7 @@ export default function AdminPortal() {
             <div className="p-3 bg-muted/30 rounded-ui">
               <p className="text-[13px] font-medium">{giftTarget.name || giftTarget.email}</p>
               <p className="text-[11px] text-muted-foreground">{giftTarget.email}</p>
-              <p className="text-[10px] text-muted-foreground mt-1">Current plan: <span className="text-np-gold">{giftTarget.plan}</span></p>
+              <p className="text-[10px] text-muted-foreground mt-1">Current plan: <span className="text-foreground">{giftTarget.plan}</span></p>
             </div>
 
             {/* Plan picker */}
@@ -561,7 +561,7 @@ export default function AdminPortal() {
                     className={cn(
                       "py-2.5 rounded-ui border text-[12px] font-semibold uppercase tracking-wider transition-all",
                       giftPlan === p
-                        ? "bg-np-gold/15 border-np-gold/40 text-np-gold"
+                        ? "bg-primary text-primary-foreground/15 border-border text-foreground"
                         : "border-border text-muted-foreground hover:text-foreground"
                     )}
                   >
@@ -594,7 +594,7 @@ export default function AdminPortal() {
                       className={cn(
                         "py-2 rounded-ui border text-[11px] font-medium transition-all",
                         giftDays === d
-                          ? "bg-np-gold/15 border-np-gold/40 text-np-gold"
+                          ? "bg-primary text-primary-foreground/15 border-border text-foreground"
                           : "border-border text-muted-foreground hover:text-foreground"
                       )}
                     >
@@ -613,7 +613,7 @@ export default function AdminPortal() {
                 value={giftReason}
                 onChange={e => setGiftReason(e.target.value)}
                 placeholder="e.g. launch promo, influencer, partner"
-                className="w-full h-9 px-3 rounded-ui bg-muted/30 border border-border text-[12px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-np-gold/50"
+                className="w-full h-9 px-3 rounded-ui bg-muted/30 border border-border text-[12px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
 
@@ -647,7 +647,7 @@ export default function AdminPortal() {
             <div className="p-4 bg-muted/30 rounded-ui space-y-1">
               <p className="text-[13px] font-medium">{reviewingTrial.user.name || reviewingTrial.user.email}</p>
               <p className="text-[11px] text-muted-foreground">{reviewingTrial.user.email}</p>
-              <p className="text-[12px] text-np-gold">{reviewingTrial.eduEmail}</p>
+              <p className="text-[12px] text-foreground">{reviewingTrial.eduEmail}</p>
               <p className="text-[10px] text-muted-foreground">Submitted {new Date(reviewingTrial.submittedAt).toLocaleDateString()}</p>
             </div>
 
@@ -659,7 +659,7 @@ export default function AdminPortal() {
                   onClick={() => {
                     window.open(`/api/admin/student-trials/signed-url?trialId=${reviewingTrial.id}`, '_blank');
                   }}
-                  className="w-full flex items-center justify-center gap-2 p-4 border border-border rounded-ui text-[12px] text-np-gold hover:bg-np-gold/5 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 p-4 border border-border rounded-ui text-[12px] text-foreground hover:bg-primary text-primary-foreground/5 transition-colors"
                 >
                   <Eye className="h-4 w-4" />
                   Open ID card (secure link, expires in 60s)
@@ -674,7 +674,7 @@ export default function AdminPortal() {
                 <select
                   value={rejectionReason}
                   onChange={e => setRejectionReason(e.target.value)}
-                  className="w-full h-10 px-3 pr-8 rounded-ui bg-muted/30 border border-border text-[12px] text-foreground appearance-none focus:outline-none focus:ring-1 focus:ring-np-gold/50"
+                  className="w-full h-10 px-3 pr-8 rounded-ui bg-muted/30 border border-border text-[12px] text-foreground appearance-none focus:outline-none focus:ring-1 focus:ring-primary"
                 >
                   <option value="">Select a reason...</option>
                   {REJECTION_REASONS.map(r => (
@@ -693,7 +693,7 @@ export default function AdminPortal() {
                 onChange={e => setRejectionNote(e.target.value)}
                 placeholder="Add any extra context for the applicant..."
                 rows={2}
-                className="w-full px-3 py-2 rounded-ui bg-muted/30 border border-border text-[12px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-np-gold/50 resize-none"
+                className="w-full px-3 py-2 rounded-ui bg-muted/30 border border-border text-[12px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
               />
             </div>
 
@@ -702,7 +702,7 @@ export default function AdminPortal() {
               <Button
                 onClick={() => handleReview('APPROVE')}
                 disabled={reviewLoading}
-                className="flex-1 flex items-center justify-center gap-2 h-10 text-[11px] uppercase tracking-wider bg-np-teal/15 border border-np-teal/30 text-np-teal hover:bg-np-teal/25"
+                className="flex-1 flex items-center justify-center gap-2 h-10 text-[11px] uppercase tracking-wider bg-np-teal/15 border border-status-up/20 text-status-up hover:bg-np-teal/25"
               >
                 <Check className="h-3.5 w-3.5" />
                 Approve
@@ -711,7 +711,7 @@ export default function AdminPortal() {
                 onClick={() => handleReview('REJECT')}
                 disabled={reviewLoading || !rejectionReason}
                 variant="outline"
-                className="flex-1 flex items-center justify-center gap-2 h-10 text-[11px] uppercase tracking-wider border-np-crimson/30 text-np-crimson hover:bg-np-crimson/10 disabled:opacity-40"
+                className="flex-1 flex items-center justify-center gap-2 h-10 text-[11px] uppercase tracking-wider border-status-down/20 text-status-down hover:bg-status-down/10 disabled:opacity-40"
               >
                 <X className="h-3.5 w-3.5" />
                 Reject

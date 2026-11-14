@@ -127,7 +127,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-4">
-        <Loader2 className="h-8 w-8 animate-spin text-np-gold" />
+        <Loader2 className="h-8 w-8 animate-spin text-foreground" />
         <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground animate-pulse">Synchronizing Infrastructure...</p>
       </div>
     );
@@ -151,7 +151,7 @@ export default function ProfilePage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight uppercase">
-              Operator <span className="text-np-gold">Profile</span>
+              Operator <span className="text-foreground">Profile</span>
             </h1>
             <p className="label-category text-muted-foreground mt-1 text-[10px] sm:text-[11px]">
               Manage your system credentials and authorization level.
@@ -171,11 +171,11 @@ export default function ProfilePage() {
 
             {/* Avatar card */}
             <Card className="p-5 sm:p-6 text-center space-y-4 relative overflow-hidden group">
-              <div className="absolute inset-0 bg-np-gold/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+              <div className="absolute inset-0 bg-primary text-primary-foreground/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
               {/* Avatar */}
               <div className="relative group mx-auto w-20 sm:w-24">
-                <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full overflow-hidden border-2 border-np-gold/20 flex items-center justify-center bg-np-gold/10 text-np-gold text-2xl sm:text-3xl font-bold">
+                <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full overflow-hidden border-2 border-border flex items-center justify-center bg-primary text-primary-foreground/10 text-foreground text-2xl sm:text-3xl font-bold">
                   {image ? (
                     <Image src={image} alt="Avatar" width={96} height={96} className="w-full h-full object-cover" />
                   ) : profileUser.email ? (
@@ -186,7 +186,7 @@ export default function ProfilePage() {
                 </div>
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute bottom-0 right-0 p-1.5 bg-np-ink border border-border rounded-full text-muted-foreground hover:text-np-gold transition-colors shadow-xl z-20"
+                  className="absolute bottom-0 right-0 p-1.5 bg-np-ink border border-border rounded-full text-muted-foreground hover:text-foreground transition-colors shadow-xl z-20"
                 >
                   <Camera className="h-3.5 w-3.5" />
                 </button>
@@ -197,7 +197,7 @@ export default function ProfilePage() {
               <div className="relative z-10">
                 <h2 className="text-base sm:text-lg font-bold uppercase truncate px-2">{profileUser.name || "Unnamed Unit"}</h2>
                 <div className="flex items-center justify-center flex-wrap gap-2 mt-1">
-                  <p className="label-category text-[10px] text-np-gold">{profileUser.role} · {profileUser.plan} TIER</p>
+                  <p className="label-category text-[10px] text-foreground">{profileUser.role} · {profileUser.plan} TIER</p>
                   {profileUser.emailVerified ? (
                     <Badge variant="success" className="h-4 px-1.5 text-[8px] uppercase tracking-tighter">Verified</Badge>
                   ) : (
@@ -220,11 +220,11 @@ export default function ProfilePage() {
             </Card>
 
             {/* Tier card */}
-            <Card className="p-5 sm:p-6 bg-np-gold/5 border-np-gold/20 overflow-hidden relative">
+            <Card className="p-5 sm:p-6 bg-primary text-primary-foreground/5 border-border overflow-hidden relative">
               <div className="absolute top-0 right-0 p-2 opacity-10 pointer-events-none">
                 <ShieldCheck className="h-16 w-16 sm:h-20 sm:w-20" />
               </div>
-              <div className="flex items-center gap-3 mb-4 text-np-gold relative z-10">
+              <div className="flex items-center gap-3 mb-4 text-foreground relative z-10">
                 <ShieldCheck className="h-5 w-5 shrink-0" />
                 <h3 className="text-[13px] font-bold uppercase">System Tier</h3>
               </div>
@@ -232,23 +232,23 @@ export default function ProfilePage() {
               {profileUser.plan === "BUSINESS" ? (
                 <div className="space-y-4 relative z-10">
                   <p className="text-[13px] text-muted-foreground leading-relaxed">
-                    You have achieved the <span className="text-np-gold font-bold">OPERATIONAL PEAK</span>. Your account is authorized for maximum infrastructure throughput.
+                    You have achieved the <span className="text-foreground font-bold">OPERATIONAL PEAK</span>. Your account is authorized for maximum infrastructure throughput.
                   </p>
-                  <div className="p-3 bg-np-gold/10 rounded-ui border border-np-gold/20 flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-np-gold animate-pulse" />
-                    <span className="text-[10px] uppercase font-bold text-np-gold">All Limits Unlocked</span>
+                  <div className="p-3 bg-primary text-primary-foreground/10 rounded-ui border border-border flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary text-primary-foreground animate-pulse" />
+                    <span className="text-[10px] uppercase font-bold text-foreground">All Limits Unlocked</span>
                   </div>
                   {/* Cancel link for Agency plan */}
                   {!cancelledUntil && (
                     <button
                       onClick={() => setCancelModal(true)}
-                      className="text-[10px] text-muted-foreground hover:text-np-crimson transition-colors underline underline-offset-2 w-full text-center mt-1"
+                      className="text-[10px] text-muted-foreground hover:text-status-down transition-colors underline underline-offset-2 w-full text-center mt-1"
                     >
                       Cancel subscription
                     </button>
                   )}
                   {cancelledUntil && (
-                    <p className="text-[10px] text-np-teal text-center">
+                    <p className="text-[10px] text-status-up text-center">
                       Cancelled — access until {new Date(cancelledUntil).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                     </p>
                   )}
@@ -256,7 +256,7 @@ export default function ProfilePage() {
               ) : profileUser.plan === "FREE" ? (
                 <div className="space-y-4 relative z-10">
                   <p className="text-[13px] text-muted-foreground leading-relaxed">
-                    Operating on the <span className="text-np-gold font-bold">FREE</span> protocol. Upgrade to expand your monitoring perimeter.
+                    Operating on the <span className="text-foreground font-bold">FREE</span> protocol. Upgrade to expand your monitoring perimeter.
                   </p>
                   <Button
                     onClick={() => setIsPricingOpen(true)}
@@ -269,7 +269,7 @@ export default function ProfilePage() {
               ) : (
                 <div className="space-y-4 relative z-10">
                   <p className="text-[13px] text-muted-foreground leading-relaxed">
-                    Operating on the <span className="text-np-gold font-bold">{profileUser.plan}</span> protocol.
+                    Operating on the <span className="text-foreground font-bold">{profileUser.plan}</span> protocol.
                   </p>
                   <Button
                     onClick={() => setIsPricingOpen(true)}
@@ -282,13 +282,13 @@ export default function ProfilePage() {
                   {!cancelledUntil && (
                     <button
                       onClick={() => setCancelModal(true)}
-                      className="text-[10px] text-muted-foreground hover:text-np-crimson transition-colors underline underline-offset-2 w-full text-center mt-1"
+                      className="text-[10px] text-muted-foreground hover:text-status-down transition-colors underline underline-offset-2 w-full text-center mt-1"
                     >
                       Cancel subscription
                     </button>
                   )}
                   {cancelledUntil && (
-                    <p className="text-[10px] text-np-teal text-center">
+                    <p className="text-[10px] text-status-up text-center">
                       Cancelled — access until {new Date(cancelledUntil).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                     </p>
                   )}
@@ -303,7 +303,7 @@ export default function ProfilePage() {
             {/* Personal Identity */}
             <Card className="p-5 sm:p-8">
               <h3 className="text-[14px] font-bold uppercase mb-5 sm:mb-6 flex items-center gap-2">
-                <User className="h-4 w-4 text-np-gold shrink-0" />
+                <User className="h-4 w-4 text-foreground shrink-0" />
                 Personal Identity
               </h3>
               <form onSubmit={handleUpdate} className="space-y-5 sm:space-y-6">
@@ -331,8 +331,8 @@ export default function ProfilePage() {
                   <div className={cn(
                     "p-3 rounded-ui text-[12px] font-medium",
                     message.type === "success"
-                      ? "bg-np-teal/10 text-np-teal border border-np-teal/20"
-                      : "bg-np-crimson/10 text-np-crimson border border-np-crimson/20"
+                      ? "bg-status-up/10 text-status-up border border-status-up/20"
+                      : "bg-status-down/10 text-status-down border border-status-down/20"
                   )}>
                     {message.text}
                   </div>
@@ -347,7 +347,7 @@ export default function ProfilePage() {
             {/* Security Credentials */}
             <Card className="p-5 sm:p-8">
               <h3 className="text-[14px] font-bold uppercase mb-5 sm:mb-6 flex items-center gap-2">
-                <Key className="h-4 w-4 text-np-gold shrink-0" />
+                <Key className="h-4 w-4 text-foreground shrink-0" />
                 Security Credentials
               </h3>
               <form onSubmit={async (e) => {
@@ -393,7 +393,7 @@ export default function ProfilePage() {
                       <button
                         type="button"
                         onClick={() => setShowCurrent(!showCurrent)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-np-gold transition-colors"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                       >
                         {showCurrent ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                       </button>
@@ -412,7 +412,7 @@ export default function ProfilePage() {
                       <button
                         type="button"
                         onClick={() => setShowNew(!showNew)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-np-gold transition-colors"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                       >
                         {showNew ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                       </button>
@@ -439,19 +439,19 @@ export default function ProfilePage() {
             {/* Advanced Protection */}
             <Card className="p-5 sm:p-8">
               <h3 className="text-[14px] font-bold uppercase mb-5 sm:mb-6 flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-np-gold shrink-0" />
+                <ShieldCheck className="h-4 w-4 text-foreground shrink-0" />
                 Advanced Protection
               </h3>
               <div className="space-y-4">
 
                 {/* Email unverified warning */}
                 {!profileUser.emailVerified && (
-                  <div className="p-3 sm:p-4 bg-np-crimson/5 border border-np-crimson/20 rounded-ui">
+                  <div className="p-3 sm:p-4 bg-np-crimson/5 border border-status-down/20 rounded-ui">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <div className="flex items-start sm:items-center gap-3">
-                        <AlertTriangle className="h-5 w-5 text-np-crimson shrink-0 mt-0.5 sm:mt-0" />
+                        <AlertTriangle className="h-5 w-5 text-status-down shrink-0 mt-0.5 sm:mt-0" />
                         <div>
-                          <p className="text-[12px] font-bold uppercase text-np-crimson">Email Unverified</p>
+                          <p className="text-[12px] font-bold uppercase text-status-down">Email Unverified</p>
                           <p className="text-[11px] text-muted-foreground">Verify your email to secure your account.</p>
                         </div>
                       </div>
@@ -470,7 +470,7 @@ export default function ProfilePage() {
                         }}
                         variant="outline"
                         size="sm"
-                        className="h-8 text-[10px] uppercase border-np-crimson/30 hover:bg-np-crimson/10 text-np-crimson self-start sm:self-auto"
+                        className="h-8 text-[10px] uppercase border-status-down/20 hover:bg-status-down/10 text-status-down self-start sm:self-auto"
                       >
                         Resend
                       </Button>
@@ -482,7 +482,7 @@ export default function ProfilePage() {
                 <div className="p-4 bg-muted/40 rounded-ui border border-dashed border-border flex flex-col gap-4">
                   <div className="flex items-start sm:items-center justify-between gap-3">
                     <div className="flex items-start sm:items-center gap-3">
-                      <Shield className="h-5 w-5 text-np-slate shrink-0 mt-0.5 sm:mt-0" />
+                      <Shield className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5 sm:mt-0" />
                       <div>
                         <p className="text-[12px] font-bold uppercase">Multi-Factor Auth (MFA)</p>
                         <p className="text-[10px] text-muted-foreground">High-security layer for your account access.</p>
@@ -590,7 +590,7 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-3 shrink-0">
                   <span className={cn(
                     "text-[11px] font-mono font-semibold uppercase tracking-wider",
-                    digestEnabled ? "text-np-teal" : "text-muted-foreground"
+                    digestEnabled ? "text-status-up" : "text-muted-foreground"
                   )}>
                     {digestEnabled ? "On" : "Off"}
                   </span>
@@ -620,18 +620,18 @@ export default function ProfilePage() {
             {profileUser.plan === 'FREE' && (
               <Card className="p-5 sm:p-8">
                 <h3 className="text-[14px] font-bold uppercase mb-5 sm:mb-6 flex items-center gap-2">
-                  <GraduationCap className="h-4 w-4 text-np-gold shrink-0" />
+                  <GraduationCap className="h-4 w-4 text-foreground shrink-0" />
                   Student Access
                 </h3>
 
                 {/* ── APPROVED ── */}
                 {studentTrial?.status === 'APPROVED' && (
-                  <div className="p-4 bg-np-teal/5 border border-np-teal/20 rounded-ui space-y-2">
-                    <p className="text-[12px] font-bold uppercase text-np-teal">
+                  <div className="p-4 bg-np-teal/5 border border-status-up/20 rounded-ui space-y-2">
+                    <p className="text-[12px] font-bold uppercase text-status-up">
                       {studentTrial.isExpired ? 'Trial Expired' : 'Trial Active'}
                     </p>
                     <p className="text-[11px] text-muted-foreground">
-                      Verified with <span className="text-np-gold">{studentTrial.eduEmail}</span>
+                      Verified with <span className="text-foreground">{studentTrial.eduEmail}</span>
                       {studentTrial.expiresAt && (
                         <span> — {studentTrial.isExpired ? 'expired' : 'expires'} {new Date(studentTrial.expiresAt).toLocaleDateString()}</span>
                       )}
@@ -641,13 +641,13 @@ export default function ProfilePage() {
 
                 {/* ── PENDING ── */}
                 {studentTrial?.status === 'PENDING' && (
-                  <div className="p-4 bg-np-gold/5 border border-np-gold/20 rounded-ui space-y-2">
+                  <div className="p-4 bg-primary text-primary-foreground/5 border border-border rounded-ui space-y-2">
                     <div className="flex items-center gap-2">
-                      <Loader2 className="h-3.5 w-3.5 text-np-gold animate-spin" />
-                      <p className="text-[12px] font-bold uppercase text-np-gold">Under Review</p>
+                      <Loader2 className="h-3.5 w-3.5 text-foreground animate-spin" />
+                      <p className="text-[12px] font-bold uppercase text-foreground">Under Review</p>
                     </div>
                     <p className="text-[11px] text-muted-foreground">
-                      Your application is being reviewed. We will email <span className="text-np-gold">{studentTrial.eduEmail}</span> within 1-2 business days.
+                      Your application is being reviewed. We will email <span className="text-foreground">{studentTrial.eduEmail}</span> within 1-2 business days.
                     </p>
                   </div>
                 )}
@@ -655,8 +655,8 @@ export default function ProfilePage() {
                 {/* ── REJECTED ── */}
                 {studentTrial?.status === 'REJECTED' && (
                   <div className="space-y-4">
-                    <div className="p-4 bg-np-crimson/5 border border-np-crimson/20 rounded-ui space-y-2">
-                      <p className="text-[12px] font-bold uppercase text-np-crimson">Application Not Approved</p>
+                    <div className="p-4 bg-np-crimson/5 border border-status-down/20 rounded-ui space-y-2">
+                      <p className="text-[12px] font-bold uppercase text-status-down">Application Not Approved</p>
                       <p className="text-[11px] text-muted-foreground">
                         {studentTrial.rejectionReason || 'We were unable to verify your student status.'}
                       </p>
@@ -674,7 +674,7 @@ export default function ProfilePage() {
                   <div className="space-y-4 mt-2">
                     {!studentTrial?.hasTrial && (
                       <p className="text-[13px] text-muted-foreground leading-relaxed">
-                        Are you a student? Submit your institutional email and student ID card to get <span className="text-np-gold font-bold">30 days of PRO access</span> free. We review all applications manually within 1-2 business days.
+                        Are you a student? Submit your institutional email and student ID card to get <span className="text-foreground font-bold">30 days of PRO access</span> free. We review all applications manually within 1-2 business days.
                       </p>
                     )}
 
@@ -687,7 +687,7 @@ export default function ProfilePage() {
                           value={studentEduEmail}
                           onChange={e => setStudentEduEmail(e.target.value)}
                           placeholder="you@university.edu.bd"
-                          className="w-full h-10 px-3 rounded-ui bg-muted/30 border border-border text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-np-gold/50"
+                          className="w-full h-10 px-3 rounded-ui bg-muted/30 border border-border text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                         />
                         <p className="text-[10px] text-muted-foreground">Any institutional email is accepted — .edu, .ac.uk, .edu.bd, .com.bd, or your university domain.</p>
                       </div>
@@ -699,21 +699,21 @@ export default function ProfilePage() {
                           onClick={() => studentFileRef.current?.click()}
                           className={cn(
                             "relative border-2 border-dashed rounded-ui p-4 cursor-pointer transition-colors text-center",
-                            studentFile ? "border-np-gold/40 bg-np-gold/5" : "border-border hover:border-np-gold/40 hover:bg-muted/40"
+                            studentFile ? "border-border bg-primary text-primary-foreground/5" : "border-border hover:border-border hover:bg-muted/40"
                           )}
                         >
                           {studentFilePreview && studentFile?.type.startsWith('image/') ? (
                             <div className="flex flex-col items-center gap-2">
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img src={studentFilePreview} alt="ID preview" className="max-h-32 rounded object-contain" />
-                              <p className="text-[10px] text-np-gold">{studentFile.name}</p>
+                              <p className="text-[10px] text-foreground">{studentFile.name}</p>
                             </div>
                           ) : studentFile ? (
                             <div className="flex flex-col items-center gap-2 py-2">
-                              <div className="h-10 w-10 rounded bg-np-gold/10 flex items-center justify-center">
-                                <GraduationCap className="h-5 w-5 text-np-gold" />
+                              <div className="h-10 w-10 rounded bg-primary text-primary-foreground/10 flex items-center justify-center">
+                                <GraduationCap className="h-5 w-5 text-foreground" />
                               </div>
-                              <p className="text-[10px] text-np-gold">{studentFile.name}</p>
+                              <p className="text-[10px] text-foreground">{studentFile.name}</p>
                             </div>
                           ) : (
                             <div className="py-2 space-y-1">
@@ -743,7 +743,7 @@ export default function ProfilePage() {
                       </div>
 
                       {message.text && (
-                        <p className={cn("text-[11px]", message.type === 'error' ? "text-np-crimson" : "text-np-teal")}>
+                        <p className={cn("text-[11px]", message.type === 'error' ? "text-status-down" : "text-status-up")}>
                           {message.text}
                         </p>
                       )}
@@ -819,7 +819,7 @@ export default function ProfilePage() {
           <div className="relative w-full max-w-5xl bg-background border border-border rounded-ui shadow-2xl p-5 sm:p-8 lg:p-12 my-4 sm:my-0 animate-in zoom-in-95 duration-300">
             <button
               onClick={() => setIsPricingOpen(false)}
-              className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 text-muted-foreground hover:text-np-gold transition-colors"
+              className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 text-muted-foreground hover:text-foreground transition-colors"
             >
               <X className="h-5 w-5 sm:h-6 sm:w-6" />
             </button>
@@ -827,7 +827,7 @@ export default function ProfilePage() {
             <div className="text-center mb-8 sm:mb-14">
               <p className="label-category mb-3">Infrastructure Tiers</p>
               <h2 className="text-2xl sm:text-4xl font-semibold tracking-tight uppercase">
-                Operational <span className="text-np-gold">Protocols</span>
+                Operational <span className="text-foreground">Protocols</span>
               </h2>
               <p className="text-muted-foreground mt-2 text-sm max-w-lg mx-auto">
                 Select the authorization level that matches your production throughput requirements.
@@ -844,19 +844,19 @@ export default function ProfilePage() {
                     key={key}
                     className={cn(
                       "p-5 sm:p-7 flex flex-col gap-5 sm:gap-6 relative transition-all",
-                      isPro && "ring-1 ring-np-gold shadow-np-gold/5 shadow-2xl sm:scale-105 z-10",
-                      isCurrent && "opacity-100 border-np-gold/40 bg-np-gold/5"
+                      isPro && "ring-1 ring-border shadow-lg sm:scale-105 z-10",
+                      isCurrent && "opacity-100 border-border bg-muted/30"
                     )}
                   >
                     {isPro && (
                       <div
                         className="absolute -top-3 left-0 right-0 h-0.5 rounded-t-card"
-                        style={{ background: "var(--np-gold)" }}
+                        style={{ background: "var(--foreground)" }}
                       />
                     )}
                     {isCurrent && (
                       <div className="absolute top-2 right-3">
-                        <Badge variant="success" className="text-[7px] uppercase tracking-widest bg-np-teal/10 text-np-teal">Active</Badge>
+                        <Badge variant="success" className="text-[7px] uppercase tracking-widest bg-status-up/10 text-status-up">Active</Badge>
                       </div>
                     )}
                     <div>
@@ -871,7 +871,7 @@ export default function ProfilePage() {
                     <ul className="space-y-2 sm:space-y-2.5">
                       {plan.features.map((f: { active: boolean; text: string }, i: number) => (
                         <li key={i} className={cn("flex items-center gap-2 sm:gap-2.5 text-[12px]", !f.active && "opacity-30")}>
-                          <Check className="h-3 w-3 shrink-0" style={{ color: f.active ? "var(--np-teal)" : "var(--np-slate)" }} />
+                          <Check className="h-3 w-3 shrink-0" style={{ color: f.active ? "var(--status-up)" : "var(--muted-foreground)" }} />
                           {f.text}
                         </li>
                       ))}
@@ -903,7 +903,7 @@ export default function ProfilePage() {
                       className={cn(
                         "mt-auto uppercase tracking-widest text-[10px] h-10 sm:h-11",
                         isPro ? "np-btn-primary w-full" : "np-btn-outline w-full",
-                        isCurrent && "bg-np-gold/20 border-np-gold/40 text-np-gold hover:bg-np-gold/20 cursor-default"
+                        isCurrent && "bg-primary text-primary-foreground/20 border-border text-foreground hover:bg-primary text-primary-foreground/20 cursor-default"
                       )}
                     >
                       {isCurrent ? "Current Protocol" : `Select ${plan.name}`}
@@ -925,7 +925,7 @@ export default function ProfilePage() {
       {/* ── Cancel Subscription Confirmation Modal ── */}
       {cancelModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-200">
-          <Card className="w-full max-w-md p-6 relative border-np-crimson/30 shadow-2xl">
+          <Card className="w-full max-w-md p-6 relative border-status-down/20 shadow-2xl">
             <button
               onClick={() => setCancelModal(false)}
               className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
@@ -933,7 +933,7 @@ export default function ProfilePage() {
               <X className="h-5 w-5" />
             </button>
             
-            <div className="flex items-center gap-3 mb-4 text-np-crimson">
+            <div className="flex items-center gap-3 mb-4 text-status-down">
               <AlertTriangle className="h-6 w-6 shrink-0" />
               <h3 className="text-base font-bold uppercase tracking-tight">Cancel Subscription?</h3>
             </div>

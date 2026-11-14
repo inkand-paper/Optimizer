@@ -107,15 +107,15 @@ export function PRBotPanel() {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
 
       {/* ── Header ── */}
-      <Card className="p-6 bg-gradient-to-r from-np-gold/5 via-background to-background border-np-gold/20">
+      <Card className="p-6 border-border bg-card">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-ui bg-np-gold/10 border border-np-gold/30 flex items-center justify-center text-np-gold">
+          <div className="h-8 w-8 rounded-ui bg-muted border border-border flex items-center justify-center text-foreground">
             <GitPullRequest className="h-5 w-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-base font-bold uppercase tracking-tight">PR Code Review Bot</h2>
-              <span className="bg-np-gold/20 text-np-gold font-bold text-[9px] uppercase tracking-widest px-2 py-0.5 rounded border border-np-gold/30">AI</span>
+              <span className="bg-muted text-foreground text-[10px] font-mono px-2 py-0.5 rounded border border-border">AI</span>
             </div>
             <p className="text-[12px] text-muted-foreground mt-0.5">
               Auto-audit pull requests and post a quality score comment directly on GitHub.
@@ -127,12 +127,12 @@ export function PRBotPanel() {
       {/* ── Connect Repo ── */}
       <Card className="p-6 space-y-4">
         <h3 className="text-[13px] font-semibold uppercase tracking-wider flex items-center gap-2">
-          <Plus className="h-4 w-4 text-np-gold" />
+          <Plus className="h-4 w-4 text-foreground" />
           Connect a Repository
         </h3>
 
         {error && (
-          <div className="flex items-center gap-2 p-3 rounded-ui bg-np-crimson/10 border border-np-crimson/30 text-np-crimson text-[12px]">
+          <div className="flex items-center gap-2 p-3 rounded-ui bg-status-down/10 border border-status-down/20 text-status-down text-[12px]">
             <AlertCircle className="h-4 w-4 shrink-0" />
             {error}
           </div>
@@ -152,8 +152,8 @@ export function PRBotPanel() {
 
         {/* ── Setup Instructions ── */}
         {setup && (
-          <div className="mt-2 p-5 rounded-ui bg-muted/30 border border-np-teal/20 space-y-4 animate-in fade-in duration-300">
-            <div className="flex items-center gap-2 text-np-teal">
+          <div className="mt-2 p-5 rounded-ui bg-muted/30 border border-border space-y-4 animate-in fade-in duration-300">
+            <div className="flex items-center gap-2 text-foreground">
               <CheckCircle2 className="h-4 w-4" />
               <h4 className="text-[12px] font-bold uppercase tracking-wider">Repository Connected — Complete GitHub Webhook Setup</h4>
             </div>
@@ -161,11 +161,11 @@ export function PRBotPanel() {
             <div className="space-y-2">
               <p className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">Payload URL</p>
               <div className="flex items-center gap-2">
-                <code className="flex-1 font-mono text-[12px] p-2.5 bg-background rounded-ui border border-border text-np-gold truncate">
+                <code className="flex-1 font-mono text-[12px] p-2.5 bg-background rounded-ui border border-border text-foreground truncate">
                   {setup.webhookUrl}
                 </code>
                 <Button size="sm" variant="outline" onClick={() => copyText(setup.webhookUrl, "url")}>
-                  {copied === "url" ? <CheckCircle2 className="h-3.5 w-3.5 text-np-teal" /> : <Copy className="h-3.5 w-3.5" />}
+                  {copied === "url" ? <CheckCircle2 className="h-3.5 w-3.5 text-foreground" /> : <Copy className="h-3.5 w-3.5" />}
                 </Button>
               </div>
             </div>
@@ -173,11 +173,11 @@ export function PRBotPanel() {
             <div className="space-y-2">
               <p className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">Webhook Secret</p>
               <div className="flex items-center gap-2">
-                <code className="flex-1 font-mono text-[12px] p-2.5 bg-background rounded-ui border border-border text-np-teal truncate">
+                <code className="flex-1 font-mono text-[12px] p-2.5 bg-background rounded-ui border border-border text-foreground truncate">
                   {setup.webhookSecret}
                 </code>
                 <Button size="sm" variant="outline" onClick={() => copyText(setup.webhookSecret, "secret")}>
-                  {copied === "secret" ? <CheckCircle2 className="h-3.5 w-3.5 text-np-teal" /> : <Copy className="h-3.5 w-3.5" />}
+                  {copied === "secret" ? <CheckCircle2 className="h-3.5 w-3.5 text-foreground" /> : <Copy className="h-3.5 w-3.5" />}
                 </Button>
               </div>
             </div>
@@ -187,7 +187,7 @@ export function PRBotPanel() {
               <ol className="space-y-1">
                 {setup.instructions.map((step, i) => (
                   <li key={i} className="text-[12px] text-muted-foreground flex items-start gap-2">
-                    <span className="text-np-gold font-bold font-mono shrink-0">{i + 1}.</span>
+                    <span className="text-foreground font-bold font-mono shrink-0">{i + 1}.</span>
                     <span>{step}</span>
                   </li>
                 ))}
@@ -204,7 +204,7 @@ export function PRBotPanel() {
       {/* ── Connected Repos ── */}
       <Card className="p-6 space-y-4">
         <h3 className="text-[13px] font-semibold uppercase tracking-wider flex items-center gap-2">
-          <ShieldCheck className="h-4 w-4 text-np-gold" />
+          <ShieldCheck className="h-4 w-4 text-foreground" />
           Connected Repositories
         </h3>
 
@@ -226,14 +226,14 @@ export function PRBotPanel() {
                 className={cn(
                   "flex items-center justify-between p-3.5 rounded-ui border transition-all",
                   config.enabled
-                    ? "bg-muted/20 border-border hover:border-np-gold/30"
+                    ? "bg-muted/20 border-border hover:border-foreground/30"
                     : "bg-muted/10 border-border/50 opacity-60"
                 )}
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className={cn(
                     "h-8 w-8 rounded bg-background border flex items-center justify-center shrink-0",
-                    config.enabled ? "border-np-gold/30 text-np-gold" : "border-border text-muted-foreground"
+                    config.enabled ? "border-border text-foreground" : "border-border text-muted-foreground"
                   )}>
                     <GitPullRequest className="h-4 w-4" />
                   </div>
@@ -242,7 +242,7 @@ export function PRBotPanel() {
                     <p className="text-[10px] text-muted-foreground">
                       Connected {new Date(config.createdAt).toLocaleDateString()}
                       {" · "}
-                      <span className={config.enabled ? "text-np-teal" : "text-muted-foreground"}>
+                      <span className={config.enabled ? "text-foreground" : "text-muted-foreground"}>
                         {config.enabled ? "Active" : "Paused"}
                       </span>
                     </p>
@@ -265,12 +265,12 @@ export function PRBotPanel() {
                     title={config.enabled ? "Pause" : "Resume"}
                   >
                     {config.enabled
-                      ? <ToggleRight className="h-4 w-4 text-np-teal" />
+                      ? <ToggleRight className="h-4 w-4 text-foreground" />
                       : <ToggleLeft className="h-4 w-4" />}
                   </button>
                   <button
                     onClick={() => handleDelete(config.id)}
-                    className="p-2 rounded-ui text-muted-foreground hover:text-np-crimson hover:bg-np-crimson/10 transition-colors"
+                    className="p-2 rounded-ui text-muted-foreground hover:text-status-down hover:bg-status-down/10 transition-colors"
                     title="Disconnect"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
