@@ -107,7 +107,7 @@ function CategoryCard({ label, cat, data }: {
       <div className="h-1 bg-muted/40 rounded-full overflow-hidden mb-4">
         <div className={cn("h-full transition-all duration-1000", scoreColor(score).replace('text-', 'bg-'))} style={{ width: `${score}%` }} />
       </div>
-      <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+      <div className="flex justify-between items-center text-[10px] font-bold  text-muted-foreground/50">
         <span>{issueCount} Items</span>
         {critical > 0 && <span className="text-status-down">{critical} Critical</span>}
       </div>
@@ -126,7 +126,7 @@ function IssueCard({ issue }: { issue: LineIssue & { filePath?: string } }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1.5">
-            <span className={cn("text-[8px] px-1.5 py-0.5 rounded border border-border font-bold uppercase tracking-widest", severityBadge(issue.severity))}>{issue.severity}</span>
+            <span className={cn("text-[8px] px-1.5 py-0.5 rounded border border-border font-bold ", severityBadge(issue.severity))}>{issue.severity}</span>
             <span className="label-category text-[9px]">{issue.category}</span>
             {issue.line && <span className="text-[10px] font-mono text-muted-foreground/40 bg-muted/30 px-1.5 py-0.5 rounded">L{issue.line}</span>}
           </div>
@@ -140,18 +140,18 @@ function IssueCard({ issue }: { issue: LineIssue & { filePath?: string } }) {
       {expanded && (
         <div className="border-t border-border p-6 space-y-6 bg-muted/5 animate-in slide-in-from-top-1 duration-200">
           <div>
-            <p className="label-category text-[10px] mb-2 uppercase tracking-widest">Remediation</p>
+            <p className="label-category text-[10px] mb-2 ">Remediation</p>
             <p className="text-[14px] text-foreground/60 leading-relaxed bg-muted/30 p-4 rounded-ui">{issue.suggestion}</p>
           </div>
           {issue.codeSnippet && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <p className="label-category text-[9px] uppercase tracking-widest text-status-down/50">Vulnerable Source</p>
+                <p className="label-category text-[9px]  text-status-down/50">Original snippet</p>
                 <pre className="np-codeblock text-[11px] bg-np-crimson/5 border-border max-h-[300px]">{issue.codeSnippet}</pre>
               </div>
               {issue.fixedSnippet && (
                 <div className="space-y-2">
-                  <p className="label-category text-[9px] uppercase tracking-widest text-status-up/50">Optimized Source</p>
+                  <p className="label-category text-[9px]  text-status-up/50">Recommended fix</p>
                   <pre className="np-codeblock text-[11px] bg-np-teal/5 border-border max-h-[300px]">{issue.fixedSnippet}</pre>
                 </div>
               )}
@@ -176,7 +176,7 @@ function FileAccordion({ file }: { file: FileReview }) {
           <p className="text-[14px] sm:text-[16px] font-semibold font-mono text-foreground/80 truncate tracking-tight">{file.path}</p>
           <div className="flex items-center gap-3 sm:gap-4 mt-0.5 sm:mt-1">
              <span className="label-category text-[9px] sm:text-[10px]">{file.language}</span>
-             <span className="text-[9px] sm:text-[10px] font-bold text-foreground/60 uppercase tracking-widest flex items-center gap-1.5"><ShieldCheck className="h-3 w-3" /> {file.issues.length} Issues</span>
+             <span className="text-[9px] sm:text-[10px] font-bold text-foreground/60  flex items-center gap-1.5"><ShieldCheck className="h-3 w-3" /> {file.issues.length} Issues</span>
           </div>
         </div>
         <div className="flex items-center gap-4 sm:gap-8">
@@ -191,13 +191,13 @@ function FileAccordion({ file }: { file: FileReview }) {
       {open && (
         <div className="border-t border-border p-4 sm:p-8 space-y-6 sm:space-y-8 bg-muted/5 animate-in slide-in-from-top-2 duration-300">
           <div className="max-w-4xl">
-             <p className="label-category text-[10px] mb-3 uppercase tracking-widest">Logic Summary</p>
+             <p className="label-category text-[10px] mb-3 ">Summary</p>
              <p className="text-[14px] sm:text-[15px] text-foreground/50 leading-relaxed font-medium">{file.summary}</p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
              <div className="lg:col-span-4 space-y-4">
                 <div className="bg-np-teal/5 border border-border rounded-ui p-4 sm:p-6">
-                   <p className="label-category text-[10px] mb-4 text-status-up/60 uppercase tracking-widest flex items-center gap-2"><CheckCircle2 className="h-3 w-3" /> Strengths</p>
+                   <p className="label-category text-[10px] mb-4 text-status-up/60  flex items-center gap-2"><CheckCircle2 className="h-3 w-3" /> Strengths</p>
                    <ul className="space-y-2 sm:space-y-3">
                      {file.positives.map((p, i) => (
                        <li key={i} className="text-[12px] sm:text-[13px] text-foreground/50 flex gap-3 leading-relaxed">
@@ -208,7 +208,7 @@ function FileAccordion({ file }: { file: FileReview }) {
                 </div>
              </div>
              <div className="lg:col-span-8 space-y-4">
-                <p className="label-category text-[10px] mb-2 uppercase tracking-widest text-foreground/40">Audit Logs</p>
+                <p className="label-category text-[10px] mb-2  text-foreground/40">Audit logs</p>
                 {file.issues.map((issue, i) => <IssueCard key={i} issue={issue} />)}
              </div>
           </div>
@@ -285,7 +285,7 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
           <div className="h-4 w-px bg-border hidden sm:block" />
           <div className="min-w-0">
             <h1 className="text-[13px] sm:text-[14px] font-semibold leading-tight truncate max-w-[150px] sm:max-w-none">{reviewMeta?.repoName || reviewMeta?.fileName || "Neural Audit Result"}</h1>
-            <p className="label-category text-[8px] sm:text-[9px] uppercase tracking-widest opacity-60 truncate">{reviewMeta?.source} Pipeline</p>
+            <p className="label-category text-[8px] sm:text-[9px]  opacity-60 truncate">{reviewMeta?.source} Pipeline</p>
           </div>
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
@@ -311,7 +311,7 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
                 <p className="text-[14px] sm:text-[16px] text-foreground/50 leading-relaxed font-medium max-w-2xl">{result?.summary}</p>
                 <div className="flex flex-wrap gap-4 sm:gap-8 pt-2">
                    <div className="space-y-1"><p className="label-category text-[10px]">Registry Logs</p><p className="text-lg sm:text-xl font-bold tabular-nums">{result?.linesOfCode?.toLocaleString()}</p></div>
-                   <div className="space-y-1"><p className="label-category text-[10px]">Stack</p><p className="text-lg sm:text-xl font-bold uppercase">{result?.language}</p></div>
+                   <div className="space-y-1"><p className="label-category text-[10px]">Stack</p><p className="text-lg sm:text-xl font-bold ">{result?.language}</p></div>
                    {criticalCount > 0 && <div className="space-y-1"><p className="label-category text-[10px] text-status-down/60">Hazards</p><p className="text-lg sm:text-xl font-bold text-status-down flex items-center gap-2"><Shield className="h-4 w-4 sm:h-5 sm:w-5" /> {criticalCount}</p></div>}
                 </div>
             </div>
@@ -319,7 +319,7 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
                 <ScoreRing score={overallScore} />
                 <div className="text-left">
                    <div className={cn("text-4xl sm:text-6xl font-bold tracking-tighter leading-none", scoreColor(overallScore))}>{grade}</div>
-                   <p className="label-category text-[10px] mt-3 sm:mt-4 uppercase tracking-[0.2em]">Logical Maturity</p>
+                   <p className="label-category text-[10px] mt-3 sm:mt-4 ">Code health grade</p>
                 </div>
             </Card>
          </div>
@@ -335,7 +335,7 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
          {/* Content Tabs */}
          <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 pt-4">
             <div className="xl:col-span-4 space-y-6">
-               <p className="label-category text-[10px] uppercase tracking-widest px-1">Recommendations</p>
+               <p className="label-category text-[10px]  px-1">Recommendations</p>
                <div className="space-y-4">
                  {recommendations.map((rec, i) => (
                    <Card key={i} className="p-5 bg-card/10 border-border group hover:bg-card/20 transition-all flex gap-4">
@@ -348,12 +348,12 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
             <div className="xl:col-span-8 space-y-6">
                <div className="flex border-b border-border bg-muted/10 rounded-xl overflow-x-auto np-scroll p-0.5">
                   {(["overview", "files", "issues"] as const).map((t) => (
-                    <button key={t} onClick={() => setActiveTab(t)} className={cn("flex-1 min-w-[120px] py-3 sm:py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg", activeTab === t ? "text-foreground bg-background shadow-sm" : "text-muted-foreground/40 hover:bg-muted/20")}>
+                    <button key={t} onClick={() => setActiveTab(t)} className={cn("flex-1 min-w-[120px] py-3 sm:py-4 text-[10px] font-black  transition-all rounded-lg", activeTab === t ? "text-foreground bg-background shadow-sm" : "text-muted-foreground/40 hover:bg-muted/20")}>
                       {t === "overview" ? `Top (${topIssues.length})` : t === "files" ? `Nodes (${filesReviewed})` : `Registry (${allIssues.length})`}
                     </button>
                   ))}
                   {(diff?.hasDiff || diffLoading) && (
-                    <button onClick={() => setActiveTab("diff")} className={cn("flex-1 min-w-[120px] py-3 sm:py-4 text-[10px] font-black uppercase tracking-widest transition-all rounded-lg relative", activeTab === "diff" ? "text-foreground bg-background shadow-sm" : "text-muted-foreground/40 hover:bg-muted/20")}>
+                    <button onClick={() => setActiveTab("diff")} className={cn("flex-1 min-w-[120px] py-3 sm:py-4 text-[10px] font-black  transition-all rounded-lg relative", activeTab === "diff" ? "text-foreground bg-background shadow-sm" : "text-muted-foreground/40 hover:bg-muted/20")}>
                       Diff
                       {diff?.hasDiff && diff.scoreDelta !== undefined && diff.scoreDelta !== 0 && (
                         <span className={cn("ml-1.5 text-[9px] font-bold", diff.scoreDelta > 0 ? "text-status-up" : "text-status-down")}>
@@ -388,7 +388,7 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
                               <p className={cn("text-4xl font-black", diff.scoreDelta === 0 ? "text-muted-foreground" : diff.scoreDelta! > 0 ? "text-status-up" : "text-status-down")}>
                                 {diff.scoreDelta! > 0 ? `+${diff.scoreDelta}` : diff.scoreDelta}
                               </p>
-                              <p className="text-[10px] uppercase text-muted-foreground mt-1">Score Delta</p>
+                              <p className="text-[10px]  text-muted-foreground mt-1">Score delta</p>
                             </div>
                             <div className="flex-1 space-y-1">
                               <p className="text-[14px] font-semibold capitalize">
@@ -404,18 +404,18 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
                           <div className="grid grid-cols-2 gap-4">
                             <div className="p-4 bg-np-crimson/5 border border-status-down/20 rounded-xl text-center">
                               <p className="text-3xl font-black text-status-down">{diff.newIssuesCount}</p>
-                              <p className="text-[10px] uppercase text-muted-foreground mt-1">New Issues</p>
+                              <p className="text-[10px]  text-muted-foreground mt-1">New issues</p>
                             </div>
                             <div className="p-4 bg-np-teal/5 border border-status-up/20 rounded-xl text-center">
                               <p className="text-3xl font-black text-status-up">{diff.fixedIssuesCount}</p>
-                              <p className="text-[10px] uppercase text-muted-foreground mt-1">Issues Fixed</p>
+                              <p className="text-[10px]  text-muted-foreground mt-1">Issues fixed</p>
                             </div>
                           </div>
 
                           {/* New issues */}
                           {(diff.newIssues?.length ?? 0) > 0 && (
                             <div className="space-y-3">
-                              <p className="text-[11px] font-bold uppercase tracking-widest text-status-down">New Issues Introduced</p>
+                              <p className="text-[11px] font-bold  text-status-down">New issues introduced</p>
                               {diff.newIssues!.map((issue, i) => (
                                 <div key={i} className="p-3 bg-np-crimson/5 border border-status-down/20 rounded-lg">
                                   <p className="text-[12px] font-medium text-foreground">{issue.message}</p>
@@ -428,7 +428,7 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
                           {/* Fixed issues */}
                           {(diff.fixedIssues?.length ?? 0) > 0 && (
                             <div className="space-y-3">
-                              <p className="text-[11px] font-bold uppercase tracking-widest text-status-up">Issues Fixed</p>
+                              <p className="text-[11px] font-bold  text-status-up">Issues fixed</p>
                               {diff.fixedIssues!.map((issue, i) => (
                                 <div key={i} className="p-3 bg-np-teal/5 border border-np-teal/10 rounded-lg line-through opacity-60">
                                   <p className="text-[12px] font-medium text-foreground">{issue.message}</p>

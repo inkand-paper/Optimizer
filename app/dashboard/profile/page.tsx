@@ -128,7 +128,7 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-4">
         <Loader2 className="h-8 w-8 animate-spin text-foreground" />
-        <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground animate-pulse">Synchronizing Infrastructure...</p>
+        <p className="text-[10px]  tracking-[0.2em] text-muted-foreground animate-pulse">Loading account settings...</p>
       </div>
     );
   }
@@ -150,11 +150,11 @@ export default function ProfilePage() {
         {/* ── Header ── */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight uppercase">
-              Operator <span className="text-foreground">Profile</span>
+            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight ">
+              Account settings
             </h1>
             <p className="label-category text-muted-foreground mt-1 text-[10px] sm:text-[11px]">
-              Manage your system credentials and authorization level.
+              Manage your profile, authentication credentials, security preferences, and subscription.
             </p>
           </div>
           <Link href="/dashboard" className="np-btn-outline h-9 sm:h-10 px-4 text-[11px] flex items-center gap-2 self-start sm:self-auto">
@@ -195,13 +195,13 @@ export default function ProfilePage() {
 
               {/* Identity */}
               <div className="relative z-10">
-                <h2 className="text-base sm:text-lg font-bold uppercase truncate px-2">{profileUser.name || "Unnamed Unit"}</h2>
+                <h2 className="text-base sm:text-lg font-bold  truncate px-2">{profileUser.name || "Developer"}</h2>
                 <div className="flex items-center justify-center flex-wrap gap-2 mt-1">
                   <p className="label-category text-[10px] text-foreground">{profileUser.role} · {profileUser.plan} TIER</p>
                   {profileUser.emailVerified ? (
-                    <Badge variant="success" className="h-4 px-1.5 text-[8px] uppercase tracking-tighter">Verified</Badge>
+                    <Badge variant="success" className="h-4 px-1.5 text-[8px] er">Verified</Badge>
                   ) : (
-                    <Badge variant="danger" className="h-4 px-1.5 text-[8px] uppercase tracking-tighter">Unverified</Badge>
+                    <Badge variant="danger" className="h-4 px-1.5 text-[8px] er">Unverified</Badge>
                   )}
                 </div>
               </div>
@@ -226,7 +226,7 @@ export default function ProfilePage() {
               </div>
               <div className="flex items-center gap-3 mb-4 text-foreground relative z-10">
                 <ShieldCheck className="h-5 w-5 shrink-0" />
-                <h3 className="text-[13px] font-bold uppercase">System Tier</h3>
+                <h3 className="text-[13px] font-bold ">Current plan</h3>
               </div>
 
               {profileUser.plan === "BUSINESS" ? (
@@ -236,7 +236,7 @@ export default function ProfilePage() {
                   </p>
                   <div className="p-3 bg-primary text-primary-foreground/10 rounded-ui border border-border flex items-center gap-2">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary text-primary-foreground animate-pulse" />
-                    <span className="text-[10px] uppercase font-bold text-foreground">All Limits Unlocked</span>
+                    <span className="text-[10px]  font-bold text-foreground">Full platform access</span>
                   </div>
                   {/* Cancel link for Agency plan */}
                   {!cancelledUntil && (
@@ -261,7 +261,7 @@ export default function ProfilePage() {
                   <Button
                     onClick={() => setIsPricingOpen(true)}
                     variant="outline"
-                    className="w-full text-[11px] uppercase tracking-widest h-9"
+                    className="w-full text-[11px]  h-9"
                   >
                     Upgrade Plan
                   </Button>
@@ -274,7 +274,7 @@ export default function ProfilePage() {
                   <Button
                     onClick={() => setIsPricingOpen(true)}
                     variant="outline"
-                    className="w-full text-[11px] uppercase tracking-widest h-9"
+                    className="w-full text-[11px]  h-9"
                   >
                     Manage Subscription
                   </Button>
@@ -302,7 +302,7 @@ export default function ProfilePage() {
 
             {/* Personal Identity */}
             <Card className="p-5 sm:p-8">
-              <h3 className="text-[14px] font-bold uppercase mb-5 sm:mb-6 flex items-center gap-2">
+              <h3 className="text-[14px] font-bold  mb-5 sm:mb-6 flex items-center gap-2">
                 <User className="h-4 w-4 text-foreground shrink-0" />
                 Personal Identity
               </h3>
@@ -338,7 +338,7 @@ export default function ProfilePage() {
                   </div>
                 )}
 
-                <Button type="submit" disabled={saving} className="w-full sm:w-auto px-8 sm:px-10 h-10 sm:h-11 uppercase tracking-widest text-[11px]">
+                <Button type="submit" disabled={saving} className="w-full sm:w-auto px-8 sm:px-10 h-10 sm:h-11 text-xs font-medium">
                   {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save Changes"}
                 </Button>
               </form>
@@ -346,7 +346,7 @@ export default function ProfilePage() {
 
             {/* Security Credentials */}
             <Card className="p-5 sm:p-8">
-              <h3 className="text-[14px] font-bold uppercase mb-5 sm:mb-6 flex items-center gap-2">
+              <h3 className="text-[14px] font-bold  mb-5 sm:mb-6 flex items-center gap-2">
                 <Key className="h-4 w-4 text-foreground shrink-0" />
                 Security Credentials
               </h3>
@@ -430,7 +430,7 @@ export default function ProfilePage() {
                     />
                   </div>
                 </div>
-                <Button type="submit" disabled={saving} variant="outline" className="w-full sm:w-auto px-8 sm:px-10 h-10 sm:h-11 uppercase tracking-widest text-[11px]">
+                <Button type="submit" disabled={saving} variant="outline" className="w-full sm:w-auto px-8 sm:px-10 h-10 sm:h-11 text-xs font-medium">
                   Update Password
                 </Button>
               </form>
@@ -438,7 +438,7 @@ export default function ProfilePage() {
 
             {/* Advanced Protection */}
             <Card className="p-5 sm:p-8">
-              <h3 className="text-[14px] font-bold uppercase mb-5 sm:mb-6 flex items-center gap-2">
+              <h3 className="text-[14px] font-bold  mb-5 sm:mb-6 flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4 text-foreground shrink-0" />
                 Advanced Protection
               </h3>
@@ -451,7 +451,7 @@ export default function ProfilePage() {
                       <div className="flex items-start sm:items-center gap-3">
                         <AlertTriangle className="h-5 w-5 text-status-down shrink-0 mt-0.5 sm:mt-0" />
                         <div>
-                          <p className="text-[12px] font-bold uppercase text-status-down">Email Unverified</p>
+                          <p className="text-[12px] font-bold  text-status-down">Email Unverified</p>
                           <p className="text-[11px] text-muted-foreground">Verify your email to secure your account.</p>
                         </div>
                       </div>
@@ -470,7 +470,7 @@ export default function ProfilePage() {
                         }}
                         variant="outline"
                         size="sm"
-                        className="h-8 text-[10px] uppercase border-status-down/20 hover:bg-status-down/10 text-status-down self-start sm:self-auto"
+                        className="h-8 text-[10px]  border-status-down/20 hover:bg-status-down/10 text-status-down self-start sm:self-auto"
                       >
                         Resend
                       </Button>
@@ -484,12 +484,12 @@ export default function ProfilePage() {
                     <div className="flex items-start sm:items-center gap-3">
                       <Shield className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5 sm:mt-0" />
                       <div>
-                        <p className="text-[12px] font-bold uppercase">Multi-Factor Auth (MFA)</p>
+                        <p className="text-[12px] font-bold ">Multi-Factor Auth (MFA)</p>
                         <p className="text-[10px] text-muted-foreground">High-security layer for your account access.</p>
                       </div>
                     </div>
                     {profileUser.twoFactorEnabled ? (
-                      <Badge variant="success" className="text-[8px] uppercase shrink-0">Enabled</Badge>
+                      <Badge variant="success" className="text-[8px]  shrink-0">Enabled</Badge>
                     ) : (
                       <Button
                         onClick={async () => {
@@ -510,7 +510,7 @@ export default function ProfilePage() {
                         }}
                         variant="outline"
                         size="sm"
-                        className="h-8 text-[10px] uppercase shrink-0"
+                        className="h-8 text-[10px]  shrink-0"
                       >
                         Setup MFA
                       </Button>
@@ -562,7 +562,7 @@ export default function ProfilePage() {
                                 setSaving(false);
                               }
                             }}
-                            className="px-5 sm:px-6 h-10 text-[10px] uppercase shrink-0"
+                            className="px-5 sm:px-6 h-10 text-[10px]  shrink-0"
                           >
                             Verify
                           </Button>
@@ -582,14 +582,14 @@ export default function ProfilePage() {
               {/* Weekly Digest toggle */}
               <div className="p-4 bg-muted/40 rounded-ui border border-dashed border-border flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-[12px] font-bold uppercase">Weekly Email Digest</p>
+                  <p className="text-[12px] font-bold ">Weekly Email Digest</p>
                   <p className="text-[10px] text-muted-foreground mt-0.5">
                     Monday morning summary of uptime, incidents, and code audit scores.
                   </p>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
                   <span className={cn(
-                    "text-[11px] font-mono font-semibold uppercase tracking-wider",
+                    "text-[11px] font-mono font-semibold ",
                     digestEnabled ? "text-status-up" : "text-muted-foreground"
                   )}>
                     {digestEnabled ? "On" : "Off"}
@@ -619,7 +619,7 @@ export default function ProfilePage() {
             {/* Student Trial */}
             {profileUser.plan === 'FREE' && (
               <Card className="p-5 sm:p-8">
-                <h3 className="text-[14px] font-bold uppercase mb-5 sm:mb-6 flex items-center gap-2">
+                <h3 className="text-[14px] font-bold  mb-5 sm:mb-6 flex items-center gap-2">
                   <GraduationCap className="h-4 w-4 text-foreground shrink-0" />
                   Student Access
                 </h3>
@@ -627,7 +627,7 @@ export default function ProfilePage() {
                 {/* ── APPROVED ── */}
                 {studentTrial?.status === 'APPROVED' && (
                   <div className="p-4 bg-np-teal/5 border border-status-up/20 rounded-ui space-y-2">
-                    <p className="text-[12px] font-bold uppercase text-status-up">
+                    <p className="text-[12px] font-bold  text-status-up">
                       {studentTrial.isExpired ? 'Trial Expired' : 'Trial Active'}
                     </p>
                     <p className="text-[11px] text-muted-foreground">
@@ -644,7 +644,7 @@ export default function ProfilePage() {
                   <div className="p-4 bg-primary text-primary-foreground/5 border border-border rounded-ui space-y-2">
                     <div className="flex items-center gap-2">
                       <Loader2 className="h-3.5 w-3.5 text-foreground animate-spin" />
-                      <p className="text-[12px] font-bold uppercase text-foreground">Under Review</p>
+                      <p className="text-[12px] font-bold  text-foreground">Under Review</p>
                     </div>
                     <p className="text-[11px] text-muted-foreground">
                       Your application is being reviewed. We will email <span className="text-foreground">{studentTrial.eduEmail}</span> within 1-2 business days.
@@ -656,7 +656,7 @@ export default function ProfilePage() {
                 {studentTrial?.status === 'REJECTED' && (
                   <div className="space-y-4">
                     <div className="p-4 bg-np-crimson/5 border border-status-down/20 rounded-ui space-y-2">
-                      <p className="text-[12px] font-bold uppercase text-status-down">Application Not Approved</p>
+                      <p className="text-[12px] font-bold  text-status-down">Application Not Approved</p>
                       <p className="text-[11px] text-muted-foreground">
                         {studentTrial.rejectionReason || 'We were unable to verify your student status.'}
                       </p>
@@ -795,7 +795,7 @@ export default function ProfilePage() {
                           }
                         }}
                         disabled={studentLoading || !studentEduEmail || !studentFile}
-                        className="w-full sm:w-auto px-8 h-10 uppercase tracking-widest text-[11px]"
+                        className="w-full sm:w-auto px-8 h-10 text-xs font-medium"
                       >
                         {studentLoading
                           ? studentUploadProgress === 'uploading'
@@ -826,7 +826,7 @@ export default function ProfilePage() {
 
             <div className="text-center mb-8 sm:mb-14">
               <p className="label-category mb-3">Infrastructure Tiers</p>
-              <h2 className="text-2xl sm:text-4xl font-semibold tracking-tight uppercase">
+              <h2 className="text-2xl sm:text-4xl font-semibold tracking-tight ">
                 Operational <span className="text-foreground">Protocols</span>
               </h2>
               <p className="text-muted-foreground mt-2 text-sm max-w-lg mx-auto">
@@ -856,7 +856,7 @@ export default function ProfilePage() {
                     )}
                     {isCurrent && (
                       <div className="absolute top-2 right-3">
-                        <Badge variant="success" className="text-[7px] uppercase tracking-widest bg-status-up/10 text-status-up">Active</Badge>
+                        <Badge variant="success" className="text-[7px]  bg-status-up/10 text-status-up">Active</Badge>
                       </div>
                     )}
                     <div>
@@ -901,7 +901,7 @@ export default function ProfilePage() {
                         }
                       }}
                       className={cn(
-                        "mt-auto uppercase tracking-widest text-[10px] h-10 sm:h-11",
+                        "mt-auto text-xs font-medium h-10 sm:h-11",
                         isPro ? "np-btn-primary w-full" : "np-btn-outline w-full",
                         isCurrent && "bg-primary text-primary-foreground/20 border-border text-foreground hover:bg-primary text-primary-foreground/20 cursor-default"
                       )}
@@ -914,7 +914,7 @@ export default function ProfilePage() {
             </div>
 
             <div className="mt-8 sm:mt-12 text-center">
-              <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+              <p className="text-[10px]  text-muted-foreground">
                 All transactions secured by NexPulse Guard.
               </p>
             </div>
@@ -935,7 +935,7 @@ export default function ProfilePage() {
             
             <div className="flex items-center gap-3 mb-4 text-status-down">
               <AlertTriangle className="h-6 w-6 shrink-0" />
-              <h3 className="text-base font-bold uppercase tracking-tight">Cancel Subscription?</h3>
+              <h3 className="text-base font-bold ">Cancel Subscription?</h3>
             </div>
 
             <p className="text-[13px] text-muted-foreground leading-relaxed mb-6">
@@ -947,7 +947,7 @@ export default function ProfilePage() {
                 variant="outline"
                 onClick={() => setCancelModal(false)}
                 disabled={cancelLoading}
-                className="text-[11px] uppercase tracking-widest h-9"
+                className="text-[11px]  h-9"
               >
                 Keep Plan
               </Button>
@@ -976,7 +976,7 @@ export default function ProfilePage() {
                   }
                 }}
                 disabled={cancelLoading}
-                className="bg-np-crimson text-white hover:bg-np-crimson/90 text-[11px] uppercase tracking-widest h-9"
+                className="bg-status-down text-white hover:opacity-90 text-[11px]  h-9"
               >
                 {cancelLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirm Cancel"}
               </Button>

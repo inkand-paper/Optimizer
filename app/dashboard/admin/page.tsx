@@ -215,20 +215,20 @@ export default function AdminPortal() {
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-6 sm:py-10">
         {/* Header */}
         <div className="mb-8">
-          <Link href="/dashboard" className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground hover:text-foreground mb-6 transition-all group w-fit">
+          <Link href="/dashboard" className="flex items-center gap-2 text-[11px] font-semibold  text-muted-foreground hover:text-foreground mb-6 transition-all group w-fit">
             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-            <span>Return to Mission Control</span>
+            <span>Back to dashboard</span>
           </Link>
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight uppercase">
-                Admin <span className="text-foreground">Panel</span>
+              <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight ">
+                Admin console
               </h1>
               <p className="label-category text-muted-foreground mt-2">Manage users, plans, and student trial applications.</p>
             </div>
             {/* Stats card */}
             <Card className="p-4 flex items-center gap-3 sm:min-w-[180px]">
-              <div className="h-10 w-10 rounded-ui bg-primary text-primary-foreground/10 flex items-center justify-center border border-border shrink-0">
+              <div className="h-10 w-10 rounded-ui bg-muted flex items-center justify-center border border-border shrink-0">
                 <Users className="h-4 w-4 text-foreground" />
               </div>
               <div>
@@ -244,9 +244,9 @@ export default function AdminPortal() {
           <button
             onClick={() => setActiveTab('users')}
             className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-ui text-[12px] font-medium uppercase tracking-wider border transition-all",
+              "flex items-center gap-2 px-4 py-2 rounded-ui text-[12px] font-medium  border transition-all",
               activeTab === 'users'
-                ? "bg-primary text-primary-foreground/15 border-border text-foreground"
+                ? "bg-foreground text-background font-semibold"
                 : "border-border text-muted-foreground hover:text-foreground"
             )}
           >
@@ -256,9 +256,9 @@ export default function AdminPortal() {
           <button
             onClick={() => setActiveTab('trials')}
             className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-ui text-[12px] font-medium uppercase tracking-wider border transition-all",
+              "flex items-center gap-2 px-4 py-2 rounded-ui text-[12px] font-medium  border transition-all",
               activeTab === 'trials'
-                ? "bg-primary text-primary-foreground/15 border-border text-foreground"
+                ? "bg-foreground text-background font-semibold"
                 : "border-border text-muted-foreground hover:text-foreground"
             )}
           >
@@ -280,7 +280,7 @@ export default function AdminPortal() {
               <Input 
                 type="text" 
                 placeholder="SEARCH OPERATOR (EMAIL/IDENTITY)..."
-                className="w-full pl-10 bg-card font-mono text-[12px] uppercase"
+                className="w-full pl-10 bg-card font-mono text-[12px] "
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -311,7 +311,7 @@ export default function AdminPortal() {
                   <tr key={user.id} className="hover:bg-muted/20 transition-all group">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-ui bg-primary text-primary-foreground/10 border border-border flex items-center justify-center text-foreground font-bold text-sm uppercase shrink-0">
+                        <div className="h-9 w-9 rounded-ui bg-muted border border-border flex items-center justify-center text-foreground font-bold text-sm  shrink-0">
                           {user.name?.[0] || user.email[0]}
                         </div>
                         <div className="min-w-0">
@@ -326,7 +326,7 @@ export default function AdminPortal() {
                           value={user.plan}
                           onChange={(e) => updateUser(user.id, { plan: e.target.value })}
                           disabled={updatingId === user.id}
-                          className="text-[10px] font-semibold uppercase tracking-wider px-2 py-1.5 rounded bg-muted border border-border focus:border-border outline-none"
+                          className="text-[10px] font-semibold  px-2 py-1.5 rounded bg-muted border border-border focus:border-border outline-none"
                         >
                           <option value="FREE">Free</option>
                           <option value="PRO">PRO</option>
@@ -336,7 +336,7 @@ export default function AdminPortal() {
                           value={user.role}
                           onChange={(e) => updateUser(user.id, { role: e.target.value })}
                           disabled={updatingId === user.id}
-                          className="text-[10px] font-semibold uppercase tracking-wider px-2 py-1.5 rounded bg-primary text-primary-foreground/10 text-foreground border border-border outline-none"
+                          className="text-[10px] font-semibold  px-2 py-1.5 rounded bg-muted text-foreground border border-border outline-none"
                         >
                           <option value="DEVELOPER">Developer</option>
                           <option value="ADMIN">Admin</option>
@@ -347,11 +347,11 @@ export default function AdminPortal() {
                       <div className="flex items-center justify-center gap-4">
                         <div className="text-center">
                           <p className="text-[12px] font-mono font-semibold">{user._count.monitors}</p>
-                          <p className="text-[9px] uppercase text-muted-foreground">Monitors</p>
+                          <p className="text-[9px]  text-muted-foreground">Monitors</p>
                         </div>
                         <div className="text-center">
                           <p className="text-[12px] font-mono font-semibold">{user._count.apiKeys}</p>
-                          <p className="text-[9px] uppercase text-muted-foreground">Keys</p>
+                          <p className="text-[9px]  text-muted-foreground">Keys</p>
                         </div>
                       </div>
                     </td>
@@ -391,7 +391,7 @@ export default function AdminPortal() {
               <div key={user.id} className="p-4 space-y-3">
                 {/* Identity */}
                 <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-ui bg-primary text-primary-foreground/10 border border-border flex items-center justify-center text-foreground font-bold text-sm uppercase shrink-0">
+                  <div className="h-9 w-9 rounded-ui bg-muted border border-border flex items-center justify-center text-foreground font-bold text-sm  shrink-0">
                     {user.name?.[0] || user.email[0]}
                   </div>
                   <div className="min-w-0 flex-1">
@@ -420,7 +420,7 @@ export default function AdminPortal() {
                     value={user.plan}
                     onChange={(e) => updateUser(user.id, { plan: e.target.value })}
                     disabled={updatingId === user.id}
-                    className="flex-1 text-[11px] font-semibold uppercase tracking-wider px-3 py-2 rounded bg-muted border border-border focus:border-border outline-none"
+                    className="flex-1 text-[11px] font-semibold  px-3 py-2 rounded bg-muted border border-border focus:border-border outline-none"
                   >
                     <option value="FREE">Free</option>
                     <option value="PRO">PRO</option>
@@ -430,7 +430,7 @@ export default function AdminPortal() {
                     value={user.role}
                     onChange={(e) => updateUser(user.id, { role: e.target.value })}
                     disabled={updatingId === user.id}
-                    className="flex-1 text-[11px] font-semibold uppercase tracking-wider px-3 py-2 rounded bg-primary text-primary-foreground/10 text-foreground border border-border outline-none"
+                    className="flex-1 text-[11px] font-semibold  px-3 py-2 rounded bg-muted text-foreground border border-border outline-none"
                   >
                     <option value="DEVELOPER">Developer</option>
                     <option value="ADMIN">Admin</option>
@@ -458,7 +458,7 @@ export default function AdminPortal() {
                   key={s}
                   onClick={() => setTrialFilter(s)}
                   className={cn(
-                    "px-3 py-1.5 rounded text-[11px] font-medium uppercase tracking-wider transition-all",
+                    "px-3 py-1.5 rounded text-[11px] font-medium  transition-all",
                     trialFilter === s
                       ? s === 'PENDING' ? "bg-primary text-primary-foreground/15 text-foreground"
                         : s === 'APPROVED' ? "bg-np-teal/15 text-status-up"
@@ -515,7 +515,7 @@ export default function AdminPortal() {
                       {trial.status === 'PENDING' && (
                         <button
                           onClick={() => { setReviewingTrial(trial); setRejectionReason(''); setRejectionNote(''); }}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-border text-[11px] text-foreground hover:bg-primary text-primary-foreground/10 transition-all"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-border text-[11px] text-foreground hover:bg-muted transition-all"
                         >
                           Review
                         </button>
@@ -534,7 +534,7 @@ export default function AdminPortal() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-200">
           <div className="w-full max-w-md bg-background border border-border rounded-ui shadow-2xl p-6 space-y-5 animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between">
-              <h3 className="text-[14px] font-bold uppercase flex items-center gap-2">
+              <h3 className="text-[14px] font-bold  flex items-center gap-2">
                 <Zap className="h-4 w-4 text-foreground" />
                 Gift Plan Access
               </h3>
@@ -559,9 +559,9 @@ export default function AdminPortal() {
                     key={p}
                     onClick={() => setGiftPlan(p)}
                     className={cn(
-                      "py-2.5 rounded-ui border text-[12px] font-semibold uppercase tracking-wider transition-all",
+                      "py-2.5 rounded-ui border text-[12px] font-semibold  transition-all",
                       giftPlan === p
-                        ? "bg-primary text-primary-foreground/15 border-border text-foreground"
+                        ? "bg-foreground text-background font-semibold"
                         : "border-border text-muted-foreground hover:text-foreground"
                     )}
                   >
@@ -594,7 +594,7 @@ export default function AdminPortal() {
                       className={cn(
                         "py-2 rounded-ui border text-[11px] font-medium transition-all",
                         giftDays === d
-                          ? "bg-primary text-primary-foreground/15 border-border text-foreground"
+                          ? "bg-foreground text-background font-semibold"
                           : "border-border text-muted-foreground hover:text-foreground"
                       )}
                     >
@@ -621,7 +621,7 @@ export default function AdminPortal() {
             <Button
               onClick={handleGift}
               disabled={giftLoading}
-              className="w-full h-10 text-[11px] uppercase tracking-widest flex items-center justify-center gap-2"
+              className="w-full h-10 text-[11px]  flex items-center justify-center gap-2"
             >
               {giftLoading
                 ? <><Loader2 className="h-4 w-4 animate-spin" />Gifting...</>
@@ -637,7 +637,7 @@ export default function AdminPortal() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-200">
           <div className="w-full max-w-lg bg-background border border-border rounded-ui shadow-2xl p-6 space-y-5 animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between">
-              <h3 className="text-[14px] font-bold uppercase">Review Application</h3>
+              <h3 className="text-[14px] font-bold ">Review application</h3>
               <button onClick={() => setReviewingTrial(null)} className="text-muted-foreground hover:text-foreground">
                 <X className="h-4 w-4" />
               </button>
@@ -702,7 +702,7 @@ export default function AdminPortal() {
               <Button
                 onClick={() => handleReview('APPROVE')}
                 disabled={reviewLoading}
-                className="flex-1 flex items-center justify-center gap-2 h-10 text-[11px] uppercase tracking-wider bg-np-teal/15 border border-status-up/20 text-status-up hover:bg-np-teal/25"
+                className="flex-1 flex items-center justify-center gap-2 h-10 text-[11px]  bg-foreground text-background hover:opacity-90 font-medium"
               >
                 <Check className="h-3.5 w-3.5" />
                 Approve
@@ -711,7 +711,7 @@ export default function AdminPortal() {
                 onClick={() => handleReview('REJECT')}
                 disabled={reviewLoading || !rejectionReason}
                 variant="outline"
-                className="flex-1 flex items-center justify-center gap-2 h-10 text-[11px] uppercase tracking-wider border-status-down/20 text-status-down hover:bg-status-down/10 disabled:opacity-40"
+                className="flex-1 flex items-center justify-center gap-2 h-10 text-[11px]  border-status-down/20 text-status-down hover:bg-status-down/10 disabled:opacity-40"
               >
                 <X className="h-3.5 w-3.5" />
                 Reject
