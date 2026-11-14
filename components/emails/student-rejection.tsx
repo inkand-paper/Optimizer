@@ -19,8 +19,8 @@ export const StudentRejectionEmail = ({
     <Preview>NexPulse student trial application update</Preview>
     <Body style={{ backgroundColor: "#0a0a0a", fontFamily: "monospace" }}>
       <Container style={{ maxWidth: "560px", margin: "0 auto", padding: "40px 20px" }}>
-        <Heading style={{ color: "#d4af37", fontSize: "22px", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-          ⚡ NexPulse
+        <Heading style={{ color: "#ffffff", fontSize: "22px", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          NexPulse
         </Heading>
         <Hr style={{ borderColor: "#222" }} />
 
@@ -48,7 +48,7 @@ export const StudentRejectionEmail = ({
         </Section>
 
         <Section style={{ backgroundColor: "#111", border: "1px solid #222", borderRadius: "8px", padding: "20px" }}>
-          <Text style={{ color: "#d4af37", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.15em", margin: "0 0 10px" }}>
+          <Text style={{ color: "#ffffff", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.15em", margin: "0 0 10px" }}>
             What to do next
           </Text>
           <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0", lineHeight: "1.6" }}>

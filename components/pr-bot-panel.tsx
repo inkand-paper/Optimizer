@@ -114,8 +114,8 @@ export function PRBotPanel() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-base font-bold uppercase tracking-tight">PR Code Review Bot</h2>
-              <span className="bg-muted text-foreground text-[10px] font-mono px-2 py-0.5 rounded border border-border">AI</span>
+              <h2 className="text-base font-semibold text-foreground">PR Code Review Bot</h2>
+              <span className="bg-muted text-foreground text-[10px] font-mono px-2 py-0.5 rounded border border-border">GitHub</span>
             </div>
             <p className="text-[12px] text-muted-foreground mt-0.5">
               Auto-audit pull requests and post a quality score comment directly on GitHub.
@@ -126,7 +126,7 @@ export function PRBotPanel() {
 
       {/* ── Connect Repo ── */}
       <Card className="p-6 space-y-4">
-        <h3 className="text-[13px] font-semibold uppercase tracking-wider flex items-center gap-2">
+        <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
           <Plus className="h-4 w-4 text-foreground" />
           Connect a Repository
         </h3>
@@ -155,11 +155,11 @@ export function PRBotPanel() {
           <div className="mt-2 p-5 rounded-ui bg-muted/30 border border-border space-y-4 animate-in fade-in duration-300">
             <div className="flex items-center gap-2 text-foreground">
               <CheckCircle2 className="h-4 w-4" />
-              <h4 className="text-[12px] font-bold uppercase tracking-wider">Repository Connected — Complete GitHub Webhook Setup</h4>
+              <h4 className="text-xs font-semibold text-foreground">Repository Connected — Complete GitHub Webhook Setup</h4>
             </div>
 
             <div className="space-y-2">
-              <p className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">Payload URL</p>
+              <p className="text-xs text-muted-foreground font-medium">Payload URL</p>
               <div className="flex items-center gap-2">
                 <code className="flex-1 font-mono text-[12px] p-2.5 bg-background rounded-ui border border-border text-foreground truncate">
                   {setup.webhookUrl}
@@ -171,7 +171,7 @@ export function PRBotPanel() {
             </div>
 
             <div className="space-y-2">
-              <p className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">Webhook Secret</p>
+              <p className="text-xs text-muted-foreground font-medium">Webhook Secret</p>
               <div className="flex items-center gap-2">
                 <code className="flex-1 font-mono text-[12px] p-2.5 bg-background rounded-ui border border-border text-foreground truncate">
                   {setup.webhookSecret}
@@ -183,7 +183,7 @@ export function PRBotPanel() {
             </div>
 
             <div className="space-y-1.5">
-              <p className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">Steps</p>
+              <p className="text-xs text-muted-foreground font-medium">Steps</p>
               <ol className="space-y-1">
                 {setup.instructions.map((step, i) => (
                   <li key={i} className="text-[12px] text-muted-foreground flex items-start gap-2">
@@ -203,7 +203,7 @@ export function PRBotPanel() {
 
       {/* ── Connected Repos ── */}
       <Card className="p-6 space-y-4">
-        <h3 className="text-[13px] font-semibold uppercase tracking-wider flex items-center gap-2">
+        <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
           <ShieldCheck className="h-4 w-4 text-foreground" />
           Connected Repositories
         </h3>

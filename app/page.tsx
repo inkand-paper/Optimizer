@@ -15,17 +15,17 @@ import {
 import { cn } from "@/lib/utils";
 
 const valueProps = [
-  { label: "Frameworks supported", value: "Any" },
-  { label: "Avg. cache clear time", value: "< 200ms" },
-  { label: "Uptime SLA", value: "99.9%" },
-  { label: "Languages supported", value: "15+" },
+  { label: "Check intervals", value: "10s – 60s" },
+  { label: "Monitored protocols", value: "HTTP / REST" },
+  { label: "Agent protocol", value: "JSON-RPC 2.0" },
+  { label: "Deployment", value: "Self-hostable" },
 ];
 
 const featureDomains = [
   {
     id: "observe",
     title: "Deep Observability",
-    subtitle: "Uptime · Latency · Status Pages",
+    subtitle: "Uptime · Latency · Status pages",
     icon: Activity,
     items: [
       { name: "Live Uptime & Latency Monitors", desc: "HTTP, REST & gRPC endpoint health streaming across global edge PoPs in real-time." },
@@ -35,8 +35,8 @@ const featureDomains = [
   },
   {
     id: "autopilot",
-    title: "Autonomous AI Engine",
-    subtitle: "Root Cause · Autopilot · PR Review",
+    title: "Automated Incident Triage",
+    subtitle: "Root cause · Autopilot · PR review",
     icon: Cpu,
     items: [
       { name: "Incident Root-Cause Graph", desc: "Correlates latency spikes to exact culprit commits and slow database queries automatically." },
@@ -46,8 +46,8 @@ const featureDomains = [
   },
   {
     id: "finops",
-    title: "Cost & Developer Tools",
-    subtitle: "FinOps · MCP Server · Code Audit",
+    title: "FinOps & Developer Tools",
+    subtitle: "Resource audit · MCP server · Code audit",
     icon: DollarSign,
     items: [
       { name: "Zombie Resource Hunter", desc: "Continuous scanning for unattached EBS volumes, idle database replicas, and orphaned IPs." },
@@ -59,7 +59,7 @@ const featureDomains = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col bg-background selection:bg-primary text-primary-foreground/20">
+    <div className="min-h-screen flex flex-col bg-background selection:bg-foreground selection:text-background">
       <Navbar />
 
       <main className="flex-1">
@@ -74,7 +74,7 @@ export default function Home() {
             </h1>
 
             <p className="text-[16px] md:text-[18px] text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10">
-              NexPulse combines real-time uptime monitoring, AI code auditing, edge cache revalidation, and status pages into a single developer platform.
+              NexPulse combines real-time uptime monitoring, automated code auditing, edge cache revalidation, and public status pages into a single developer platform.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -88,13 +88,13 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── Stats strip ─────────────────── */}
+        {/* ── Capabilities strip ─────────── */}
         <div className="border-y border-border/40 bg-muted/20">
           <div className="max-w-4xl mx-auto px-4 py-6 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0 md:divide-x divide-border/40">
             {valueProps.map((v) => (
               <div key={v.label} className="flex flex-col items-center gap-1 px-2 md:px-6">
-                <span className="text-2xl md:text-3xl font-bold text-foreground font-mono">{v.value}</span>
-                <span className="text-center text-[10px] tracking-widest uppercase text-muted-foreground font-medium">{v.label}</span>
+                <span className="text-2xl md:text-3xl font-semibold text-foreground font-mono">{v.value}</span>
+                <span className="text-center text-xs text-muted-foreground">{v.label}</span>
               </div>
             ))}
           </div>
@@ -125,7 +125,7 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-[16px] font-bold text-foreground leading-snug">{domain.title}</h3>
-                      <p className="text-[11px] text-muted-foreground font-mono uppercase tracking-wide mt-0.5">{domain.subtitle}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{domain.subtitle}</p>
                     </div>
                   </div>
 
@@ -173,9 +173,9 @@ export default function Home() {
                   >
                     <div>
                       <div className="flex items-center justify-between mb-3">
-                        <p className="text-[12px] font-semibold uppercase tracking-widest text-muted-foreground">{plan.name}</p>
+                        <p className="text-xs font-medium text-muted-foreground">{plan.name}</p>
                         {isPro && (
-                          <span className="text-[9px] uppercase tracking-widest bg-primary text-primary-foreground/15 text-foreground font-bold px-2 py-0.5 rounded border border-border">
+                          <span className="text-[11px] bg-muted text-foreground font-medium px-2 py-0.5 rounded border border-border">
                             Most popular
                           </span>
                         )}
@@ -224,7 +224,7 @@ export default function Home() {
             <div className="space-y-5">
               <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
                 Connected in under 2 minutes.<br />
-                <span className="text-foreground">No agents required.</span>
+                <span className="text-foreground">No heavy agent required.</span>
               </h2>
               <p className="text-muted-foreground text-[15px] max-w-sm mx-auto leading-relaxed">
                 Add your first endpoint or repository and start catching issues before your users ever do.

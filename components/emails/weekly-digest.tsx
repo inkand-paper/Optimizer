@@ -32,7 +32,7 @@ interface WeeklyDigestEmailProps {
 
 const gradeColor = (grade: string) => {
   if (grade === 'A') return '#1D9E75';
-  if (grade === 'B') return '#d4af37';
+  if (grade === 'B') return '#f59e0b';
   if (grade === 'C') return '#BA7517';
   return '#E05C2A';
 };
@@ -60,8 +60,8 @@ export const WeeklyDigestEmail = ({
       <Container style={{ maxWidth: "600px", margin: "0 auto", padding: "40px 20px" }}>
 
         {/* Header */}
-        <Heading style={{ color: "#d4af37", fontSize: "22px", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 4px" }}>
-          ⚡ NexPulse
+        <Heading style={{ color: "#ffffff", fontSize: "22px", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 4px" }}>
+          NexPulse
         </Heading>
         <Text style={{ color: "#555", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.15em", margin: "0 0 24px" }}>
           Weekly Digest
@@ -96,7 +96,7 @@ export const WeeklyDigestEmail = ({
         {/* Monitors section */}
         {monitors.length > 0 && (
           <Section style={{ marginBottom: "28px" }}>
-            <Text style={{ color: "#d4af37", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.15em", margin: "0 0 12px" }}>
+            <Text style={{ color: "#ffffff", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.15em", margin: "0 0 12px" }}>
               Uptime Monitoring
             </Text>
             {monitors.map((m, i) => (
@@ -131,7 +131,7 @@ export const WeeklyDigestEmail = ({
         {/* Code audits section */}
         {audits.length > 0 && (
           <Section style={{ marginBottom: "28px" }}>
-            <Text style={{ color: "#d4af37", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.15em", margin: "0 0 12px" }}>
+            <Text style={{ color: "#ffffff", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.15em", margin: "0 0 12px" }}>
               Code Audits This Week
             </Text>
             {audits.map((a, i) => (
@@ -177,7 +177,7 @@ export const WeeklyDigestEmail = ({
             href={dashboardUrl}
             style={{
               display: "inline-block",
-              backgroundColor: "#d4af37",
+              backgroundColor: "#ffffff",
               color: "#0a0a0a",
               padding: "12px 32px",
               borderRadius: "6px",

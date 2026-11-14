@@ -453,7 +453,7 @@ export default function DashboardPage() {
                   <div className="flex-1 space-y-4 overflow-y-auto">
                     {DOMAIN_GROUPS.map((group) => (
                       <div key={group.id} className="space-y-1">
-                        <p className="px-2 text-[10px] font-mono uppercase text-muted-foreground">{group.category}</p>
+                        <p className="px-2 text-[11px] font-medium text-muted-foreground">{group.category}</p>
                         {group.tabs.map((t) => (
                           <button 
                             key={t.id}

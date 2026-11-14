@@ -129,7 +129,7 @@ export function Badge({
     neutral: "bg-muted text-foreground border border-border rounded text-[11px] font-mono px-1.5 py-0.5",
   }[variant];
   return (
-    <span className={cn(v, "font-mono uppercase tracking-wide inline-flex items-center gap-1.5", className)}>
+    <span className={cn(v, "font-mono text-[11px] font-medium inline-flex items-center gap-1.5 px-2 py-0.5 rounded", className)}>
       {children}
     </span>
   );

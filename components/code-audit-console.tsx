@@ -191,11 +191,11 @@ export function CodeAuditConsole() {
     <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
          <div>
-            <h2 className="text-[18px] sm:text-[20px] font-bold tracking-tight">Neural Command</h2>
-            <p className="label-category text-[9px] sm:text-[10px] uppercase tracking-widest">Universal Source Analysis Engine</p>
+            <h2 className="text-[18px] sm:text-[20px] font-bold tracking-tight">Code Audits</h2>
+            <p className="text-xs text-muted-foreground">Automated repository and source code analysis</p>
          </div>
          <div className="flex items-center justify-between sm:justify-start gap-4 bg-muted/20 px-4 py-2 rounded-ui border border-border w-full sm:w-auto">
-            <span className="label-category text-[10px]">Cycles Used</span>
+            <span className="text-xs text-muted-foreground">Audits used</span>
             <span className="text-[14px] font-bold tabular-nums">{isUnlimited ? `${usage} / ∞` : `${usage} / ${limit}`}</span>
          </div>
       </div>
@@ -301,11 +301,11 @@ export function CodeAuditConsole() {
                            <div className="h-10 w-10 rounded-ui bg-muted flex items-center justify-center text-muted-foreground/60 group-hover:text-foreground transition-colors">
                               {r.source === "GITHUB" ? <GitBranch className="h-5 w-5" /> : r.source === "ZIP" ? <FolderArchive className="h-5 w-5" /> : <Terminal className="h-5 w-5" />}
                            </div>
-                           <Badge variant={r.status === "COMPLETED" ? "success" : "warning"} className="text-[8px] sm:text-[9px] px-2 py-0.5 tracking-widest">{r.status}</Badge>
+                           <Badge variant={r.status === "COMPLETED" ? "success" : "warning"} className="text-[10px] px-2 py-0.5">{r.status}</Badge>
                         </div>
                         <div>
-                          <h4 className="text-[14px] sm:text-[15px] font-semibold truncate text-foreground/80 group-hover:text-foreground mb-1 pr-10 sm:pr-12">{r.repoName ?? r.fileName ?? "Source Node"}</h4>
-                          <p className="label-category text-[8px] sm:text-[9px] uppercase tracking-widest opacity-60">{r.source} Interface</p>
+                          <h4 className="text-[14px] sm:text-[15px] font-semibold truncate text-foreground/80 group-hover:text-foreground mb-1 pr-10 sm:pr-12">{r.repoName ?? r.fileName ?? "Source file"}</h4>
+                          <p className="text-xs text-muted-foreground">{r.source.toLowerCase()}</p>
                         </div>
                         <div className="pt-4 sm:pt-5 mt-4 sm:mt-5 border-t border-border flex items-center justify-between">
                            <div className="flex items-center gap-2 opacity-40">
@@ -331,7 +331,7 @@ export function CodeAuditConsole() {
              </div>
              <div>
                <h3 className="text-[13px] font-semibold">PR Code Review Bot</h3>
-               <p className="label-category text-[10px] text-muted-foreground">Auto-audit pull requests and post a score comment on GitHub</p>
+               <p className="text-xs text-muted-foreground">Auto-audit pull requests and post a score comment on GitHub</p>
              </div>
            </div>
 
@@ -356,7 +356,7 @@ export function CodeAuditConsole() {
                          setPrBotConfigs(prev => prev.map(c => c.id === cfg.id ? { ...c, enabled: !c.enabled } : c));
                        }}
                        className={cn(
-                         "text-[10px] px-2 py-1 rounded border uppercase tracking-wider font-medium transition-all",
+                         "text-xs px-2.5 py-1 rounded border font-medium transition-all",
                          cfg.enabled
                            ? "bg-status-up/10 border-status-up/20 text-status-up"
                            : "border-border text-muted-foreground"

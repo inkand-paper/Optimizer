@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import * as React from "react";
 import Link from "next/link";
@@ -171,7 +171,7 @@ function LoginForm() {
 
             <div className="relative flex items-center justify-center">
               <div className="absolute inset-0 border-t border-border" />
-              <span className="relative bg-background px-3 text-[11px] uppercase tracking-wider text-muted-foreground font-mono">
+              <span className="relative bg-background px-3 text-xs text-muted-foreground font-mono">
                 or with credentials
               </span>
             </div>
@@ -221,7 +221,7 @@ function LoginForm() {
         ) : (
           <form onSubmit={handleMfaSubmit} className="space-y-5">
             <div className="space-y-2">
-              <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground block text-center">
+              <label className="text-xs font-medium text-muted-foreground block text-center">
                 Security Verification Code
               </label>
               <Input

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import * as React from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -124,7 +124,7 @@ export default function MonitorDetailsPage() {
         {/* Metric Cards Row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <Card className="p-4 space-y-2">
-            <p className="text-xs font-mono text-muted-foreground uppercase tracking-wider">Current Latency</p>
+            <p className="text-xs text-muted-foreground">Current Latency</p>
             <div className="flex items-baseline justify-between">
               <span className="text-xl font-mono font-semibold text-foreground">
                 {latestCheck?.latency ?? 0}
@@ -171,7 +171,7 @@ export default function MonitorDetailsPage() {
           </Card>
 
           <Card className="p-4 space-y-2">
-            <p className="text-xs font-mono text-muted-foreground uppercase tracking-wider">Routing Node</p>
+            <p className="text-xs text-muted-foreground">Routing Node</p>
             <div className="flex items-baseline justify-between">
               <span className="text-sm font-semibold text-foreground">Global Edge</span>
               <Server className="h-3.5 w-3.5 text-muted-foreground" />
@@ -188,7 +188,7 @@ export default function MonitorDetailsPage() {
               <div className="flex items-center justify-between mb-6 pb-2 border-b border-border">
                 <div className="flex items-center gap-2">
                   <Activity className="h-4 w-4 text-foreground" />
-                  <h3 className="text-xs font-mono uppercase tracking-wider font-semibold text-foreground">
+                  <h3 className="text-xs font-semibold text-foreground">
                     Latency Telemetry Stream (ms)
                   </h3>
                 </div>
@@ -278,7 +278,7 @@ export default function MonitorDetailsPage() {
           {/* Right Column: Configuration & Danger Zone */}
           <div className="space-y-6">
             <Card className="p-5 space-y-4">
-              <h3 className="text-xs font-mono uppercase tracking-wider font-semibold text-foreground pb-2 border-b border-border">
+              <h3 className="text-xs font-semibold text-foreground pb-2 border-b border-border">
                 Probe Configuration
               </h3>
               

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import * as React from "react";
 import { Card, Button, Input, StatusPip, Toggle, ConfirmDialog } from "./ui-elements";
@@ -160,7 +160,7 @@ export function MonitoringDashboard() {
     return (
       <Card className="p-12 text-center bg-card border-border">
         <Activity className="h-6 w-6 animate-pulse mx-auto mb-3 text-muted-foreground opacity-40" />
-        <p className="text-xs font-mono text-muted-foreground uppercase tracking-wider">Syncing Global Probes...</p>
+        <p className="text-xs text-muted-foreground">Loading monitors...</p>
       </Card>
     );
   }

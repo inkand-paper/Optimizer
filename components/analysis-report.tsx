@@ -163,14 +163,14 @@ export function AnalysisReport({ data }: Props) {
               </div>
               
               {tabSections[activeTab]?.suggestions?.length > 0 && (
-                <div className="mt-6 p-4 rounded-card border border-border bg-primary text-primary-foreground/5">
-                  <h4 className="text-[12px] font-semibold text-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
+                <div className="mt-6 p-4 rounded-card border border-border bg-muted/30">
+                  <h4 className="text-xs font-semibold text-foreground mb-3 flex items-center gap-2">
                     <Sparkles className="h-3.5 w-3.5" /> Recommendations
                   </h4>
                   <ul className="space-y-2">
                     {tabSections[activeTab].suggestions.map((sugg: string, i: number) => (
                       <li key={i} className="text-[13px] text-muted-foreground flex items-start gap-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-primary text-primary-foreground shrink-0 mt-1.5" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0 mt-1.5" />
                         <span>{sugg}</span>
                       </li>
                     ))}
@@ -191,8 +191,8 @@ export function AnalysisReport({ data }: Props) {
                 <div className="np-diagnosis">
                   <div className="flex items-center gap-2 mb-4">
                     <Sparkles className="h-4 w-4 text-foreground" />
-                    <span className="text-[12px] font-semibold text-foreground uppercase tracking-wide">
-                      Genius Diagnosis
+                    <span className="text-xs font-semibold text-foreground">
+                      Analysis Diagnosis
                     </span>
                   </div>
                   <div className="text-[13px] leading-relaxed max-w-none">

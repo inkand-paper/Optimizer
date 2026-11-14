@@ -103,12 +103,12 @@ export function FinOpsPreview({ mode = "cost" }: FinOpsPreviewProps) {
 
             <div className="flex items-center gap-4 bg-muted/40 px-4 py-2.5 rounded-ui border border-border shrink-0">
               <div>
-                <p className="label-category text-[9px] uppercase">Current Monthly Spend</p>
+                <p className="text-xs text-muted-foreground">Current monthly spend</p>
                 <p className="text-lg font-bold font-mono">$842/mo</p>
               </div>
               <ArrowDownRight className="h-5 w-5 text-status-up" />
               <div>
-                <p className="label-category text-[9px] text-status-up uppercase">Optimized Target</p>
+                <p className="text-xs text-muted-foreground">Optimized target</p>
                 <p className="text-lg font-bold font-mono text-status-up">${projectedSpend.toFixed(0)}/mo</p>
               </div>
             </div>
@@ -166,7 +166,7 @@ export function FinOpsPreview({ mode = "cost" }: FinOpsPreviewProps) {
         {/* PR Cost Prediction & Recommendations */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <Card className="lg:col-span-7 p-6 space-y-4">
-            <h3 className="text-[13px] font-bold uppercase tracking-wider flex items-center gap-2">
+            <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
               <Sparkles className="h-4 w-4 text-foreground" />
               Automated Cost Optimization Recommendations
             </h3>
@@ -191,7 +191,7 @@ export function FinOpsPreview({ mode = "cost" }: FinOpsPreviewProps) {
 
           <Card className="lg:col-span-5 p-6 space-y-4 flex flex-col justify-between">
             <div>
-              <h3 className="text-[13px] font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
+              <h3 className="text-sm font-semibold mb-2 flex items-center gap-2 text-foreground">
                 <ShieldAlert className="h-4 w-4 text-foreground" />
                 PR Infrastructure Cost Impact
               </h3>
@@ -244,7 +244,7 @@ export function FinOpsPreview({ mode = "cost" }: FinOpsPreviewProps) {
 
           <div className="flex items-center gap-4 bg-muted/40 px-4 py-2.5 rounded-ui border border-border shrink-0">
             <div>
-              <p className="label-category text-[9px] uppercase text-status-down">Recoverable Waste</p>
+              <p className="text-xs text-muted-foreground">Recoverable waste</p>
               <p className="text-lg font-bold font-mono text-status-down">${totalMonthlyWaste.toFixed(0)}/mo</p>
             </div>
           </div>
@@ -261,16 +261,16 @@ export function FinOpsPreview({ mode = "cost" }: FinOpsPreviewProps) {
       <Card className="p-6 space-y-5">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-[13px] font-bold uppercase tracking-wider flex items-center gap-2">
+            <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
               <Trash2 className="h-4 w-4 text-foreground" />
               Detected Idle & Abandoned Resources
             </h3>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               Clicking &quot;Clean Up&quot; safely deprovisions the target cloud resource and updates your budget immediately.
             </p>
           </div>
           {!loading && zombies.length > 0 && (
-            <span className="bg-foreground/20 text-foreground font-bold text-[9px] uppercase tracking-widest px-2.5 py-1 rounded border border-border">
+            <span className="bg-muted text-foreground font-medium text-xs px-2.5 py-1 rounded border border-border">
               {zombies.length} Zombie{zombies.length > 1 ? "s" : ""} Found
             </span>
           )}
@@ -296,8 +296,8 @@ export function FinOpsPreview({ mode = "cost" }: FinOpsPreviewProps) {
                 <div className="flex items-center gap-3.5 min-w-0">
                   <div className="h-9 w-9 rounded-ui bg-background border border-border flex items-center justify-center shrink-0">
                     {z.provider === "Supabase"
-                      ? <Database className="h-4 w-4 text-emerald-400" />
-                      : <Cloud className="h-4 w-4 text-blue-400" />}
+                      ? <Database className="h-4 w-4 text-foreground" />
+                      : <Cloud className="h-4 w-4 text-foreground" />}
                   </div>
                   <div className="min-w-0">
                     <p className="text-[13px] font-bold font-mono truncate">{z.name}</p>
@@ -308,13 +308,13 @@ export function FinOpsPreview({ mode = "cost" }: FinOpsPreviewProps) {
                 <div className="flex items-center gap-5 shrink-0">
                   <div className="text-right">
                     <p className="text-[14px] font-bold font-mono text-status-down">+${z.costMonthly}/mo</p>
-                    <span className="text-[9px] uppercase font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">{z.status}</span>
+                    <span className="text-xs font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded">{z.status}</span>
                   </div>
                   <Button
                     onClick={() => handleClean(z)}
                     disabled={cleaningId === z.id}
                     variant="outline"
-                    className="h-8 text-[11px] uppercase tracking-wider font-bold text-status-down border-status-down/20 hover:bg-status-down/10 text-status-down"
+                    className="h-8 text-xs font-medium text-status-down border border-status-down/30 hover:bg-status-down/10"
                   >
                     {cleaningId === z.id ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : "Clean Up"}
                   </Button>
