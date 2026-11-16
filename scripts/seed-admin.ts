@@ -1,3 +1,7 @@
+import dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
+dotenv.config({ path: ".env" });
+
 import { prisma } from "../lib/prisma";
 import { hashPassword } from "../lib/auth";
 
