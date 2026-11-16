@@ -22,6 +22,8 @@ export function WebhookManager({ onLimitReached }: Props) {
   const [url, setUrl]                   = React.useState("");
   const [selectedEvents, setSelected]   = React.useState<string[]>(["MONITOR_DOWN", "REVALIDATE_SUCCESS"]);
   const [copiedId, setCopiedId]         = React.useState<string | null>(null);
+  const [webhookError, setWebhookError] = React.useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = React.useState<string | null>(null);
 
   const fetchWebhooks = async () => {
     try {
@@ -49,13 +51,14 @@ export function WebhookManager({ onLimitReached }: Props) {
       });
       if (r.ok) { setIsAdding(false); setUrl(""); fetchWebhooks(); }
       else if (r.status === 403) { onLimitReached?.(); }
-      else { const d = await r.json(); alert(d.message || "Failed"); }
-    } catch { alert("Error provisioning webhook"); }
+      else { const d = await r.json(); setWebhookError(d.message || "Failed to provision webhook"); }
+    } catch { setWebhookError("Error provisioning webhook"); }
     finally { setLoading(false); }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Remove this webhook?")) return;
+    if (deleteConfirmId !== id) { setDeleteConfirmId(id); return; }
+    setDeleteConfirmId(null);
     try {
       const r = await fetch(`/api/webhooks/${id}`, { method: "DELETE", credentials: "include" });
       if (r.ok) setWebhooks(webhooks.filter((w) => w.id !== id));
@@ -82,6 +85,13 @@ export function WebhookManager({ onLimitReached }: Props) {
 
   return (
     <Card className="overflow-hidden">
+      {/* Error banner */}
+      {webhookError && (
+        <div className="flex items-center justify-between gap-3 px-5 py-3 text-[12px] text-status-down bg-status-down/5 border-b border-status-down/20">
+          <span>{webhookError}</span>
+          <button onClick={() => setWebhookError(null)} className="shrink-0 hover:opacity-70 transition-opacity">✕</button>
+        </div>
+      )}
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-3.5" style={{ borderBottom: "0.5px solid rgb(var(--border))" }}>
         <div className="flex items-center gap-2">
@@ -158,7 +168,8 @@ export function WebhookManager({ onLimitReached }: Props) {
                 </div>
                 <button
                   onClick={() => handleDelete(w.id)}
-                  className="np-btn-danger h-8 px-3 text-[12px] sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                  className={`np-btn-danger h-8 px-3 text-[12px] sm:opacity-0 sm:group-hover:opacity-100 transition-opacity ${deleteConfirmId === w.id ? "!opacity-100" : ""}`}
+                  title={deleteConfirmId === w.id ? "Click again to confirm" : "Remove webhook"}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>

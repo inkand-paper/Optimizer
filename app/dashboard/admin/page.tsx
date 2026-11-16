@@ -58,6 +58,8 @@ export default function AdminPortal() {
   const [rejectionNote, setRejectionNote] = React.useState('');
   const [reviewLoading, setReviewLoading] = React.useState(false);
   const [trialFilter, setTrialFilter] = React.useState<'PENDING' | 'APPROVED' | 'REJECTED'>('PENDING');
+  const [adminError, setAdminError] = React.useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = React.useState<string | null>(null);
   const [giftTarget, setGiftTarget] = React.useState<AdminUser | null>(null);
   const [giftPlan, setGiftPlan] = React.useState<'PRO' | 'BUSINESS'>('PRO');
   const [giftDays, setGiftDays] = React.useState(30);
@@ -160,6 +162,7 @@ export default function AdminPortal() {
 
   const updateUser = async (userId: string, data: Record<string, unknown>) => {
     setUpdatingId(userId);
+    setAdminError(null);
     try {
       const res = await fetch("/api/admin/users", {
         method: "PATCH",
@@ -171,18 +174,22 @@ export default function AdminPortal() {
          fetchUsers();
       } else {
          const errorData = await res.json();
-         alert(errorData.error || "Failed to update user");
+         setAdminError(errorData.error || "Failed to update user");
       }
     } catch {
-      alert("Network error: Update failed");
+      setAdminError("Network error: Update failed");
     } finally {
       setUpdatingId(null);
     }
   };
 
   const deleteUser = async (userId: string) => {
-    if (!confirm("Are you sure you want to permanently delete this user? This cannot be undone.")) return;
-    
+    if (deleteConfirmId !== userId) {
+      setDeleteConfirmId(userId);
+      return;
+    }
+    setDeleteConfirmId(null);
+    setAdminError(null);
     setUpdatingId(userId);
     try {
       const res = await fetch(`/api/admin/users?userId=${userId}`, {
@@ -194,7 +201,7 @@ export default function AdminPortal() {
       if (res.ok) {
         fetchUsers();
       } else {
-        alert(data.error || "Failed to delete user");
+        setAdminError(data.error || "Failed to delete user");
       }
     } catch {
       console.error("Delete failed");
@@ -213,6 +220,13 @@ export default function AdminPortal() {
       <Navbar />
       
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-6 sm:py-10">
+        {/* Error banner */}
+        {adminError && (
+          <div className="mb-4 flex items-center justify-between gap-3 px-4 py-3 rounded-ui border border-status-down/30 bg-status-down/5 text-[13px] text-status-down">
+            <span>{adminError}</span>
+            <button onClick={() => setAdminError(null)} className="shrink-0 text-status-down hover:opacity-70 transition-opacity"><X className="h-4 w-4" /></button>
+          </div>
+        )}
         {/* Header */}
         <div className="mb-8">
           <Link href="/dashboard" className="flex items-center gap-2 text-[11px] font-semibold  text-muted-foreground hover:text-foreground mb-6 transition-all group w-fit">
@@ -372,8 +386,8 @@ export default function AdminPortal() {
                         <button
                           onClick={() => deleteUser(user.id)}
                           disabled={updatingId === user.id}
-                          className="p-2 text-muted-foreground hover:text-status-down transition-all opacity-0 group-hover:opacity-100 disabled:opacity-50"
-                          title="Delete user"
+                          className={`p-2 transition-all opacity-0 group-hover:opacity-100 disabled:opacity-50 ${deleteConfirmId === user.id ? "text-status-down" : "text-muted-foreground hover:text-status-down"}`}
+                          title={deleteConfirmId === user.id ? "Click again to confirm delete" : "Delete user"}
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -408,7 +422,8 @@ export default function AdminPortal() {
                   <button
                     onClick={() => deleteUser(user.id)}
                     disabled={updatingId === user.id}
-                    className="p-2 text-muted-foreground hover:text-status-down transition-colors shrink-0"
+                    className={`p-2 transition-colors shrink-0 ${deleteConfirmId === user.id ? "text-status-down" : "text-muted-foreground hover:text-status-down"}`}
+                    title={deleteConfirmId === user.id ? "Click again to confirm delete" : "Delete user"}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>

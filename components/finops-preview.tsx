@@ -24,6 +24,7 @@ interface FinOpsPreviewProps {
 export function FinOpsPreview({ mode = "cost" }: FinOpsPreviewProps) {
   const [zombies, setZombies] = React.useState<ZombieResource[]>([]);
   const [totalMonthlyWaste, setTotalMonthlyWaste] = React.useState(0);
+  const [currentSpend, setCurrentSpend] = React.useState<number | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [cleaningId, setCleaningId] = React.useState<string | null>(null);
   const [toastMessage, setToastMessage] = React.useState<string | null>(null);
@@ -37,6 +38,7 @@ export function FinOpsPreview({ mode = "cost" }: FinOpsPreviewProps) {
           const data = await res.json();
           setZombies(data.resources || []);
           setTotalMonthlyWaste(data.totalMonthlyWaste || 0);
+          if (typeof data.currentMonthlySpend === "number") setCurrentSpend(data.currentMonthlySpend);
         }
       } catch (err) {
         console.error("[FINOPS_FETCH_ERR]", err);
@@ -77,7 +79,7 @@ export function FinOpsPreview({ mode = "cost" }: FinOpsPreviewProps) {
     }
   }
 
-  const projectedSpend = Math.max(0, 842 - totalMonthlyWaste);
+  const projectedSpend = currentSpend !== null ? Math.max(0, currentSpend - totalMonthlyWaste) : null;
 
   // Mode 1: COST INTELLIGENCE DASHBOARD
   if (mode === "cost") {
@@ -104,12 +106,12 @@ export function FinOpsPreview({ mode = "cost" }: FinOpsPreviewProps) {
             <div className="flex items-center gap-4 bg-muted/40 px-4 py-2.5 rounded-ui border border-border shrink-0">
               <div>
                 <p className="text-xs text-muted-foreground">Current monthly spend</p>
-                <p className="text-lg font-bold font-mono">$842/mo</p>
+                <p className="text-lg font-bold font-mono">{currentSpend !== null ? `$${currentSpend.toFixed(0)}/mo` : "—"}</p>
               </div>
               <ArrowDownRight className="h-5 w-5 text-status-up" />
               <div>
                 <p className="text-xs text-muted-foreground">Optimized target</p>
-                <p className="text-lg font-bold font-mono text-status-up">${projectedSpend.toFixed(0)}/mo</p>
+                <p className="text-lg font-bold font-mono text-status-up">{projectedSpend !== null ? `$${projectedSpend.toFixed(0)}/mo` : "—"}</p>
               </div>
             </div>
           </div>
@@ -201,7 +203,7 @@ export function FinOpsPreview({ mode = "cost" }: FinOpsPreviewProps) {
 
               <div className="p-4 bg-muted/20 rounded-ui border border-border space-y-3 font-mono text-[11px]">
                 <div className="flex justify-between items-center pb-2 border-b border-border/40">
-                  <span className="text-muted-foreground">PR #482 (Redis Cache)</span>
+                  <span className="text-muted-foreground">Recent PR — infrastructure impact</span>
                   <span className="text-foreground font-bold">+$177/mo</span>
                 </div>
                 <div className="space-y-1.5 text-[10px] text-muted-foreground font-sans">

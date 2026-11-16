@@ -63,6 +63,7 @@ export function CodeAuditConsole() {
   const [prBotSetup, setPrBotSetup] = React.useState<PRBotSetup | null>(null);
   const [prBotError, setPrBotError] = React.useState('');
   const [logs, setLogs] = React.useState<{ msg: string; type: string }[]>([]);
+  const [deleteConfirmId, setDeleteConfirmId] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     loadReviews();
@@ -106,7 +107,8 @@ export function CodeAuditConsole() {
   async function deleteReview(id: string, e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    if (!confirm("Remove this audit record?")) return;
+    if (deleteConfirmId !== id) { setDeleteConfirmId(id); return; }
+    setDeleteConfirmId(null);
 
     try {
       const res = await fetch(`/api/code-review/${id}`, { method: "DELETE" });
@@ -289,8 +291,8 @@ export function CodeAuditConsole() {
                    {/* Delete Button - Outside the Link to avoid swallowing events */}
                    <button 
                      onClick={(e) => deleteReview(r.id, e)}
-                     className="absolute top-3 right-3 p-2 rounded-md bg-background/80 backdrop-blur-md border border-border/50 text-status-down hover:bg-np-crimson hover:text-white transition-all z-30 shadow-lg"
-                     title="Remove Archive"
+                     className={`absolute top-3 right-3 p-2 rounded-md bg-background/80 backdrop-blur-md border border-border/50 transition-all z-30 shadow-lg ${deleteConfirmId === r.id ? "text-white bg-status-down border-status-down" : "text-status-down hover:bg-status-down/10"}`}
+                     title={deleteConfirmId === r.id ? "Click again to confirm" : "Remove audit record"}
                    >
                      <Trash2 className="h-3.5 w-3.5" />
                    </button>
