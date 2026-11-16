@@ -270,6 +270,17 @@ function LoginForm() {
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign In with Credentials"}
               </Button>
             </form>
+
+            {process.env.NODE_ENV !== "production" && (
+              <div className="pt-2">
+                <a
+                  href="/api/auth/dev-login"
+                  className="w-full h-9 flex items-center justify-center gap-2 rounded-ui border border-border bg-muted/40 hover:bg-muted text-xs font-mono text-muted-foreground hover:text-foreground transition-all"
+                >
+                  <span>One-Click Dev Access (Admin)</span>
+                </a>
+              </div>
+            )}
           </div>
         ) : (
           <form
