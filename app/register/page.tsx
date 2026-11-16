@@ -108,7 +108,7 @@ export default function RegisterPage() {
               </span>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} method="POST" action="#" className="space-y-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-foreground" htmlFor="name">
                   Full Name

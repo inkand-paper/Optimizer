@@ -51,9 +51,7 @@ function LoginForm() {
     ? `Authentication error (${oauthErrorParam}). Please try again.`
     : null;
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    e.stopPropagation();
+  async function performLogin(email: string, pass: string) {
     setLoading(true);
     setError("");
 
@@ -62,7 +60,7 @@ function LoginForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email: emailInput, password: passwordInput }),
+        body: JSON.stringify({ email, password: pass }),
       });
 
       const data = await res.json();
@@ -73,7 +71,7 @@ function LoginForm() {
           setInternalMfaToken(data.mfaToken);
         } else {
           localStorage.setItem("user", JSON.stringify(data.user));
-          router.push("/dashboard");
+          window.location.href = "/dashboard";
         }
       } else {
         setError(data.message || "Invalid credentials. Please try again.");
@@ -83,6 +81,25 @@ function LoginForm() {
     } finally {
       setLoading(false);
     }
+  }
+
+  // Handle URL credentials (e.g. if browser previously fell back to GET navigation)
+  React.useEffect(() => {
+    const qEmail = searchParams?.get("email");
+    const qPassword = searchParams?.get("password");
+    if (qEmail && qPassword) {
+      if (typeof window !== "undefined") {
+        window.history.replaceState({}, "", "/login");
+      }
+      performLogin(qEmail, qPassword);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+    await performLogin(emailInput, passwordInput);
   }
 
   async function handleMfaSubmit(e: React.FormEvent) {
@@ -176,7 +193,7 @@ function LoginForm() {
               </span>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} method="POST" action="#" className="space-y-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-foreground" htmlFor="email">
                   Work Email
@@ -219,7 +236,7 @@ function LoginForm() {
             </form>
           </div>
         ) : (
-          <form onSubmit={handleMfaSubmit} className="space-y-5">
+          <form onSubmit={handleMfaSubmit} method="POST" action="#" className="space-y-5">
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground block text-center">
                 Security Verification Code
