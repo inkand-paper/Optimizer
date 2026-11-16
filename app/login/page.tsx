@@ -51,7 +51,15 @@ function LoginForm() {
     ? `Authentication error (${oauthErrorParam}). Please try again.`
     : null;
 
-  async function performLogin(email: string, pass: string) {
+  async function performLogin(email?: string, pass?: string) {
+    const targetEmail = (email || emailInput || "").trim();
+    const targetPass = pass || passwordInput || "";
+
+    if (!targetEmail || !targetPass) {
+      setError("Please enter your work email and password.");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
@@ -60,7 +68,7 @@ function LoginForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email, password: pass }),
+        body: JSON.stringify({ email: targetEmail, password: targetPass }),
       });
 
       const data = await res.json();
@@ -76,7 +84,8 @@ function LoginForm() {
       } else {
         setError(data.message || "Invalid credentials. Please try again.");
       }
-    } catch {
+    } catch (err) {
+      console.error("[LOGIN_FETCH_ERR]", err);
       setError("Connection error. Please try again.");
     } finally {
       setLoading(false);
@@ -96,9 +105,11 @@ function LoginForm() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    e.stopPropagation();
+  async function handleSubmit(e?: React.FormEvent) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     await performLogin(emailInput, passwordInput);
   }
 
@@ -193,7 +204,15 @@ function LoginForm() {
               </span>
             </div>
 
-            <form onSubmit={handleSubmit} method="POST" action="#" className="space-y-4">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleSubmit(e);
+              }}
+              action="javascript:void(0);"
+              className="space-y-4"
+            >
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-foreground" htmlFor="email">
                   Work Email
@@ -204,6 +223,12 @@ function LoginForm() {
                   type="email"
                   value={emailInput}
                   onChange={(e) => setEmailInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleSubmit();
+                    }
+                  }}
                   placeholder="name@company.com"
                   required
                 />
@@ -226,17 +251,36 @@ function LoginForm() {
                   name="password" 
                   value={passwordInput}
                   onChange={(e) => setPasswordInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleSubmit();
+                    }
+                  }}
                   required 
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button
+                type="button"
+                onClick={() => handleSubmit()}
+                className="w-full"
+                disabled={loading}
+              >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign In with Credentials"}
               </Button>
             </form>
           </div>
         ) : (
-          <form onSubmit={handleMfaSubmit} method="POST" action="#" className="space-y-5">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleMfaSubmit(e);
+            }}
+            action="javascript:void(0);"
+            className="space-y-5"
+          >
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground block text-center">
                 Security Verification Code
@@ -244,6 +288,12 @@ function LoginForm() {
               <Input
                 value={mfaCode || ""}
                 onChange={(e) => setMfaCode(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && mfaCode.length >= 6) {
+                    e.preventDefault();
+                    handleMfaSubmit(e);
+                  }
+                }}
                 placeholder="000000"
                 maxLength={6}
                 autoFocus
@@ -251,7 +301,12 @@ function LoginForm() {
               />
             </div>
 
-            <Button type="submit" className="w-full" disabled={loading || mfaCode.length < 6}>
+            <Button
+              type="button"
+              onClick={handleMfaSubmit}
+              className="w-full"
+              disabled={loading || mfaCode.length < 6}
+            >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Verify Code & Proceed"}
             </Button>
 

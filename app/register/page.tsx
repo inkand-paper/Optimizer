@@ -108,7 +108,15 @@ export default function RegisterPage() {
               </span>
             </div>
 
-            <form onSubmit={handleSubmit} method="POST" action="#" className="space-y-4">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleSubmit(e);
+              }}
+              action="javascript:void(0);"
+              className="space-y-4"
+            >
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-foreground" htmlFor="name">
                   Full Name
@@ -148,7 +156,12 @@ export default function RegisterPage() {
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button
+                type="button"
+                onClick={(e) => handleSubmit(e as unknown as React.FormEvent<HTMLFormElement>)}
+                className="w-full"
+                disabled={loading}
+              >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create Developer Account"}
               </Button>
             </form>
