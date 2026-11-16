@@ -45,8 +45,10 @@ export async function GET(req: NextRequest) {
       role: adminUser.role,
     });
 
-    const cookieStore = await cookies();
-    cookieStore.set("token", token, {
+    // Create redirect response and attach cookies directly to its headers
+    const response = NextResponse.redirect(new URL("/dashboard", req.url));
+
+    response.cookies.set("token", token, {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
@@ -54,7 +56,7 @@ export async function GET(req: NextRequest) {
       path: "/",
     });
 
-    cookieStore.set("dev_bypass_user", JSON.stringify({
+    response.cookies.set("dev_bypass_user", JSON.stringify({
       id: adminUser.id,
       email: adminUser.email,
       name: adminUser.name,
@@ -68,7 +70,7 @@ export async function GET(req: NextRequest) {
       path: "/",
     });
 
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+    return response;
   } catch (error) {
     console.error("[DEV_LOGIN_ERROR]", error);
     return NextResponse.json({ error: "Failed to initialize dev session" }, { status: 500 });
