@@ -96,7 +96,7 @@ export function ActivityLogs() {
               <div
                 key={log.id}
                 className="flex items-start gap-3 px-4 sm:px-5 py-4 group hover:bg-muted/30 transition-colors"
-                style={i < logs.length - 1 ? { borderBottom: "1px solid var(--border)" } : {}}
+                style={i < logs.length - 1 ? { borderBottom: "1px solid rgb(var(--border))" } : {}}
               >
                 {/* Dot */}
                 <div 
@@ -187,7 +187,7 @@ export function ActivityLogs() {
 
       <div
         className="px-5 py-3 text-center"
-        style={{ borderTop: "0.5px solid var(--border)" }}
+        style={{ borderTop: "0.5px solid rgb(var(--border))" }}
       >
         <p className="label-category text-[10px]">End of trail · auto-refreshes every 30s</p>
       </div>

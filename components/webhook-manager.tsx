@@ -83,7 +83,7 @@ export function WebhookManager({ onLimitReached }: Props) {
   return (
     <Card className="overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-3.5" style={{ borderBottom: "0.5px solid var(--border)" }}>
+      <div className="flex items-center justify-between px-5 py-3.5" style={{ borderBottom: "0.5px solid rgb(var(--border))" }}>
         <div className="flex items-center gap-2">
           <Webhook className="h-4 w-4 text-foreground" />
           <span className="text-[13px] font-semibold">Outgoing Webhooks</span>
@@ -95,7 +95,7 @@ export function WebhookManager({ onLimitReached }: Props) {
 
       {/* Add form */}
       {isAdding && (
-        <div className="p-5 space-y-4" style={{ borderBottom: "0.5px solid var(--border)", background: "var(--muted)" }}>
+        <div className="p-5 space-y-4" style={{ borderBottom: "0.5px solid rgb(var(--border))", background: "rgb(var(--muted))" }}>
           <div className="space-y-1.5">
             <label className="label-category text-[10px]">Target URL</label>
             <Input placeholder="https://your-server.com/webhooks" value={url} onChange={(e) => setUrl(e.target.value)} />
@@ -117,11 +117,11 @@ export function WebhookManager({ onLimitReached }: Props) {
                         : "text-muted-foreground hover:text-foreground"
                     )}
                     style={{
-                      border: active ? "0.5px solid var(--foreground)" : "0.5px solid var(--border)",
-                      background: active ? "rgba(180,140,60,0.08)" : "var(--card)",
+                      border: active ? "0.5px solid rgb(var(--foreground))" : "0.5px solid rgb(var(--border))",
+                      background: active ? "rgba(180,140,60,0.08)" : "rgb(var(--card))",
                     }}
                   >
-                    <Zap className="h-3.5 w-3.5 shrink-0" style={{ color: active ? "var(--foreground)" : "var(--muted-foreground)" }} />
+                    <Zap className="h-3.5 w-3.5 shrink-0" style={{ color: active ? "rgb(var(--foreground))" : "rgb(var(--muted-foreground))" }} />
                     {ev.label}
                   </button>
                 );

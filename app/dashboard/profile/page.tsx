@@ -851,7 +851,7 @@ export default function ProfilePage() {
                     {isPro && (
                       <div
                         className="absolute -top-3 left-0 right-0 h-0.5 rounded-t-card"
-                        style={{ background: "var(--foreground)" }}
+                        style={{ background: "rgb(var(--foreground))" }}
                       />
                     )}
                     {isCurrent && (
@@ -871,7 +871,7 @@ export default function ProfilePage() {
                     <ul className="space-y-2 sm:space-y-2.5">
                       {plan.features.map((f: { active: boolean; text: string }, i: number) => (
                         <li key={i} className={cn("flex items-center gap-2 sm:gap-2.5 text-[12px]", !f.active && "opacity-30")}>
-                          <Check className="h-3 w-3 shrink-0" style={{ color: f.active ? "var(--status-up)" : "var(--muted-foreground)" }} />
+                          <Check className="h-3 w-3 shrink-0" style={{ color: f.active ? "rgb(var(--status-up))" : "rgb(var(--muted-foreground))" }} />
                           {f.text}
                         </li>
                       ))}

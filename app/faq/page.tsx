@@ -98,7 +98,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
   return (
     <div
-      style={{ borderBottom: "0.5px solid var(--border)" }}
+      style={{ borderBottom: "0.5px solid rgb(var(--border))" }}
       className="last:border-b-0"
     >
       <button
@@ -147,7 +147,7 @@ export default function FaqPage() {
           <h1 className="text-4xl md:text-6xl font-semibold tracking-tight leading-tight mb-4">
             Got questions?
             <br />
-            <span style={{ color: "var(--foreground)" }}>We have answers.</span>
+            <span style={{ color: "rgb(var(--foreground))" }}>We have answers.</span>
           </h1>
           <p className="text-[16px] text-muted-foreground max-w-xl mx-auto leading-relaxed">
             Everything you need to know about NexPulse, from setup to security.
@@ -207,7 +207,7 @@ export default function FaqPage() {
         </Card>
       </main>
 
-      <footer className="py-8" style={{ borderTop: "0.5px solid var(--border)" }}>
+      <footer className="py-8" style={{ borderTop: "0.5px solid rgb(var(--border))" }}>
         <div className="max-w-4xl mx-auto px-4 text-center">
           <p className="label-category">© 2026 NexPulse Universal Infrastructure</p>
         </div>

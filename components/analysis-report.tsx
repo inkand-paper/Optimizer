@@ -14,14 +14,14 @@ interface Props { data: AnalyzeResponse; }
 
 function ScoreRing({ score }: { score: number }) {
   const color =
-    score >= 80 ? "var(--status-up)" :
-    score >= 50 ? "var(--foreground)" :
-    "var(--status-down)";
+    score >= 80 ? "rgb(var(--status-up))" :
+    score >= 50 ? "rgb(var(--foreground))" :
+    "rgb(var(--status-down))";
   return (
     <div className="flex flex-col items-center gap-1">
       <div
         className="relative h-20 w-20 rounded-full flex items-center justify-center"
-        style={{ background: `conic-gradient(${color} ${score * 3.6}deg, var(--muted) 0deg)` }}
+        style={{ background: `conic-gradient(${color} ${score * 3.6}deg, rgb(var(--muted)) 0deg)` }}
       >
         <div className="h-14 w-14 rounded-full bg-card flex items-center justify-center">
           <span className="text-[18px] font-semibold" style={{ color }}>{score}</span>
@@ -35,7 +35,7 @@ function IssueRow({ label, value, pass }: { label: string; value?: string; pass:
   return (
     <div
       className="flex items-start justify-between gap-4 py-3"
-      style={{ borderBottom: "0.5px solid var(--border)" }}
+      style={{ borderBottom: "0.5px solid rgb(var(--border))" }}
     >
       <div className="flex items-center gap-2.5 min-w-0">
         {pass
@@ -54,7 +54,7 @@ export function AnalysisReport({ data }: Props) {
 
   if (!success || !results) {
     return (
-      <Card className="p-5 flex items-center gap-3" style={{ borderLeft: "3px solid var(--status-down)" }}>
+      <Card className="p-5 flex items-center gap-3" style={{ borderLeft: "3px solid rgb(var(--status-down))" }}>
         <AlertCircle className="h-5 w-5 text-status-down shrink-0" />
         <div>
           <p className="text-[13px] font-semibold text-status-down">Scan failed</p>
@@ -117,7 +117,7 @@ export function AnalysisReport({ data }: Props) {
             <div
               key={s.label}
               className="flex flex-col items-center gap-3 p-4 rounded-card"
-              style={{ background: "var(--muted)", border: "0.5px solid var(--border)" }}
+              style={{ background: "rgb(var(--muted))", border: "0.5px solid rgb(var(--border))" }}
             >
               <ScoreRing score={s.score} />
               <p className="label-category">{s.label}</p>
@@ -129,7 +129,7 @@ export function AnalysisReport({ data }: Props) {
       {/* ── Tabbed report ── */}
       <Card>
         {/* Tab bar */}
-        <div className="flex overflow-x-auto" style={{ borderBottom: "0.5px solid var(--border)" }}>
+        <div className="flex overflow-x-auto" style={{ borderBottom: "0.5px solid rgb(var(--border))" }}>
           {tabs.map((t, i) => (
             <button
               key={t.label}

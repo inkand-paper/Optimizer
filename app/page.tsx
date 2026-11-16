@@ -15,7 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 
 const valueProps = [
-  { label: "Check intervals", value: "10s – 60s" },
+  { label: "Check interval", value: "1–5 min" },
   { label: "Monitored protocols", value: "HTTP / REST" },
   { label: "Agent protocol", value: "JSON-RPC 2.0" },
   { label: "Deployment", value: "Self-hostable" },

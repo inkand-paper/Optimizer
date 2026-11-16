@@ -40,6 +40,8 @@
 
   --radius-card: 8px;
   --radius-ui:   6px;
+  /* Geist Mono alias so var(--font-mono) resolves correctly */
+  --font-mono: var(--font-geist-mono);
 }
 
 .dark {
@@ -80,24 +82,24 @@
 
 /* Dark overrides for semantic component styles */
 .dark .np-codeblock {
-  background: #0D0E12;
-  color: #E2E8F0;
-  border-color: rgba(255, 255, 255, 0.08);
+  background: rgb(var(--muted));
+  color: rgb(var(--foreground));
+  border-color: rgb(var(--border));
 }
 .dark .np-diagnosis {
-  background: #121215;
-  color: #F4F4F5;
+  background: rgb(var(--muted));
+  color: rgb(var(--foreground));
 }
 
 @layer base {
   * {
-    border-color: var(--border);
+    border-color: rgb(var(--border));
     transition: background-color 150ms ease, border-color 150ms ease;
   }
 
   body {
-    background-color: var(--background);
-    color: var(--foreground);
+    background-color: rgb(var(--background));
+    color: rgb(var(--foreground));
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "rlig" 1, "calt" 1;
     font-variant-numeric: tabular-nums;
     -webkit-font-smoothing: antialiased;
@@ -108,14 +110,14 @@
     font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--muted-foreground);
+    color: rgb(var(--muted-foreground));
     font-weight: 600;
   }
 
   /* Mono timestamps, metrics, keys */
   .mono-gold {
-    font-family: var(--font-mono);
-    color: var(--foreground);
+    font-family: var(--font-geist-mono);
+    color: rgb(var(--foreground));
     font-size: 11px;
   }
 }
@@ -123,16 +125,16 @@
 @layer components {
   /* Card — Flat, crisp, engineered 1px border */
   .np-card {
-    background-color: var(--card);
-    color: var(--card-foreground);
+    background-color: rgb(var(--card));
+    color: rgb(var(--card-foreground));
     border-radius: var(--radius-card);
-    border: 1px solid var(--border);
+    border: 1px solid rgb(var(--border));
   }
 
   /* Primary button — Inverted high-contrast ink */
   .np-btn-primary {
-    background-color: var(--primary);
-    color: var(--primary-foreground);
+    background-color: rgb(var(--primary));
+    color: rgb(var(--primary-foreground));
     border-radius: var(--radius-ui);
     font-weight: 500;
     font-size: 13px;
@@ -151,7 +153,7 @@
   /* Outline button */
   .np-btn-outline {
     background-color: transparent;
-    color: var(--foreground);
+    color: rgb(var(--foreground));
     border-radius: var(--radius-ui);
     font-weight: 500;
     font-size: 13px;
@@ -161,19 +163,19 @@
     align-items: center;
     justify-content: center;
     transition: all 120ms ease;
-    border: 1px solid var(--border);
+    border: 1px solid rgb(var(--border));
     cursor: pointer;
   }
   .np-btn-outline:hover {
-    background-color: var(--muted);
-    border-color: var(--border-strong);
+    background-color: rgb(var(--muted));
+    border-color: rgb(var(--border-strong));
   }
   .np-btn-outline:active { transform: scale(0.99); }
 
   /* Danger button */
   .np-btn-danger {
     background-color: transparent;
-    color: var(--np-crimson);
+    color: rgb(var(--np-crimson));
     border-radius: var(--radius-ui);
     font-weight: 500;
     font-size: 13px;
@@ -188,24 +190,24 @@
   }
   .np-btn-danger:hover {
     background-color: rgba(239, 68, 68, 0.08);
-    border-color: var(--np-crimson);
+    border-color: rgb(var(--np-crimson));
   }
   .np-btn-danger:active { transform: scale(0.99); }
 
   /* Active sidebar item */
   .np-sidebar-active {
-    border-left: 2px solid var(--primary);
-    background-color: var(--muted);
-    color: var(--foreground);
+    border-left: 2px solid rgb(var(--primary));
+    background-color: rgb(var(--muted));
+    color: rgb(var(--foreground));
     font-weight: 500;
   }
 
   /* Input */
   .np-input {
-    background-color: var(--input);
-    border: 1px solid var(--border);
+    background-color: rgb(var(--input));
+    border: 1px solid rgb(var(--border));
     border-radius: var(--radius-ui);
-    color: var(--foreground);
+    color: rgb(var(--foreground));
     font-size: 13px;
     padding: 0 12px;
     height: 38px;
@@ -215,14 +217,14 @@
     transition: border-color 120ms ease, box-shadow 120ms ease;
   }
   .np-input:focus {
-    border-color: var(--foreground);
-    box-shadow: 0 0 0 1px var(--foreground);
+    border-color: rgb(var(--foreground));
+    box-shadow: 0 0 0 1px rgb(var(--foreground));
   }
 
   /* Status badges — crisp, micro-bordered, high contrast */
   .np-badge-success {
     background: rgba(16, 185, 129, 0.10);
-    color: var(--np-teal);
+    color: rgb(var(--np-teal));
     border: 1px solid rgba(16, 185, 129, 0.25);
     border-radius: 4px;
     font-size: 11px;
@@ -231,7 +233,7 @@
   }
   .np-badge-warning {
     background: rgba(245, 158, 11, 0.10);
-    color: var(--np-amber);
+    color: rgb(var(--np-amber));
     border: 1px solid rgba(245, 158, 11, 0.25);
     border-radius: 4px;
     font-size: 11px;
@@ -240,7 +242,7 @@
   }
   .np-badge-danger {
     background: rgba(239, 68, 68, 0.10);
-    color: var(--np-crimson);
+    color: rgb(var(--np-crimson));
     border: 1px solid rgba(239, 68, 68, 0.25);
     border-radius: 4px;
     font-size: 11px;
@@ -250,24 +252,24 @@
 
   /* Code block */
   .np-codeblock {
-    background: var(--muted);
-    color: var(--foreground);
+    background: rgb(var(--muted));
+    color: rgb(var(--foreground));
     border-radius: var(--radius-ui);
-    font-family: var(--font-mono);
+    font-family: var(--font-geist-mono);
     font-size: 13px;
     line-height: 1.6;
     padding: 16px;
     overflow-x: auto;
-    border: 1px solid var(--border);
+    border: 1px solid rgb(var(--border));
   }
 
   /* Diagnosis block */
   .np-diagnosis {
-    background: var(--muted);
-    border-left: 2px solid var(--foreground);
+    background: rgb(var(--muted));
+    border-left: 2px solid rgb(var(--foreground));
     border-radius: var(--radius-card);
     padding: 20px;
-    color: var(--foreground);
+    color: rgb(var(--foreground));
   }
 
   /* Engineering grid (very subtle, 1px) */
@@ -281,14 +283,14 @@
   /* Section divider */
   .np-divider {
     height: 1px;
-    background-color: var(--border);
+    background-color: rgb(var(--border));
   }
 }
 
 /* Scrollbar */
 .np-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
 .np-scroll::-webkit-scrollbar-track { background: transparent; }
-.np-scroll::-webkit-scrollbar-thumb { background: var(--muted-foreground); border-radius: 99px; }
+.np-scroll::-webkit-scrollbar-thumb { background: rgb(var(--muted-foreground)); border-radius: 99px; }
 
 /* Subtle entrance */
 .np-slide-up {
