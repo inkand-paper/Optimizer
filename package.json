@@ -49,6 +49,7 @@
     "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
+    "geist": "^1.9.2",
     "groq-sdk": "^1.1.2",
     "jsonwebtoken": "^9.0.3",
     "jszip": "^3.10.1",

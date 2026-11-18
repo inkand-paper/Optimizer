@@ -14,14 +14,14 @@ interface Props { data: AnalyzeResponse; }
 
 function ScoreRing({ score }: { score: number }) {
   const color =
-    score >= 80 ? "var(--np-teal)" :
-    score >= 50 ? "var(--np-gold)" :
-    "var(--np-crimson)";
+    score >= 80 ? "rgb(var(--status-up))" :
+    score >= 50 ? "rgb(var(--foreground))" :
+    "rgb(var(--status-down))";
   return (
     <div className="flex flex-col items-center gap-1">
       <div
         className="relative h-20 w-20 rounded-full flex items-center justify-center"
-        style={{ background: `conic-gradient(${color} ${score * 3.6}deg, var(--muted) 0deg)` }}
+        style={{ background: `conic-gradient(${color} ${score * 3.6}deg, rgb(var(--muted)) 0deg)` }}
       >
         <div className="h-14 w-14 rounded-full bg-card flex items-center justify-center">
           <span className="text-[18px] font-semibold" style={{ color }}>{score}</span>
@@ -35,12 +35,12 @@ function IssueRow({ label, value, pass }: { label: string; value?: string; pass:
   return (
     <div
       className="flex items-start justify-between gap-4 py-3"
-      style={{ borderBottom: "0.5px solid var(--border)" }}
+      style={{ borderBottom: "0.5px solid rgb(var(--border))" }}
     >
       <div className="flex items-center gap-2.5 min-w-0">
         {pass
-          ? <CheckCircle2 className="h-4 w-4 shrink-0 text-np-teal" />
-          : <XCircle     className="h-4 w-4 shrink-0 text-np-crimson" />}
+          ? <CheckCircle2 className="h-4 w-4 shrink-0 text-status-up" />
+          : <XCircle     className="h-4 w-4 shrink-0 text-status-down" />}
         <span className="text-[13px] font-medium truncate">{label}</span>
       </div>
       {value && <span className="text-[12px] text-muted-foreground shrink-0 font-mono">{value}</span>}
@@ -54,10 +54,10 @@ export function AnalysisReport({ data }: Props) {
 
   if (!success || !results) {
     return (
-      <Card className="p-5 flex items-center gap-3" style={{ borderLeft: "3px solid var(--np-crimson)" }}>
-        <AlertCircle className="h-5 w-5 text-np-crimson shrink-0" />
+      <Card className="p-5 flex items-center gap-3" style={{ borderLeft: "3px solid rgb(var(--status-down))" }}>
+        <AlertCircle className="h-5 w-5 text-status-down shrink-0" />
         <div>
-          <p className="text-[13px] font-semibold text-np-crimson">Scan failed</p>
+          <p className="text-[13px] font-semibold text-status-down">Scan failed</p>
           <p className="text-[12px] text-muted-foreground mt-0.5">
             {(data as unknown as Record<string, unknown>).message as string || "Could not analyse the URL. Check the URL and your API key."}
           </p>
@@ -117,7 +117,7 @@ export function AnalysisReport({ data }: Props) {
             <div
               key={s.label}
               className="flex flex-col items-center gap-3 p-4 rounded-card"
-              style={{ background: "var(--muted)", border: "0.5px solid var(--border)" }}
+              style={{ background: "rgb(var(--muted))", border: "0.5px solid rgb(var(--border))" }}
             >
               <ScoreRing score={s.score} />
               <p className="label-category">{s.label}</p>
@@ -129,7 +129,7 @@ export function AnalysisReport({ data }: Props) {
       {/* ── Tabbed report ── */}
       <Card>
         {/* Tab bar */}
-        <div className="flex overflow-x-auto" style={{ borderBottom: "0.5px solid var(--border)" }}>
+        <div className="flex overflow-x-auto" style={{ borderBottom: "0.5px solid rgb(var(--border))" }}>
           {tabs.map((t, i) => (
             <button
               key={t.label}
@@ -137,7 +137,7 @@ export function AnalysisReport({ data }: Props) {
               className={cn(
                 "flex items-center gap-2 px-5 py-3.5 text-[13px] font-medium transition-colors shrink-0",
                 activeTab === i
-                  ? "text-np-gold border-b-2 border-np-gold -mb-px"
+                  ? "text-foreground border-b-2 border-border -mb-px"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
@@ -163,14 +163,14 @@ export function AnalysisReport({ data }: Props) {
               </div>
               
               {tabSections[activeTab]?.suggestions?.length > 0 && (
-                <div className="mt-6 p-4 rounded-card border border-np-gold/20 bg-np-gold/5">
-                  <h4 className="text-[12px] font-semibold text-np-gold uppercase tracking-widest mb-3 flex items-center gap-2">
+                <div className="mt-6 p-4 rounded-card border border-border bg-muted/30">
+                  <h4 className="text-xs font-semibold text-foreground mb-3 flex items-center gap-2">
                     <Sparkles className="h-3.5 w-3.5" /> Recommendations
                   </h4>
                   <ul className="space-y-2">
                     {tabSections[activeTab].suggestions.map((sugg: string, i: number) => (
                       <li key={i} className="text-[13px] text-muted-foreground flex items-start gap-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-np-gold shrink-0 mt-1.5" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0 mt-1.5" />
                         <span>{sugg}</span>
                       </li>
                     ))}
@@ -190,9 +190,9 @@ export function AnalysisReport({ data }: Props) {
               {aiSection ? (
                 <div className="np-diagnosis">
                   <div className="flex items-center gap-2 mb-4">
-                    <Sparkles className="h-4 w-4 text-np-gold" />
-                    <span className="text-[12px] font-semibold text-np-gold uppercase tracking-wide">
-                      Genius Diagnosis
+                    <Sparkles className="h-4 w-4 text-foreground" />
+                    <span className="text-xs font-semibold text-foreground">
+                      Analysis Diagnosis
                     </span>
                   </div>
                   <div className="text-[13px] leading-relaxed max-w-none">

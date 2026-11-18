@@ -2,240 +2,301 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── NexPulse Handcrafted Developer Suite Design System ─── */
+/* ─── NexPulse Engineered Monochromatic Design System ─── */
 :root {
-  --np-gold:     #D4A338;
-  --np-teal:     #10B981;
-  --np-crimson:  #EF4444;
-  --np-ink:      #0F172A;
-  --np-vellum:   #FAFAF8;
-  --np-obsidian: #090A0C;
-  --np-steel:    #121418;
-  --np-slate:    #64748B;
+  /* Page Canvas & Surfaces */
+  --background:         250 250 250; /* #FAFAFA */
+  --foreground:         9 9 11;      /* #09090B */
+  --card:               255 255 255; /* #FFFFFF */
+  --card-foreground:    9 9 11;
+  --surface-raised:     244 244 245; /* #F4F4F5 */
+  --border:             228 228 231; /* #E4E4E7 */
+  --border-strong:      212 212 216; /* #D4D4D8 */
+  --input:              244 244 245;
+  --ring:               9 9 11;
+  --muted:              244 244 245;
+  --muted-foreground:   113 113 122; /* #71717A */
+  --primary:            9 9 11;
+  --primary-foreground: 255 255 255;
+  --secondary:          244 244 245;
+  --secondary-foreground: 9 9 11;
+  --destructive:        185 28 28;   /* #B91C1C */
+  --destructive-foreground: 255 255 255;
 
-  /* Semantic tokens — light mode */
-  --background:        #FAFAF8;
-  --foreground:        #0F172A;
-  --card:              #FFFFFF;
-  --card-foreground:   #0F172A;
-  --border:            rgba(15, 23, 42, 0.08);
-  --input:             rgba(15, 23, 42, 0.04);
-  --ring:              #D4A338;
-  --muted:             #F1F5F9;
-  --muted-foreground:  #64748B;
-  --primary:           #D4A338;
-  --primary-foreground:#FFFFFF;
-  --secondary:         #10B981;
-  --secondary-foreground: #FFFFFF;
-  --destructive:       #EF4444;
-  --destructive-foreground: #FFFFFF;
-  --radius-card: 10px;
+  /* Functional Status Colors (STRICTLY for data signals) */
+  --status-up:          21 128 61;   /* #15803D */
+  --status-down:        185 28 28;   /* #B91C1C */
+  --status-warn:        180 83 9;    /* #B45309 */
+
+  /* Backward Compatibility Aliases */
+  --np-teal:            21 128 61;
+  --np-crimson:         185 28 28;
+  --np-amber:           180 83 9;
+  --np-ink:             9 9 11;
+  --np-vellum:          255 255 255;
+  --np-obsidian:        24 24 27;
+  --np-steel:           39 39 42;
+  --np-slate:           113 113 122;
+
+  --radius-card: 8px;
   --radius-ui:   6px;
+  /* Geist Mono alias so var(--font-mono) resolves correctly */
+  --font-mono: var(--font-geist-mono);
 }
 
 .dark {
-  --background:        #090A0C;
-  --foreground:        #F8FAFC;
-  --card:              #121418;
-  --card-foreground:   #F8FAFC;
-  --border:            rgba(255, 255, 255, 0.08);
-  --input:             rgba(255, 255, 255, 0.06);
-  --ring:              #D4A338;
-  --muted:             #1A1D24;
-  --muted-foreground:  #94A3B8;
-  --primary:           #D4A338;
-  --primary-foreground:#090A0C;
-  --secondary:         #10B981;
-  --secondary-foreground: #090A0C;
-  --destructive:       #EF4444;
-  --destructive-foreground: #FFFFFF;
+  /* Page Canvas & Surfaces */
+  --background:         9 9 11;      /* #09090B */
+  --foreground:         244 244 245; /* #F4F4F5 */
+  --card:               16 16 18;    /* #101012 */
+  --card-foreground:    244 244 245;
+  --surface-raised:     24 24 27;    /* #18181B */
+  --border:             39 39 42;    /* #27272A */
+  --border-strong:      63 63 70;    /* #3F3F46 */
+  --input:              24 24 27;
+  --ring:               244 244 245;
+  --muted:              24 24 27;
+  --muted-foreground:   161 161 170; /* #A1A1AA */
+  --primary:            244 244 245;
+  --primary-foreground: 9 9 11;
+  --secondary:          24 24 27;
+  --secondary-foreground: 244 244 245;
+  --destructive:        248 113 113; /* #F87171 */
+  --destructive-foreground: 9 9 11;
+
+  /* Functional Status Colors (Dark mode) */
+  --status-up:          74 222 128;  /* #4ADE80 */
+  --status-down:        248 113 113; /* #F87171 */
+  --status-warn:        251 191 36;  /* #FBBF24 */
+
+  /* Backward Compatibility Aliases */
+  --np-teal:            74 222 128;
+  --np-crimson:         248 113 113;
+  --np-amber:           251 191 36;
+  --np-ink:             244 244 245;
+  --np-vellum:          18 18 21;
+  --np-obsidian:        9 9 11;
+  --np-steel:           24 24 27;
+  --np-slate:           161 161 170;
 }
 
 /* Dark overrides for semantic component styles */
 .dark .np-codeblock {
-  background: #0D0E12;
-  color: #E2E8F0;
-  border-color: rgba(255, 255, 255, 0.08);
+  background: rgb(var(--muted));
+  color: rgb(var(--foreground));
+  border-color: rgb(var(--border));
 }
 .dark .np-diagnosis {
-  background: #121418;
-  color: #F8FAFC;
+  background: rgb(var(--muted));
+  color: rgb(var(--foreground));
 }
 
 @layer base {
   * {
-    border-color: var(--border);
-    transition: background-color 200ms ease, border-color 200ms ease;
+    border-color: rgb(var(--border));
+    transition: background-color 150ms ease, border-color 150ms ease;
   }
 
   body {
-    background-color: var(--background);
-    color: var(--foreground);
-    font-feature-settings: "rlig" 1, "calt" 1;
+    background-color: rgb(var(--background));
+    color: rgb(var(--foreground));
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "rlig" 1, "calt" 1;
+    font-variant-numeric: tabular-nums;
     -webkit-font-smoothing: antialiased;
   }
 
   /* Category labels / section headers */
   .label-category {
     font-size: 11px;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--np-slate);
+    color: rgb(var(--muted-foreground));
     font-weight: 600;
   }
 
-  /* Mono timestamps and keys */
+  /* Mono timestamps, metrics, keys */
   .mono-gold {
-    font-family: var(--font-mono);
-    color: var(--np-gold);
+    font-family: var(--font-geist-mono);
+    color: rgb(var(--foreground));
     font-size: 11px;
   }
 }
 
 @layer components {
-  /* Card */
+  /* Card — Flat, crisp, engineered 1px border */
   .np-card {
-    background-color: var(--card);
-    color: var(--card-foreground);
+    background-color: rgb(var(--card));
+    color: rgb(var(--card-foreground));
     border-radius: var(--radius-card);
-    border: 0.5px solid var(--border);
+    border: 1px solid rgb(var(--border));
   }
 
-  /* Primary button */
+  /* Primary button — Inverted high-contrast ink */
   .np-btn-primary {
-    background-color: var(--np-gold);
-    color: #FFFFFF;
+    background-color: rgb(var(--primary));
+    color: rgb(var(--primary-foreground));
     border-radius: var(--radius-ui);
-    font-weight: 700;
+    font-weight: 500;
     font-size: 13px;
-    padding: 0 20px;
-    height: 40px;
+    padding: 0 16px;
+    height: 38px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: all 150ms ease;
-    border: none;
+    transition: opacity 120ms ease, transform 120ms ease;
+    border: 1px solid transparent;
     cursor: pointer;
   }
-  .np-btn-primary:hover { opacity: 0.88; }
-  .np-btn-primary:active { transform: scale(0.98); }
+  .np-btn-primary:hover { opacity: 0.90; }
+  .np-btn-primary:active { transform: scale(0.99); }
 
   /* Outline button */
   .np-btn-outline {
     background-color: transparent;
-    color: var(--foreground);
+    color: rgb(var(--foreground));
     border-radius: var(--radius-ui);
-    font-weight: 600;
+    font-weight: 500;
     font-size: 13px;
-    padding: 0 20px;
-    height: 40px;
+    padding: 0 16px;
+    height: 38px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: all 150ms ease;
-    border: 0.5px solid var(--border);
+    transition: all 120ms ease;
+    border: 1px solid rgb(var(--border));
     cursor: pointer;
   }
-  .np-btn-outline:hover { background-color: var(--muted); }
-  .np-btn-outline:active { transform: scale(0.98); }
+  .np-btn-outline:hover {
+    background-color: rgb(var(--muted));
+    border-color: rgb(var(--border-strong));
+  }
+  .np-btn-outline:active { transform: scale(0.99); }
 
   /* Danger button */
   .np-btn-danger {
     background-color: transparent;
-    color: var(--np-crimson);
+    color: rgb(var(--np-crimson));
     border-radius: var(--radius-ui);
-    font-weight: 600;
+    font-weight: 500;
     font-size: 13px;
-    padding: 0 20px;
-    height: 40px;
+    padding: 0 16px;
+    height: 38px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: all 150ms ease;
-    border: 0.5px solid var(--np-crimson);
+    transition: all 120ms ease;
+    border: 1px solid rgba(239, 68, 68, 0.3);
     cursor: pointer;
   }
-  .np-btn-danger:hover { background-color: rgba(163,45,45,0.08); }
-  .np-btn-danger:active { transform: scale(0.98); }
+  .np-btn-danger:hover {
+    background-color: rgba(239, 68, 68, 0.08);
+    border-color: rgb(var(--np-crimson));
+  }
+  .np-btn-danger:active { transform: scale(0.99); }
 
   /* Active sidebar item */
   .np-sidebar-active {
-    border-left: 3px solid var(--np-gold);
-    background-color: rgba(180,140,60,0.08);
-    color: var(--np-gold);
+    border-left: 2px solid rgb(var(--primary));
+    background-color: rgb(var(--muted));
+    color: rgb(var(--foreground));
+    font-weight: 500;
   }
 
   /* Input */
   .np-input {
-    background-color: var(--input);
-    border: 0.5px solid var(--border);
+    background-color: rgb(var(--input));
+    border: 1px solid rgb(var(--border));
     border-radius: var(--radius-ui);
-    color: var(--foreground);
-    font-size: 14px;
+    color: rgb(var(--foreground));
+    font-size: 13px;
     padding: 0 12px;
-    height: 40px;
-    min-height: 40px;
+    height: 38px;
+    min-height: 38px;
     width: 100%;
     outline: none;
-    transition: all 150ms ease;
+    transition: border-color 120ms ease, box-shadow 120ms ease;
   }
   .np-input:focus {
-    border-color: var(--np-gold);
-    box-shadow: 0 0 0 2px rgba(180,140,60,0.15);
+    border-color: rgb(var(--foreground));
+    box-shadow: 0 0 0 1px rgb(var(--foreground));
   }
 
-  /* Status badge */
-  .np-badge-success { background: rgba(29,158,117,0.12); color: var(--np-teal); border-radius: 4px; font-size: 11px; font-weight: 600; padding: 2px 8px; }
-  .np-badge-warning { background: rgba(180,140,60,0.12); color: var(--np-gold); border-radius: 4px; font-size: 11px; font-weight: 600; padding: 2px 8px; }
-  .np-badge-danger  { background: rgba(163,45,45,0.12);  color: var(--np-crimson); border-radius: 4px; font-size: 11px; font-weight: 600; padding: 2px 8px; }
+  /* Status badges — crisp, micro-bordered, high contrast */
+  .np-badge-success {
+    background: rgba(16, 185, 129, 0.10);
+    color: rgb(var(--np-teal));
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 1px 6px;
+  }
+  .np-badge-warning {
+    background: rgba(245, 158, 11, 0.10);
+    color: rgb(var(--np-amber));
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 1px 6px;
+  }
+  .np-badge-danger {
+    background: rgba(239, 68, 68, 0.10);
+    color: rgb(var(--np-crimson));
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 1px 6px;
+  }
 
   /* Code block */
   .np-codeblock {
-    background: var(--muted);
-    color: var(--foreground);
+    background: rgb(var(--muted));
+    color: rgb(var(--foreground));
     border-radius: var(--radius-ui);
-    font-family: var(--font-mono);
+    font-family: var(--font-geist-mono);
     font-size: 13px;
     line-height: 1.6;
-    padding: 20px;
+    padding: 16px;
     overflow-x: auto;
-    border: 0.5px solid var(--border);
+    border: 1px solid rgb(var(--border));
   }
 
-  /* Genius Diagnosis block */
+  /* Diagnosis block */
   .np-diagnosis {
-    background: var(--muted);
-    border-left: 3px solid var(--np-gold);
+    background: rgb(var(--muted));
+    border-left: 2px solid rgb(var(--foreground));
     border-radius: var(--radius-card);
-    padding: 24px;
-    color: var(--foreground);
+    padding: 20px;
+    color: rgb(var(--foreground));
   }
 
-  /* Engineering grid (subtle) */
+  /* Engineering grid (very subtle, 1px) */
   .np-grid-bg {
     background-image:
-      linear-gradient(to right, rgba(107,106,102,0.06) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(107,106,102,0.06) 1px, transparent 1px);
-    background-size: 28px 28px;
+      linear-gradient(to right, rgba(120, 120, 120, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(120, 120, 120, 0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
   }
 
   /* Section divider */
   .np-divider {
-    height: 0.5px;
-    background-color: var(--border);
+    height: 1px;
+    background-color: rgb(var(--border));
   }
 }
 
 /* Scrollbar */
 .np-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
 .np-scroll::-webkit-scrollbar-track { background: transparent; }
-.np-scroll::-webkit-scrollbar-thumb { background: var(--muted-foreground); border-radius: 99px; }
+.np-scroll::-webkit-scrollbar-thumb { background: rgb(var(--muted-foreground)); border-radius: 99px; }
 
-/* Slide-up animation */
+/* Subtle entrance */
 .np-slide-up {
-  animation: np-slide-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: np-slide-up 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 @keyframes np-slide-up {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(4px); }
   to   { opacity: 1; transform: translateY(0);   }
 }

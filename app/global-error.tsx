@@ -27,7 +27,7 @@ export default function GlobalError({
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="px-6 py-2 bg-np-gold text-black rounded font-medium hover:bg-np-gold/90 transition-all"
+            className="px-6 py-2 bg-primary text-primary-foreground font-medium rounded font-medium hover:opacity-90 transition-all"
           >
             Restart Application
           </button>

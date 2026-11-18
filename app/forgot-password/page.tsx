@@ -1,14 +1,15 @@
-"use client";
+﻿"use client";
 
 import * as React from "react";
-
-import { Card, Button, Input } from "@/components/ui-elements";
-import { Activity, Loader2, CheckCircle2, ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { Button, Input } from "@/components/ui-elements";
+import { AuthSplitLayout } from "@/components/auth-split-layout";
+import { Loader2, CheckCircle2, AlertCircle, ArrowLeft } from "lucide-react";
 
 export default function ForgotPasswordPage() {
   const [loading, setLoading] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
-  const [error, setError] = React.useState("");
+  const [error, setError]     = React.useState("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -28,87 +29,80 @@ export default function ForgotPasswordPage() {
         setSuccess(true);
       } else {
         const data = await res.json();
-        setError(data.message || "Failed to send reset link.");
+        setError(data.message || "Failed to process request. Please try again.");
       }
     } catch {
-      setError("Connection error. Please try again.");
+      setError("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-      {/* Warm glow */}
-      <div
-        className="fixed top-0 left-0 right-0 bottom-0 pointer-events-none"
-        style={{
-          background: "radial-gradient(ellipse 600px 400px at 50% 30%, rgba(180,140,60,0.04), transparent)",
-        }}
-      />
-
-      <div className="relative w-full max-w-sm z-10">
-        <div className="flex flex-col items-center mb-8">
-          <div
-            className="h-12 w-12 rounded-card flex items-center justify-center mb-4 border border-np-gold/20 bg-np-gold/10"
+    <AuthSplitLayout headline="Secure credential recovery with cryptographic tokens.">
+      <div className="space-y-6">
+        <div className="space-y-1.5">
+          <Link
+            href="/login"
+            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-2"
           >
-            <Activity className="h-5 w-5 text-np-gold" />
-          </div>
-          <h1 className="text-[22px] font-semibold tracking-tight text-foreground">
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span>Back to sign in</span>
+          </Link>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">
             Reset Password
           </h1>
-          <p className="text-[13px] mt-1 text-np-slate">
-            We&apos;ll send a recovery link to your inbox
+          <p className="text-[13px] text-muted-foreground">
+            Enter your account email to receive a single-use recovery link.
           </p>
         </div>
 
-        <Card className="p-6">
-          {success ? (
-            <div className="text-center space-y-4 py-4">
-              <div className="h-12 w-12 rounded-full bg-np-teal/10 flex items-center justify-center mx-auto">
-                <CheckCircle2 className="h-6 w-6 text-np-teal" />
-              </div>
-              <div className="space-y-1">
-                <p className="text-[14px] font-bold uppercase tracking-tight">Check your email</p>
-                <p className="text-[13px] text-muted-foreground">
-                  If an account exists, you&apos;ll receive a link to reset your password shortly.
-                </p>
-              </div>
-              <Button variant="outline" className="w-full mt-4 h-10 text-[11px] uppercase tracking-widest" onClick={() => window.location.href = "/login"}>
-                Back to Sign In
-              </Button>
+        {error && (
+          <div className="flex items-start gap-2.5 p-3 rounded-md text-[13px] bg-rose-500/10 border border-rose-500/20 text-rose-500">
+            <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {success ? (
+          <div className="rounded-lg border border-border p-6 text-center space-y-4 bg-card">
+            <div className="h-10 w-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 mx-auto flex items-center justify-center">
+              <CheckCircle2 className="h-5 w-5" />
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-1.5">
-                <label htmlFor="email" className="label-category block">Email Address</label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="you@company.com"
-                  required
-                  autoFocus
-                />
-              </div>
-
-              {error && (
-                <p className="text-[12px] text-np-crimson font-medium bg-np-crimson/5 p-3 rounded-ui border border-np-crimson/20">
-                  {error}
-                </p>
-              )}
-
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send Reset Link"}
+            <div className="space-y-1.5">
+              <h2 className="text-[15px] font-semibold text-foreground">Recovery email dispatched</h2>
+              <p className="text-[13px] text-muted-foreground leading-relaxed">
+                If an account exists with that address, we have sent instructions to reset your password. Links expire in 1 hour.
+              </p>
+            </div>
+            <Link href="/login" className="inline-flex w-full">
+              <Button variant="outline" className="w-full">
+                Return to Login
               </Button>
+            </Link>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-foreground" htmlFor="email">
+                Account Email
+              </label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="name@company.com"
+                required
+                autoFocus
+              />
+            </div>
 
-              <Button variant="ghost" className="w-full text-[11px] uppercase tracking-widest hover:bg-transparent" onClick={() => window.location.href = "/login"}>
-                <ArrowLeft className="h-3.5 w-3.5 mr-2" /> Back to Sign In
-              </Button>
-            </form>
-          )}
-        </Card>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send Password Recovery Link"}
+            </Button>
+          </form>
+        )}
       </div>
-    </div>
+    </AuthSplitLayout>
   );
 }

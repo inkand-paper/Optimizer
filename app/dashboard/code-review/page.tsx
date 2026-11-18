@@ -18,10 +18,10 @@ export default function CodeReviewRedirect() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-np-obsidian flex flex-col items-center justify-center space-y-4">
-      <Loader2 className="h-8 w-8 animate-spin text-np-gold" />
-      <p className="text-[12px] font-mono text-muted-foreground animate-pulse tracking-widest uppercase">
-        Synchronizing Neural Console...
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-3">
+      <Loader2 className="h-6 w-6 animate-spin text-foreground" />
+      <p className="text-sm text-muted-foreground">
+        Redirecting to audits...
       </p>
     </div>
   );

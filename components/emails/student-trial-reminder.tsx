@@ -14,8 +14,8 @@ export const StudentTrialReminderEmail = ({ userName, expiresAt, daysLeft, upgra
     <Preview>{`⏳ Your NexPulse student trial expires in ${daysLeft} day${daysLeft === 1 ? '' : 's'} — keep your PRO access`}</Preview>
     <Body style={{ backgroundColor: "#0a0a0a", fontFamily: "monospace" }}>
       <Container style={{ maxWidth: "560px", margin: "0 auto", padding: "40px 20px" }}>
-        <Heading style={{ color: "#d4af37", fontSize: "22px", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-          ⚡ NexPulse
+        <Heading style={{ color: "#ffffff", fontSize: "22px", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          NexPulse
         </Heading>
         <Hr style={{ borderColor: "#222" }} />
         <Section style={{ padding: "24px 0" }}>
@@ -24,14 +24,14 @@ export const StudentTrialReminderEmail = ({ userName, expiresAt, daysLeft, upgra
           </Text>
           <Text style={{ color: "#999", fontSize: "14px", lineHeight: "1.6" }}>
             Your student PRO trial ends in{" "}
-            <strong style={{ color: "#d4af37" }}>{daysLeft} day{daysLeft === 1 ? '' : 's'}</strong>{" "}
-            on <strong style={{ color: "#d4af37" }}>{expiresAt}</strong>.
+            <strong style={{ color: "#ffffff" }}>{daysLeft} day{daysLeft === 1 ? '' : 's'}</strong>{" "}
+            on <strong style={{ color: "#ffffff" }}>{expiresAt}</strong>.
             After that your account will return to the FREE tier.
           </Text>
         </Section>
 
         <Section style={{ backgroundColor: "#1a1200", border: "1px solid #3a2a00", borderRadius: "8px", padding: "20px" }}>
-          <Text style={{ color: "#d4af37", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.15em", margin: "0 0 12px" }}>
+          <Text style={{ color: "#ffffff", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.15em", margin: "0 0 12px" }}>
             What you will lose on FREE
           </Text>
           <Text style={{ color: "#888", fontSize: "13px", margin: "4px 0" }}>✗ Drops from 10 monitors → 1 monitor</Text>
@@ -44,7 +44,7 @@ export const StudentTrialReminderEmail = ({ userName, expiresAt, daysLeft, upgra
           <Button
             href={upgradeUrl}
             style={{
-              backgroundColor: "#d4af37",
+              backgroundColor: "#ffffff",
               color: "#0a0a0a",
               padding: "12px 32px",
               borderRadius: "6px",

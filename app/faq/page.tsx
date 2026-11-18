@@ -9,8 +9,7 @@ import { HelpCircle, ChevronDown, MessageSquare, ArrowRight, Zap, Shield, Activi
 const faqCategories = [
   {
     icon: Zap,
-    label: "Core Concepts",
-    color: "np-gold",
+    label: "Core concepts",
     faqs: [
       {
         q: "What exactly is NexPulse?",
@@ -33,8 +32,7 @@ const faqCategories = [
   {
     icon: Key,
     label: "API Keys & Integration",
-    color: "np-teal",
-    faqs: [
+        faqs: [
       {
         q: "What is a Machine API Key?",
         a: "A Machine API Key (prefixed opt_...) is a high-entropy credential generated in your NexPulse dashboard. Unlike your personal login (which is for humans), Machine Keys are designed for server-to-server and app-to-server authentication. You embed them in your target system to allow NexPulse to securely trigger pulses and audits.",
@@ -56,8 +54,7 @@ const faqCategories = [
   {
     icon: Activity,
     label: "Monitoring & Alerts",
-    color: "np-gold",
-    faqs: [
+        faqs: [
       {
         q: "How often does NexPulse check my monitors?",
         a: "NexPulse runs health checks approximately every 60 seconds per monitor. When a status change is detected (UP → DOWN or DOWN → UP), alerts are dispatched instantly to your configured channels (Email, Discord, Slack).",
@@ -75,8 +72,7 @@ const faqCategories = [
   {
     icon: Shield,
     label: "Account & Security",
-    color: "np-teal",
-    faqs: [
+        faqs: [
       {
         q: "How do I reset my password?",
         a: "On the Login page, click \"Forgot password?\". Enter your account email and we'll send a secure reset link (valid for 1 hour). Click the link in the email and set your new password. If you don't receive the email, check your spam folder or contact support.",
@@ -102,7 +98,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
   return (
     <div
-      style={{ borderBottom: "0.5px solid var(--border)" }}
+      style={{ borderBottom: "0.5px solid rgb(var(--border))" }}
       className="last:border-b-0"
     >
       <button
@@ -110,7 +106,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
         className="w-full flex items-start justify-between gap-4 py-5 text-left group"
         aria-expanded={open}
       >
-        <span className="text-[14px] font-medium leading-snug group-hover:text-np-gold transition-colors">
+        <span className="text-[14px] font-medium leading-snug group-hover:text-foreground transition-colors">
           {q}
         </span>
         <ChevronDown
@@ -145,13 +141,13 @@ export default function FaqPage() {
         {/* Header */}
         <div className="text-center mb-16">
           <p className="label-category mb-4 inline-flex items-center gap-2">
-            <HelpCircle className="h-3.5 w-3.5 text-np-gold" />
+            <HelpCircle className="h-3.5 w-3.5 text-foreground" />
             Frequently Asked Questions
           </p>
           <h1 className="text-4xl md:text-6xl font-semibold tracking-tight leading-tight mb-4">
             Got questions?
             <br />
-            <span style={{ color: "var(--np-gold)" }}>We have answers.</span>
+            <span style={{ color: "rgb(var(--foreground))" }}>We have answers.</span>
           </h1>
           <p className="text-[16px] text-muted-foreground max-w-xl mx-auto leading-relaxed">
             Everything you need to know about NexPulse, from setup to security.
@@ -165,24 +161,11 @@ export default function FaqPage() {
           {faqCategories.map((cat) => (
             <Card key={cat.label} className="overflow-hidden">
               {/* Category Header */}
-              <div
-                className="flex items-center gap-3 px-6 py-4"
-                style={{ borderBottom: "0.5px solid var(--border)", background: "rgba(180,140,60,0.03)" }}
-              >
-                <div
-                  className="h-8 w-8 rounded-ui flex items-center justify-center shrink-0"
-                  style={{
-                    background: cat.color === "np-gold"
-                      ? "rgba(180,140,60,0.12)"
-                      : "rgba(29,158,117,0.12)",
-                  }}
-                >
-                  <cat.icon
-                    className="h-4 w-4"
-                    style={{ color: cat.color === "np-gold" ? "var(--np-gold)" : "var(--np-teal)" }}
-                  />
+              <div className="flex items-center gap-3 px-6 py-3.5 border-b border-border bg-muted/40">
+                <div className="h-7 w-7 rounded-ui bg-muted border border-border flex items-center justify-center text-foreground shrink-0">
+                  <cat.icon className="h-3.5 w-3.5" strokeWidth={1.5} />
                 </div>
-                <h2 className="text-[13px] font-semibold uppercase tracking-widest text-muted-foreground">
+                <h2 className="text-xs font-semibold text-foreground">
                   {cat.label}
                 </h2>
               </div>
@@ -199,11 +182,10 @@ export default function FaqPage() {
 
         {/* CTA */}
         <Card className="mt-12 p-10 md:p-14 text-center relative overflow-hidden">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-40 bg-np-gold/5 blur-[60px] pointer-events-none" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-40 bg-primary text-primary-foreground/5 blur-[60px] pointer-events-none" />
           <div className="relative">
             <div
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-ui mb-5 text-[11px] font-semibold"
-              style={{ background: "rgba(180,140,60,0.10)", color: "var(--np-gold)" }}
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-ui mb-5 text-[11px] font-semibold bg-muted border border-border text-foreground"
             >
               <MessageSquare className="h-3.5 w-3.5" /> Still have questions?
             </div>
@@ -225,7 +207,7 @@ export default function FaqPage() {
         </Card>
       </main>
 
-      <footer className="py-8" style={{ borderTop: "0.5px solid var(--border)" }}>
+      <footer className="py-8" style={{ borderTop: "0.5px solid rgb(var(--border))" }}>
         <div className="max-w-4xl mx-auto px-4 text-center">
           <p className="label-category">© 2026 NexPulse Universal Infrastructure</p>
         </div>
