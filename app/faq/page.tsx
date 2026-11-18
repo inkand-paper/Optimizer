@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/navbar";
 import { Card } from "@/components/ui-elements";
-import { HelpCircle, ChevronDown, MessageSquare, ArrowRight, Zap, Shield, Activity, Key } from "lucide-react";
+import { HelpCircle, ChevronDown, MessageSquare, ArrowRight, Zap, Shield, Radio, Key } from "lucide-react";
 
 const faqCategories = [
   {
@@ -52,7 +52,7 @@ const faqCategories = [
     ],
   },
   {
-    icon: Activity,
+    icon: Radio,
     label: "Monitoring & Alerts",
         faqs: [
       {

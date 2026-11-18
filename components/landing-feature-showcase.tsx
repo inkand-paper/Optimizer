@@ -3,12 +3,11 @@
 import * as React from "react";
 import { Button, Card } from "@/components/ui-elements";
 import {
-  Activity,
-  Cpu,
-  DollarSign,
-  Zap,
+  Workflow,
+  Coins,
+  Layers,
   Terminal,
-  GitBranch,
+  GitPullRequest,
   CheckCircle2,
   AlertTriangle,
   ShieldCheck,
@@ -103,8 +102,8 @@ export function LandingFeatureShowcase() {
               : "text-muted-foreground hover:text-foreground"
           )}
         >
-          <Cpu className="h-3.5 w-3.5" />
-          Autopilot
+          <Workflow className="h-3.5 w-3.5" />
+          Incident runbooks
         </button>
 
         <button
@@ -116,8 +115,8 @@ export function LandingFeatureShowcase() {
               : "text-muted-foreground hover:text-foreground"
           )}
         >
-          <DollarSign className="h-3.5 w-3.5" />
-          FinOps waste hunter
+          <Coins className="h-3.5 w-3.5" />
+          Resource reclaimer
         </button>
 
         <button
@@ -129,8 +128,8 @@ export function LandingFeatureShowcase() {
               : "text-muted-foreground hover:text-foreground"
           )}
         >
-          <Zap className="h-3.5 w-3.5" />
-          Cache invalidation
+          <Layers className="h-3.5 w-3.5" />
+          Edge cache dispatcher
         </button>
 
         <button
@@ -143,7 +142,7 @@ export function LandingFeatureShowcase() {
           )}
         >
           <Terminal className="h-3.5 w-3.5" />
-          MCP protocol
+          MCP telemetry bridge
         </button>
 
         <button
@@ -155,20 +154,20 @@ export function LandingFeatureShowcase() {
               : "text-muted-foreground hover:text-foreground"
           )}
         >
-          <GitBranch className="h-3.5 w-3.5" />
-          PR review bot
+          <GitPullRequest className="h-3.5 w-3.5" />
+          Pull request guard
         </button>
       </div>
 
       {/* Main Interactive Screen */}
       <Card className="p-6 md:p-8 bg-card border-border/50 relative overflow-hidden shadow-sm">
-        {/* ── 1. AUTOPILOT TAB ── */}
+        {/* ── 1. INCIDENT RUNBOOKS TAB ── */}
         {activeTab === "autopilot" && (
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/40">
               <div>
-                <span className="text-xs font-mono text-muted-foreground">Automated incident triage</span>
-                <h3 className="text-lg font-bold text-foreground">Autonomous anomaly detection & self-healing guard</h3>
+                <span className="text-xs font-mono text-muted-foreground">Automated incident runbooks</span>
+                <h3 className="text-lg font-bold text-foreground">Telemetry anomaly detection & zero-downtime rollback runbooks</h3>
               </div>
 
               <div className="flex items-center gap-2">
@@ -234,17 +233,17 @@ export function LandingFeatureShowcase() {
           </div>
         )}
 
-        {/* ── 2. FINOPS TAB ── */}
+        {/* ── 2. RESOURCE RECLAIMER TAB ── */}
         {activeTab === "finops" && (
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/40">
               <div>
-                <span className="text-xs font-mono text-muted-foreground">Resource audit</span>
-                <h3 className="text-lg font-bold text-foreground">Recover monthly cloud budget from zombie infrastructure</h3>
+                <span className="text-xs font-mono text-muted-foreground">Cloud resource audit</span>
+                <h3 className="text-lg font-bold text-foreground">Audit idle infrastructure & reclaim orphaned cloud budget</h3>
               </div>
 
               <div className="bg-muted/40 px-4 py-2 rounded-ui border border-border text-right">
-                <span className="text-xs text-muted-foreground block">Recovered budget</span>
+                <span className="text-xs text-muted-foreground block">Reclaimed budget</span>
                 <span className="text-xl font-bold font-mono text-status-up">+${savedCost}/mo</span>
               </div>
             </div>
@@ -253,7 +252,7 @@ export function LandingFeatureShowcase() {
               {zombies.length === 0 ? (
                 <div className="p-8 text-center border border-dashed border-border rounded-ui space-y-2">
                   <CheckCircle2 className="h-8 w-8 mx-auto text-status-up" />
-                  <p className="text-sm font-semibold text-foreground">All sample zombie resources cleaned</p>
+                  <p className="text-sm font-semibold text-foreground">All sample orphaned resources reclaimed</p>
                   <p className="text-xs text-muted-foreground">Recovered ${savedCost}/mo in monthly cloud spend.</p>
                   <Button onClick={() => setZombies([
                     { id: "1", name: "staging-db-replica-v2", cost: 51, type: "Supabase DB" },
@@ -271,7 +270,7 @@ export function LandingFeatureShowcase() {
                     <div className="flex items-center gap-4">
                       <span className="text-sm font-semibold font-mono text-foreground">${z.cost}/mo</span>
                       <Button onClick={() => handleCleanZombie(z.id, z.cost)} size="sm" variant="outline" className="np-btn-outline h-8 px-3 text-xs">
-                        Terminate & save
+                        Reclaim & save
                       </Button>
                     </div>
                   </div>
@@ -281,13 +280,13 @@ export function LandingFeatureShowcase() {
           </div>
         )}
 
-        {/* ── 3. CACHE PULSE TAB ── */}
+        {/* ── 3. EDGE CACHE TAB ── */}
         {activeTab === "cache" && (
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/40">
               <div>
-                <span className="text-xs font-mono text-muted-foreground">Cache invalidation</span>
-                <h3 className="text-lg font-bold text-foreground">Edge cache purging by tag or path</h3>
+                <span className="text-xs font-mono text-muted-foreground">Edge cache dispatcher</span>
+                <h3 className="text-lg font-bold text-foreground">On-demand global cache invalidation by tag or path</h3>
               </div>
 
               <div className="text-right">
@@ -305,8 +304,8 @@ export function LandingFeatureShowcase() {
                 className="flex-1 font-mono text-xs px-3.5 py-2.5 bg-background border border-border/60 rounded-ui focus:outline-none focus:border-foreground"
               />
               <Button onClick={handlePurgeCache} disabled={purging || !cacheTag} className="np-btn-primary h-10 px-5 text-xs gap-2">
-                {purging ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
-                Purge global edge
+                {purging ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Layers className="h-4 w-4" />}
+                Dispatch invalidation
               </Button>
             </div>
 
@@ -419,7 +418,7 @@ export function LandingFeatureShowcase() {
                   <p className="font-medium text-foreground">NexPulse automated audit summary for <code className="font-mono text-foreground">{prRepo}</code>:</p>
                   <p className="flex items-center gap-2 text-status-up"><CheckCircle2 className="h-3.5 w-3.5 shrink-0" /> Zero security vulnerabilities detected in dependencies.</p>
                   <p className="flex items-center gap-2 text-status-up"><CheckCircle2 className="h-3.5 w-3.5 shrink-0" /> Core Web Vitals impact: +4ms (well within threshold).</p>
-                  <p className="flex items-center gap-2 text-foreground"><Activity className="h-3.5 w-3.5 shrink-0" /> Recommendation: Add memoization on heavy compute loop at line 42.</p>
+                  <p className="flex items-center gap-2 text-foreground"><GitPullRequest className="h-3.5 w-3.5 shrink-0" /> Recommendation: Add memoization on heavy compute loop at line 42.</p>
                 </div>
               </div>
             )}

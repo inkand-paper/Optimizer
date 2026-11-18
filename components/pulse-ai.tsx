@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Activity, X, Send, Loader2, Bot, User } from "lucide-react";
+import { X, Send, Loader2, User, Terminal } from "lucide-react";
+import { BrandIcon } from "./brand-icon";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
 
@@ -10,11 +11,14 @@ interface Message {
   content: string;
 }
 
-export function PulseAI() {
+export function ConsoleAssistant() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [input, setInput] = React.useState("");
   const [messages, setMessages] = React.useState<Message[]>([
-    { role: "assistant", content: "Hey! I'm Pulse-AI. Ask me about your plan, features, setup, or anything NexPulse-related." }
+    {
+      role: "assistant",
+      content: "NexPulse Console Assistant ready. Ask about your monitors, deployment runbooks, API configuration, or cluster telemetry."
+    }
   ]);
   const [loading, setLoading] = React.useState(false);
   const scrollRef = React.useRef<HTMLDivElement>(null);
@@ -63,12 +67,12 @@ export function PulseAI() {
 
   return (
     <>
-      {/* Floating Bubble */}
+      {/* Floating Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        aria-label={isOpen ? "Close Pulse-AI" : "Open Pulse-AI"}
+        aria-label={isOpen ? "Close Console Assistant" : "Open Console Assistant"}
         className={cn(
-          "fixed bottom-24 md:bottom-6 right-6 h-12 w-12 rounded-full z-[90] items-center justify-center transition-all duration-200 shadow-lg cursor-pointer bg-primary text-primary-foreground border border-border",
+          "fixed bottom-24 md:bottom-6 right-6 h-12 w-12 rounded-full z-[90] items-center justify-center transition-all duration-200 shadow-lg cursor-pointer bg-primary text-primary-foreground border border-border group",
           isOpen ? "hidden md:flex" : "flex",
           isOpen ? "rotate-90 scale-95" : "hover:scale-105 active:scale-95"
         )}
@@ -76,13 +80,13 @@ export function PulseAI() {
         {isOpen ? (
           <X className="h-5 w-5" strokeWidth={1.5} />
         ) : (
-          <Activity className="h-5 w-5" strokeWidth={1.5} />
+          <Terminal className="h-5 w-5" strokeWidth={1.5} />
         )}
         
         {/* Tooltip */}
         {!isOpen && (
           <div className="absolute right-14 px-2.5 py-1 bg-card border border-border rounded-ui text-xs font-medium text-foreground whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-md">
-            Ask Pulse AI
+            Console Assistant
           </div>
         )}
       </button>
@@ -93,7 +97,7 @@ export function PulseAI() {
           className="fixed z-[90] flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-200
             inset-0 md:inset-auto
             md:bottom-24 md:right-6
-            md:w-[350px] md:max-w-[calc(100vw-3rem)]
+            md:w-[360px] md:max-w-[calc(100vw-3rem)]
             md:h-[500px] md:max-h-[calc(100vh-10rem)]
             md:rounded-card md:border md:border-border md:shadow-xl
             bg-card"
@@ -102,10 +106,11 @@ export function PulseAI() {
           <div className="p-3.5 border-b border-border bg-muted/40 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="h-7 w-7 rounded-ui bg-muted border border-border flex items-center justify-center">
-                <Activity className="h-3.5 w-3.5 text-foreground" strokeWidth={1.5} />
+                <BrandIcon className="h-3.5 w-3.5 text-foreground" />
               </div>
               <div>
-                <p className="text-[13px] font-semibold text-foreground">Pulse AI</p>
+                <p className="text-[13px] font-semibold text-foreground">Console Assistant</p>
+                <p className="text-[10px] text-muted-foreground">Cluster &amp; telemetry guidance</p>
               </div>
             </div>
             <button
@@ -128,7 +133,7 @@ export function PulseAI() {
                   "h-6 w-6 rounded-full flex items-center justify-center shrink-0 text-xs font-medium border border-border",
                   m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                 )}>
-                  {m.role === "user" ? <User className="h-3 w-3" strokeWidth={1.5} /> : <Activity className="h-3 w-3" strokeWidth={1.5} />}
+                  {m.role === "user" ? <User className="h-3 w-3" strokeWidth={1.5} /> : <BrandIcon className="h-3 w-3" />}
                 </div>
                 <div className={cn(
                   "max-w-[80%] p-3 rounded-ui text-xs leading-relaxed prose dark:prose-invert prose-p:my-0 prose-sm",
@@ -141,7 +146,7 @@ export function PulseAI() {
             {loading && (
               <div className="flex gap-2.5">
                 <div className="h-6 w-6 rounded-full bg-muted border border-border flex items-center justify-center">
-                  <Bot className="h-3 w-3 text-muted-foreground animate-bounce" strokeWidth={1.5} />
+                  <BrandIcon className="h-3 w-3 text-muted-foreground animate-pulse" />
                 </div>
                 <div className="bg-muted p-3 rounded-ui border border-border">
                   <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
@@ -150,7 +155,7 @@ export function PulseAI() {
             )}
           </div>
 
-          {/* Input — sticky to bottom, clears keyboard on mobile */}
+          {/* Input */}
           <div className="p-3 border-t border-border bg-card pb-[max(0.75rem,env(safe-area-inset-bottom))]">
             <div className="relative">
               <input
@@ -179,3 +184,6 @@ export function PulseAI() {
     </>
   );
 }
+
+// Backward-compatibility export alias
+export { ConsoleAssistant as PulseAI };

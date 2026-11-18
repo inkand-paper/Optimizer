@@ -1,15 +1,16 @@
 import Link from "next/link";
 import { Navbar } from "@/components/navbar";
 import { Card } from "@/components/ui-elements";
+import { BrandIcon } from "@/components/brand-icon";
 import { PLAN_LIMITS } from "@/lib/plans";
 import { LandingFeatureShowcase } from "@/components/landing-feature-showcase";
 import {
-  Activity,
+  Radio,
   ArrowRight,
   Check,
   Mail,
-  Cpu,
-  DollarSign,
+  Workflow,
+  Coins,
   CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -24,35 +25,35 @@ const valueProps = [
 const featureDomains = [
   {
     id: "observe",
-    title: "Deep Observability",
-    subtitle: "Uptime · Latency · Status pages",
-    icon: Activity,
+    title: "Synthetic Observability",
+    subtitle: "Uptime · Latency · Public Status Pages",
+    icon: Radio,
     items: [
       { name: "Live Uptime & Latency Monitors", desc: "HTTP, REST & gRPC endpoint health streaming across global edge PoPs in real-time." },
-      { name: "Cache Pulse Engine", desc: "Sub-200ms edge cache invalidation by tag or path for Next.js, Nuxt & Remix." },
+      { name: "Edge Cache Dispatcher", desc: "Sub-second on-demand edge cache invalidation by tag or route for Next.js, Cloudflare & Remix." },
       { name: "Public Status Pages", desc: "Shareable SLA history dashboards at /status/your-org with zero-config setup." },
     ],
   },
   {
-    id: "autopilot",
-    title: "Automated Incident Triage",
-    subtitle: "Root cause · Autopilot · PR review",
-    icon: Cpu,
+    id: "runbooks",
+    title: "Automated Incident Runbooks",
+    subtitle: "Root cause correlation · Rollback · PR guard",
+    icon: Workflow,
     items: [
       { name: "Incident Root-Cause Graph", desc: "Correlates latency spikes to exact culprit commits and slow database queries automatically." },
-      { name: "Autopilot Remediation", desc: "Human-in-the-loop or fully autonomous rollback execution with configurable safety gates." },
-      { name: "PR Code Review Bot", desc: "Posts Code Health scores and architecture recommendations directly on GitHub pull requests." },
+      { name: "Automated Rollback Runbooks", desc: "Human-in-the-loop or policy-governed rollback execution with strict verification gates." },
+      { name: "Pull Request Guard", desc: "Pre-merge architectural feedback and performance regression checks posted directly on GitHub PRs." },
     ],
   },
   {
     id: "finops",
-    title: "FinOps & Developer Tools",
-    subtitle: "Resource audit · MCP server · Code audit",
-    icon: DollarSign,
+    title: "Cloud FinOps & Engineering Suite",
+    subtitle: "Resource reclaimer · MCP bridge · Security audit",
+    icon: Coins,
     items: [
-      { name: "Zombie Resource Hunter", desc: "Continuous scanning for unattached EBS volumes, idle database replicas, and orphaned IPs." },
-      { name: "MCP Server Protocol", desc: "JSON-RPC 2.0 telemetry interface for Cursor, Claude Desktop, and AI coding agents." },
-      { name: "Neural Code Auditing", desc: "AI-powered repository vulnerability scanning, diff analysis, and security webhooks." },
+      { name: "Cloud Resource Reclaimer", desc: "Continuous scanning for unattached storage volumes, idle database replicas, and orphaned IPs." },
+      { name: "Model Context Protocol (MCP) Bridge", desc: "Native JSON-RPC 2.0 telemetry interface for Cursor, Claude Desktop, and IDE integrations." },
+      { name: "Static Analysis & Security Audit", desc: "Deep repository vulnerability scanning, memory leak vectors, and automated webhooks." },
     ],
   },
 ];
@@ -66,15 +67,15 @@ export default function Home() {
         {/* ── Hero ───────────────────────── */}
         <section className="relative pt-24 pb-20 md:pt-36 md:pb-28 overflow-hidden">
           <div className="relative max-w-4xl mx-auto px-4 text-center">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.1] text-foreground mb-6">
-              Monitor your sites.<br />
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-[-0.025em] leading-[1.12] text-foreground mb-6">
+              Unified observability for<br />
               <span className="text-foreground">
-                Audit your code. Ship faster.
+                modern web infrastructure.
               </span>
             </h1>
 
             <p className="text-[16px] md:text-[18px] text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10">
-              NexPulse combines real-time uptime monitoring, automated code auditing, edge cache revalidation, and public status pages into a single developer platform.
+              NexPulse brings together real-time synthetic monitors, instant edge cache revalidation, automated incident runbooks, and pre-merge code security audits into a single command platform.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -106,9 +107,9 @@ export default function Home() {
         {/* ── Feature Domains ─────────────── */}
         <section className="py-20 max-w-6xl mx-auto px-4 border-t border-border/40">
           <div className="text-center mb-14 space-y-2">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Everything your team needs</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.02em]">Engineered for production resilience</h2>
             <p className="text-[15px] text-muted-foreground max-w-lg mx-auto leading-relaxed">
-              From uptime monitoring to AI-driven incident response and cloud cost recovery — all in one console.
+              From synthetic endpoint probes to automated rollback runbooks and cloud resource reclamation — unified in one console.
             </p>
           </div>
 
@@ -246,7 +247,7 @@ export default function Home() {
       <footer className="py-10 border-t border-border/40">
         <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-5">
           <div className="flex items-center gap-2">
-            <Activity className="h-4 w-4 text-foreground" />
+            <BrandIcon className="h-4 w-4 text-foreground" />
             <span className="text-[14px] font-bold tracking-tight">NexPulse</span>
           </div>
 

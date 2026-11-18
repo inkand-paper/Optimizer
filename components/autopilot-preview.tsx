@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Card, Button, Badge } from "@/components/ui-elements";
 import {
-  Cpu, ShieldCheck, AlertTriangle, Zap, Check, RotateCcw, Activity,
+  Workflow, ShieldCheck, AlertTriangle, Zap, Check, RotateCcw,
   RefreshCw, Globe, ArrowDown, Database, CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -115,14 +115,14 @@ export function AutopilotPreview() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="h-9 w-9 rounded-ui bg-muted border border-border flex items-center justify-center text-foreground">
-              <Cpu className="h-4 w-4" strokeWidth={1.5} />
+              <Workflow className="h-4 w-4" strokeWidth={1.5} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-semibold text-foreground">Autopilot engine</h2>
+                <h2 className="text-sm font-semibold text-foreground">Incident Runbooks &amp; Diagnostics</h2>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Automated root-cause detection &amp; remediation guardrails.
+                Telemetry anomaly correlation, commit attribution &amp; rollback runbooks.
               </p>
             </div>
           </div>
@@ -130,18 +130,22 @@ export function AutopilotPreview() {
           <div className="flex items-center gap-3">
             {/* Mode selector */}
             <div className="flex items-center bg-muted p-1 rounded-ui border border-border">
-              {(["observe", "recommend", "autopilot"] as AutopilotMode[]).map((m) => (
+              {([
+                { id: "observe", label: "Observe" },
+                { id: "recommend", label: "Interactive" },
+                { id: "autopilot", label: "Automated" },
+              ] as { id: AutopilotMode; label: string }[]).map((m) => (
                 <button
-                  key={m}
-                  onClick={() => setMode(m)}
+                  key={m.id}
+                  onClick={() => setMode(m.id)}
                   className={cn(
-                    "px-3 py-1 rounded-ui text-xs font-medium capitalize transition-colors cursor-pointer",
-                    mode === m
+                    "px-3 py-1 rounded-ui text-xs font-medium transition-colors cursor-pointer",
+                    mode === m.id
                       ? "bg-primary text-primary-foreground shadow-sm"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  {m}
+                  {m.label}
                 </button>
               ))}
             </div>
@@ -151,12 +155,12 @@ export function AutopilotPreview() {
         <div className="mt-4 pt-3 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
           <span className="flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-status-up" />
-            Active mode: <strong className="text-foreground capitalize">{mode}</strong>
+            Active policy: <strong className="text-foreground capitalize">{mode === "autopilot" ? "Automated Runbook" : mode === "recommend" ? "Interactive Triage" : "Telemetry Monitor"}</strong>
           </span>
           <span className="text-[11px]">
-            {mode === "observe" && "Observes telemetry and records anomalies without modifying services."}
-            {mode === "recommend" && "Proposes remediation actions requiring 1-click confirmation."}
-            {mode === "autopilot" && "Automatically executes pre-approved safe remediations."}
+            {mode === "observe" && "Passively records anomalies and tracks culprit commits without modifying services."}
+            {mode === "recommend" && "Correlates root causes and proposes rollback runbooks requiring 1-click engineer approval."}
+            {mode === "autopilot" && "Automatically executes pre-approved zero-downtime rollbacks when confidence exceeds 80%."}
           </span>
         </div>
       </Card>
@@ -176,7 +180,7 @@ export function AutopilotPreview() {
           <Card className="lg:col-span-7 p-5 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-mono font-semibold text-foreground flex items-center gap-2">
-                <Activity className="h-4 w-4 text-foreground" strokeWidth={1.5} />
+                <Workflow className="h-4 w-4 text-foreground" strokeWidth={1.5} />
                 Root cause correlation
               </h3>
               <span className="text-xs font-mono text-status-up bg-status-up/10 px-2 py-0.5 rounded border border-status-up/20 flex items-center gap-1.5">

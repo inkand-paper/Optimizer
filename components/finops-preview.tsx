@@ -5,7 +5,7 @@ import { Card, Button } from "@/components/ui-elements";
 import {
   DollarSign, Trash2, ArrowDownRight, Database, Cloud,
   ShieldAlert, RefreshCw, Loader2, TrendingDown,
-  Server, Sparkles, CheckCircle2, ZapOff
+  Server, Sparkles, CheckCircle2, Coins
 } from "lucide-react";
 
 interface ZombieResource {
@@ -230,16 +230,16 @@ export function FinOpsPreview({ mode = "cost" }: FinOpsPreviewProps) {
       <Card className="p-6 border-border bg-card">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="h-8 w-8 rounded-ui bg-muted border border-border flex items-center justify-center text-status-down shrink-0">
-              <ZapOff className="h-5 w-5" />
+            <div className="h-8 w-8 rounded-ui bg-muted border border-border flex items-center justify-center text-status-warn shrink-0">
+              <Coins className="h-5 w-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold tracking-tight">Zombie Infrastructure Hunter</h2>
-                <span className="bg-status-down/10 text-status-down text-[10px] font-mono px-2 py-0.5 rounded border border-status-down/20">Active Scanner</span>
+                <h2 className="text-base font-bold tracking-tight">Cloud Resource Reclaimer</h2>
+                <span className="bg-status-warn/10 text-status-warn text-[10px] font-mono px-2 py-0.5 rounded border border-status-warn/20">Active Scanner</span>
               </div>
               <p className="text-[12px] text-muted-foreground mt-0.5">
-                Scan for abandoned, orphaned, and idle cloud resources across your accounts and terminate them in one click.
+                Audit abandoned, orphaned, and idle cloud resources across your connected accounts and reclaim budget in one click.
               </p>
             </div>
           </div>

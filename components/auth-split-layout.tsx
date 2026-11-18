@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Activity } from "lucide-react";
+import { BrandIcon } from "./brand-icon";
 
 export function AuthSplitLayout({
   children,
@@ -21,8 +21,8 @@ export function AuthSplitLayout({
         {/* Top: Brand Header */}
         <div className="relative z-10 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="h-8 w-8 rounded border border-white/10 bg-white/5 flex items-center justify-center text-white transition-colors group-hover:border-white/20">
-              <Activity className="h-4 w-4" strokeWidth={1.5} />
+            <div className="h-8 w-8 rounded-ui border border-white/10 bg-white/5 flex items-center justify-center text-white transition-colors group-hover:border-white/20 shadow-sm">
+              <BrandIcon className="h-4 w-4" />
             </div>
             <span className="font-semibold tracking-tight text-[15px] text-white">NexPulse</span>
           </Link>
@@ -71,8 +71,8 @@ export function AuthSplitLayout({
         {/* Mobile top header */}
         <div className="flex lg:hidden items-center justify-between mb-8">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="h-7 w-7 rounded border border-border bg-muted flex items-center justify-center text-foreground">
-              <Activity className="h-3.5 w-3.5" strokeWidth={1.5} />
+            <div className="h-7 w-7 rounded-ui border border-border bg-muted/60 flex items-center justify-center text-foreground shadow-sm">
+              <BrandIcon className="h-3.5 w-3.5" />
             </div>
             <span className="font-semibold tracking-tight text-sm">NexPulse</span>
           </Link>
