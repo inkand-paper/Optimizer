@@ -194,7 +194,7 @@ export function CodeAuditConsole() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
          <div>
             <h2 className="text-[18px] sm:text-[20px] font-bold tracking-tight">Code Audits</h2>
-            <p className="text-xs text-muted-foreground">Automated repository and source code analysis</p>
+            <p className="text-xs text-muted-foreground">Static analysis, dependency security checks &amp; architectural audits</p>
          </div>
          <div className="flex items-center justify-between sm:justify-start gap-4 bg-muted/20 px-4 py-2 rounded-ui border border-border w-full sm:w-auto">
             <span className="text-xs text-muted-foreground">Audits used</span>

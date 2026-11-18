@@ -20,13 +20,13 @@ import { AutopilotPreview } from "@/components/autopilot-preview";
 import { FinOpsPreview } from "@/components/finops-preview";
 import { PRBotPanel } from "@/components/pr-bot-panel";
 import { MCPSettings } from "@/components/mcp-settings";
+import { BrandIcon } from "@/components/brand-icon";
 
 import {
-  Activity, Key, Plus, Terminal, ShieldCheck, Copy,
-  CheckCircle2, Loader2, LogOut, Search, FileText,
+  Radio, Gauge, Workflow, Coins, Key, Plus, Terminal, ShieldCheck, Copy,
+  CheckCircle2, Loader2, LogOut, FileText,
   Webhook, ShieldAlert, Book, Home, User,
-  Menu, X, Cpu, DollarSign, ZapOff, GitPullRequest,
-  AlertCircle
+  Menu, X, GitPullRequest, AlertCircle
 } from "lucide-react";
 
 interface ApiKey { id: string; name: string; createdAt: string; lastUsedAt: string | null; }
@@ -52,37 +52,52 @@ const DOMAIN_GROUPS: DomainGroup[] = [
     id: "observe",
     category: "Observe",
     tabs: [
-      { id: "monitoring", label: "Monitors", icon: Activity },
-      { id: "seo", label: "SEO & Perf", icon: Search },
+      { id: "monitoring", label: "Monitors", icon: Radio },
+      { id: "seo", label: "SEO & Perf", icon: Gauge },
       { id: "logs", label: "Activity Logs", icon: FileText },
     ],
   },
   {
-    id: "autopilot",
-    category: "Autopilot",
+    id: "runbooks",
+    category: "Remediation",
     tabs: [
-      { id: "autopilot", label: "Root cause & guard", icon: Cpu },
+      { id: "autopilot", label: "Incident Runbooks", icon: Workflow },
     ],
   },
   {
     id: "finops",
-    category: "FinOps",
+    category: "Cost & FinOps",
     tabs: [
-      { id: "zombie-hunter", label: "Zombie hunter (Sample)", icon: ZapOff },
+      { id: "zombie-hunter", label: "Resource Reclaimer", icon: Coins },
     ],
   },
   {
     id: "devtools",
     category: "Developer tools",
     tabs: [
-      { id: "audits", label: "Code audit", icon: ShieldCheck },
-      { id: "pr-bot", label: "PR review bot", icon: GitPullRequest },
-      { id: "mcp", label: "MCP server", icon: Terminal },
-      { id: "keys", label: "API keys", icon: Key },
+      { id: "audits", label: "Code Audit", icon: ShieldCheck },
+      { id: "pr-bot", label: "PR Guard", icon: GitPullRequest },
+      { id: "mcp", label: "MCP Bridge", icon: Terminal },
+      { id: "keys", label: "API Keys", icon: Key },
       { id: "webhooks", label: "Webhooks", icon: Webhook },
     ],
   },
 ];
+
+const TAB_TITLES: Record<Tab, string> = {
+  monitoring: "Synthetic Observability",
+  seo: "Endpoint & Web Vitals Analyzer",
+  logs: "System Activity & Audit Logs",
+  autopilot: "Automated Incident Runbooks",
+  "pulse-ai": "Console Assistant",
+  cost: "Cloud Cost Intelligence",
+  "zombie-hunter": "Cloud Resource Reclaimer",
+  audits: "Static Code Analysis & Security",
+  keys: "Machine API Credentials",
+  webhooks: "Outbound Webhooks",
+  "pr-bot": "Pull Request Guard",
+  mcp: "Model Context Protocol (MCP) Bridge",
+};
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -316,12 +331,12 @@ export default function DashboardPage() {
         >
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 px-3.5 lg:px-5 h-14 shrink-0 border-b border-border">
-            <div className="h-7 w-7 rounded border border-border bg-muted flex items-center justify-center text-foreground shrink-0">
-              <Activity className="h-3.5 w-3.5" strokeWidth={1.5} />
+            <div className="h-7 w-7 rounded-ui border border-border bg-muted/60 flex items-center justify-center text-foreground shrink-0 shadow-sm">
+              <BrandIcon className="h-4 w-4" />
             </div>
             <div className="hidden lg:flex items-center gap-1.5 min-w-0">
               <span className="text-sm font-semibold tracking-tight text-foreground">NexPulse</span>
-              <span className="text-[10px] font-mono text-muted-foreground px-1 py-0.2 rounded bg-muted">v0.1.0</span>
+              <span className="text-[10px] font-mono text-muted-foreground px-1 py-0.2 rounded bg-muted/80 border border-border">v0.1.0</span>
             </div>
           </Link>
 
@@ -433,8 +448,8 @@ export default function DashboardPage() {
                 <Home className="h-3.5 w-3.5" />
               </Link>
               <div>
-                <h1 className="text-sm font-semibold text-foreground capitalize">
-                  {activeTab === "monitoring" ? "Observability Center" : activeTab.replace("-", " ")}
+                <h1 className="text-sm font-semibold text-foreground">
+                  {TAB_TITLES[activeTab] || activeTab}
                 </h1>
               </div>
             </div>
@@ -539,7 +554,7 @@ export default function DashboardPage() {
                 <Card className="p-5">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="h-8 w-8 rounded border border-border bg-muted flex items-center justify-center text-foreground">
-                      <Search className="h-4 w-4" />
+                      <Gauge className="h-4 w-4" />
                     </div>
                     <div>
                       <h2 className="text-sm font-semibold text-foreground">Endpoint & SEO Analyzer</h2>

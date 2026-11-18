@@ -4,7 +4,7 @@ import * as React from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Card, Button, Badge, StatusPip, ConfirmDialog } from "@/components/ui-elements";
 import { 
-  ArrowLeft, Activity, Globe, Clock, Server, 
+  ArrowLeft, Radio, Globe, Clock, Server, 
   AlertCircle, Shield, RefreshCw, Loader2, Trash2, 
   ExternalLink, CheckCircle2,
 } from "lucide-react";
@@ -187,7 +187,7 @@ export default function MonitorDetailsPage() {
             <Card className="p-5">
               <div className="flex items-center justify-between mb-6 pb-2 border-b border-border">
                 <div className="flex items-center gap-2">
-                  <Activity className="h-4 w-4 text-foreground" />
+                  <Radio className="h-4 w-4 text-foreground" />
                   <h3 className="text-xs font-semibold text-foreground">
                     Latency Telemetry Stream (ms)
                   </h3>

@@ -21,6 +21,8 @@
     "node": ">=20.0.0 <23.0.0"
   },
   "dependencies": {
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/plus-jakarta-sans": "^5.3.0",
     "@google/generative-ai": "^0.24.1",
     "@lemonsqueezy/lemonsqueezy.js": "^4.0.0",
     "@next-auth/prisma-adapter": "^1.0.7",

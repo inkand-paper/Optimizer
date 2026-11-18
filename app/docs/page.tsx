@@ -2,7 +2,8 @@ import * as React from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/navbar";
 import { Card } from "@/components/ui-elements";
-import { Book, Terminal, Smartphone, Compass, ArrowRight, Activity, Mail, GitBranch, Cpu, ShieldCheck } from "lucide-react";
+import { BrandIcon } from "@/components/brand-icon";
+import { Book, Terminal, Smartphone, Compass, ArrowRight, Mail, GitBranch, Workflow, ShieldCheck, Radio } from "lucide-react";
 
 const categories = [
   {
@@ -18,15 +19,15 @@ const categories = [
     ],
   },
   {
-    icon: Cpu,
-    title: "Features & Incident Triage",
-    description: "Breakdown of core capabilities, analogies, and operational behaviors.",
+    icon: Workflow,
+    title: "Features & Incident Runbooks",
+    description: "Breakdown of core capabilities, operational runbooks, and telemetry behaviors.",
     links: [
       { label: "Complete Feature Guide", href: "/docs/features" },
-      { label: "Autopilot Incident Engine", href: "/docs/features#2-nexpulse-autopilot-ai-engine-root-cause-remediation" },
-      { label: "FinOps Waste Hunter", href: "/docs/features#3-finops-waste-hunter-cost-intelligence" },
+      { label: "Incident Runbook Engine", href: "/docs/features#2-nexpulse-autopilot-ai-engine-root-cause-remediation" },
+      { label: "Cloud Resource Reclaimer", href: "/docs/features#3-finops-waste-hunter-cost-intelligence" },
       { label: "MCP Protocol Server", href: "/docs/features#7-model-context-protocol-mcp-server" },
-      { label: "GitHub PR Review Bot", href: "/docs/features#6-github-pr-code-review-bot" },
+      { label: "GitHub PR Guard", href: "/docs/features#6-github-pr-code-review-bot" },
     ],
   },
   {
@@ -55,7 +56,7 @@ const categories = [
     ],
   },
   {
-    icon: Activity,
+    icon: Radio,
     title: "Monitoring & Probes",
     description: "Uptime checks, cron schedule execution, and incident alerting.",
     links: [
@@ -165,7 +166,7 @@ export default function DocsPage() {
         {/* Support CTA */}
         <Card className="p-8 md:p-12 text-center bg-card border border-border/50">
           <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-muted text-foreground text-xs font-medium mb-4 border border-border">
-            <Activity className="h-3 w-3" />
+            <BrandIcon className="h-3 w-3" />
             <span>Community & support</span>
           </div>
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">

@@ -4,7 +4,7 @@ import * as React from "react";
 import { Card, Button } from "@/components/ui-elements";
 import {
   Terminal, Key, Copy, CheckCircle2, ExternalLink,
-  Server, Cpu, Globe, RefreshCw,
+  Server, Workflow, Globe, RefreshCw,
 } from "lucide-react";
 
 interface MCPTool {
@@ -16,7 +16,7 @@ interface MCPTool {
 
 const MCP_TOOLS: MCPTool[] = [
   { name: "get_system_health", description: "Fetch real-time uptime & latency across all monitors.", inputRequired: false, icon: Server },
-  { name: "get_active_incidents", description: "List active Autopilot root-cause incidents.", inputRequired: false, icon: Cpu },
+  { name: "get_active_incidents", description: "List active incident diagnostics and root-cause events.", inputRequired: false, icon: Workflow },
   { name: "run_seo_audit", description: "Run a full SEO & performance audit on a URL.", inputRequired: true, icon: Globe },
   { name: "trigger_cache_purge", description: "Instantly purge Next.js edge cache by tag.", inputRequired: true, icon: RefreshCw },
 ];
@@ -91,11 +91,11 @@ export function MCPSettings() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-base font-semibold text-foreground">MCP Server Integration</h2>
+              <h2 className="text-base font-semibold text-foreground">Model Context Protocol (MCP) Bridge</h2>
               <span className="bg-muted text-foreground text-[10px] font-mono px-2 py-0.5 rounded border border-border">v1.0</span>
             </div>
             <p className="text-[12px] text-muted-foreground mt-0.5">
-              Connect AI agents (Cursor, Claude Desktop) directly to your NexPulse infrastructure telemetry.
+              Connect developer tools and IDEs (Cursor, Claude Desktop) directly to your NexPulse infrastructure telemetry.
             </p>
           </div>
         </div>

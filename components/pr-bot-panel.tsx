@@ -114,11 +114,11 @@ export function PRBotPanel() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-base font-semibold text-foreground">PR Code Review Bot</h2>
+              <h2 className="text-base font-semibold text-foreground">Pull Request Guard</h2>
               <span className="bg-muted text-foreground text-[10px] font-mono px-2 py-0.5 rounded border border-border">GitHub</span>
             </div>
             <p className="text-[12px] text-muted-foreground mt-0.5">
-              Auto-audit pull requests and post a quality score comment directly on GitHub.
+              Automated pre-merge pull request audits, performance regression alerts, and quality feedback directly on GitHub.
             </p>
           </div>
         </div>

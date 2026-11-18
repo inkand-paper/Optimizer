@@ -22,11 +22,11 @@ export const metadata: Metadata = {
   ),
   title: "NexPulse",
   description:
-    "The universal command center for modern web assets. Monitor health, analyse performance, revalidate cache, and audit source code across any framework.",
+    "The unified observability and resilience console for modern web infrastructure. Real-time synthetic monitors, instant edge cache revalidation, automated incident runbooks, and pre-merge code security audits.",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "NexPulse | Any Framework, One Dashboard",
-    description: "Universal performance monitoring, cache revalidation, and AI-powered code auditing.",
+    title: "NexPulse | Infrastructure Observability & Resilience Console",
+    description: "Real-time synthetic monitors, instant edge cache revalidation, automated incident runbooks, and pre-merge code security audits across modern frameworks.",
     url: "/",
     siteName: "NexPulse",
     locale: "en_US",

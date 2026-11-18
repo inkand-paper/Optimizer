@@ -11,8 +11,8 @@ const config: Config = {
     extend: {
       screens: { xs: "375px" },
       fontFamily: {
-        sans: ["var(--font-geist-sans)", "Inter", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
-        mono: ["var(--font-mono)", "JetBrains Mono", "SFMono-Regular", "Menlo", "monospace"],
+        sans: ["var(--font-sans)", "'Plus Jakarta Sans'", "Inter", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "'JetBrains Mono'", "SFMono-Regular", "Menlo", "monospace"],
       },
       colors: {
         /* Functional status colors (STRICTLY for data signals) */

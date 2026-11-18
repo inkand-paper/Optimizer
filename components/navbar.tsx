@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui-elements";
-import { Activity, Menu, X, BookOpen, LayoutDashboard, LogIn, LogOut, UserPlus, User, HelpCircle } from "lucide-react";
+import { BrandIcon } from "./brand-icon";
+import { Menu, X, BookOpen, LayoutDashboard, LogIn, LogOut, UserPlus, User, HelpCircle } from "lucide-react";
 
 export function Navbar() {
   const router = useRouter();
@@ -41,12 +42,12 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 font-semibold text-sm shrink-0 group">
-          <div className="h-7 w-7 rounded border border-border bg-muted flex items-center justify-center text-foreground group-hover:border-foreground/30 transition-colors">
-            <Activity className="h-3.5 w-3.5" />
+          <div className="h-7 w-7 rounded-ui border border-border bg-muted/60 flex items-center justify-center text-foreground group-hover:border-foreground/30 transition-colors shadow-sm">
+            <BrandIcon className="h-4 w-4" />
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-foreground tracking-tight font-semibold">NexPulse</span>
-            <span className="text-[10px] font-mono text-muted-foreground px-1 py-0.2 rounded bg-muted border border-border">v2.4</span>
+            <span className="text-[10px] font-mono text-muted-foreground px-1 py-0.2 rounded bg-muted/80 border border-border">v2.4</span>
           </div>
         </Link>
 

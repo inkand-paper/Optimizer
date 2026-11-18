@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Card, Button, Input, StatusPip, Toggle, ConfirmDialog } from "./ui-elements";
 import { 
-  Activity, 
+  Radio, 
   Globe, 
   Trash2, 
   Plus, 
@@ -159,7 +159,7 @@ export function MonitoringDashboard() {
   if (loading && monitors.length === 0) {
     return (
       <Card className="p-12 text-center bg-card border-border">
-        <Activity className="h-6 w-6 animate-pulse mx-auto mb-3 text-muted-foreground opacity-40" />
+        <Radio className="h-6 w-6 animate-pulse mx-auto mb-3 text-muted-foreground opacity-40" />
         <p className="text-xs text-muted-foreground">Loading monitors...</p>
       </Card>
     );
@@ -171,12 +171,12 @@ export function MonitoringDashboard() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-card p-4 rounded-lg border border-border gap-4">
         <div className="flex items-center gap-3">
           <div className="h-8 w-8 rounded border border-border bg-muted flex items-center justify-center text-foreground shrink-0">
-            <Activity className="h-4 w-4" />
+            <Radio className="h-4 w-4" />
           </div>
           <div>
-            <h2 className="text-sm font-semibold tracking-tight text-foreground">Active Infrastructure</h2>
+            <h2 className="text-sm font-semibold tracking-tight text-foreground">Synthetic Endpoints</h2>
             <p className="text-xs text-muted-foreground font-mono">
-              {monitors.length} endpoints monitored · 10s live interval
+              {monitors.length} active monitors · 60s probe interval
             </p>
           </div>
         </div>
