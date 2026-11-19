@@ -223,7 +223,7 @@ export function FinOpsPreview({ mode = "cost" }: FinOpsPreviewProps) {
     );
   }
 
-  // Mode 2: ZOMBIE RESOURCE HUNTER DASHBOARD
+  // Mode 2: CLOUD RESOURCE RECLAIMER DASHBOARD
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
       {/* Header Banner */}
@@ -259,7 +259,7 @@ export function FinOpsPreview({ mode = "cost" }: FinOpsPreviewProps) {
         </div>
       )}
 
-      {/* Main Zombie Table */}
+      {/* Main Resource Table */}
       <Card className="p-6 space-y-5">
         <div className="flex items-center justify-between">
           <div>
@@ -273,7 +273,7 @@ export function FinOpsPreview({ mode = "cost" }: FinOpsPreviewProps) {
           </div>
           {!loading && zombies.length > 0 && (
             <span className="bg-muted text-foreground font-medium text-xs px-2.5 py-1 rounded border border-border">
-              {zombies.length} Zombie{zombies.length > 1 ? "s" : ""} Found
+              {zombies.length} Idle Resource{zombies.length > 1 ? "s" : ""} Found
             </span>
           )}
         </div>

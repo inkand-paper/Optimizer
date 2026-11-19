@@ -35,7 +35,7 @@ export const StudentTrialReminderEmail = ({ userName, expiresAt, daysLeft, upgra
             What you will lose on FREE
           </Text>
           <Text style={{ color: "#888", fontSize: "13px", margin: "4px 0" }}>✗ Drops from 10 monitors → 1 monitor</Text>
-          <Text style={{ color: "#888", fontSize: "13px", margin: "4px 0" }}>✗ Drops from 50 AI audits → 3 per month</Text>
+          <Text style={{ color: "#888", fontSize: "13px", margin: "4px 0" }}>✗ Drops from 50 code audits → 3 per month</Text>
           <Text style={{ color: "#888", fontSize: "13px", margin: "4px 0" }}>✗ No Intelligence Bank access</Text>
           <Text style={{ color: "#888", fontSize: "13px", margin: "4px 0" }}>✗ No webhooks or API keys</Text>
         </Section>

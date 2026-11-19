@@ -76,10 +76,10 @@ Optimizer/
 │   ├── api/           # API route handlers (Next.js App Router)
 │   │   ├── auth/      # Authentication endpoints
 │   │   ├── analyze/   # SEO & performance audit
-│   │   ├── code-review/ # Neural code audit (SSE streaming)
-│   │   ├── monitors/  # Uptime monitoring
-│   │   ├── revalidate/ # Cache pulse engine
-│   │   └── ai/chat/   # Pulse-AI assistant
+│   │   ├── code-review/ # Static analysis & code audit (SSE streaming)
+│   │   ├── monitors/  # Synthetic uptime monitoring
+│   │   ├── revalidate/ # Edge cache dispatcher
+│   │   └── ai/chat/   # Console assistant
 │   └── dashboard/     # Dashboard UI pages
 ├── core/
 │   └── analyzer/      # Pure audit logic (SEO, security, performance, code review)

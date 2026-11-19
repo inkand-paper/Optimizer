@@ -29,7 +29,7 @@ const MCP_TOOLS = [
   },
   {
     name: "get_active_incidents",
-    description: "Fetch all active or recent autonomous root-cause incidents detected by NexPulse Autopilot.",
+    description: "Fetch all active or recent autonomous root-cause incidents detected by NexPulse Incident Runbooks.",
     inputSchema: {
       type: "object",
       properties: {},

@@ -284,7 +284,7 @@ export default function ReviewResultPage({ params }: { params: Promise<{ id: str
           </Link>
           <div className="h-4 w-px bg-border hidden sm:block" />
           <div className="min-w-0">
-            <h1 className="text-[13px] sm:text-[14px] font-semibold leading-tight truncate max-w-[150px] sm:max-w-none">{reviewMeta?.repoName || reviewMeta?.fileName || "Neural Audit Result"}</h1>
+            <h1 className="text-[13px] sm:text-[14px] font-semibold leading-tight truncate max-w-[150px] sm:max-w-none">{reviewMeta?.repoName || reviewMeta?.fileName || "Code Audit Report"}</h1>
             <p className="label-category text-[8px] sm:text-[9px]  opacity-60 truncate">{reviewMeta?.source} Pipeline</p>
           </div>
         </div>

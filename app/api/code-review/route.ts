@@ -1,6 +1,6 @@
 ﻿/**
  * app/api/code-review/route.ts
- * Hybrid SSE Streamer for Neural Code Audits.
+ * Hybrid SSE Streamer for Static Analysis & Security Audits.
  * Turbo Edition: Parallel Workers + Intelligence Cache.
  */
 

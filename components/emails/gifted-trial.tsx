@@ -40,9 +40,9 @@ export const GiftedTrialEmail = ({ userName, plan, permanent, expiresAt, dashboa
           {plan === 'PRO' && (
             <>
               <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ 10 monitored sites</Text>
-              <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ 50 AI code audits per month</Text>
+              <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ 50 static code & security audits per month</Text>
               <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ Full AI diagnosis and Intelligence Bank</Text>
-              <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ API keys and cache revalidation</Text>
+              <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ API keys and edge cache dispatcher</Text>
               <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ 5 Discord/Slack webhooks</Text>
               <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ 30-day log retention</Text>
             </>
@@ -50,7 +50,7 @@ export const GiftedTrialEmail = ({ userName, plan, permanent, expiresAt, dashboa
           {plan === 'BUSINESS' && (
             <>
               <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ Unlimited monitored sites</Text>
-              <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ Unlimited AI code audits</Text>
+              <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ Unlimited code & security audits</Text>
               <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ 50 webhooks</Text>
               <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ 365-day log retention</Text>
               <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ All limits unlocked</Text>

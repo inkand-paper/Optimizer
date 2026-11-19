@@ -12,7 +12,7 @@ export async function getAiDiagnosis(auditData: AnalyzeResponse["results"]) {
     const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
     const prompt = `
-      You are NexPulse AI, a professional performance and SEO consultant for high-end web agencies.
+      You are NexPulse Console Assistant, a professional infrastructure and SEO consultant for high-performance engineering teams.
       I will provide you with JSON data from a website audit. 
       Your task is to provide a "Genius Diagnosis" for the owner.
 

@@ -31,10 +31,10 @@ export const StudentTrialEmail = ({ userName, eduEmail, expiresAt }: StudentTria
             Your trial includes
           </Text>
           <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ 10 monitored sites</Text>
-          <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ 50 AI code audits per month</Text>
+          <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ 50 static code & security audits per month</Text>
           <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ Intelligence Bank</Text>
-          <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ AI diagnosis & Pulse-AI assistant</Text>
-          <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ API keys & cache revalidation</Text>
+          <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ AI diagnosis & Console assistant</Text>
+          <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ API keys & edge cache dispatcher</Text>
           <Text style={{ color: "#aaa", fontSize: "13px", margin: "4px 0" }}>✓ 5 Discord/Slack webhooks</Text>
         </Section>
         <Section style={{ backgroundColor: "#0d1a0d", border: "1px solid #1a3a1a", borderRadius: "8px", padding: "16px", marginTop: "16px" }}>

@@ -7,7 +7,8 @@ import {
   History, 
   Plus, 
   Loader2, 
-  GitBranch, 
+  GitBranch,
+  GitPullRequest, 
   FolderArchive, 
   Terminal,
   Clock,
@@ -325,15 +326,15 @@ export function CodeAuditConsole() {
 
       </div>{/* close grid */}
 
-      {/* ── PR Bot — full width below the grid ── */}
+      {/* ── PR Guard — full width below the grid ── */}
       <div className="space-y-4 pt-6 border-t border-border">
            <div className="flex items-center gap-3">
              <div className="h-9 w-9 rounded-ui bg-muted border border-border flex items-center justify-center">
-               <GitBranch className="h-4 w-4 text-foreground" strokeWidth={1.5} />
+               <GitPullRequest className="h-4 w-4 text-foreground" strokeWidth={1.5} />
              </div>
              <div>
-               <h3 className="text-[13px] font-semibold">PR Code Review Bot</h3>
-               <p className="text-xs text-muted-foreground">Auto-audit pull requests and post a score comment on GitHub</p>
+               <h3 className="text-[13px] font-semibold">Pull Request Guard</h3>
+               <p className="text-xs text-muted-foreground">Automated pre-merge pull request audits, regression checks, and feedback on GitHub</p>
              </div>
            </div>
 

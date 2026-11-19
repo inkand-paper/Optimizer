@@ -15,23 +15,26 @@
 
 ---
 
-NexPulse gives engineering teams a unified command center for uptime monitoring, cache revalidation, AI-powered code auditing, and SEO analysis — across any framework, any region.
+NexPulse gives engineering teams a unified command center for synthetic uptime monitoring, edge cache dispatching, static code analysis, and infrastructure resilience — across any framework, any region.
 
 | Feature | Description |
 |---|---|
-| **Real-Time Monitoring** | Uptime, latency, and status tracking for any public URL with global telemetry graphs. |
-| **Public Status Pages** | Customizable live status page (`/status/[slug]`) to showcase uptime to public users. |
-| **Cache Pulse Engine** | Remotely revalidate Next.js, Nuxt, and Remix caches by tag or path. |
-| **SEO & Performance Audit** | Crawl any live URL for Core Web Vitals, meta coverage, security headers, and structured data. |
-| **Neural Code Audit** | AI-powered source code analysis from GitHub repos, ZIP archives, or pasted snippets. |
+| **Synthetic Monitoring** | Uptime, latency, and status tracking for any public endpoint with global telemetry graphs. |
+| **Public Status Pages** | Customizable live status page (`/status/[slug]`) to showcase service availability to customers. |
+| **Edge Cache Dispatcher** | Remotely revalidate Next.js, Nuxt, and Remix caches by tag or path on demand. |
+| **Automated Incident Runbooks** | Root-cause incident correlation, telemetry anomaly detection, and pre-approved zero-downtime rollbacks. |
+| **Cloud Resource Reclaimer** | Audit abandoned, orphaned, and idle cloud resources across connected accounts and reclaim budget. |
+| **Static Analysis & Security Audit** | Source code auditing and architectural inspection from GitHub repos, ZIP archives, or pasted snippets. |
+| **Pull Request Guard** | Automated pre-merge pull request audits, performance regression alerts, and quality feedback on GitHub. |
+| **Model Context Protocol (MCP) Bridge** | Connect developer tools and IDEs (Cursor, Claude Desktop) directly to live infrastructure telemetry. |
 | **Intelligence Bank** | Hash-based incremental auditing — only re-analyses files that changed since the last audit. |
-| **Student Trial System** | Verification engine granting 30-day PRO access to students with automated 3-day/1-day reminder emails. |
-| **Admin Gifted Trials** | Admin functionality to grant custom duration (7–90 days or permanent) PRO/Agency trials with notes. |
-| **Weekly Email Digest** | Automated Monday morning summary of infrastructure health, incidents, and audit metrics. |
-| **Pulse-AI Assistant** | AI technical assistant embedded in the dashboard. Answers questions about your infrastructure and audit results. |
-| **Webhooks** | Real-time Discord and Slack alerts when monitored endpoints go down or recover. |
-| **Activity Logs** | Full audit trail of all API calls, revalidation pulses, and auth events. |
-| **MFA** | TOTP-based two-factor authentication for all accounts. |
+| **Console Assistant** | Engineering technical assistant embedded in the dashboard for real-time infrastructure troubleshooting. |
+| **Student Verification System** | Verification engine granting 30-day PRO access to students with automated reminder workflows. |
+| **Admin Gifted Trials** | Granular admin controls to grant custom duration (7–90 days or permanent) PRO/Agency access. |
+| **Weekly Digest** | Automated Monday morning summary of infrastructure health, incidents, and audit metrics. |
+| **Webhooks** | Real-time Discord and Slack alerts when monitored endpoints experience degradation or recover. |
+| **Activity Logs** | Immutable audit trail of all API calls, revalidation dispatches, and authentication events. |
+| **MFA** | TOTP-based two-factor authentication for hardened access control. |
 
 ---
 

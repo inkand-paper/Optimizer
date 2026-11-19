@@ -24,10 +24,10 @@ const categories = [
     description: "Breakdown of core capabilities, operational runbooks, and telemetry behaviors.",
     links: [
       { label: "Complete Feature Guide", href: "/docs/features" },
-      { label: "Incident Runbook Engine", href: "/docs/features#2-nexpulse-autopilot-ai-engine-root-cause-remediation" },
-      { label: "Cloud Resource Reclaimer", href: "/docs/features#3-finops-waste-hunter-cost-intelligence" },
-      { label: "MCP Protocol Server", href: "/docs/features#7-model-context-protocol-mcp-server" },
-      { label: "GitHub PR Guard", href: "/docs/features#6-github-pr-code-review-bot" },
+      { label: "Incident Runbook Engine", href: "/docs/features" },
+      { label: "Cloud Resource Reclaimer", href: "/docs/features" },
+      { label: "MCP Telemetry Bridge", href: "/docs/features" },
+      { label: "Pull Request Guard", href: "/docs/features" },
     ],
   },
   {
@@ -36,11 +36,11 @@ const categories = [
     description: "HTTP endpoints, authentication headers, and response payloads.",
     links: [
       { label: "All Endpoints", href: "/docs/api" },
-      { label: "Cache Invalidation", href: "/docs/api#post-api-revalidate" },
-      { label: "Code Audit (SSE)", href: "/docs/api#post-api-code-review" },
+      { label: "Edge Cache Dispatcher", href: "/docs/api#post-api-revalidate" },
+      { label: "Static Code Audit (SSE)", href: "/docs/api#post-api-code-review" },
       { label: "Audit Diff", href: "/docs/api#get-api-code-review-diff-reviewid-xxx" },
       { label: "Status Page Query", href: "/docs/api#get-api-status-slug-xxx" },
-      { label: "PR Review Webhook", href: "/docs/api#post-api-pr-bot" },
+      { label: "PR Guard Webhook", href: "/docs/api#post-api-pr-bot" },
     ],
   },
   {

@@ -9,12 +9,16 @@ Last updated: July 2025
 
 NexPulse is a unified infrastructure monitoring and auditing platform. It provides:
 
-- **Uptime Monitoring** — Health checks for any public URL, checked every 5 minutes via external cron. Discord/Slack alerts on status change only.
-- **Cache Pulse Engine** — Remote cache revalidation for Next.js (and any framework with a revalidation endpoint). Triggered via Machine API Key.
+- **Synthetic Monitoring** — Health checks for any public URL, checked every 5 minutes via external cron. Discord/Slack alerts on status change only.
+- **Edge Cache Dispatcher** — Remote cache revalidation for Next.js (and any framework with a revalidation endpoint). Triggered via Machine API Key.
 - **SEO & Performance Audit** — Deep crawl of live URLs for Core Web Vitals signals, meta tags, security headers, and structured data.
-- **Neural Code Audit** — AI-powered analysis of source code from GitHub repos, ZIP uploads, or pasted code. Streams results in real time.
+- **Static Analysis & Security Audit** — Deep source code analysis from GitHub repos, ZIP uploads, or pasted code. Streams results in real time.
+- **Automated Incident Runbooks** — Anomaly correlation and automated zero-downtime rollback runbooks.
+- **Cloud Resource Reclaimer** — Automated scan and one-click budget reclamation for orphaned cloud resources.
+- **Pull Request Guard** — Pre-merge PR review and security scanning posted directly to GitHub.
+- **Model Context Protocol (MCP) Bridge** — Native MCP endpoint providing telemetry context to AI tools and IDEs.
 - **Intelligence Bank** — SHA-256 hash-based incremental auditing. Unchanged files skip the AI entirely and return cached results.
-- **Pulse-AI Assistant** — AI chat assistant embedded in the dashboard with accurate NexPulse product knowledge.
+- **Console Assistant** — Technical assistant embedded in the dashboard with accurate NexPulse operational knowledge.
 - **Webhooks** — Discord and Slack alerts for monitoring events.
 - **Activity Logs** — Full audit trail of all platform events.
 - **Promotions System** — Admin-managed time-limited discount promotions shown as a dashboard banner with countdown timer.
@@ -179,7 +183,7 @@ NexPulse forwards the request to the user's registered endpoint using their `REV
 
 ---
 
-## 7. Neural Code Audit Engine
+## 7. Static Analysis & Security Audit Engine
 
 ### Flow
 
@@ -361,11 +365,11 @@ Users can enable a public status page at `/status/[slug]` from Dashboard → Mon
 - `statusPageEnabled` and `statusPageSlug` fields on User model
 - `isPublic` field on Monitor model (default true)
 
-### PR Code Review Bot
+### Pull Request Guard
 
 Auto-audits pull requests and posts a Code Health Score comment on GitHub.
 
-Setup from Dashboard → Code Audit → PR Code Review Bot section:
+Setup from Dashboard → Pull Request Guard section:
 1. Enter repo in `owner/repo` format
 2. Follow the one-time webhook setup instructions shown after connecting
 3. Add the webhook to GitHub repo settings with the generated secret

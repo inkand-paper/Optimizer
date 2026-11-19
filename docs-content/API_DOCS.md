@@ -95,7 +95,7 @@ URL is validated against SSRF blocklist before any request.
 ```
 
 ### `POST /api/code-review`
-Run the Neural Code Audit Engine. Returns an SSE stream.
+Run the Static Analysis & Security Audit Engine. Returns an SSE stream.
 Requires: User session.
 
 **GitHub:**

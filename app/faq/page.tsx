@@ -83,7 +83,7 @@ const faqCategories = [
       },
       {
         q: "What plans are available?",
-        a: "NexPulse offers Free, Pro, and Business tiers. Higher plans unlock more monitors, longer log history, AI-powered diagnostics via Pulse-AI, and priority support. Visit the Pricing section on the homepage or your Profile page to view current plan limits and upgrade options.",
+        a: "NexPulse offers Free, Pro, and Business tiers. Higher plans unlock more monitors, longer log history, automated diagnostics via Console Assistant, and priority support. Visit the Pricing section on the homepage or your Profile page to view current plan limits and upgrade options.",
       },
       {
         q: "Is my data secure?",
@@ -152,7 +152,7 @@ export default function FaqPage() {
           <p className="text-[16px] text-muted-foreground max-w-xl mx-auto leading-relaxed">
             Everything you need to know about NexPulse, from setup to security.
             Can&apos;t find what you&apos;re looking for? Ask{" "}
-            <span className="font-semibold text-foreground">Pulse-AI</span> in the dashboard.
+            <span className="font-semibold text-foreground">Console Assistant</span> in the dashboard.
           </p>
         </div>
 
@@ -190,10 +190,10 @@ export default function FaqPage() {
               <MessageSquare className="h-3.5 w-3.5" /> Still have questions?
             </div>
             <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-3">
-              Ask Pulse-AI
+              Ask Console Assistant
             </h2>
             <p className="text-muted-foreground text-[15px] mb-7 max-w-md mx-auto leading-relaxed">
-              Our AI assistant is trained on the entire NexPulse knowledge base and is available 24/7 inside your dashboard.
+              Our Console Assistant is available 24/7 inside your dashboard to answer operational questions and troubleshoot telemetry.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link href="/dashboard" className="np-btn-primary h-10 px-6 text-[13px] gap-2 inline-flex items-center">
