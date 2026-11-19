@@ -273,12 +273,13 @@ function LoginForm() {
 
             {process.env.NODE_ENV !== "production" && (
               <div className="pt-2">
-                <a
+                <Link
                   href="/api/auth/dev-login"
+                  prefetch={false}
                   className="w-full h-9 flex items-center justify-center gap-2 rounded-ui border border-border bg-muted/40 hover:bg-muted text-xs font-mono text-muted-foreground hover:text-foreground transition-all"
                 >
                   <span>One-Click Dev Access (Admin)</span>
-                </a>
+                </Link>
               </div>
             )}
           </div>
@@ -333,7 +334,7 @@ function LoginForm() {
 
         {!mfaRequired && (
           <p className="text-center text-[13px] text-muted-foreground pt-2">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link href="/register" className="font-medium text-foreground hover:underline">
               Sign up
             </Link>

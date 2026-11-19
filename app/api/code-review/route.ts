@@ -168,7 +168,7 @@ export async function POST(req: NextRequest) {
       // [SECURITY � M1] For FREE tier, only allow cache hits for files this specific
       // user has previously submitted. We build the allowed set by extracting hashes
       // from that user's own completed review results, not from the global AuditCache table.
-      let userPriorHashes = new Set<string>();
+      const userPriorHashes = new Set<string>();
       if (!canUseSharedCache) {
         const userReviews = await prisma.codeReview.findMany({
           where: { userId: dbUser.id, status: 'COMPLETED' },

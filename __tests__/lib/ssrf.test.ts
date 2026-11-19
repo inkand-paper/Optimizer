@@ -10,7 +10,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const dnsState = vi.hoisted(() => ({ resolvedIp: '8.8.8.8' }));
 
 vi.mock('dns/promises', () => ({
-  lookup: vi.fn((_host: string) =>
+  lookup: vi.fn(() =>
     Promise.resolve({ address: dnsState.resolvedIp, family: dnsState.resolvedIp.includes(':') ? 6 : 4 })
   ),
 }));

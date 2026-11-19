@@ -4,7 +4,7 @@ import * as React from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Card, Button, Badge, StatusPip, ConfirmDialog } from "@/components/ui-elements";
 import { 
-  ArrowLeft, Radio, Globe, Clock, Server, 
+  ArrowLeft, Radio, Globe, Server, 
   AlertCircle, Shield, RefreshCw, Loader2, Trash2, 
   ExternalLink, CheckCircle2,
 } from "lucide-react";
@@ -25,7 +25,7 @@ export default function MonitorDetailsPage() {
   const [isDeleting, setIsDeleting] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
 
-  const fetchDetails = async () => {
+  const fetchDetails = React.useCallback(async () => {
     setRefreshing(true);
     try {
       const r = await fetch(`/api/monitors/${id}`, { credentials: "include" });
@@ -38,13 +38,13 @@ export default function MonitorDetailsPage() {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [id, router]);
 
   React.useEffect(() => {
     fetchDetails();
     const iv = setInterval(fetchDetails, 30000);
     return () => clearInterval(iv);
-  }, [id]);
+  }, [fetchDetails]);
 
   const handleDelete = async () => {
     setIsDeleting(true);

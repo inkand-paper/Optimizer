@@ -69,7 +69,6 @@ export function CodeAuditConsole() {
   React.useEffect(() => {
     loadReviews();
     const github = searchParams.get("github");
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (github === "connected") setGithubConnected(true);
   }, [searchParams]);
 

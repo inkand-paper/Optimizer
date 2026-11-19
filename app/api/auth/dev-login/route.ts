@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { signJwt } from "@/lib/auth";
-import { cookies } from "next/headers";
 
 /**
  * GET /api/auth/dev-login

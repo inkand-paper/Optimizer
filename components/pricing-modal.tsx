@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import * as React from "react";
-import { X, Check, Zap, Shield, Globe, Loader2, AlertCircle, MessageCircle } from "lucide-react";
+import { X, Check, Zap, Shield, Globe, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "./ui-elements";
 import { cn } from "@/lib/utils";
 import { PLAN_LIMITS } from "@/lib/plans";

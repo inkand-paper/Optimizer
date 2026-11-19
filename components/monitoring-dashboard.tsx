@@ -247,7 +247,7 @@ export function MonitoringDashboard() {
           <Card className="p-12 text-center border-dashed">
             <Globe className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
             <p className="text-xs font-medium text-foreground">No endpoints provisioned yet</p>
-            <p className="text-xs text-muted-foreground mt-0.5">Click "Add Target" above to start streaming uptime telemetry.</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Click &quot;Add Target&quot; above to start streaming uptime telemetry.</p>
           </Card>
         ) : (
           monitors.map((m) => {

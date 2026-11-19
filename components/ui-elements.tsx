@@ -184,7 +184,7 @@ export function IconWrapper({
   size?: number;
   strokeWidth?: number;
   className?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }) {
   return <IconComponent size={size} strokeWidth={strokeWidth} className={className} {...props} />;
 }

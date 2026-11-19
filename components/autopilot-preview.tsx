@@ -48,7 +48,6 @@ export function AutopilotPreview() {
   }, []);
 
   React.useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     void fetchIncidents();
   }, [fetchIncidents]);
 
@@ -173,6 +172,11 @@ export function AutopilotPreview() {
           <p className="text-xs text-muted-foreground max-w-md mx-auto leading-relaxed">
             All monitored endpoints and services are operating within expected latency thresholds. When a regression or outage occurs, root cause analysis will be displayed here.
           </p>
+          <div className="pt-2">
+            <Button onClick={handleSimulateAnomaly} disabled={executing} variant="outline" className="np-btn-outline h-8 px-3 text-xs">
+              Simulate Telemetry Anomaly
+            </Button>
+          </div>
         </Card>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

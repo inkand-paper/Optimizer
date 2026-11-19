@@ -150,12 +150,10 @@ export default function AdminPortal() {
   };
 
   React.useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchUsers();
   }, []);
 
   React.useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (activeTab === 'trials') fetchTrials(trialFilter);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, trialFilter]);
